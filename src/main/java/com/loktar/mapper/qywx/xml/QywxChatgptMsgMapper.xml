@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.qywx.QywxChatgptMsgMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.qywx.QywxChatgptMsg">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="from_user_name" jdbcType="VARCHAR" property="fromUserName" />
+    <result column="role" jdbcType="VARCHAR" property="role" />
+    <result column="filename" jdbcType="VARCHAR" property="filename" />
+    <result column="prompt_tokens" jdbcType="INTEGER" property="promptTokens" />
+    <result column="completion_tokens" jdbcType="INTEGER" property="completionTokens" />
+    <result column="totalTokens" jdbcType="INTEGER" property="totaltokens" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="text" jdbcType="LONGVARCHAR" property="text" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from qywx_chatgpt_msg
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.qywx.QywxChatgptMsg">
+    insert into qywx_chatgpt_msg (`id`, from_user_name, `role`, filename,
+      prompt_tokens, completion_tokens, totalTokens, 
+      create_time, `text`)
+    values (#{id,jdbcType=INTEGER}, #{fromUserName,jdbcType=VARCHAR}, #{role,jdbcType=VARCHAR}, #{filename,jdbcType=VARCHAR},
+      #{promptTokens,jdbcType=INTEGER}, #{completionTokens,jdbcType=INTEGER}, #{totaltokens,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{text,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.qywx.QywxChatgptMsg">
+    update qywx_chatgpt_msg
+    set from_user_name = #{fromUserName,jdbcType=VARCHAR},
+      `role` = #{role,jdbcType=VARCHAR},
+      filename = #{filename,jdbcType=VARCHAR},
+      prompt_tokens = #{promptTokens,jdbcType=INTEGER},
+      completion_tokens = #{completionTokens,jdbcType=INTEGER},
+      totalTokens = #{totaltokens,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      `text` = #{text,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, from_user_name, `role`, filename, prompt_tokens, completion_tokens, totalTokens, 
+    create_time, `text`
+    from qywx_chatgpt_msg
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, from_user_name, `role`, filename, prompt_tokens, completion_tokens, totalTokens, 
+    create_time, `text`
+    from qywx_chatgpt_msg
+  </select>
+</mapper>

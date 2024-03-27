@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.newhouse.NewHouseHangzhouV2Mapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.newhouse.NewHouseHangzhouV2">
+    <id column="house_id" jdbcType="VARCHAR" property="houseId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="name_spread" jdbcType="VARCHAR" property="nameSpread" />
+    <result column="price" jdbcType="INTEGER" property="price" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="plot_ratio" jdbcType="DOUBLE" property="plotRatio" />
+    <result column="green_ratio" jdbcType="VARCHAR" property="greenRatio" />
+    <result column="cover_area" jdbcType="VARCHAR" property="coverArea" />
+    <result column="bulid_area" jdbcType="VARCHAR" property="bulidArea" />
+    <result column="bulid_type" jdbcType="VARCHAR" property="bulidType" />
+    <result column="total_house_num" jdbcType="INTEGER" property="totalHouseNum" />
+    <result column="car_park_num" jdbcType="INTEGER" property="carParkNum" />
+    <result column="area" jdbcType="VARCHAR" property="area" />
+    <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
+    <result column="plate" jdbcType="VARCHAR" property="plate" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from new_house_hangzhou_v2
+    where house_id = #{houseId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV2">
+    insert into new_house_hangzhou_v2 (house_id, `name`, name_spread, 
+      price, `type`, plot_ratio, 
+      green_ratio, cover_area, bulid_area, 
+      bulid_type, total_house_num, car_park_num, 
+      area, area_code, plate, 
+      address, update_time)
+    values (#{houseId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{nameSpread,jdbcType=VARCHAR}, 
+      #{price,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, #{plotRatio,jdbcType=DOUBLE}, 
+      #{greenRatio,jdbcType=VARCHAR}, #{coverArea,jdbcType=VARCHAR}, #{bulidArea,jdbcType=VARCHAR}, 
+      #{bulidType,jdbcType=VARCHAR}, #{totalHouseNum,jdbcType=INTEGER}, #{carParkNum,jdbcType=INTEGER}, 
+      #{area,jdbcType=VARCHAR}, #{areaCode,jdbcType=VARCHAR}, #{plate,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV2">
+    update new_house_hangzhou_v2
+    set `name` = #{name,jdbcType=VARCHAR},
+      name_spread = #{nameSpread,jdbcType=VARCHAR},
+      price = #{price,jdbcType=INTEGER},
+      `type` = #{type,jdbcType=VARCHAR},
+      plot_ratio = #{plotRatio,jdbcType=DOUBLE},
+      green_ratio = #{greenRatio,jdbcType=VARCHAR},
+      cover_area = #{coverArea,jdbcType=VARCHAR},
+      bulid_area = #{bulidArea,jdbcType=VARCHAR},
+      bulid_type = #{bulidType,jdbcType=VARCHAR},
+      total_house_num = #{totalHouseNum,jdbcType=INTEGER},
+      car_park_num = #{carParkNum,jdbcType=INTEGER},
+      area = #{area,jdbcType=VARCHAR},
+      area_code = #{areaCode,jdbcType=VARCHAR},
+      plate = #{plate,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where house_id = #{houseId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select house_id, `name`, name_spread, price, `type`, plot_ratio, green_ratio, cover_area, 
+    bulid_area, bulid_type, total_house_num, car_park_num, area, area_code, plate, address, 
+    update_time
+    from new_house_hangzhou_v2
+    where house_id = #{houseId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select house_id, `name`, name_spread, price, `type`, plot_ratio, green_ratio, cover_area, 
+    bulid_area, bulid_type, total_house_num, car_park_num, area, area_code, plate, address, 
+    update_time
+    from new_house_hangzhou_v2
+  </select>
+</mapper>

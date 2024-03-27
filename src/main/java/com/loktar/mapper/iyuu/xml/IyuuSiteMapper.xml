@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.iyuu.IyuuSiteMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.iyuu.IyuuSite">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="site" jdbcType="VARCHAR" property="site" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="base_url" jdbcType="VARCHAR" property="baseUrl" />
+    <result column="download_page" jdbcType="VARCHAR" property="downloadPage" />
+    <result column="reseed_check" jdbcType="VARCHAR" property="reseedCheck" />
+    <result column="is_https" jdbcType="INTEGER" property="isHttps" />
+    <result column="supported" jdbcType="VARCHAR" property="supported" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="passkey" jdbcType="VARCHAR" property="passkey" />
+    <result column="download_hash" jdbcType="VARCHAR" property="downloadHash" />
+    <result column="track_host" jdbcType="VARCHAR" property="trackHost" />
+    <result column="registered" jdbcType="INTEGER" property="registered" />
+    <result column="important_level" jdbcType="INTEGER" property="importantLevel" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from iyuu_site
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.iyuu.IyuuSite">
+    insert into iyuu_site (`id`, site, nickname, base_url,
+      download_page, reseed_check, is_https, 
+      supported, `uid`, passkey, 
+      download_hash, track_host, registered, 
+      important_level)
+    values (#{id,jdbcType=INTEGER}, #{site,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, #{baseUrl,jdbcType=VARCHAR},
+      #{downloadPage,jdbcType=VARCHAR}, #{reseedCheck,jdbcType=VARCHAR}, #{isHttps,jdbcType=INTEGER}, 
+      #{supported,jdbcType=VARCHAR}, #{uid,jdbcType=INTEGER}, #{passkey,jdbcType=VARCHAR}, 
+      #{downloadHash,jdbcType=VARCHAR}, #{trackHost,jdbcType=VARCHAR}, #{registered,jdbcType=INTEGER}, 
+      #{importantLevel,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.iyuu.IyuuSite">
+    update iyuu_site
+    set site = #{site,jdbcType=VARCHAR},
+      nickname = #{nickname,jdbcType=VARCHAR},
+      base_url = #{baseUrl,jdbcType=VARCHAR},
+      download_page = #{downloadPage,jdbcType=VARCHAR},
+      reseed_check = #{reseedCheck,jdbcType=VARCHAR},
+      is_https = #{isHttps,jdbcType=INTEGER},
+      supported = #{supported,jdbcType=VARCHAR},
+      `uid` = #{uid,jdbcType=INTEGER},
+      passkey = #{passkey,jdbcType=VARCHAR},
+      download_hash = #{downloadHash,jdbcType=VARCHAR},
+      track_host = #{trackHost,jdbcType=VARCHAR},
+      registered = #{registered,jdbcType=INTEGER},
+      important_level = #{importantLevel,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, site, nickname, base_url, download_page, reseed_check, is_https, supported, 
+    `uid`, passkey, download_hash, track_host, registered, important_level
+    from iyuu_site
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, site, nickname, base_url, download_page, reseed_check, is_https, supported, 
+    `uid`, passkey, download_hash, track_host, registered, important_level
+    from iyuu_site
+  </select>
+</mapper>

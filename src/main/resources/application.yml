@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: loktar
+  profiles:
+    active: pro
+server:
+  port: 8080
+  servlet:
+    context-path: /fun
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  mapperLocations: classpath:com/loktar/mapper/**/xml/*.xml
+
