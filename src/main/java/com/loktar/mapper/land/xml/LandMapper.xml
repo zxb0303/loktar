@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.land.LandMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.land.Land">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="date" jdbcType="DATE" property="date" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="area" jdbcType="VARCHAR" property="area" />
+    <result column="land_no" jdbcType="VARCHAR" property="landNo" />
+    <result column="land_name" jdbcType="VARCHAR" property="landName" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="acreage" jdbcType="REAL" property="acreage" />
+    <result column="land_usage" jdbcType="VARCHAR" property="landUsage" />
+    <result column="volumetric_rate" jdbcType="VARCHAR" property="volumetricRate" />
+    <result column="deal_price" jdbcType="REAL" property="dealPrice" />
+    <result column="build_price" jdbcType="REAL" property="buildPrice" />
+    <result column="premium_rate" jdbcType="VARCHAR" property="premiumRate" />
+    <result column="owner" jdbcType="VARCHAR" property="owner" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="detail_url" jdbcType="VARCHAR" property="detailUrl" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from land
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.loktar.domain.land.Land">
+    insert into land (`id`, `date`, city, area,
+      land_no, land_name, `status`, 
+      acreage, land_usage, volumetric_rate, 
+      deal_price, build_price, premium_rate, 
+      `owner`, remark, detail_url
+      )
+    values (#{id,jdbcType=INTEGER}, #{date,jdbcType=DATE}, #{city,jdbcType=VARCHAR}, #{area,jdbcType=VARCHAR},
+      #{landNo,jdbcType=VARCHAR}, #{landName,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
+      #{acreage,jdbcType=REAL}, #{landUsage,jdbcType=VARCHAR}, #{volumetricRate,jdbcType=VARCHAR}, 
+      #{dealPrice,jdbcType=REAL}, #{buildPrice,jdbcType=REAL}, #{premiumRate,jdbcType=VARCHAR}, 
+      #{owner,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{detailUrl,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.land.Land">
+    update land
+    set `date` = #{date,jdbcType=DATE},
+      city = #{city,jdbcType=VARCHAR},
+      area = #{area,jdbcType=VARCHAR},
+      land_no = #{landNo,jdbcType=VARCHAR},
+      land_name = #{landName,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=VARCHAR},
+      acreage = #{acreage,jdbcType=REAL},
+      land_usage = #{landUsage,jdbcType=VARCHAR},
+      volumetric_rate = #{volumetricRate,jdbcType=VARCHAR},
+      deal_price = #{dealPrice,jdbcType=REAL},
+      build_price = #{buildPrice,jdbcType=REAL},
+      premium_rate = #{premiumRate,jdbcType=VARCHAR},
+      `owner` = #{owner,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      detail_url = #{detailUrl,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, `date`, city, area, land_no, land_name, `status`, acreage, land_usage, 
+    volumetric_rate, deal_price, build_price, premium_rate, `owner`, remark, detail_url
+    from land
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, `date`, city, area, land_no, land_name, `status`, acreage, land_usage, 
+    volumetric_rate, deal_price, build_price, premium_rate, `owner`, remark, detail_url
+    from land
+  </select>
+  <delete id="deleteByDate" parameterType="java.util.Date">
+    delete from land
+    where TO_DAYS(`date`) <![CDATA[>=]]> TO_DAYS(#{date,jdbcType=DATE});
+  </delete>
+</mapper>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.newhouse.NewHouseHangzhouDetailMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.newhouse.NewHouseHangzhouDetail">
+    <id column="detail_id" jdbcType="VARCHAR" property="detailId" />
+    <result column="house_id" jdbcType="VARCHAR" property="houseId" />
+    <result column="presell_id" jdbcType="VARCHAR" property="presellId" />
+    <result column="build_no" jdbcType="VARCHAR" property="buildNo" />
+    <result column="unit_no" jdbcType="VARCHAR" property="unitNo" />
+    <result column="room_no" jdbcType="VARCHAR" property="roomNo" />
+    <result column="build_area" jdbcType="VARCHAR" property="buildArea" />
+    <result column="inner_area" jdbcType="VARCHAR" property="innerArea" />
+    <result column="area_rate" jdbcType="VARCHAR" property="areaRate" />
+    <result column="record_price" jdbcType="VARCHAR" property="recordPrice" />
+    <result column="fix_price" jdbcType="VARCHAR" property="fixPrice" />
+    <result column="price" jdbcType="VARCHAR" property="price" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from new_house_hangzhou_detail
+    where detail_id = #{detailId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouDetail">
+    insert into new_house_hangzhou_detail (detail_id, house_id, presell_id, 
+      build_no, unit_no, room_no, 
+      build_area, inner_area, area_rate, 
+      record_price, fix_price, price, 
+      `status`)
+    values (#{detailId,jdbcType=VARCHAR}, #{houseId,jdbcType=VARCHAR}, #{presellId,jdbcType=VARCHAR}, 
+      #{buildNo,jdbcType=VARCHAR}, #{unitNo,jdbcType=VARCHAR}, #{roomNo,jdbcType=VARCHAR}, 
+      #{buildArea,jdbcType=VARCHAR}, #{innerArea,jdbcType=VARCHAR}, #{areaRate,jdbcType=VARCHAR}, 
+      #{recordPrice,jdbcType=VARCHAR}, #{fixPrice,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouDetail">
+    update new_house_hangzhou_detail
+    set house_id = #{houseId,jdbcType=VARCHAR},
+      presell_id = #{presellId,jdbcType=VARCHAR},
+      build_no = #{buildNo,jdbcType=VARCHAR},
+      unit_no = #{unitNo,jdbcType=VARCHAR},
+      room_no = #{roomNo,jdbcType=VARCHAR},
+      build_area = #{buildArea,jdbcType=VARCHAR},
+      inner_area = #{innerArea,jdbcType=VARCHAR},
+      area_rate = #{areaRate,jdbcType=VARCHAR},
+      record_price = #{recordPrice,jdbcType=VARCHAR},
+      fix_price = #{fixPrice,jdbcType=VARCHAR},
+      price = #{price,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=VARCHAR}
+    where detail_id = #{detailId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select detail_id, house_id, presell_id, build_no, unit_no, room_no, build_area, inner_area, 
+    area_rate, record_price, fix_price, price, `status`
+    from new_house_hangzhou_detail
+    where detail_id = #{detailId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select detail_id, house_id, presell_id, build_no, unit_no, room_no, build_area, inner_area, 
+    area_rate, record_price, fix_price, price, `status`
+    from new_house_hangzhou_detail
+  </select>
+  <delete id="deleteByHouseIdAndPresellId">
+    delete from new_house_hangzhou_detail
+    where house_id = #{param1,jdbcType=VARCHAR} and presell_id = #{param2,jdbcType=VARCHAR}
+  </delete>
+  <select id="selectCountByHouseId" resultType="java.lang.Integer">
+    select count(1) from new_house_hangzhou_detail where house_id = #{house_id,jdbcType=VARCHAR}
+  </select>
+  <select id="getAvgPrice" resultType="java.lang.Integer">
+    select case when cast(sum(price)/sum(build_area) as signed) is null then 0 else cast(sum(price)/sum(build_area) as signed) end from new_house_hangzhou_detail
+    where house_id = #{house_id,jdbcType=VARCHAR} and price <![CDATA[<>]]>'-' ;
+  </select>
+</mapper>

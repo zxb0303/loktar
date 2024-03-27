@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.github.GithubRepositoryMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.github.GithubRepository">
+    <id column="repository_id" jdbcType="INTEGER" property="repositoryId" />
+    <result column="repository" jdbcType="VARCHAR" property="repository" />
+    <result column="last_tag_id" jdbcType="INTEGER" property="lastTagId" />
+    <result column="last_tag_name" jdbcType="VARCHAR" property="lastTagName" />
+    <result column="published_at" jdbcType="VARCHAR" property="publishedAt" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from github_repository
+    where repository_id = #{repositoryId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.github.GithubRepository">
+    insert into github_repository (repository_id, repository, last_tag_id, 
+      last_tag_name, published_at, `status`
+      )
+    values (#{repositoryId,jdbcType=INTEGER}, #{repository,jdbcType=VARCHAR}, #{lastTagId,jdbcType=INTEGER}, 
+      #{lastTagName,jdbcType=VARCHAR}, #{publishedAt,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.github.GithubRepository">
+    update github_repository
+    set repository = #{repository,jdbcType=VARCHAR},
+      last_tag_id = #{lastTagId,jdbcType=INTEGER},
+      last_tag_name = #{lastTagName,jdbcType=VARCHAR},
+      published_at = #{publishedAt,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=INTEGER}
+    where repository_id = #{repositoryId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select repository_id, repository, last_tag_id, last_tag_name, published_at, `status`
+    from github_repository
+    where repository_id = #{repositoryId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select repository_id, repository, last_tag_id, last_tag_name, published_at, `status`
+    from github_repository
+  </select>
+  <select id="getNeedCheckGithubRepositorys" resultMap="BaseResultMap">
+    select repository_id, repository, last_tag_id, last_tag_name, published_at, `status`
+    from github_repository where status = 1
+  </select>
+</mapper>

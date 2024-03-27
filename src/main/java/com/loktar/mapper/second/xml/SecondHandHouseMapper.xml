@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.second.SecondHandHouseMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.second.SecondHandHouse">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="fwtybh" jdbcType="VARCHAR" property="fwtybh" />
+    <result column="xzqhname" jdbcType="VARCHAR" property="xzqhname" />
+    <result column="cqmc" jdbcType="VARCHAR" property="cqmc" />
+    <result column="xqmc" jdbcType="VARCHAR" property="xqmc" />
+    <result column="jzmj" jdbcType="REAL" property="jzmj" />
+    <result column="wtcsjg" jdbcType="VARCHAR" property="wtcsjg" />
+    <result column="mdmc" jdbcType="VARCHAR" property="mdmc" />
+    <result column="gplxrxm" jdbcType="VARCHAR" property="gplxrxm" />
+    <result column="scgpshsj" jdbcType="VARCHAR" property="scgpshsj" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="status_time" jdbcType="TIMESTAMP" property="statusTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from second_hand_house
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.second.SecondHandHouse">
+    insert into second_hand_house (`id`, fwtybh, xzqhname, cqmc,
+      xqmc, jzmj, wtcsjg, mdmc, 
+      gplxrxm, scgpshsj, `status`, 
+      status_time)
+    values (#{id,jdbcType=INTEGER}, #{fwtybh,jdbcType=VARCHAR}, #{xzqhname,jdbcType=VARCHAR}, #{cqmc,jdbcType=VARCHAR},
+      #{xqmc,jdbcType=VARCHAR}, #{jzmj,jdbcType=REAL}, #{wtcsjg,jdbcType=VARCHAR}, #{mdmc,jdbcType=VARCHAR}, 
+      #{gplxrxm,jdbcType=VARCHAR}, #{scgpshsj,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
+      #{statusTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.second.SecondHandHouse">
+    update second_hand_house
+    set fwtybh = #{fwtybh,jdbcType=VARCHAR},
+      xzqhname = #{xzqhname,jdbcType=VARCHAR},
+      cqmc = #{cqmc,jdbcType=VARCHAR},
+      xqmc = #{xqmc,jdbcType=VARCHAR},
+      jzmj = #{jzmj,jdbcType=REAL},
+      wtcsjg = #{wtcsjg,jdbcType=VARCHAR},
+      mdmc = #{mdmc,jdbcType=VARCHAR},
+      gplxrxm = #{gplxrxm,jdbcType=VARCHAR},
+      scgpshsj = #{scgpshsj,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=VARCHAR},
+      status_time = #{statusTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, fwtybh, xzqhname, cqmc, xqmc, jzmj, wtcsjg, mdmc, gplxrxm, scgpshsj, `status`, 
+    status_time
+    from second_hand_house
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, fwtybh, xzqhname, cqmc, xqmc, jzmj, wtcsjg, mdmc, gplxrxm, scgpshsj, `status`, 
+    status_time
+    from second_hand_house
+  </select>
+  <select id="getMaxDate" resultType="java.lang.String">
+    select max(scgpshsj) as maxDate from second_hand_house;
+  </select>
+  <select id="getNeedUpdateStatus" resultMap="BaseResultMap">
+    select * from second_hand_house where status ='挂牌'
+                                      and TO_DAYS(status_time)<![CDATA[<]]>(TO_DAYS(now())-3) order by status_time limit 100;
+  </select>
+  <update id="updateStatusAndStatusTimeByFwtybh">
+    update second_hand_house set `status` = #{status,jdbcType=VARCHAR}, status_time = now() where fwtybh = #{fwtybh,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

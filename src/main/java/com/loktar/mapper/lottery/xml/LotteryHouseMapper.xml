@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.lottery.LotteryHouseMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.lottery.LotteryHouse">
+    <id column="house_id" jdbcType="VARCHAR" property="houseId" />
+    <result column="house_name" jdbcType="VARCHAR" property="houseName" />
+    <result column="total_people_num" jdbcType="INTEGER" property="totalPeopleNum" />
+    <result column="total_house_num" jdbcType="INTEGER" property="totalHouseNum" />
+    <result column="elite_people_num" jdbcType="INTEGER" property="elitePeopleNum" />
+    <result column="elite_house_num" jdbcType="INTEGER" property="eliteHouseNum" />
+    <result column="elite_chance" jdbcType="VARCHAR" property="eliteChance" />
+    <result column="homeless_people_num" jdbcType="INTEGER" property="homelessPeopleNum" />
+    <result column="homeless_house_num" jdbcType="INTEGER" property="homelessHouseNum" />
+    <result column="homeless_chance" jdbcType="VARCHAR" property="homelessChance" />
+    <result column="unhomeless_people_num" jdbcType="INTEGER" property="unhomelessPeopleNum" />
+    <result column="unhomeless_house_num" jdbcType="INTEGER" property="unhomelessHouseNum" />
+    <result column="unhomeless_chance" jdbcType="VARCHAR" property="unhomelessChance" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="lottery_time" jdbcType="VARCHAR" property="lotteryTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from lottery_house
+    where house_id = #{houseId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.lottery.LotteryHouse">
+    insert into lottery_house (house_id, house_name, total_people_num,
+      total_house_num, elite_people_num, elite_house_num,
+      elite_chance, homeless_people_num, homeless_house_num,
+      homeless_chance, unhomeless_people_num, unhomeless_house_num,
+      unhomeless_chance, `status`, lottery_time
+      )
+    values (#{houseId,jdbcType=VARCHAR}, #{houseName,jdbcType=VARCHAR}, #{totalPeopleNum,jdbcType=INTEGER},
+      #{totalHouseNum,jdbcType=INTEGER}, #{elitePeopleNum,jdbcType=INTEGER}, #{eliteHouseNum,jdbcType=INTEGER},
+      #{eliteChance,jdbcType=VARCHAR}, #{homelessPeopleNum,jdbcType=INTEGER}, #{homelessHouseNum,jdbcType=INTEGER},
+      #{homelessChance,jdbcType=VARCHAR}, #{unhomelessPeopleNum,jdbcType=INTEGER}, #{unhomelessHouseNum,jdbcType=INTEGER},
+      #{unhomelessChance,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{lotteryTime,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.lottery.LotteryHouse">
+    update lottery_house
+    set house_name = #{houseName,jdbcType=VARCHAR},
+      total_people_num = #{totalPeopleNum,jdbcType=INTEGER},
+      total_house_num = #{totalHouseNum,jdbcType=INTEGER},
+      elite_people_num = #{elitePeopleNum,jdbcType=INTEGER},
+      elite_house_num = #{eliteHouseNum,jdbcType=INTEGER},
+      elite_chance = #{eliteChance,jdbcType=VARCHAR},
+      homeless_people_num = #{homelessPeopleNum,jdbcType=INTEGER},
+      homeless_house_num = #{homelessHouseNum,jdbcType=INTEGER},
+      homeless_chance = #{homelessChance,jdbcType=VARCHAR},
+      unhomeless_people_num = #{unhomelessPeopleNum,jdbcType=INTEGER},
+      unhomeless_house_num = #{unhomelessHouseNum,jdbcType=INTEGER},
+      unhomeless_chance = #{unhomelessChance,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=INTEGER},
+      lottery_time = #{lotteryTime,jdbcType=VARCHAR}
+    where house_id = #{houseId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select house_id, house_name, total_people_num, total_house_num, elite_people_num,
+    elite_house_num, elite_chance, homeless_people_num, homeless_house_num, homeless_chance,
+    unhomeless_people_num, unhomeless_house_num, unhomeless_chance, `status`, lottery_time
+    from lottery_house
+    where house_id = #{houseId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select house_id, house_name, total_people_num, total_house_num, elite_people_num,
+    elite_house_num, elite_chance, homeless_people_num, homeless_house_num, homeless_chance,
+    unhomeless_people_num, unhomeless_house_num, unhomeless_chance, `status`, lottery_time
+    from lottery_house
+  </select>
+  <select id="selectLotteryedHZHousesByDay" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * from lottery_house
+    where length(house_id)<![CDATA[>=]]>20  and status = 1 and TO_DAYS(lottery_time) <![CDATA[>=]]> TO_DAYS(now())-#{day,jdbcType=INTEGER}
+    order by lottery_time;
+  </select>
+  <select id="getMaxRankByHouseId" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(1)  from lottery_people where house_id = #{houseId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectLotteryedYHHousesByDay" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * from lottery_house
+    where length(house_id)<![CDATA[<=]]>20  and status = 1 and TO_DAYS(lottery_time) <![CDATA[>=]]> TO_DAYS(now())-#{day,jdbcType=INTEGER}
+    order by lottery_time desc;
+  </select>
+  <select id="getYesterdayLotteryHouses" resultMap="BaseResultMap">
+    select * from lottery_house where TO_DAYS(lottery_time)=TO_DAYS(now())-1 order by lottery_time;
+  </select>
+</mapper>

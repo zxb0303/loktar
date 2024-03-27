@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.newhouse.NewHouseHangzhouPresellMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.newhouse.NewHouseHangzhouPresell">
+    <id column="presell_id" jdbcType="VARCHAR" property="presellId" />
+    <result column="house_id" jdbcType="VARCHAR" property="houseId" />
+    <result column="presell_no" jdbcType="VARCHAR" property="presellNo" />
+    <result column="price" jdbcType="DOUBLE" property="price" />
+    <result column="date" jdbcType="VARCHAR" property="date" />
+    <result column="total_house_num" jdbcType="INTEGER" property="totalHouseNum" />
+    <result column="limit_house_num" jdbcType="INTEGER" property="limitHouseNum" />
+    <result column="sold_house_num" jdbcType="INTEGER" property="soldHouseNum" />
+    <result column="update_status" jdbcType="INTEGER" property="updateStatus" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from new_house_hangzhou_presell
+    where presell_id = #{presellId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouPresell">
+    insert into new_house_hangzhou_presell (presell_id, house_id, presell_no, 
+      price, `date`, total_house_num, 
+      limit_house_num, sold_house_num, update_status
+      )
+    values (#{presellId,jdbcType=VARCHAR}, #{houseId,jdbcType=VARCHAR}, #{presellNo,jdbcType=VARCHAR}, 
+      #{price,jdbcType=DOUBLE}, #{date,jdbcType=VARCHAR}, #{totalHouseNum,jdbcType=INTEGER}, 
+      #{limitHouseNum,jdbcType=INTEGER}, #{soldHouseNum,jdbcType=INTEGER}, #{updateStatus,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouPresell">
+    update new_house_hangzhou_presell
+    set house_id = #{houseId,jdbcType=VARCHAR},
+      presell_no = #{presellNo,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DOUBLE},
+      `date` = #{date,jdbcType=VARCHAR},
+      total_house_num = #{totalHouseNum,jdbcType=INTEGER},
+      limit_house_num = #{limitHouseNum,jdbcType=INTEGER},
+      sold_house_num = #{soldHouseNum,jdbcType=INTEGER},
+      update_status = #{updateStatus,jdbcType=INTEGER}
+    where presell_id = #{presellId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select presell_id, house_id, presell_no, price, `date`, total_house_num, limit_house_num, 
+    sold_house_num, update_status
+    from new_house_hangzhou_presell
+    where presell_id = #{presellId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select presell_id, house_id, presell_no, price, `date`, total_house_num, limit_house_num, 
+    sold_house_num, update_status
+    from new_house_hangzhou_presell
+  </select>
+  <select id="getPresellByHouseIdAndStatus" resultMap="BaseResultMap">
+    select presell_id, house_id, presell_no,price, `date`, total_house_num, limit_house_num, sold_house_num,update_status
+    from new_house_hangzhou_presell
+    where house_id = #{param1,jdbcType=VARCHAR} and update_status = #{param2,jdbcType=INTEGER} order by `date` desc
+  </select>
+  <select id="getLimitSumByHouseId" resultType="java.lang.Integer">
+    select sum(limit_house_num) from new_house_hangzhou_presell where house_id = #{house_id,jdbcType=VARCHAR}
+  </select>
+</mapper>
