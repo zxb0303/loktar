@@ -58,7 +58,7 @@ conf:
     * web web服务
 ### 1.4 生成domain、mapper
 * 1.4.1 添加依赖
-```angular2html
+```xml
 <dependency>
   <groupId>org.mybatis.spring.boot</groupId>
   <artifactId>mybatis-spring-boot-starter</artifactId>
@@ -78,7 +78,7 @@ conf:
 </dependency>
 ```
 * 1.4.2 在项目的 resources 目录下新建mybatis-generator-config.xml和mybatis-generator.properties
-```angular2html
+```properties
 #mybatis-generator.properties示例
 datasource.url=jdbc:mysql://localhost：3306/database?&useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
 datasource.driverClassName=com.mysql.cj.jdbc.Driver
@@ -92,7 +92,7 @@ table.schema=scheme
 table.tableName=tr_torrent_tracker
 ```
 * 1.4.3 在pom.xml的build部分添加plugins
-```angular2html
+```xml
 <plugin>
     <groupId>org.mybatis.generator</groupId>
     <artifactId>mybatis-generator-maven-plugin</artifactId>
@@ -126,7 +126,7 @@ table.tableName=tr_torrent_tracker
 在LoktarApplicationTests.java上添加注解@ActiveProfiles("dev")
 * 1.5.2 mvn package 没有将mapper下的xml打包<br />
 在pom.xml的build下添加资源配置
-```angular2html
+```xml
 <resources>
     <resource>
         <directory>src/main/resources</directory>
@@ -164,7 +164,7 @@ table.tableName=tr_torrent_tracker
 参考[Http.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Flearn%2Fjdk11%2FHttp.java)
 <br/>
 **注：文件上传使用httpmime构建对象**
-```angular2html
+```xml
 <dependency>
     <groupId>org.apache.httpcomponents</groupId>
     <artifactId>httpmime</artifactId>
@@ -174,7 +174,7 @@ table.tableName=tr_torrent_tracker
 参考[QywxApi.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Futil%2Fwx%2Fqywx%2FQywxApi.java)
 
 ## 2.4 xml解析使用jackson-dataformat-xml
-```angular2html
+```xml
 <dependency>
     <groupId>com.fasterxml.jackson.dataformat</groupId>
     <artifactId>jackson-dataformat-xml</artifactId>
