@@ -1,4 +1,4 @@
-# SpringBoot3+Java21 个人学习
+# SpringBoot3+Java21 学习记录
 ## 1.项目搭建流程
 ### 1.1 idea通过spring initialize创建新工程
 * spring-boot-starter:
@@ -160,6 +160,25 @@ table.tableName=tr_torrent_tracker
 改为org.apache.commons.lang3.StringUtils
 ## 2.2 com.alibaba.fastjson->com.fasterxml.jackson
 参考[JacksonTest.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Flearn%2Fjackson%2FJacksonTest.java)
+### 2.2.1 修改redis序列化
+```java
+//RedisConfig示例
+public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
+  RedisTemplate<String,Object> redisTemplate = new RedisTemplate<>();
+  redisTemplate.setConnectionFactory(lettuceConnectionFactory);
+  // 设置key序列化方式string，RedisSerializer.string() 等价于 new StringRedisSerializer()
+  redisTemplate.setKeySerializer(RedisSerializer.string());
+  // 设置value的序列化方式json，使用GenericJackson2JsonRedisSerializer替换默认序列化，RedisSerializer.json() 等价于 new GenericJackson2JsonRedisSerializer()
+  redisTemplate.setValueSerializer(RedisSerializer.json());
+  // 设置hash的key的序列化方式
+  redisTemplate.setHashKeySerializer(RedisSerializer.string());
+  // 设置hash的value的序列化方式
+  redisTemplate.setHashValueSerializer(RedisSerializer.json());
+  // 使配置生效
+  redisTemplate.afterPropertiesSet();
+  return redisTemplate;
+}
+```
 ## 2.3 org.apache.http.impl.client、org.springframework.web.client->java.net.http
 参考[Http.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Flearn%2Fjdk11%2FHttp.java)
 <br/>
