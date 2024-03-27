@@ -1,0 +1,155 @@
+package com.loktar.web.jellyfin;
+
+import com.loktar.conf.LokTarConstant;
+import com.loktar.conf.LokTarPrivateConstant;
+import com.loktar.dto.jellyfin.Notification;
+import com.loktar.dto.jellyfin.Session;
+import com.loktar.dto.transmission.TrResponseDTO;
+import com.loktar.dto.wx.agentmsg.AgentMsgText;
+import com.loktar.util.*;
+import com.loktar.util.wx.qywx.QywxApi;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.HashSet;
+import java.util.Set;
+
+@RestController
+@RequestMapping("jellyfin")
+public class JellyfinWebhookController {
+
+    private final QywxApi qywxApi;
+
+    //TODO Set改redis 代码优化
+    private Set<String> userPlayingSet = new HashSet<>();
+
+    public JellyfinWebhookController(QywxApi qywxApi) {
+        this.qywxApi = qywxApi;
+    }
+
+    @RequestMapping("/webhook.do")
+    public void webhook(@RequestBody Notification notification) {
+        HtmlEntityDecoderUtil.decodeHtmlEntities(notification);
+        Session session = JellyfinUtil.getSessionByDeviceId(notification.getDeviceId());
+        StringBuilder contentBuilder = new StringBuilder();
+
+        switch (notification.getNotificationType()) {
+            case "Generic":
+                contentBuilder.append(LokTarConstant.NOTICE_JELLYFIN).append(System.lineSeparator())
+                        .append(System.lineSeparator())
+                        .append(notification.getMessage());
+                break;
+            case "PlaybackStart":
+            case "PlaybackStop":
+                handlePlaybackEvents(notification, session, contentBuilder);
+                break;
+            default:
+                break;
+        }
+        contentBuilder.append(System.lineSeparator())
+                .append(System.lineSeparator())
+                .append(DateUtil.getMinuteSysDate());
+        if (!notification.getNotificationUsername().equals("adult")) {
+            qywxApi.sendTextMsg(new AgentMsgText(LokTarPrivateConstant.NOTICE_ZXB, LokTarPrivateConstant.AGENT002ID, contentBuilder.toString()));
+        }
+
+        handleTransmissionSpeed(notification, session);
+    }
+
+    private void handlePlaybackEvents(Notification notification, Session session, StringBuilder contentBuilder) {
+        String playName = getPlayName(notification);
+        String eventType = notification.getNotificationType().equals("PlaybackStart") ? LokTarConstant.NOTICE_JELLYFIN_START : LokTarConstant.NOTICE_JELLYFIN_STOP;
+
+        if (notification.getNotificationType().equals("PlaybackStart")) {
+            userPlayingSet.add(notification.getNotificationUsername());
+        } else {
+            userPlayingSet.remove(notification.getNotificationUsername());
+        }
+
+        contentBuilder.append(eventType).append(System.lineSeparator())
+                .append(System.lineSeparator())
+                .append("用户：").append(notification.getNotificationUsername()).append(System.lineSeparator())
+                .append("影片：").append(playName).append(System.lineSeparator())
+                .append("进度：").append(notification.getPlaybackPosition()).append(" / ").append(notification.getRunTime()).append(System.lineSeparator())
+                .append("设备：").append(notification.getDeviceName()).append(" - ").append(notification.getClientName()).append(System.lineSeparator())
+                .append("IP：").append(session.getRemoteEndPoint());
+    }
+
+    private String getPlayName(Notification notification) {
+        if ("Movie".equals(notification.getItemType())) {
+            return notification.getName() + "(" + notification.getYear() + ")";
+        }
+        if ("Episode".equals(notification.getItemType())) {
+            return notification.getSeriesName() + "(" + notification.getYear() + ") - " +
+                    "S" + notification.getSeasonNumber00() + "E" + notification.getEpisodeNumber00() + " - " +
+                    notification.getName();
+        }
+        return "";
+    }
+
+    private void handleTransmissionSpeed(Notification notification, Session session) {
+        if (!isLocalNetwork(session.getRemoteEndPoint())) {
+            String content = "";
+            TrResponseDTO trResponseDTOSession = TransmissionUtil.getSession();
+            if ("PlaybackStart".equals(notification.getNotificationType()) && !trResponseDTOSession.getArguments().isAltSpeedEnabled()) {
+                TransmissionUtil.altSpeedEnabled(true);
+                content = "Transmission已自动开启限速";
+            }
+            if ("PlaybackStop".equals(notification.getNotificationType()) && userPlayingSet.isEmpty() && trResponseDTOSession.getArguments().isAltSpeedEnabled()) {
+                TransmissionUtil.altSpeedEnabled(false);
+                content = "Transmission已自动关闭限速";
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+            if (!notification.getNotificationUsername().equals("adult")) {
+                qywxApi.sendTextMsg(new AgentMsgText(LokTarPrivateConstant.NOTICE_ZXB, LokTarPrivateConstant.AGENT002ID, content));
+            }
+        }
+    }
+
+    private boolean isLocalNetwork(String remoteEndPoint) {
+        try {
+            String ipAddress = remoteEndPoint.split(":")[0]; // 假设remoteEndPoint的格式为IP:PORT
+            InetAddress address = InetAddress.getByName(ipAddress);
+            String ip = IPUtil.getip();
+
+            if (remoteEndPoint.equals(ip)) {
+                return true;
+            }
+
+            // 检查是否为回环地址
+            if (address.isLoopbackAddress()) {
+                return true;
+            }
+
+            // 转换为字节形式
+            byte[] bytes = address.getAddress();
+
+            // 检查是否为私有地址
+            // 10.x.x.x
+            if ((bytes[0] & 0xFF) == 10) {
+                return true;
+            }
+            // 172.16.x.x - 172.31.x.x
+            if (((bytes[0] & 0xFF) == 172) && ((bytes[1] & 0xF0) == 16)) {
+                return true;
+            }
+            // 192.168.x.x
+            if (((bytes[0] & 0xFF) == 192) && ((bytes[1] & 0xFF) == 168)) {
+                return true;
+            }
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return false;
+    }
+}

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.qywx.QywxMenuMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.qywx.QywxMenu">
+    <id column="menu_id" jdbcType="INTEGER" property="menuId" />
+    <result column="agent_id" jdbcType="INTEGER" property="agentId" />
+    <result column="button" jdbcType="VARCHAR" property="button" />
+    <result column="button_level" jdbcType="INTEGER" property="buttonLevel" />
+    <result column="has_sub_button" jdbcType="INTEGER" property="hasSubButton" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="key" jdbcType="VARCHAR" property="key" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="order" jdbcType="INTEGER" property="order" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from qywx_menu
+    where menu_id = #{menuId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.qywx.QywxMenu">
+    insert into qywx_menu (menu_id, agent_id, button, 
+      button_level, has_sub_button, `name`, 
+      `type`, `key`, url, `order`, 
+      `status`)
+    values (#{menuId,jdbcType=INTEGER}, #{agentId,jdbcType=INTEGER}, #{button,jdbcType=VARCHAR}, 
+      #{buttonLevel,jdbcType=INTEGER}, #{hasSubButton,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{key,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{order,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.qywx.QywxMenu">
+    update qywx_menu
+    set agent_id = #{agentId,jdbcType=INTEGER},
+      button = #{button,jdbcType=VARCHAR},
+      button_level = #{buttonLevel,jdbcType=INTEGER},
+      has_sub_button = #{hasSubButton,jdbcType=INTEGER},
+      `name` = #{name,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=VARCHAR},
+      `key` = #{key,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      `order` = #{order,jdbcType=INTEGER},
+      `status` = #{status,jdbcType=INTEGER}
+    where menu_id = #{menuId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select menu_id, agent_id, button, button_level, has_sub_button, `name`, `type`, `key`, 
+    url, `order`, `status`
+    from qywx_menu
+    where menu_id = #{menuId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select menu_id, agent_id, button, button_level, has_sub_button, `name`, `type`, `key`, 
+    url, `order`, `status`
+    from qywx_menu
+  </select>
+  <select id="selectAllByAgentId" resultMap="BaseResultMap">
+    select menu_id, agent_id, button, button_level, has_sub_button, `name`, `type`, `key`,
+           url, `order`, `status`
+    from qywx_menu where status = 1 and agent_id = #{agentId,jdbcType=INTEGER} order by `order`
+  </select>
+</mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.iyuu.IyuuTorrentMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.iyuu.IyuuTorrent">
+    <id column="info_hash" jdbcType="VARCHAR" property="infoHash" />
+    <result column="sid" jdbcType="INTEGER" property="sid" />
+    <result column="torrent_id" jdbcType="INTEGER" property="torrentId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from iyuu_torrent
+    where info_hash = #{infoHash,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.iyuu.IyuuTorrent">
+    insert into iyuu_torrent (info_hash, sid, torrent_id
+      )
+    values (#{infoHash,jdbcType=VARCHAR}, #{sid,jdbcType=INTEGER}, #{torrentId,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.iyuu.IyuuTorrent">
+    update iyuu_torrent
+    set sid = #{sid,jdbcType=INTEGER},
+      torrent_id = #{torrentId,jdbcType=INTEGER}
+    where info_hash = #{infoHash,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select info_hash, sid, torrent_id
+    from iyuu_torrent
+    where info_hash = #{infoHash,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select info_hash, sid, torrent_id
+    from iyuu_torrent
+  </select>
+</mapper>

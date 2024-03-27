@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.transmission.TrTorrentMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.transmission.TrTorrent">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="total_size" jdbcType="BIGINT" property="totalSize" />
+    <result column="download_dir" jdbcType="VARCHAR" property="downloadDir" />
+    <result column="error" jdbcType="INTEGER" property="error" />
+    <result column="error_string" jdbcType="VARCHAR" property="errorString" />
+    <result column="hash_string" jdbcType="VARCHAR" property="hashString" />
+    <result column="upload_ratio" jdbcType="DOUBLE" property="uploadRatio" />
+    <result column="percent_done" jdbcType="DOUBLE" property="percentDone" />
+    <result column="peers_sending_to_us" jdbcType="INTEGER" property="peersSendingToUs" />
+    <result column="peers_getting_from_us" jdbcType="INTEGER" property="peersGettingFromUs" />
+    <result column="rate_upload" jdbcType="INTEGER" property="rateUpload" />
+    <result column="added_date" jdbcType="INTEGER" property="addedDate" />
+    <result column="activity_date" jdbcType="INTEGER" property="activityDate" />
+    <result column="done_date" jdbcType="INTEGER" property="doneDate" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tr_torrent
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.transmission.TrTorrent">
+    insert into tr_torrent (`id`, `name`, `status`, total_size,
+      download_dir, error, error_string, 
+      hash_string, upload_ratio, percent_done, 
+      peers_sending_to_us, peers_getting_from_us, rate_upload, 
+      added_date, activity_date, done_date
+      )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{totalSize,jdbcType=BIGINT},
+      #{downloadDir,jdbcType=VARCHAR}, #{error,jdbcType=INTEGER}, #{errorString,jdbcType=VARCHAR}, 
+      #{hashString,jdbcType=VARCHAR}, #{uploadRatio,jdbcType=DOUBLE}, #{percentDone,jdbcType=DOUBLE}, 
+      #{peersSendingToUs,jdbcType=INTEGER}, #{peersGettingFromUs,jdbcType=INTEGER}, #{rateUpload,jdbcType=INTEGER}, 
+      #{addedDate,jdbcType=INTEGER}, #{activityDate,jdbcType=INTEGER}, #{doneDate,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.transmission.TrTorrent">
+    update tr_torrent
+    set `name` = #{name,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=INTEGER},
+      total_size = #{totalSize,jdbcType=BIGINT},
+      download_dir = #{downloadDir,jdbcType=VARCHAR},
+      error = #{error,jdbcType=INTEGER},
+      error_string = #{errorString,jdbcType=VARCHAR},
+      hash_string = #{hashString,jdbcType=VARCHAR},
+      upload_ratio = #{uploadRatio,jdbcType=DOUBLE},
+      percent_done = #{percentDone,jdbcType=DOUBLE},
+      peers_sending_to_us = #{peersSendingToUs,jdbcType=INTEGER},
+      peers_getting_from_us = #{peersGettingFromUs,jdbcType=INTEGER},
+      rate_upload = #{rateUpload,jdbcType=INTEGER},
+      added_date = #{addedDate,jdbcType=INTEGER},
+      activity_date = #{activityDate,jdbcType=INTEGER},
+      done_date = #{doneDate,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, `name`, `status`, total_size, download_dir, error, error_string, hash_string, 
+    upload_ratio, percent_done, peers_sending_to_us, peers_getting_from_us, rate_upload, 
+    added_date, activity_date, done_date
+    from tr_torrent
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, `name`, `status`, total_size, download_dir, error, error_string, hash_string, 
+    upload_ratio, percent_done, peers_sending_to_us, peers_getting_from_us, rate_upload, 
+    added_date, activity_date, done_date
+    from tr_torrent
+  </select>
+  <select id="getworstTorrent" resultMap="BaseResultMap">
+    select m.name,m.total_size from (
+                                      select tt.`name`,tt.total_size,count(1) count_num,min(tt.added_date) added_date,from_unixtime(min(tt.added_date)) as show_date from tr_torrent  tt
+                                                                                                                                                                            left join tr_torrent_tracker trr on tt.id = trr.torrent_id
+                                                                                                                                                                            left join tr_torrent_host tth on trr.`host` = tth.`host`
+                                      where download_dir=#{param2,jdbcType=VARCHAR}
+                                      group by `name`,total_size) m
+    where unix_timestamp(now())-m.added_date>#{param1,jdbcType=INTEGER}*24*60*60
+    order by count_num,total_size,added_date
+      limit 1;
+  </select>
+  <select id="getTorrentsByNameAndSize" resultMap="BaseResultMap">
+    select id, `name`, `status`, total_size, download_dir, error, error_string, hash_string,
+           upload_ratio, percent_done, peers_sending_to_us, peers_getting_from_us, rate_upload,
+           added_date, activity_date, done_date
+    from tr_torrent
+    where `name`=#{param1,jdbcType=VARCHAR} and total_size = #{param2,jdbcType=BIGINT};
+  </select>
+  <update id="truncate">
+    truncate table tr_torrent;
+  </update>
+  <select id="getNeedStartTrTorrents" resultMap="BaseResultMap">
+    SELECT id, `name`, `status`, total_size, download_dir, error, error_string, hash_string,
+           upload_ratio, percent_done, peers_sending_to_us, peers_getting_from_us, rate_upload,
+           added_date, activity_date, done_date from tr_torrent   where status = 0 and percent_done=1;
+  </select>
+  <select id="getTrTorrentsByStatus" resultMap="BaseResultMap">
+    select id, `name`, `status`, total_size, download_dir, error, error_string, hash_string,
+           upload_ratio, percent_done, peers_sending_to_us, peers_getting_from_us, rate_upload,
+           added_date, activity_date, done_date
+    from tr_torrent where `status` = #{status,jdbcType=INTEGER} order by added_date;
+  </select>
+  <select id="getNotRegisteredErrorName" resultType="java.lang.String">
+    select DISTINCT name from tr_torrent where error_string like '%not registered%';
+  </select>
+  <select id="getTorrentsByName" resultMap="BaseResultMap">
+    select id, `name`, `status`, total_size, download_dir, error, error_string, hash_string,
+           upload_ratio, percent_done, peers_sending_to_us, peers_getting_from_us, rate_upload,
+           added_date, activity_date, done_date
+    from tr_torrent
+    where `name`=#{name,jdbcType=VARCHAR}
+  </select>
+  <insert id="insertOrUpdate" parameterType="com.loktar.domain.transmission.TrTorrent">
+    insert into tr_torrent (id, `name`, `status`, total_size, download_dir, error, error_string, hash_string,
+                            upload_ratio, percent_done, peers_sending_to_us, peers_getting_from_us, rate_upload,
+                            added_date, activity_date, done_date)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
+            #{totalSize,jdbcType=BIGINT}, #{downloadDir,jdbcType=VARCHAR},#{error,jdbcType=INTEGER},
+            #{errorString,jdbcType=VARCHAR},#{hashString,jdbcType=VARCHAR},
+            #{uploadRatio,jdbcType=DOUBLE}, #{percentDone,jdbcType=DOUBLE}, #{peersSendingToUs,jdbcType=INTEGER},
+            #{peersGettingFromUs,jdbcType=INTEGER}, #{rateUpload,jdbcType=INTEGER}, #{addedDate,jdbcType=INTEGER},
+            #{activityDate,jdbcType=INTEGER}, #{doneDate,jdbcType=INTEGER})
+      ON DUPLICATE KEY UPDATE
+                         `name` = #{name,jdbcType=VARCHAR},
+                         `status` = #{status,jdbcType=INTEGER},
+                         total_size = #{totalSize,jdbcType=BIGINT},
+                         download_dir = #{downloadDir,jdbcType=VARCHAR},
+                         error = #{error,jdbcType=INTEGER},
+                         error_string = #{errorString,jdbcType=VARCHAR},
+                         hash_string = #{hashString,jdbcType=VARCHAR},
+                         upload_ratio = #{uploadRatio,jdbcType=DOUBLE},
+                         percent_done = #{percentDone,jdbcType=DOUBLE},
+                         peers_sending_to_us = #{peersSendingToUs,jdbcType=INTEGER},
+                         peers_getting_from_us = #{peersGettingFromUs,jdbcType=INTEGER},
+                         rate_upload = #{rateUpload,jdbcType=INTEGER},
+                         added_date = #{addedDate,jdbcType=INTEGER},
+                         activity_date = #{activityDate,jdbcType=INTEGER},
+                         done_date = #{doneDate,jdbcType=INTEGER}
+  </insert>
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.transmission.TrRssTorrentMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.transmission.TrRssTorrent">
+    <id column="rss_torrent_id" jdbcType="INTEGER" property="rssTorrentId" />
+    <result column="rss_id" jdbcType="INTEGER" property="rssId" />
+    <result column="link" jdbcType="VARCHAR" property="link" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="download_url" jdbcType="VARCHAR" property="downloadUrl" />
+    <result column="pub_date" jdbcType="TIMESTAMP" property="pubDate" />
+    <result column="title" jdbcType="LONGVARCHAR" property="title" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tr_rss_torrent
+    where rss_torrent_id = #{rssTorrentId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.transmission.TrRssTorrent">
+    insert into tr_rss_torrent (rss_torrent_id, rss_id, link, 
+      `status`, download_url, pub_date, 
+      title)
+    values (#{rssTorrentId,jdbcType=INTEGER}, #{rssId,jdbcType=INTEGER}, #{link,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{downloadUrl,jdbcType=VARCHAR}, #{pubDate,jdbcType=TIMESTAMP}, 
+      #{title,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.transmission.TrRssTorrent">
+    update tr_rss_torrent
+    set rss_id = #{rssId,jdbcType=INTEGER},
+      link = #{link,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=INTEGER},
+      download_url = #{downloadUrl,jdbcType=VARCHAR},
+      pub_date = #{pubDate,jdbcType=TIMESTAMP},
+      title = #{title,jdbcType=LONGVARCHAR}
+    where rss_torrent_id = #{rssTorrentId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select rss_torrent_id, rss_id, link, `status`, download_url, pub_date, title
+    from tr_rss_torrent
+    where rss_torrent_id = #{rssTorrentId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select rss_torrent_id, rss_id, link, `status`, download_url, pub_date, title
+    from tr_rss_torrent
+  </select>
+  <select id="getTrRssTorrentsByStatusAndTrRssId" resultMap="BaseResultMap">
+    select rss_torrent_id, rss_id, title, link, `status`, download_url, pub_date
+    from tr_rss_torrent where `status` =  #{param1,jdbcType=INTEGER} and rss_id = #{param2,jdbcType=INTEGER}
+  </select>
+</mapper>

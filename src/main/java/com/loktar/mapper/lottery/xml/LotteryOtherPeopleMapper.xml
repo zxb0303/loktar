@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.lottery.LotteryOtherPeopleMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.lottery.LotteryOtherPeople">
+    <id column="other_people_id" jdbcType="VARCHAR" property="otherPeopleId" />
+    <result column="house_id" jdbcType="VARCHAR" property="houseId" />
+    <result column="people_id" jdbcType="VARCHAR" property="peopleId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="identity_num" jdbcType="VARCHAR" property="identityNum" />
+    <result column="record_num" jdbcType="VARCHAR" property="recordNum" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from lottery_other_people
+    where other_people_id = #{otherPeopleId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.lottery.LotteryOtherPeople">
+    insert into lottery_other_people (other_people_id, house_id, people_id, 
+      `name`, identity_num, record_num
+      )
+    values (#{otherPeopleId,jdbcType=VARCHAR}, #{houseId,jdbcType=VARCHAR}, #{peopleId,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{identityNum,jdbcType=VARCHAR}, #{recordNum,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.lottery.LotteryOtherPeople">
+    update lottery_other_people
+    set house_id = #{houseId,jdbcType=VARCHAR},
+      people_id = #{peopleId,jdbcType=VARCHAR},
+      `name` = #{name,jdbcType=VARCHAR},
+      identity_num = #{identityNum,jdbcType=VARCHAR},
+      record_num = #{recordNum,jdbcType=VARCHAR}
+    where other_people_id = #{otherPeopleId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select other_people_id, house_id, people_id, `name`, identity_num, record_num
+    from lottery_other_people
+    where other_people_id = #{otherPeopleId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select other_people_id, house_id, people_id, `name`, identity_num, record_num
+    from lottery_other_people
+  </select>
+  <delete id="deleteLotteryOtherPeoplesByHouseId" parameterType="java.lang.String">
+    delete from lottery_other_people  where house_id =#{houseId,jdbcType=VARCHAR};
+  </delete>
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.cxy.ContractMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.cxy.Contract">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="party" jdbcType="VARCHAR" property="party" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="number" jdbcType="VARCHAR" property="number" />
+    <result column="counter_party" jdbcType="VARCHAR" property="counterParty" />
+    <result column="start_date" jdbcType="VARCHAR" property="startDate" />
+    <result column="end_date" jdbcType="VARCHAR" property="endDate" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from contract
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.cxy.Contract">
+    insert into contract (`id`, party, `type`, `number`,
+      counter_party, start_date, end_date, 
+      `status`)
+    values (#{id,jdbcType=INTEGER}, #{party,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR},
+      #{counterParty,jdbcType=VARCHAR}, #{startDate,jdbcType=VARCHAR}, #{endDate,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.cxy.Contract">
+    update contract
+    set party = #{party,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=VARCHAR},
+      `number` = #{number,jdbcType=VARCHAR},
+      counter_party = #{counterParty,jdbcType=VARCHAR},
+      start_date = #{startDate,jdbcType=VARCHAR},
+      end_date = #{endDate,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, party, `type`, `number`, counter_party, start_date, end_date, `status`
+    from contract
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, party, `type`, `number`, counter_party, start_date, end_date, `status`
+    from contract
+  </select>
+  <select id="getNeedNoticeContracts" resultMap="BaseResultMap">
+    select id, party, `type`, `number`, counter_party, start_date, end_date,`status` from contract where TO_DAYS(end_date)-7<![CDATA[<=]]>TO_DAYS(now()) and status = 0  order by id;
+  </select>
+</mapper>
