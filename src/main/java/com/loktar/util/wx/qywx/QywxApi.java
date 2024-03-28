@@ -1,6 +1,7 @@
 package com.loktar.util.wx.qywx;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.loktar.conf.LokTarConstant;
@@ -22,7 +23,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.time.Duration;
@@ -56,7 +56,6 @@ public class QywxApi {
     /**
      * 获取accessToken
      */
-    @SneakyThrows
     public AccessToken accessToken(String agentId) {
         AccessToken accessToken = (AccessToken) redisUtil.get(KEY_ACCESSTOKEN + agentId);
         if (Objects.nonNull(accessToken)) {
@@ -105,11 +104,13 @@ public class QywxApi {
         return sendMessage(agentMsgMarkdown, agentMsgMarkdown.getAgentid());
     }
 
+
     @SneakyThrows
     private <T> AgentMsgRsp sendMessage(T message, String agentId) {
         HttpClient httpClient = HttpClient.newHttpClient();
         String requestbody = new ObjectMapper()
-                .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).writeValueAsString(message);
+                    .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).writeValueAsString(message);
+
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(SEND_AGENTMSG_URL, accessToken(agentId).getAccessToken())))
                 .timeout(Duration.ofSeconds(10))
@@ -117,9 +118,9 @@ public class QywxApi {
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         return new ObjectMapper().readValue(response.body(), AgentMsgRsp.class);
+
     }
 
-    //TODO need test
     @SneakyThrows
     public BaseResult createAgentMenu(String agentId) {
         List<QywxMenu> qywxMenus = qywxMenuMapper.selectAllByAgentId(agentId);
@@ -140,12 +141,15 @@ public class QywxApi {
         buttons.sort(Comparator.comparingInt(Menu.Button::getOrder));
         Menu wxMenu = new Menu(buttons);
         HttpClient httpClient = HttpClient.newHttpClient();
+        String requestBody = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL).setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).writeValueAsString(wxMenu);
+        System.out.println(requestBody);
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(MessageFormat.format(MENU_CREATE_URL, accessToken(agentId).getAccessToken())))
+                .uri(URI.create(MessageFormat.format(MENU_CREATE_URL, accessToken(agentId).getAccessToken(),agentId)))
                 .timeout(Duration.ofSeconds(10))
-                .POST(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(wxMenu)))
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        System.out.println(response.body());
         BaseResult baseResult = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CASE).readValue(response.body(), AgentMsgRsp.class);
         return baseResult;
     }
@@ -193,6 +197,6 @@ public class QywxApi {
                 .uri(URI.create(MessageFormat.format(GET_MEDIA_URL, accessToken(agentId).getAccessToken(), mediaId)))
                 .GET()
                 .build();
-        HttpResponse<Path> response = httpClient.send(request, HttpResponse.BodyHandlers.ofFile(Paths.get(filePath + filename + filesuffix)));
+        httpClient.send(request, HttpResponse.BodyHandlers.ofFile(Paths.get(filePath + filename + filesuffix)));
     }
 }
