@@ -202,6 +202,96 @@ public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lett
 ```
 参考[QyWeixinCallbackController.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fqywx%2FQyWeixinCallbackController.java)
 
+## 2.5 CompletableFuture.runAsync无法抛出异常
+需要加trycatch
+参考[QyWeixinCallbackController.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fqywx%2FQyWeixinCallbackController.java)
+
+## 2.6 服务需要使用到ffmpeg 方案调整
+原方案：
+* 在dockerfile中安装ffmpeg
+* 而且由于直接安装的ffmpeg没有amr格式处理能力故改用www.deb-multimedia.org的版本
+* 又因为打包过程访问不便，改用仓库镜像
+```dockerfile
+FROM openjdk:8-jre
+#用阿里云仓库镜像
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list
+#RUN apt-get update && apt-get install -y ffmpeg *直接装的ffmpeg没有amr格式处理能力 改用www.deb-multimedia.org的 访问不便 也用仓库镜像
+RUN apt-get update && apt-get install -y wget
+RUN echo deb http://mirrors.ustc.edu.cn/deb-multimedia/ bullseye main non-free >>/etc/apt/sources.list
+RUN echo deb-src http://mirrors.ustc.edu.cn/deb-multimedia/ bullseye main non-free >>/etc/apt/sources.list
+RUN wget https://mirrors.ustc.edu.cn/deb-multimedia/pool/main/d/deb-multimedia-keyring/deb-multimedia-keyring_2016.8.1_all.deb
+RUN dpkg -i deb-multimedia-keyring_2016.8.1_all.deb
+RUN apt-get update && apt-get install -y ffmpeg
+ARG JAR_FILE
+ADD $JAR_FILE /app.jar
+ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Shanghai", "/app.jar"]
+```
+新方案：
+* 不在镜像中安装ffmpeg,ffmpeg单独部署，通过DockerEngineApi调用服务
+* 部署tecnativa/docker-socket-proxy并配置好正确权限
+* 部署jrottenberg/ffmpeg
+* 编写[DockerEngineApiUtil.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Futil%2FDockerEngineApiUtil.java)实现DockerEngineApi的exec能力
+* 调整业务代码
+```yaml
+version: '3'
+services:
+  jrottenberg-ffmpeg:
+    restart: always
+    image: jrottenberg/ffmpeg:4.1-ubuntu
+    container_name: jrottenberg-ffmpeg
+    entrypoint: /bin/sh -c "tail -f /dev/null"
+    volumes:
+      - /voicepath:/voicepath
+    environment:
+      TZ: Asia/Shanghai
+    network_mode: "bridge"
+```
+```yaml
+version: '3'
+services:
+  docker-socket-proxy:
+    restart: always
+    privileged: true
+    image: tecnativa/docker-socket-proxy:0.1
+    container_name: docker-socket-proxy
+    ports:
+      - "2375:2375"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      CONTAINERS: 1
+      EXEC: 1
+      POST: 1
+    network_mode: "bridge"
+```
+# 3.打包发布
+## 3.1 添加Dockerfile文件
+```dockerfile
+FROM eclipse-temurin:21-jammy
+ARG JAR_EXPOSE=8080
+EXPOSE $JAR_EXPOSE
+ARG JAR_FILE
+ADD $JAR_FILE /app.jar
+ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Shanghai", "/app.jar"]
+```
+## 3.2 pom.xml的build中添加plugin
+```xml
+<plugin>
+  <groupId>com.spotify</groupId>
+  <artifactId>dockerfile-maven-plugin</artifactId>
+  <version>1.4.13</version>
+  <configuration>
+    <username>${my.username}</username>
+    <password>${my.password}</password>
+    <repository>${my.repository}/${project.artifactId}</repository>
+    <tag>${project.version}</tag>
+    <buildArgs>
+      <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+    </buildArgs>
+  </configuration>
+</plugin>
+```
+**注：敏感信息写在/user/.m2/settings.xml**
 
 
 
