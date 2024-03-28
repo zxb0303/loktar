@@ -160,26 +160,9 @@ table.tableName=tr_torrent_tracker
 改为org.apache.commons.lang3.StringUtils
 ## 2.2 com.alibaba.fastjson->com.fasterxml.jackson
 参考[JacksonTest.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Flearn%2Fjackson%2FJacksonTest.java)
-### 2.2.1 修改redis序列化
-```java
-//RedisConfig示例
-public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
-  RedisTemplate<String,Object> redisTemplate = new RedisTemplate<>();
-  redisTemplate.setConnectionFactory(lettuceConnectionFactory);
-  // 设置key序列化方式string，RedisSerializer.string() 等价于 new StringRedisSerializer()
-  redisTemplate.setKeySerializer(RedisSerializer.string());
-  // 设置value的序列化方式json，使用GenericJackson2JsonRedisSerializer替换默认序列化，RedisSerializer.json() 等价于 new GenericJackson2JsonRedisSerializer()
-  redisTemplate.setValueSerializer(RedisSerializer.json());
-  // 设置hash的key的序列化方式
-  redisTemplate.setHashKeySerializer(RedisSerializer.string());
-  // 设置hash的value的序列化方式
-  redisTemplate.setHashValueSerializer(RedisSerializer.json());
-  // 使配置生效
-  redisTemplate.afterPropertiesSet();
-  return redisTemplate;
-}
-```
-## 2.3 org.apache.http.impl.client、org.springframework.web.client->java.net.http
+## 2.3 修改redis序列化
+参考[RedisConfig.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fconf%2FRedisConfig.java)
+## 2.4 org.apache.http.impl.client、org.springframework.web.client->java.net.http
 参考[Http.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Flearn%2Fjdk11%2FHttp.java)
 <br/>
 **注：文件上传使用httpmime构建对象**
@@ -192,7 +175,7 @@ public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lett
 ```
 参考[QywxApi.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Futil%2Fwx%2Fqywx%2FQywxApi.java)
 
-## 2.4 xml解析使用jackson-dataformat-xml
+## 2.5 xml解析使用jackson-dataformat-xml
 ```xml
 <dependency>
     <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -202,11 +185,11 @@ public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lett
 ```
 参考[QyWeixinCallbackController.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fqywx%2FQyWeixinCallbackController.java)
 
-## 2.5 CompletableFuture.runAsync无法抛出异常
+## 2.6 CompletableFuture.runAsync无法抛出异常
 需要加trycatch
 参考[QyWeixinCallbackController.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fqywx%2FQyWeixinCallbackController.java)
 
-## 2.6 服务需要使用到ffmpeg 方案调整
+## 2.7 服务需要使用到ffmpeg 方案调整
 原方案：
 * 在dockerfile中安装ffmpeg
 * 而且由于直接安装的ffmpeg没有amr格式处理能力故改用www.deb-multimedia.org的版本
