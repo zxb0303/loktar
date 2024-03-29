@@ -164,7 +164,7 @@ table.tableName=tr_torrent_tracker
 参考[RedisConfig.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fconf%2FRedisConfig.java)
 ## 2.4 org.apache.http.impl.client、org.springframework.web.client->java.net.http
 参考[Http.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Flearn%2Fjdk11%2FHttp.java)
-<br/>
+<br/><br/>
 **注：文件上传使用httpmime构建对象**
 ```xml
 <dependency>
@@ -210,7 +210,7 @@ ADD $JAR_FILE /app.jar
 ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Shanghai", "/app.jar"]
 ```
 新方案：
-* 不在镜像中安装ffmpeg,ffmpeg单独部署，通过DockerEngineApi调用服务
+* 不在镜像中安装ffmpeg,选择单独部署并通过DockerEngineApi调用服务
 * 部署tecnativa/docker-socket-proxy并配置好正确权限
 * 部署jrottenberg/ffmpeg
 * 编写[DockerEngineApiUtil.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Futil%2FDockerEngineApiUtil.java)实现DockerEngineApi的exec能力
@@ -247,10 +247,28 @@ services:
       POST: 1
     network_mode: "bridge"
 ```
+## 2.8 docker部署后提示Runtime error: Failed to initialize platform (azure-c-shared). Error
+https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2272 </br>
+微软语音 SDK 需要 Open SSL 1.x 才能运行。目前支持的linux版本为需要Ubuntu 18.04/20.04 或者 Debian 10/11
+
+|Ubuntu LTS 版本| 名称              |
+| --- |-----------------|
+|24.04| Noble Numbat    |
+|22.04| Jammy Jellyfish |
+|20.04| Focal Fossa     |
+|18.04| Bionic Beaver   |
+
+| Debian LTS 版本 | 名称       |
+|---------------|----------|
+| 12            | Bookworm |
+| 11            | Bullseye |
+| 10            | Buster   |
+
+因个人习惯用ubuntu，基础镜像由eclipse-temurin:21-jammy调整为ibm-semeru-runtimes:open-21-jre-focal
 # 3.打包发布
 ## 3.1 添加Dockerfile文件
 ```dockerfile
-FROM eclipse-temurin:21-jammy
+FROM ibm-semeru-runtimes:open-21-jre-focal
 ARG JAR_EXPOSE=8080
 EXPOSE $JAR_EXPOSE
 ARG JAR_FILE
