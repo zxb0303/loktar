@@ -1,6 +1,7 @@
 package com.loktar.mapper.second;
 
 import com.loktar.domain.second.SecondHandHouse;
+
 import java.util.List;
 
 public interface SecondHandHouseMapper {
@@ -19,4 +20,7 @@ public interface SecondHandHouseMapper {
     List<SecondHandHouse> getNeedUpdateStatus();
 
     int updateStatusAndStatusTimeByFwtybh(String fwtybh ,String status);
+
+    int insertBatch(List<SecondHandHouse> secondHandHouses);
+
 }

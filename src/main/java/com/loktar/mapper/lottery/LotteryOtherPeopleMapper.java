@@ -16,4 +16,5 @@ public interface LotteryOtherPeopleMapper {
 
     int deleteLotteryOtherPeoplesByHouseId(String houseId);
 
+    void insertBatch(List<LotteryOtherPeople> lotteryOtherPeoples);
 }

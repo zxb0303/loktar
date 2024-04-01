@@ -3,19 +3,19 @@ package com.loktar.web.qywx;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
-import com.loktar.conf.LokTarPrivateConstant;
 import com.loktar.domain.common.Notice;
+import com.loktar.domain.transmission.TrTorrent;
 import com.loktar.dto.bandwagonhost.VPSInfo;
-import com.loktar.dto.transmission.TrResponseDTO;
-import com.loktar.dto.transmission.TrResponseTorrentDTO;
+import com.loktar.dto.transmission.TrResponse;
 import com.loktar.dto.wx.BaseResult;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.dto.wx.receivemsg.*;
+import com.loktar.mapper.transmission.TrTorrentMapper;
 import com.loktar.service.common.NoticeServer;
 import com.loktar.util.BandwagonhostUtil;
 import com.loktar.util.DateUtil;
-import com.loktar.util.RedisUtil;
 import com.loktar.util.TransmissionUtil;
 import com.loktar.util.wx.aes.WXBizMsgCrypt;
 import com.loktar.util.wx.qywx.QywxApi;
@@ -35,16 +35,28 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping("qywx/callback")
 public class QyWeixinCallbackController {
 
-    private final RedisUtil redisUtil;
+
+    private final TransmissionUtil transmissionUtil;
 
     private final NoticeServer noticeServer;
 
     private final QywxApi qywxApi;
 
-    public QyWeixinCallbackController(RedisUtil redisUtil, NoticeServer noticeServer, QywxApi qywxApi) {
-        this.redisUtil = redisUtil;
+    private final BandwagonhostUtil bandwagonhostUtil;
+
+    private final LokTarConfig lokTarConfig;
+    private final TrTorrentMapper transmissionMapper;
+    private final TrTorrentMapper trTorrentMapper;
+
+
+    public QyWeixinCallbackController(TransmissionUtil transmissionUtil, NoticeServer noticeServer, QywxApi qywxApi, BandwagonhostUtil bandwagonhostUtil, LokTarConfig lokTarConfig, TrTorrentMapper transmissionMapper, TrTorrentMapper trTorrentMapper) {
+        this.transmissionUtil = transmissionUtil;
         this.noticeServer = noticeServer;
         this.qywxApi = qywxApi;
+        this.bandwagonhostUtil = bandwagonhostUtil;
+        this.lokTarConfig = lokTarConfig;
+        this.transmissionMapper = transmissionMapper;
+        this.trTorrentMapper = trTorrentMapper;
     }
 
     @PostMapping("receive.do")
@@ -52,14 +64,18 @@ public class QyWeixinCallbackController {
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce, @RequestBody String xml) {
         CompletableFuture.runAsync(() -> {
-            asyncDealMsg(msgSignature, timestamp, nonce, xml);
+            try {
+                asyncDealMsg(msgSignature, timestamp, nonce, xml);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
         return ResponseEntity.noContent().build();
     }
 
     @SneakyThrows
     private void asyncDealMsg(String msgSignature, String timestamp, String nonce, String xml) {
-        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(LokTarPrivateConstant.TOEKN, LokTarPrivateConstant.ENCODINGAESKEY, LokTarPrivateConstant.CORPID);
+        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.qywxToken, lokTarConfig.qywxEncodingAESKey, lokTarConfig.qywxCorpId);
         String xmlMsg = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, xml);
         System.out.println("after decrypt msg: ");
         System.out.println(xmlMsg);
@@ -82,78 +98,85 @@ public class QyWeixinCallbackController {
     private void dealEventMsg(ReceiveEventMsg receiveEventMsg) {
         String eventKey = receiveEventMsg.getEventKey();
         EventCommandType type = EventCommandType.getByName(eventKey);
-        String replymsg = "不支持该命令";
+        StringBuilder replymsg = new StringBuilder();
         switch (type) {
             case EventCommandType.SHOW_COMMAND:
-                replymsg = "支持命令如下："
-                        + "\n\n添加定时通知命令："
-                        + "\n添加通知，标题，内容，时间（格式：yyyyMMddHHmm）";
+                replymsg.append("支持命令如下：").append(System.lineSeparator())
+                        .append(System.lineSeparator())
+                        .append("添加定时通知命令：").append(System.lineSeparator())
+                        .append("添加通知，标题，内容，时间(格式：yyyyMMddHHmm)").append(System.lineSeparator());
                 break;
             case EventCommandType.SHOW_NOTICE:
                 List<Notice> notices = noticeServer.getUnsendNoticesByNoticeUser(receiveEventMsg.getFromUserName());
-                replymsg = "当前待通知如下：";
+                replymsg.append("当前待通知如下：").append(System.lineSeparator())
+                        .append(System.lineSeparator());
                 for (Notice n : notices) {
-                    replymsg = replymsg + "\n\n" + n.getNoticeTitle() + "\n" + n.getNoticeContent() + "\n" + n.getNoticeTime();
+                    replymsg.append(n.getNoticeTitle()).append(System.lineSeparator())
+                            .append(n.getNoticeContent()).append(System.lineSeparator())
+                            .append(n.getNoticeTime()).append(System.lineSeparator());
                 }
-                return;
+                break;
             case EventCommandType.SHOW_DOWNLOAD_LIST:
-                replymsg = "Transmission当前下载列表：";
-                TrResponseDTO trResponseDTO = TransmissionUtil.getRecentlyActiveTorrents();
-                List<TrResponseTorrentDTO> trResponseTorrentDTOs = trResponseDTO.getArguments().getTorrents();
-                for (TrResponseTorrentDTO trResponseTorrentDTO : trResponseTorrentDTOs) {
-                    if (trResponseTorrentDTO.getStatus() == 4) {
-                        replymsg = replymsg + "\n\n" + trResponseTorrentDTO.getName() + "(" + String.format("%.2f", trResponseTorrentDTO.getPercentDone() * 100) + "%)";
-                    }
+                replymsg.append("Transmission当前下载列表：").append(System.lineSeparator())
+                        .append(System.lineSeparator());
+                List<TrTorrent> torrents = trTorrentMapper.getTrTorrentsByStatus(4);
+                for (TrTorrent trTorrent : torrents) {
+                    replymsg.append(trTorrent.getName()).append(System.lineSeparator())
+                            .append("(" + String.format("%.2f", trTorrent.getPercentDone() * 100) + "%)").append(System.lineSeparator());
                 }
                 break;
             case EventCommandType.SHOW_CLASH_RSS:
-                replymsg = "Clash订阅地址：\n\n"
-                        + LokTarPrivateConstant.CLASH_RSS_URL;
+                replymsg.append("Clash订阅地址：").append(System.lineSeparator())
+                        .append(System.lineSeparator())
+                        .append(lokTarConfig.commonClashRssUrl).append(System.lineSeparator());
+                break;
             case EventCommandType.SHOW_TRANSMISSION_ALT_SPEED:
-                replymsg = "Transmission当前限速状态：";
+                replymsg.append("Transmission当前限速状态：").append(System.lineSeparator());
                 String state = "";
-                if (TransmissionUtil.getSession().getArguments().isAltSpeedEnabled()) {
+                if (transmissionUtil.getSession().getArguments().getAltSpeedEnabled()) {
                     state = "已限速";
                 } else {
                     state = "未限速";
                 }
-                replymsg = replymsg + "\n\n" + state;
+                replymsg.append(state).append(System.lineSeparator());
                 break;
             case EventCommandType.ALT_TRANSMISSION_SPEED:
-                TrResponseDTO trResponseDTOSession = TransmissionUtil.getSession();
-                if (!trResponseDTOSession.getArguments().isAltSpeedEnabled()) {
-                    TransmissionUtil.altSpeedEnabled(true);
-                    replymsg = "Transmission已开启限速";
+                TrResponse trResponseSession = transmissionUtil.getSession();
+                if (!trResponseSession.getArguments().getAltSpeedEnabled()) {
+                    transmissionUtil.altSpeedEnabled(true);
+                    replymsg.append("Transmission已开启限速").append(System.lineSeparator());
                 } else {
-                    TransmissionUtil.altSpeedEnabled(false);
-                    replymsg = "Transmission已关闭限速";
+                    transmissionUtil.altSpeedEnabled(false);
+                    replymsg.append("Transmission已关闭限速").append(System.lineSeparator());
                 }
                 break;
             case EventCommandType.SHOW_BWG_fLOW:
-                replymsg = "当前搬瓦工VPS信息如下：";
+                replymsg.append("当前搬瓦工VPS信息如下：").append(System.lineSeparator());
                 String veids[] = new String[]{"1830460"};
                 for (String veid : veids) {
-                    VPSInfo vpsInfo = BandwagonhostUtil.getVPSData(veid);
+                    VPSInfo vpsInfo = bandwagonhostUtil.getVPSData(veid);
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTimeInMillis(vpsInfo.getDataNextReset() * 1000);
-                    replymsg = replymsg + "\n\n" + vpsInfo.getHostname() + "\n"
-                            + "IP：" + vpsInfo.getIpAddresses()[0] + "\n"
-                            + "Bandwidth：" + vpsInfo.getDataCounter() / 1024 / 1024 / 1024 + "GB" + "/" + vpsInfo.getPlanMonthlyData() / 1024 / 1024 / 1024 + "GB" + "\n"
-                            + "Reset：" + DateUtil.format(calendar.getTime(), DateUtil.DATEFORMATDAY);
+                    replymsg.append(System.lineSeparator())
+                            .append(vpsInfo.getHostname()).append(System.lineSeparator())
+                            .append("IP：").append(vpsInfo.getIpAddresses()[0]).append(System.lineSeparator())
+                            .append("Bandwidth：").append(vpsInfo.getDataCounter() / 1024 / 1024 / 1024 + "GB" + "/" + vpsInfo.getPlanMonthlyData() / 1024 / 1024 / 1024 + "GB").append(System.lineSeparator())
+                            .append("Reset：").append(DateUtil.format(calendar.getTime(), DateUtil.DATEFORMATDAY)).append(System.lineSeparator());
                 }
                 break;
             case EventCommandType.UDATE_WX_MENU:
                 BaseResult baseResult = qywxApi.createAgentMenu(receiveEventMsg.getAgentID());
-                if (baseResult.isSuccess()) {
-                    replymsg = "菜单更新成功";
+                if (baseResult.getErrcode() == 0) {
+                    replymsg.append("菜单更新成功").append(System.lineSeparator());
                 } else {
-                    replymsg = "菜单更新失败";
+                    replymsg.append("菜单更新失败").append(System.lineSeparator());
                 }
                 break;
             default:
+                replymsg.append("不支持该命令").append(System.lineSeparator());
                 break;
         }
-        qywxApi.sendTextMsg(new AgentMsgText(receiveEventMsg.getFromUserName(), receiveEventMsg.getAgentID(), replymsg));
+        qywxApi.sendTextMsg(new AgentMsgText(receiveEventMsg.getFromUserName(), receiveEventMsg.getAgentID(), replymsg.toString()));
 
     }
 
@@ -193,7 +216,7 @@ public class QyWeixinCallbackController {
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp,
             @RequestParam("nonce") String nonce, @RequestParam("echostr") String echostr) {
-        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(LokTarPrivateConstant.TOEKN, LokTarPrivateConstant.ENCODINGAESKEY, LokTarPrivateConstant.CORPID);
+        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.qywxToken, lokTarConfig.qywxEncodingAESKey, lokTarConfig.qywxCorpId);
         String sEchoStr = wxcpt.VerifyURL(msgSignature, timestamp,
                 nonce, echostr);
         if (sEchoStr != null) {

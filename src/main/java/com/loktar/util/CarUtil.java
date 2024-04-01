@@ -14,20 +14,20 @@ import java.time.Duration;
 
 public class CarUtil {
     private final static String URL = "https://support.volvo.care/v1/quality-info/release-notes/cn/V526/23w17";
+    private final static ObjectMapper objectMapper = new ObjectMapper();
 
     @SneakyThrows
     public static String getLastVersion() {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(URL))
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(60))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
                 .header("Article-Content-Type", "JSON")
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonObject = (JsonNode) objectMapper.readTree(response.body());
         JsonNode jsonContent = jsonObject.get("jsonContent");
         ArrayNode jsonArrayBody = (ArrayNode) jsonContent.get("body");

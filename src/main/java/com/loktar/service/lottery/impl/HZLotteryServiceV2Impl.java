@@ -44,7 +44,9 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
 
     private final static String URL_HOUSE_DETAIL = "https://miniprogram.hz-notary.com/app/api/houseDetail?houses.id={0}";
 
-    private final static String URL_HOUSE_LIST = "https://miniprogram.hz-notary.com/app/api/lottery?layPage.pageNum=1&layPage.pageSize=50";
+    private final static String URL_HOUSE_LIST = "https://miniprogram.hz-notary.com/app/api/lottery?layPage.pageNum=1&layPage.pageSize=20";
+
+    private final static ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${conf.pdf.path}")
     private String pdfPath;
@@ -53,6 +55,7 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
         this.lotteryHouseMapper = lotteryHouseMapper;
         this.lotteryPeopleMapper = lotteryPeopleMapper;
         this.lotteryOtherPeopleMapper = lotteryOtherPeopleMapper;
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     /**
@@ -64,7 +67,7 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
      */
     @Override
     public void updateHZLotteryData() {
-        //获取杭州市摇号网站近50条楼盘清单
+        //获取杭州市摇号网站近20条楼盘清单
         List<LotteryHouse> recentHZLotteryHouses = getRecentHZLotteryHouses();
         //新增或者更新到数据库中
         insertOrUpdateHZLotteryHouses(recentHZLotteryHouses);
@@ -138,13 +141,9 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
             }
             lotteryPeoples.add(lotteryPeople);
         }
-        for (LotteryPeople lotteryPeople : lotteryPeoples) {
-            lotteryPeopleMapper.insert(lotteryPeople);
-        }
+        lotteryPeopleMapper.insertBatch(lotteryPeoples);
+        lotteryOtherPeopleMapper.insertBatch(lotteryOtherPeoples);
 
-        for (LotteryOtherPeople lotteryOtherPeople : lotteryOtherPeoples) {
-            lotteryOtherPeopleMapper.insert(lotteryOtherPeople);
-        }
         //TODO 打印
         System.out.println("人数:" + lotteryPeoples.size());
     }
@@ -183,15 +182,13 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(URL_HOUSE_DETAIL, lotteryHouseId)))
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_JSON)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         HZLotteryHouseDetailResultDTO hZLotteryHouseDetailResultDTO = objectMapper.readValue(response.body(), HZLotteryHouseDetailResultDTO.class);
         LotteryHouse lotteryHouse = changeLotteryHouseDTO(hZLotteryHouseDetailResultDTO.getData(), true);
         return lotteryHouse;
@@ -210,16 +207,13 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(URL_HOUSE_LIST))
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_JSON)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        System.out.println(response.body());
         HZLotteryHouseResultDTO hZLotteryHouseResultDTO = objectMapper.readValue(response.body(), HZLotteryHouseResultDTO.class);
         for (HZLotteryHouseDTO hZLotteryHouseDTO : hZLotteryHouseResultDTO.getDataList()) {
             LotteryHouse lotteryHouse = changeLotteryHouseDTO(hZLotteryHouseDTO, false);

@@ -16,7 +16,7 @@ public interface TrTorrentTrackerMapper {
 
     void truncate();
 
-    void insertOrUpdate(TrTorrentTracker trTorrentTracker);
-
     void deleteByTorrentId(Integer torrentId);
+
+    int insertBatch(List<TrTorrentTracker> trTorrentTrackers);
 }

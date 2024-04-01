@@ -29,7 +29,7 @@
       #{gplxrxm,jdbcType=VARCHAR}, #{scgpshsj,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
       #{statusTime,jdbcType=TIMESTAMP})
   </insert>
-  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.second.SecondHandHouse">
+    <update id="updateByPrimaryKey" parameterType="com.loktar.domain.second.SecondHandHouse">
     update second_hand_house
     set fwtybh = #{fwtybh,jdbcType=VARCHAR},
       xzqhname = #{xzqhname,jdbcType=VARCHAR},
@@ -65,5 +65,17 @@
   <update id="updateStatusAndStatusTimeByFwtybh">
     update second_hand_house set `status` = #{status,jdbcType=VARCHAR}, status_time = now() where fwtybh = #{fwtybh,jdbcType=VARCHAR}
   </update>
-
+  <insert id="insertBatch">
+    insert into second_hand_house (`id`, fwtybh, xzqhname, cqmc,
+                                   xqmc, jzmj, wtcsjg, mdmc,
+                                   gplxrxm, scgpshsj, `status`,
+                                   status_time)
+    values
+    <foreach collection="list" separator="," item="item">
+        (#{item.id,jdbcType=INTEGER}, #{item.fwtybh,jdbcType=VARCHAR}, #{item.xzqhname,jdbcType=VARCHAR}, #{item.cqmc,jdbcType=VARCHAR},
+            #{item.xqmc,jdbcType=VARCHAR}, #{item.jzmj,jdbcType=REAL}, #{item.wtcsjg,jdbcType=VARCHAR}, #{item.mdmc,jdbcType=VARCHAR},
+            #{item.gplxrxm,jdbcType=VARCHAR}, #{item.scgpshsj,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR},
+            #{item.statusTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
 </mapper>

@@ -1,9 +1,14 @@
 package com.loktar.util;
 
+import com.loktar.conf.LokTarConstant;
+import lombok.SneakyThrows;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,58 +17,71 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@Configuration
+@Component
 public class FFmpegUtil {
-    //TODO 尝试用docker镜像 不直接打进去
 
-    public static void convertWavToAmr(String ffmpegPath, String inputFilePath, String outputFilePath) {
-        FFmpeg ffmpeg = null;
-        try {
-            ffmpeg = new FFmpeg(ffmpegPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private static String env;
+
+    @Value("${spring.profiles.active}")
+    public void setEnv(String env) {
+        FFmpegUtil.env = env; // 静态字段赋值
+    }
+
+    public static void convertWavToAmr(String voicePath, String filename) {
+        if (!env.equals(LokTarConstant.ENV_PRO)) {
+            convertWavToAmrDev(voicePath, filename);
         }
+        convertWavToAmrPro(voicePath, filename);
+    }
+
+    public static void convertAmrToWav(String voicePath, String filename) {
+        if (!env.equals(LokTarConstant.ENV_PRO)) {
+            convertAmrToWavDev(voicePath, filename);
+        }
+        convertAmrToWavPro(voicePath, filename);
+    }
+
+
+    public static void convertWavToAmrPro(String voicePath, String wavFilename) {
+        //ffmpeg -y -loglevel error -i /fun/voice/111.wav -c:a libopencore_amrnb -ar 8000 -ac 1 /fun/voice/111.amr
+        String command = "ffmpeg -y -loglevel error -i " + voicePath + wavFilename + " -c:a libopencore_amrnb -ar 8000 -ac 1 " + voicePath + wavFilename.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR);
+        DockerEngineApiUtil.containerExec(DockerEngineApiUtil.FFMPEG_COMTAINER_NAME, command);
+    }
+
+    public static void convertAmrToWavPro(String voicePath, String amrFilename) {
+        //String command = "ffmpeg -y -loglevel error -i /fun/voice/222.amr -ac 1 -ar 16000 -b:a 256k /fun/voice/222.wav";
+        String command = "ffmpeg -y -loglevel error -i " + voicePath + amrFilename + " -ac 1 -ar 16000 -b:a 256k " + voicePath + amrFilename.replace(LokTarConstant.VOICE_SUFFIX_AMR, LokTarConstant.VOICE_SUFFIX_WAV);
+        DockerEngineApiUtil.containerExec(DockerEngineApiUtil.FFMPEG_COMTAINER_NAME, command);
+    }
+
+    @SneakyThrows
+    public static void convertWavToAmrDev(String voicePath, String wavFilename) {
+        FFmpeg ffmpeg = new FFmpeg("D:/ffmpeg/bin/ffmpeg.exe");
         FFmpegBuilder builder = new FFmpegBuilder()
-                .setInput(inputFilePath)
+                .setInput(voicePath + wavFilename)
                 .overrideOutputFiles(true)
-                .addOutput(outputFilePath)
+                .addOutput(voicePath + wavFilename.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR))
                 .setAudioCodec("libopencore_amrnb")
                 .addExtraArgs("-ar", "8000") // Set the audio sample rate to 8000 Hz
                 .addExtraArgs("-ac", "1") // Set the audio to mono (single channel)
                 .done();
-        FFmpegExecutor executor = null;
-        //ffmpeg -i /debian-sshd-macvlan/1a9554381457405b86041adf99f3dbd6.wav -c:a libopencore_amrnb /debian-sshd-macvlan/1.amr
-        try {
-            executor = new FFmpegExecutor(ffmpeg);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        executor.createJob(builder).run();
+        new FFmpegExecutor(ffmpeg).createJob(builder).run();
     }
 
-    public static void convertAmrToWav(String ffmpegPath, String inputFilePath, String outputFilePath) {
-        FFmpeg ffmpeg = null;
-        try {
-            ffmpeg = new FFmpeg(ffmpegPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    @SneakyThrows
+    public static void convertAmrToWavDev(String voicePath, String amrFilename) {
+        FFmpeg ffmpeg = new FFmpeg("D:/ffmpeg/bin/ffmpeg.exe");
+
         FFmpegBuilder builder = new FFmpegBuilder()
-                .setInput(inputFilePath)
+                .setInput(voicePath + amrFilename)
                 .overrideOutputFiles(true)
-                .addOutput(outputFilePath)
+                .addOutput(voicePath + amrFilename.replace(LokTarConstant.VOICE_SUFFIX_AMR, LokTarConstant.VOICE_SUFFIX_WAV))
                 .setAudioChannels(1)
                 .setAudioSampleRate(16_000)
                 .setAudioBitRate(256_000)
                 .done();
-        FFmpegExecutor executor = null;
-        //ffmpeg -i F:/voice/1.amr -ac 1 -ar 16000 -b:a 256k F:/voice/output.wav
-        try {
-            executor = new FFmpegExecutor(ffmpeg);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        executor.createJob(builder).run();
+        new FFmpegExecutor(ffmpeg).createJob(builder).run();
     }
 
     //合并mp4 中途先转ts

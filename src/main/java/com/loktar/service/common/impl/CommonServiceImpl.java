@@ -1,7 +1,7 @@
 package com.loktar.service.common.impl;
 
+import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
-import com.loktar.conf.LokTarPrivateConstant;
 import com.loktar.domain.lottery.LotteryHouse;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.lottery.LotteryHouseMapper;
@@ -20,15 +20,18 @@ public class CommonServiceImpl implements CommonService {
 
     private final QywxApi qywxApi;
 
-    public CommonServiceImpl(LotteryHouseMapper lotteryHouseMapper, QywxApi qywxApi) {
+    private final LokTarConfig lokTarConfig;
+
+    public CommonServiceImpl(LotteryHouseMapper lotteryHouseMapper, QywxApi qywxApi, LokTarConfig lokTarConfig) {
         this.lotteryHouseMapper = lotteryHouseMapper;
         this.qywxApi = qywxApi;
+        this.lokTarConfig = lokTarConfig;
     }
 
 
     @Override
     public void sendLotteryNotice() {
-        String content = LokTarConstant.NOTICE_TITLE_LOTTERY + "(" + DateUtil.getYestodayStr() + ")" + "\n\n";
+        StringBuilder content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_LOTTERY + "(" + DateUtil.getYestodayStr() + ")").append(System.lineSeparator());
         List<LotteryHouse> lotteryHouses = lotteryHouseMapper.getYesterdayLotteryHouses();
         if (lotteryHouses.size() == 0) {
             return;
@@ -40,14 +43,15 @@ public class CommonServiceImpl implements CommonService {
             int price = 0;
             double totalChance = lotteryHouse.getTotalHouseNum() * 1.0 / lotteryHouse.getTotalPeopleNum() * 1.0;
             String totalChanceStr = totalChance >= 1 ? "100%" : String.format("%.2f", totalChance * 100) + "%";
-            content = content
-                    + lotteryHouse.getHouseName()
-                    + "\n"
-                    + "房源:" + lotteryHouse.getTotalHouseNum() + ";登记:" + lotteryHouse.getTotalPeopleNum() + ";中签率:" + totalChanceStr
-                    + "\n\n";
+            content.append(System.lineSeparator())
+                    .append(lotteryHouse.getHouseName()).append(System.lineSeparator())
+                    .append(System.lineSeparator())
+                    .append("房源:").append(lotteryHouse.getTotalHouseNum()).append(";登记:").append(lotteryHouse.getTotalPeopleNum()).append(";中签率:").append(totalChanceStr).append(System.lineSeparator())
+                    .append(System.lineSeparator());
+
         }
-        content = content + DateUtil.getMinuteSysDate();
-        qywxApi.sendTextMsg(new AgentMsgText(LokTarPrivateConstant.NOTICE_ZXB, LokTarPrivateConstant.AGENT002ID, content));
+        content.append(DateUtil.getMinuteSysDate());
+        qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content.toString()));
     }
 
 }
