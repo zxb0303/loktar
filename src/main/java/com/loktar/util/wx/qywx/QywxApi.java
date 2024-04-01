@@ -2,14 +2,16 @@ package com.loktar.util.wx.qywx;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
-import com.loktar.conf.LokTarPrivateConstant;
 import com.loktar.domain.qywx.QywxMenu;
 import com.loktar.dto.wx.*;
 import com.loktar.dto.wx.agentmsg.*;
 import com.loktar.mapper.qywx.QywxMenuMapper;
+import com.loktar.util.DateUtil;
 import com.loktar.util.RedisUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +25,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.*;
@@ -38,7 +43,7 @@ public class QywxApi {
 
     private final static String MENU_CREATE_URL = "https://qyapi.weixin.qq.com/cgi-bin/menu/create?access_token={0}&agentid={1}";
 
-    private final static String UPLOAD_URL = "https://qyapi.weixin.qq.com/cgi-bin/media/upload?access_token={0}&type={1}";
+    private final static String UPLOAD_URL = "https://qyapi.weixin.qq.com/cgi-bin/media/upload?access_token={0}&type=file";
 
     private final static String GET_MEDIA_URL = "https://qyapi.weixin.qq.com/cgi-bin/media/get?access_token={0}&media_id={1}";
 
@@ -48,9 +53,21 @@ public class QywxApi {
 
     private final QywxMenuMapper qywxMenuMapper;
 
-    public QywxApi(RedisUtil redisUtil, QywxMenuMapper qywxMenuMapper) {
+    private final LokTarConfig lokTarConfig;
+
+    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private static Map<String,String> AGENTMAP = new HashMap<>();
+
+
+
+    public QywxApi(RedisUtil redisUtil, QywxMenuMapper qywxMenuMapper, com.loktar.conf.LokTarConfig lokTarConfig) {
         this.redisUtil = redisUtil;
         this.qywxMenuMapper = qywxMenuMapper;
+        this.lokTarConfig = lokTarConfig;
+        AGENTMAP.put(lokTarConfig.qywxAgent002Id,lokTarConfig.qywxAgent002Secert);
+        AGENTMAP.put(lokTarConfig.qywxAgent003Id,lokTarConfig.qywxAgent003Secert);
+        AGENTMAP.put(lokTarConfig.qywxAgent004Id,lokTarConfig.qywxAgent004Secert);
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     /**
@@ -69,15 +86,17 @@ public class QywxApi {
      */
     @SneakyThrows
     private AccessToken refreshAccessToken(String agentId) {
-        String secret = LokTarPrivateConstant.AGENTMAP.get(agentId);
+        String secret = AGENTMAP.get(agentId);
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(MessageFormat.format(ACCESSTOKEN_URL, LokTarPrivateConstant.CORPID, secret)))
+                .uri(URI.create(MessageFormat.format(ACCESSTOKEN_URL, lokTarConfig.qywxCorpId, secret)))
                 .timeout(Duration.ofSeconds(10))
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        AccessToken accessToken = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).readValue(response.body(), AccessToken.class);
+        System.out.println(response.body());
+        AccessToken accessToken = objectMapper.readValue(response.body(), AccessToken.class);
+        System.out.println(accessToken);
         if (!StringUtils.isEmpty(accessToken.getAccessToken())) {
             redisUtil.set(KEY_ACCESSTOKEN + agentId, accessToken, accessToken.getExpiresIn());
         }
@@ -108,8 +127,7 @@ public class QywxApi {
     @SneakyThrows
     private <T> AgentMsgRsp sendMessage(T message, String agentId) {
         HttpClient httpClient = HttpClient.newHttpClient();
-        String requestbody = new ObjectMapper()
-                    .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).writeValueAsString(message);
+        String requestbody = objectMapper.writeValueAsString(message);
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(SEND_AGENTMSG_URL, accessToken(agentId).getAccessToken())))
@@ -117,7 +135,7 @@ public class QywxApi {
                 .POST(HttpRequest.BodyPublishers.ofString(requestbody))
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        return new ObjectMapper().readValue(response.body(), AgentMsgRsp.class);
+        return objectMapper.readValue(response.body(), AgentMsgRsp.class);
 
     }
 
@@ -141,16 +159,16 @@ public class QywxApi {
         buttons.sort(Comparator.comparingInt(Menu.Button::getOrder));
         Menu wxMenu = new Menu(buttons);
         HttpClient httpClient = HttpClient.newHttpClient();
-        String requestBody = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL).setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).writeValueAsString(wxMenu);
+        String requestBody = objectMapper.writeValueAsString(wxMenu);
         System.out.println(requestBody);
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(MessageFormat.format(MENU_CREATE_URL, accessToken(agentId).getAccessToken(),agentId)))
+                .uri(URI.create(MessageFormat.format(MENU_CREATE_URL, accessToken(agentId).getAccessToken(), agentId)))
                 .timeout(Duration.ofSeconds(10))
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         System.out.println(response.body());
-        BaseResult baseResult = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CASE).readValue(response.body(), AgentMsgRsp.class);
+        BaseResult baseResult = objectMapper.readValue(response.body(), AgentMsgRsp.class);
         return baseResult;
     }
 
@@ -158,29 +176,29 @@ public class QywxApi {
         KeyButtonType type = KeyButtonType.getByName((config.getType()));
         switch (type) {
             case KeyButtonType.VIEW:
-                return new Menu.ViewButton(config.getName(),config.getUrl(), config.getOrder());
+                return new Menu.ViewButton(config.getName(), config.getUrl(), config.getOrder());
             default:
-                return new Menu.KeyButton(type,config.getName(), config.getKey(),
+                return new Menu.KeyButton(type, config.getName(), config.getKey(),
                         config.getOrder());
         }
     }
 
     @SneakyThrows
-    public UploadMediaRsp uploadMedia(File file, String fileType, String agentId) {
+    public UploadMediaRsp uploadMedia(File file,  String agentId) {
         HttpClient httpClient = HttpClient.newHttpClient();
         String boundary = LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_MULTIPART_PREFIX + System.currentTimeMillis();
-        HttpRequest.BodyPublisher bodyPublisher = ofMimeMultipartData(file, boundary, fileType);
+        HttpRequest.BodyPublisher bodyPublisher = ofMimeMultipartData(file, boundary);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(MessageFormat.format(UPLOAD_URL, accessToken(agentId).getAccessToken(), fileType)))
+                .uri(new URI(MessageFormat.format(UPLOAD_URL, accessToken(agentId).getAccessToken())))
                 .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_MULTIPART + boundary)
                 .POST(bodyPublisher)
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        return new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).readValue(response.body(), UploadMediaRsp.class);
+        return objectMapper.readValue(response.body(), UploadMediaRsp.class);
     }
 
     @SneakyThrows
-    private static HttpRequest.BodyPublisher ofMimeMultipartData(File file, String boundary, String fileType) {
+    private static HttpRequest.BodyPublisher ofMimeMultipartData(File file, String boundary) {
         var builder = MultipartEntityBuilder.create();
         builder.setBoundary(boundary);
         builder.addBinaryBody(FORM_NAME, file, ContentType.APPLICATION_OCTET_STREAM, file.getName());
@@ -189,14 +207,34 @@ public class QywxApi {
         multipart.writeTo(baos);
         return HttpRequest.BodyPublishers.ofByteArray(baos.toByteArray());
     }
-
     @SneakyThrows
-    public void getMediaAndSave(String filePath, String filename, String filesuffix, String mediaId, String agentId) {
+    public String saveMedia(String filePath, String mediaId, String agentId) {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(GET_MEDIA_URL, accessToken(agentId).getAccessToken(), mediaId)))
                 .GET()
                 .build();
-        httpClient.send(request, HttpResponse.BodyHandlers.ofFile(Paths.get(filePath + filename + filesuffix)));
+
+        HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
+        // 从响应头获取文件名
+        String filename = getFileName(response);
+        Path destination = Paths.get(filePath + filename);
+        // 将响应体写入到文件中，并确保如果文件已存在则覆盖
+        Files.write(destination, response.body(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        return filename;
     }
+
+    private static String getFileName(HttpResponse<?> response) {
+        return response.headers().firstValue("Content-disposition")
+                .map(header -> header.split(";"))
+                .flatMap(parts -> {
+                    for (String part : parts) {
+                        if (part.trim().startsWith("filename=")) {
+                            return Optional.of(part.split("=")[1].replaceAll("\"", ""));
+                        }
+                    }
+                    return Optional.empty();
+                }).orElse(DateUtil.DATEFORMATMINUTESECONDSTR);
+    }
+
 }

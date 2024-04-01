@@ -213,8 +213,20 @@ ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Shanghai", "/app.jar"]
 * 不在镜像中安装ffmpeg,选择单独部署并通过DockerEngineApi调用服务
 * 部署tecnativa/docker-socket-proxy并配置好正确权限
 * 部署jrottenberg/ffmpeg
-* 编写[DockerEngineApiUtil.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Futil%2FDockerEngineApiUtil.java)实现DockerEngineApi的exec能力
+* 添加docker-java-core、docker-java-transport-httpclient5并编写[DockerEngineApiUtil.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Futil%2FDockerEngineApiUtil.java)实现DockerEngineApi的exec能力
 * 调整业务代码
+```xml
+<dependency>
+    <groupId>com.github.docker-java</groupId>
+    <artifactId>docker-java-core</artifactId>
+    <version>3.3.6</version>
+</dependency>
+<dependency>
+    <groupId>com.github.docker-java</groupId>
+    <artifactId>docker-java-transport-httpclient5</artifactId>
+    <version>3.3.6</version>
+</dependency>
+* ```
 ```yaml
 version: '3'
 services:

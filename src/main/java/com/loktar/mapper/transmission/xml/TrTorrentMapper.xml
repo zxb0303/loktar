@@ -111,31 +111,21 @@
     from tr_torrent
     where `name`=#{name,jdbcType=VARCHAR}
   </select>
-  <insert id="insertOrUpdate" parameterType="com.loktar.domain.transmission.TrTorrent">
-    insert into tr_torrent (id, `name`, `status`, total_size, download_dir, error, error_string, hash_string,
-                            upload_ratio, percent_done, peers_sending_to_us, peers_getting_from_us, rate_upload,
-                            added_date, activity_date, done_date)
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
-            #{totalSize,jdbcType=BIGINT}, #{downloadDir,jdbcType=VARCHAR},#{error,jdbcType=INTEGER},
-            #{errorString,jdbcType=VARCHAR},#{hashString,jdbcType=VARCHAR},
-            #{uploadRatio,jdbcType=DOUBLE}, #{percentDone,jdbcType=DOUBLE}, #{peersSendingToUs,jdbcType=INTEGER},
-            #{peersGettingFromUs,jdbcType=INTEGER}, #{rateUpload,jdbcType=INTEGER}, #{addedDate,jdbcType=INTEGER},
-            #{activityDate,jdbcType=INTEGER}, #{doneDate,jdbcType=INTEGER})
-      ON DUPLICATE KEY UPDATE
-                         `name` = #{name,jdbcType=VARCHAR},
-                         `status` = #{status,jdbcType=INTEGER},
-                         total_size = #{totalSize,jdbcType=BIGINT},
-                         download_dir = #{downloadDir,jdbcType=VARCHAR},
-                         error = #{error,jdbcType=INTEGER},
-                         error_string = #{errorString,jdbcType=VARCHAR},
-                         hash_string = #{hashString,jdbcType=VARCHAR},
-                         upload_ratio = #{uploadRatio,jdbcType=DOUBLE},
-                         percent_done = #{percentDone,jdbcType=DOUBLE},
-                         peers_sending_to_us = #{peersSendingToUs,jdbcType=INTEGER},
-                         peers_getting_from_us = #{peersGettingFromUs,jdbcType=INTEGER},
-                         rate_upload = #{rateUpload,jdbcType=INTEGER},
-                         added_date = #{addedDate,jdbcType=INTEGER},
-                         activity_date = #{activityDate,jdbcType=INTEGER},
-                         done_date = #{doneDate,jdbcType=INTEGER}
-  </insert>
+    <insert id="insertBatch">
+        insert into tr_torrent (`id`, `name`, `status`, total_size,
+                                download_dir, error, error_string,
+                                hash_string, upload_ratio, percent_done,
+                                peers_sending_to_us, peers_getting_from_us, rate_upload,
+                                added_date, activity_date, done_date
+        )
+        values
+        <foreach collection="list" separator="," item="item">
+            (#{item.id,jdbcType=INTEGER}, #{item.name,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.totalSize,jdbcType=BIGINT},
+                #{item.downloadDir,jdbcType=VARCHAR}, #{item.error,jdbcType=INTEGER}, #{item.errorString,jdbcType=VARCHAR},
+                #{item.hashString,jdbcType=VARCHAR}, #{item.uploadRatio,jdbcType=DOUBLE}, #{item.percentDone,jdbcType=DOUBLE},
+                #{item.peersSendingToUs,jdbcType=INTEGER}, #{item.peersGettingFromUs,jdbcType=INTEGER}, #{item.rateUpload,jdbcType=INTEGER},
+                #{item.addedDate,jdbcType=INTEGER}, #{item.activityDate,jdbcType=INTEGER}, #{item.doneDate,jdbcType=INTEGER}
+               )
+        </foreach>
+    </insert>
 </mapper>

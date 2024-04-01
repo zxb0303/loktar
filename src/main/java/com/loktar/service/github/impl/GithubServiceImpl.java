@@ -1,12 +1,13 @@
 package com.loktar.service.github.impl;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
-import com.loktar.conf.LokTarPrivateConstant;
 import com.loktar.domain.github.GithubRepository;
 import com.loktar.dto.github.GithubRelease;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
@@ -33,11 +34,14 @@ public class GithubServiceImpl implements GithubService {
     private final GithubRepositoryMapper githubRepositoryMapper;
     private final QywxApi qywxApi;
     private final String URL = "https://api.github.com/repos/{0}/releases";
+    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private final LokTarConfig lokTarConfig;
 
-
-    public GithubServiceImpl(GithubRepositoryMapper githubRepositoryMapper, QywxApi qywxApi) {
+    public GithubServiceImpl(GithubRepositoryMapper githubRepositoryMapper, QywxApi qywxApi, LokTarConfig lokTarConfig) {
         this.githubRepositoryMapper = githubRepositoryMapper;
         this.qywxApi = qywxApi;
+        this.lokTarConfig = lokTarConfig;
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     @Override
@@ -54,10 +58,10 @@ public class GithubServiceImpl implements GithubService {
             if (StringUtils.isEmpty(githubRepository.getLastTagName()) || githubRelease.getId() > githubRepository.getLastTagId()) {
                 String content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_GITHUB).append(System.lineSeparator())
                         .append(System.lineSeparator())
-                        .append(githubRepository.getRepository()).append(":").append(githubRepository.getLastTagName())
+                        .append(githubRepository.getRepository()).append(":").append(githubRepository.getLastTagName()).append(System.lineSeparator())
                         .append(System.lineSeparator())
                         .append(DateUtil.getMinuteSysDate()).toString();
-                qywxApi.sendTextMsg(new AgentMsgText(LokTarPrivateConstant.NOTICE_ZXB, LokTarPrivateConstant.AGENT002ID, content));
+                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
                 githubRepository.setLastTagId(githubRelease.getId());
                 githubRepository.setLastTagName(githubRelease.getTagName());
                 githubRepository.setPublishedAt(DateUtil.format(githubRelease.getCreatedAt(), DateUtil.DATEFORMATSECOND));
@@ -75,17 +79,12 @@ public class GithubServiceImpl implements GithubService {
                 .timeout(Duration.ofSeconds(10))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
-                .header("authorization", LokTarPrivateConstant.GITHUB_AUTHORIZATION)
+                .header("authorization", lokTarConfig.githubAuthorization)
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         String responseBody = response.body();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-
-        List<GithubRelease> githubReleases = objectMapper.readValue(responseBody, new TypeReference<List<GithubRelease>>() {
-        });
+        List<GithubRelease> githubReleases = objectMapper.readValue(responseBody, new TypeReference<List<GithubRelease>>() {});
         for (GithubRelease githubRelease : githubReleases) {
             if (!githubRelease.isPrerelease()) {
                 return githubRelease;

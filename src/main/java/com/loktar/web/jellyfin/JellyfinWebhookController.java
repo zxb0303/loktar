@@ -1,10 +1,10 @@
 package com.loktar.web.jellyfin;
 
+import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
-import com.loktar.conf.LokTarPrivateConstant;
 import com.loktar.dto.jellyfin.Notification;
 import com.loktar.dto.jellyfin.Session;
-import com.loktar.dto.transmission.TrResponseDTO;
+import com.loktar.dto.transmission.TrResponse;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.util.*;
 import com.loktar.util.wx.qywx.QywxApi;
@@ -22,18 +22,24 @@ import java.util.Set;
 public class JellyfinWebhookController {
 
     private final QywxApi qywxApi;
+    private final TransmissionUtil transmissionUtil;
+    private final JellyfinUtil jellyfinUtil;
+    private final LokTarConfig lokTarConfig;
 
     //TODO Set改redis 代码优化
     private Set<String> userPlayingSet = new HashSet<>();
 
-    public JellyfinWebhookController(QywxApi qywxApi) {
+    public JellyfinWebhookController(QywxApi qywxApi, TransmissionUtil transmissionUtil, JellyfinUtil jellyfinUtil, LokTarConfig lokTarConfig) {
         this.qywxApi = qywxApi;
+        this.transmissionUtil = transmissionUtil;
+        this.jellyfinUtil = jellyfinUtil;
+        this.lokTarConfig = lokTarConfig;
     }
 
     @RequestMapping("/webhook.do")
     public void webhook(@RequestBody Notification notification) {
         HtmlEntityDecoderUtil.decodeHtmlEntities(notification);
-        Session session = JellyfinUtil.getSessionByDeviceId(notification.getDeviceId());
+        Session session = jellyfinUtil.getSessionByDeviceId(notification.getDeviceId());
         StringBuilder contentBuilder = new StringBuilder();
 
         switch (notification.getNotificationType()) {
@@ -53,7 +59,7 @@ public class JellyfinWebhookController {
                 .append(System.lineSeparator())
                 .append(DateUtil.getMinuteSysDate());
         if (!notification.getNotificationUsername().equals("adult")) {
-            qywxApi.sendTextMsg(new AgentMsgText(LokTarPrivateConstant.NOTICE_ZXB, LokTarPrivateConstant.AGENT002ID, contentBuilder.toString()));
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, contentBuilder.toString()));
         }
 
         handleTransmissionSpeed(notification, session);
@@ -93,13 +99,13 @@ public class JellyfinWebhookController {
     private void handleTransmissionSpeed(Notification notification, Session session) {
         if (!isLocalNetwork(session.getRemoteEndPoint())) {
             String content = "";
-            TrResponseDTO trResponseDTOSession = TransmissionUtil.getSession();
-            if ("PlaybackStart".equals(notification.getNotificationType()) && !trResponseDTOSession.getArguments().isAltSpeedEnabled()) {
-                TransmissionUtil.altSpeedEnabled(true);
+            TrResponse trResponseSession = transmissionUtil.getSession();
+            if ("PlaybackStart".equals(notification.getNotificationType()) && !trResponseSession.getArguments().getAltSpeedEnabled()) {
+                transmissionUtil.altSpeedEnabled(true);
                 content = "Transmission已自动开启限速";
             }
-            if ("PlaybackStop".equals(notification.getNotificationType()) && userPlayingSet.isEmpty() && trResponseDTOSession.getArguments().isAltSpeedEnabled()) {
-                TransmissionUtil.altSpeedEnabled(false);
+            if ("PlaybackStop".equals(notification.getNotificationType()) && userPlayingSet.isEmpty() && trResponseSession.getArguments().getAltSpeedEnabled()) {
+                transmissionUtil.altSpeedEnabled(false);
                 content = "Transmission已自动关闭限速";
             }
             try {
@@ -109,7 +115,7 @@ public class JellyfinWebhookController {
                 return;
             }
             if (!notification.getNotificationUsername().equals("adult")) {
-                qywxApi.sendTextMsg(new AgentMsgText(LokTarPrivateConstant.NOTICE_ZXB, LokTarPrivateConstant.AGENT002ID, content));
+                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
             }
         }
     }

@@ -3,8 +3,8 @@ package com.loktar.dto.transmission;
 import lombok.Data;
 
 @Data
-public class TrRequestDTO {
+public class TrRequest {
     private String method;
-    private TrRequestArgDTO arguments;
+    private TrRequestArg arguments;
     private String tag;
 }
