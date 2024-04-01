@@ -1,12 +1,12 @@
 package com.loktar.service.transmission;
 
 
-import com.loktar.dto.transmission.TrResponseDTO;
+import com.loktar.dto.transmission.TrResponse;
 
 public interface TransmissionService {
-    TrResponseDTO getFreeSpaceByDownloadDir(String downloadDir);
+    TrResponse getFreeSpaceByDownloadDir(String downloadDir);
 
-    TrResponseDTO refreshAllTorrents();
+    TrResponse refreshAllTorrents();
 
     void autoRemove(Long minSizeGG,int days,String downloadDir);
 
