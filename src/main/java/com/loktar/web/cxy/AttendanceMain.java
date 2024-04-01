@@ -1,16 +1,15 @@
 package com.loktar.web.cxy;
 
-import com.loktar.conf.LokTarPrivateConstant;
 import com.loktar.dto.cxy.HardWork;
 import com.loktar.dto.cxy.Leave;
 import com.loktar.dto.cxy.RestInfo;
 import com.loktar.util.DateUtil;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.commons.lang3.ObjectUtils;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,11 +36,12 @@ public class AttendanceMain {
     // TODO 法定节假日（除周末） eg:"2023-06-22", "2023-06-23"
     public static String[] SPECIALWEEKDAYS = new String[]{};
 
+    public final static String ATTENDANCE_PATH = "";
 
-    public static String DAILY_FILE_PATH = LokTarPrivateConstant.ATTENDANCE_PATH + MONTH + "/每日统计_" + MONTH + "01_" + MONTH + MAX_DAY + ".xlsx";
-    public static String MONTH_FILE_PATH = LokTarPrivateConstant.ATTENDANCE_PATH + MONTH + "/月度汇总_" + MONTH + "01_" + MONTH + MAX_DAY + ".xlsx";
-    public static String RESULT_FILE_PATH = LokTarPrivateConstant.ATTENDANCE_PATH + MONTH + "/result_" + MONTH + ".xlsx";
-    public static String TEMPLATE_FILE_PATH = LokTarPrivateConstant.ATTENDANCE_PATH + "template.xlsx";
+    public static String DAILY_FILE_PATH = ATTENDANCE_PATH + MONTH + "/每日统计_" + MONTH + "01_" + MONTH + MAX_DAY + ".xlsx";
+    public static String MONTH_FILE_PATH = ATTENDANCE_PATH + MONTH + "/月度汇总_" + MONTH + "01_" + MONTH + MAX_DAY + ".xlsx";
+    public static String RESULT_FILE_PATH = ATTENDANCE_PATH + MONTH + "/result_" + MONTH + ".xlsx";
+    public static String TEMPLATE_FILE_PATH = ATTENDANCE_PATH + "template.xlsx";
 
 
     @SneakyThrows
