@@ -17,7 +17,7 @@ import java.util.List;
 
 public class HZnotaryUtil {
 
-    public static String TYPE_REGIST = "登记汇总表";
+    public static String TYPE_REGIST = "登记";
     public static String TYPE_RESULT = "摇号结果";
 
     public static String URL_INDEX = "https://www.hz-notary.com/lottery/index?page.pageNum={0}";
