@@ -27,10 +27,7 @@ public class JacksonTest {
         test4();
         //忽略字段
         //objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        //过滤null属性
-        //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        // 详解
-        // https://developer.aliyun.com/article/862151
+
 
     }
 

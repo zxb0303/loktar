@@ -15,12 +15,12 @@ import com.loktar.mapper.newhouse.NewHouseHangzhouV2Mapper;
 import com.loktar.service.newhouse.NewHouseHangzhouV2Service;
 import com.loktar.util.DelayUtil;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -28,10 +28,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.MessageFormat;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service {
@@ -46,8 +43,6 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
 
     private Property property;
 
-    private final static ObjectMapper objectMapper = new ObjectMapper();
-
     public final static String URL_HOUSE_INFO = "https://www.tmsf.com/newhouse/property_{0}_{1}_basicinfo.htm";
     public final static String URL_PRESELL = "https://www.tmsf.com/newhouse/property_{0}_{1}_price.htm";
     public final static String URL_PRESELL_DETAIL = "https://www.tmsf.com/newhouse/NewPropertyHz_createPresellInfo.jspx?presellid={0}&sid={1}&propertyid={2}";
@@ -59,7 +54,6 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
         this.propertyMapper = propertyMapper;
         this.newHouseHangzhouPresellMapper = newHouseHangzhouPresellMapper;
         this.newHouseHangzhouDetailMapper = newHouseHangzhouDetailMapper;
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @Override
@@ -190,8 +184,12 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         //TODO 打印
         System.out.println(response.body());
+
+
         NewHouseHangzhouPresellResultDTO newHouseHangzhouPresellResultDTO = objectMapper.readValue(response.body(), NewHouseHangzhouPresellResultDTO.class);
         if (ObjectUtils.isEmpty(newHouseHangzhouV2.getNameSpread()) && !ObjectUtils.isEmpty(newHouseHangzhouPresellResultDTO.getPre())) {
             newHouseHangzhouV2.setNameSpread(newHouseHangzhouPresellResultDTO.getPre().getPropertyname());

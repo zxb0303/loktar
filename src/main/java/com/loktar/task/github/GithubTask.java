@@ -1,31 +1,28 @@
 package com.loktar.task.github;
 
 
-import com.loktar.conf.LokTarConfig;
-import com.loktar.conf.LokTarConstant;
 import com.loktar.service.github.GithubService;
 import com.loktar.util.DateUtil;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
-@Component
+@Configuration
 @EnableScheduling
 public class GithubTask {
-
+    @Value("${spring.profiles.active}")
+    private String env;
     private final GithubService githubService;
 
-    private final LokTarConfig lokTarConfig;
-
-    public GithubTask(GithubService githubService, LokTarConfig lokTarConfig) {
+    public GithubTask(GithubService githubService) {
         this.githubService = githubService;
-        this.lokTarConfig = lokTarConfig;
     }
 
 
     @Scheduled(cron = "0 */30 * * * ?")
     private void notice() {
-        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
+        if (!env.equals("pro")) {
             return;
         }
         System.out.println("GITHUB项目检测定时器：" + DateUtil.getTodayToSecond());

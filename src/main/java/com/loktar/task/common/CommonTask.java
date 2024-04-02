@@ -1,22 +1,26 @@
 package com.loktar.task.common;
 
-import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
+import com.loktar.conf.LokTarPrivateConstant;
 import com.loktar.domain.common.Notice;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.service.common.CommonService;
 import com.loktar.service.common.NoticeServer;
 import com.loktar.util.DateUtil;
 import com.loktar.util.wx.qywx.QywxApi;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.List;
-@Component
+
+@Configuration
 @EnableScheduling
 public class CommonTask {
+    @Value("${spring.profiles.active}")
+    private String env;
 
     private final CommonService commonService;
 
@@ -24,14 +28,10 @@ public class CommonTask {
 
     private final QywxApi qywxApi;
 
-    private final LokTarConfig lokTarConfig;
-
-
-    public CommonTask(CommonService commonService, NoticeServer noticeServer, QywxApi qywxApi, LokTarConfig lokTarConfig) {
+    public CommonTask(CommonService commonService, NoticeServer noticeServer, QywxApi qywxApi) {
         this.commonService = commonService;
         this.noticeServer = noticeServer;
         this.qywxApi = qywxApi;
-        this.lokTarConfig = lokTarConfig;
     }
 
     /**
@@ -43,18 +43,16 @@ public class CommonTask {
      */
     @Scheduled(cron = "0 */1 * * * ?")
     public void commonNotice() {
-        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
+        if (!env.equals("pro")) {
             return;
         }
         List<Notice> notices = noticeServer.selectAll();
         for (Notice notice : notices) {
             if (DateUtil.getMinuteSysDate().equals(notice.getNoticeTime())) {
-                String content = new StringBuilder().append(notice.getNoticeTitle()).append(System.lineSeparator())
-                        .append(System.lineSeparator())
-                        .append(notice.getNoticeContent()).append(System.lineSeparator())
-                        .append(System.lineSeparator())
-                        .append(DateUtil.getMinuteSysDate()).toString();
-                qywxApi.sendTextMsg(new AgentMsgText(notice.getNoticeUser(), lokTarConfig.qywxAgent002Id, content));
+                String content = notice.getNoticeTitle() + "\n\n"
+                        + notice.getNoticeContent()
+                        + "\n\n" + DateUtil.getMinuteSysDate();
+                qywxApi.sendTextMsg(new AgentMsgText(notice.getNoticeUser(), LokTarPrivateConstant.AGENT002ID, content));
             }
         }
 
@@ -70,7 +68,7 @@ public class CommonTask {
      */
     @Scheduled(cron = "0 30 7 * * ?")
     private void lotteryNotice() {
-        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
+        if (!env.equals("pro")) {
             return;
         }
 //        commonService.sendLandNotice();
@@ -88,7 +86,7 @@ public class CommonTask {
      */
     @Scheduled(cron = "0 30 17 * * ?")
     private void CXYnotice() {
-        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
+        if (!env.equals("pro")) {
             return;
         }
         Calendar today = Calendar.getInstance();
@@ -102,11 +100,10 @@ public class CommonTask {
             sendDay.add(Calendar.DATE, -1);
         }
         if (today.get(Calendar.DAY_OF_YEAR) == sendDay.get(Calendar.DAY_OF_YEAR)) {
-            String content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_WORK).append(System.lineSeparator())
-                    .append(System.lineSeparator())
-                    .append(lokTarConfig.commonCxyNoticeText).append(System.lineSeparator())
-                    .append(DateUtil.getMinuteSysDate()).toString();
-            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeCxy, lokTarConfig.qywxAgent002Id, content));
+            String content = LokTarConstant.NOTICE_TITLE_WORK + "\n\n"
+                    + LokTarPrivateConstant.CXY_NOTICE_MSG
+                    + "\n\n" + DateUtil.getMinuteSysDate();
+            qywxApi.sendTextMsg(new AgentMsgText(LokTarPrivateConstant.NOTICE_CXY, LokTarPrivateConstant.AGENT002ID, content));
         }
     }
 

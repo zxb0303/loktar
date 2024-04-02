@@ -1,11 +1,10 @@
 package com.loktar.service.transmission.impl;
 
 
-import com.loktar.conf.LokTarConfig;
 import com.loktar.domain.transmission.TrTorrent;
 import com.loktar.domain.transmission.TrTorrentTracker;
-import com.loktar.dto.transmission.TrResponse;
-import com.loktar.dto.transmission.TrResponseTorrent;
+import com.loktar.dto.transmission.TrResponseDTO;
+import com.loktar.dto.transmission.TrResponseTorrentDTO;
 import com.loktar.mapper.transmission.TrTorrentMapper;
 import com.loktar.mapper.transmission.TrTorrentTrackerMapper;
 import com.loktar.service.transmission.TransmissionService;
@@ -23,53 +22,44 @@ public class TransmissionServiceImpl implements TransmissionService {
 
     private final TrTorrentTrackerMapper trTorrentTrackerMapper;
 
-    private final TransmissionUtil transmissionUtil;
-
-    private final LokTarConfig lokTarConfig;
-
-    public TransmissionServiceImpl(TrTorrentMapper trTorrentMapper, TrTorrentTrackerMapper trTorrentTrackerMapper, TransmissionUtil transmissionUtil, LokTarConfig lokTarConfig) {
+    public TransmissionServiceImpl(TrTorrentMapper trTorrentMapper, TrTorrentTrackerMapper trTorrentTrackerMapper) {
         this.trTorrentMapper = trTorrentMapper;
         this.trTorrentTrackerMapper = trTorrentTrackerMapper;
-        this.transmissionUtil = transmissionUtil;
-        this.lokTarConfig = lokTarConfig;
     }
 
 
     @Override
-    public TrResponse getFreeSpaceByDownloadDir(String downloadDir) {
-        return transmissionUtil.getFreeSpaceByPath(downloadDir);
+    public TrResponseDTO getFreeSpaceByDownloadDir(String downloadDir) {
+        return TransmissionUtil.getFreeSpaceByPath(downloadDir);
     }
 
     @Override
-    public TrResponse refreshAllTorrents() {
-        trTorrentMapper.truncate();
-        trTorrentTrackerMapper.truncate();
-        TrResponse trResponse = transmissionUtil.getAllTorrents();
-        if (ObjectUtils.isEmpty(trResponse)) {
+    public TrResponseDTO refreshAllTorrents() {
+        TrResponseDTO trResponseDTO = TransmissionUtil.getAllTorrents();
+        if (ObjectUtils.isEmpty(trResponseDTO)) {
             return null;
         }
-        List<TrResponseTorrent> trResponseTorrents = trResponse.getArguments().getTorrents();
-        trTorrentMapper.insertBatch(trResponseTorrents);
-
-        List<TrTorrentTracker> trTorrentTrackers = new ArrayList<>();
-        for (TrResponseTorrent trResponseTorrent : trResponseTorrents) {
-            for (TrTorrentTracker trTorrentTracker : trResponseTorrent.getTrackerStats()) {
-                trTorrentTracker.setTorrentId(trResponseTorrent.getId());
+        List<TrResponseTorrentDTO> trResponseTorrentDTOs = trResponseDTO.getArguments().getTorrents();
+        for (TrResponseTorrentDTO trResponseTorrentDTO : trResponseTorrentDTOs) {
+            TrTorrent trTorrent = changeTrTorrentDomain(trResponseTorrentDTO);
+            trTorrentMapper.insertOrUpdate(trTorrent);
+            for (TrTorrentTracker trTorrentTracker : trResponseTorrentDTO.getTrackerStats()) {
+                trTorrentTracker.setTorrentId(trTorrent.getId());
+                trTorrentTracker.setId(Integer.valueOf(String.valueOf(trTorrent.getId()) + String.valueOf(trTorrentTracker.getId())));
                 trTorrentTracker.setHost(trTorrentTracker.getHost().replace("https://", "").replace("http://", "").replace(":443", "").replace(":80", ""));
-                trTorrentTrackers.add(trTorrentTracker);
+                trTorrentTrackerMapper.insertOrUpdate(trTorrentTracker);
             }
         }
-        trTorrentTrackerMapper.insertBatch(trTorrentTrackers);
-        return trResponse;
+        return trResponseDTO;
     }
 
     @Override
     public void autoRemove(Long minSizeGB, int days, String downloadDir) {
-        TrResponse trResponse = transmissionUtil.getFreeSpaceByPath(downloadDir);
-        if (ObjectUtils.isEmpty(trResponse)) {
+        TrResponseDTO trResponseDTO = TransmissionUtil.getFreeSpaceByPath(downloadDir);
+        if (ObjectUtils.isEmpty(trResponseDTO)) {
             return;
         }
-        long leftSize = trResponse.getArguments().getSizeBytes();
+        long leftSize = trResponseDTO.getArguments().getSizeBytes();
         long minSize = minSizeGB * 1024 * 1024 * 1024;
 
         if (leftSize <= minSize) {
@@ -93,7 +83,7 @@ public class TransmissionServiceImpl implements TransmissionService {
                 removeIds.add(errorTrTorrent.getId());
                 trTorrentMapper.deleteByPrimaryKey(errorTrTorrent.getId());
                 trTorrentTrackerMapper.deleteByTorrentId(errorTrTorrent.getId());
-                transmissionUtil.removeTorrents(removeIds.toArray(new Integer[removeIds.size()]), true);
+                TransmissionUtil.removeTorrents(removeIds.toArray(new Integer[removeIds.size()]), true);
             }
             if (trTorrents.size() > 1) {
                 //错误的>1个时，只删种不文件
@@ -104,7 +94,7 @@ public class TransmissionServiceImpl implements TransmissionService {
                         trTorrentTrackerMapper.deleteByTorrentId(t.getId());
                     }
                 }
-                transmissionUtil.removeTorrents(removeIds.toArray(new Integer[removeIds.size()]), false);
+                TransmissionUtil.removeTorrents(removeIds.toArray(new Integer[removeIds.size()]), false);
             }
         }
     }
@@ -131,15 +121,15 @@ public class TransmissionServiceImpl implements TransmissionService {
             }
             leftSize = leftSize + worstTorrent.getTotalSize();
         }
-        TrResponse needRemoveTrResponse = transmissionUtil.getTorrents(tempIds.toArray(new Integer[tempIds.size()]));
-        List<TrResponseTorrent> needRemoveTorrents = needRemoveTrResponse.getArguments().getTorrents();
+        TrResponseDTO needRemoveTrResponseDTO = TransmissionUtil.getTorrents(tempIds.toArray(new Integer[tempIds.size()]));
+        List<TrResponseTorrentDTO> needRemoveTorrents = needRemoveTrResponseDTO.getArguments().getTorrents();
         List<Integer> trueRemoveIds = new ArrayList<Integer>();
-        for (TrResponseTorrent needRemoveTorrent : needRemoveTorrents) {
-            if (needRemoveTorrent.getDownloadDir().equals(lokTarConfig.transmissionTempDownloadDir) && tempNames.contains(needRemoveTorrent.getName())) {
+        for (TrResponseTorrentDTO needRemoveTorrent : needRemoveTorrents) {
+            if (needRemoveTorrent.getDownloadDir().equals(TransmissionUtil.TEMP_DOWNLOAD_DIR) && tempNames.contains(needRemoveTorrent.getName())) {
                 trueRemoveIds.add(Integer.valueOf(String.valueOf(needRemoveTorrent.getId())));
             }
         }
-        transmissionUtil.removeTorrents(trueRemoveIds.toArray(new Integer[trueRemoveIds.size()]), true);
+        TransmissionUtil.removeTorrents(trueRemoveIds.toArray(new Integer[trueRemoveIds.size()]), true);
     }
 
 
@@ -155,6 +145,19 @@ public class TransmissionServiceImpl implements TransmissionService {
             needStartTrTorrent.setStatus(6);
             trTorrentMapper.updateByPrimaryKey(needStartTrTorrent);
         }
-        transmissionUtil.startTorrents(ids.toArray(new Integer[needStartTrTorrents.size()]));
+        TransmissionUtil.startTorrents(ids.toArray(new Integer[needStartTrTorrents.size()]));
+
     }
+
+    //TODO 待修改
+    private TrTorrent changeTrTorrentDomain(TrResponseTorrentDTO trResponseTorrentDTO) {
+
+
+
+//        String str = JSONObject.toJSONString(trResponseTorrentDTO);
+//        TrTorrent trTorrent = JSONObject.parseObject(str, TrTorrent.class);
+//        return trTorrent;
+        return null;
+    }
+
 }

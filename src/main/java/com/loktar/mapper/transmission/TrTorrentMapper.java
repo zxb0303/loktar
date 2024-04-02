@@ -1,8 +1,6 @@
 package com.loktar.mapper.transmission;
 
 import com.loktar.domain.transmission.TrTorrent;
-import com.loktar.dto.transmission.TrResponseTorrent;
-
 import java.util.List;
 
 public interface TrTorrentMapper {
@@ -30,5 +28,6 @@ public interface TrTorrentMapper {
 
     List<TrTorrent> getTorrentsByName(String name);
 
-    int insertBatch(List<TrResponseTorrent> trTorrents);
+    int insertOrUpdate(TrTorrent record);
+
 }

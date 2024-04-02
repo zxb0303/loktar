@@ -1,7 +1,6 @@
 package com.loktar.web.openai;
 
-import com.loktar.conf.LokTarConfig;
-import com.loktar.conf.LokTarConstant;
+import com.loktar.conf.LokTarPrivateConstant;
 import com.loktar.dto.openai.OpenAiMessage;
 import com.loktar.dto.openai.OpenAiRequest;
 import com.loktar.dto.openai.OpenAiResponse;
@@ -27,20 +26,14 @@ public class ChatGPTController {
 
     private final QywxApi qywxApi;
 
-    private final AzureUtil azureUtil;
-
-    private final ChatGPTUtil chatGPTUtil;
-
-    private final LokTarConfig lokTarConfig;
-
     @Value("${conf.voice.path}")
     private String voicePath;
 
-    public ChatGPTController(QywxApi qywxApi, AzureUtil azureUtil, ChatGPTUtil chatGPTUtil, LokTarConfig lokTarConfig) {
+    @Value("${conf.ffmpeg.path}")
+    private String ffmpegPath;
+
+    public ChatGPTController(QywxApi qywxApi) {
         this.qywxApi = qywxApi;
-        this.azureUtil = azureUtil;
-        this.chatGPTUtil = chatGPTUtil;
-        this.lokTarConfig = lokTarConfig;
     }
 
     @RequestMapping("/completions.do")
@@ -50,7 +43,7 @@ public class ChatGPTController {
             openAiRequest = ChatGPTUtil.getDefalutRequest();
         }
         openAiRequest.getMessages().add(openAiMessage);
-        OpenAiResponse openAiResponse = chatGPTUtil.completions(openAiRequest);
+        OpenAiResponse openAiResponse = ChatGPTUtil.completions(openAiRequest);
         OpenAiMessage replyMsg = openAiResponse.getChoices().get(0).getMessage();
         openAiRequest.getMessages().add(replyMsg);
         System.out.println(replyMsg.content);
@@ -60,15 +53,21 @@ public class ChatGPTController {
     @SneakyThrows
     @RequestMapping("/testVoiceAndSend.do")
     public void testVoiceAndSend() {
-        String wavFileName = UUID.randomUUID().toString() + LokTarConstant.VOICE_SUFFIX_WAV;
-        azureUtil.textToWav(voicePath, wavFileName, "你叫什么名字");
-        FFmpegUtil.convertWavToAmr(voicePath, wavFileName);
-        String filepath = voicePath + wavFileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR);
-        UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(filepath), lokTarConfig.qywxAgent003Id);
-        System.out.println(uploadMediaRsp.getMediaId());
-        qywxApi.sendVoiceMsg(new AgentMsgVoice(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent003Id, uploadMediaRsp.getMediaId()));
+        String fileName = UUID.randomUUID().toString();
+        AzureUtil.textToWav(fileName, "你叫什么名字", voicePath,null);
+        FFmpegUtil.convertWavToAmr(ffmpegPath, voicePath + fileName + AzureUtil.SUFFIX_WAV, voicePath + fileName + AzureUtil.SUFFIX_AMR);
+        UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(voicePath + fileName + AzureUtil.SUFFIX_AMR),"voice",LokTarPrivateConstant.AGENT003ID);
+        qywxApi.sendVoiceMsg(new AgentMsgVoice(LokTarPrivateConstant.NOTICE_ZXB, LokTarPrivateConstant.AGENT003ID, uploadMediaRsp.getMediaId()));
     }
 
-
+    @SneakyThrows
+    @RequestMapping("/download.do")
+    public void download() {
+        String voicePath = "F:/voice/";
+        String filename = "111";
+        String mediaId = "3zUEeZmUuc-Eno-3qO9bDgClOpEoEL2XvqTyGpPpOqmrTswb-zG3rzsUOK8IKC5by";
+        String agentId = LokTarPrivateConstant.AGENT003ID;
+        qywxApi.getMediaAndSave(voicePath, filename, AzureUtil.SUFFIX_AMR, mediaId, agentId);
+    }
 
 }

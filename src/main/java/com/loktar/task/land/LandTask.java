@@ -1,30 +1,30 @@
 package com.loktar.task.land;
 
 
-import com.loktar.conf.LokTarConfig;
-import com.loktar.conf.LokTarConstant;
 import com.loktar.service.land.LandService;
 import com.loktar.util.DateUtil;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
-@Component
+
+@Configuration
 @EnableScheduling
 public class LandTask {
     private final LandService landService;
 
-    private final LokTarConfig lokTarConfig;
+    @Value("${spring.profiles.active}")
+    private String env;
 
-    public LandTask(LandService landService, LokTarConfig lokTarConfig) {
+    public LandTask(LandService landService) {
         this.landService = landService;
-        this.lokTarConfig = lokTarConfig;
     }
 
     @Scheduled(cron = "0 5 0 * * ?")
     private void updateLandData() {
-        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
+        if (!env.equals("pro")) {
             return;
         }
         System.out.println("土拍定时器开始：" + DateUtil.getTodayToSecond());
