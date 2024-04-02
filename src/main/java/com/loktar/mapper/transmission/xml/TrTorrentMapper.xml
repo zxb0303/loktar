@@ -101,7 +101,7 @@
            added_date, activity_date, done_date
     from tr_torrent where `status` = #{status,jdbcType=INTEGER} order by added_date;
   </select>
-  <select id="getNotRegisteredErrorName" resultType="java.lang.String">
+  <select id="getErrorName" resultType="java.lang.String">
     select DISTINCT name from tr_torrent where error_string like '%not registered%';
   </select>
   <select id="getTorrentsByName" resultMap="BaseResultMap">
