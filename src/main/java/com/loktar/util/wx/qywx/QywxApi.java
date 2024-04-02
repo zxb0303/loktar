@@ -60,7 +60,7 @@ public class QywxApi {
 
 
 
-    public QywxApi(RedisUtil redisUtil, QywxMenuMapper qywxMenuMapper, com.loktar.conf.LokTarConfig lokTarConfig) {
+    public QywxApi(RedisUtil redisUtil, QywxMenuMapper qywxMenuMapper, LokTarConfig lokTarConfig) {
         this.redisUtil = redisUtil;
         this.qywxMenuMapper = qywxMenuMapper;
         this.lokTarConfig = lokTarConfig;

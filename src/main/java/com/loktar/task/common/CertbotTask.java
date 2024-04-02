@@ -1,44 +1,43 @@
 package com.loktar.task.common;
 
 
+import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
-import com.loktar.conf.LokTarPrivateConstant;
 import com.loktar.domain.common.Property;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.common.PropertyMapper;
 import com.loktar.util.DateUtil;
 import com.loktar.util.wx.qywx.QywxApi;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
-@Configuration
+@Component
 @EnableScheduling
 public class CertbotTask {
-    @Value("${spring.profiles.active}")
-    private String env;
 
     private final PropertyMapper propertyMapper;
 
     private final QywxApi qywxApi;
 
-    public CertbotTask(PropertyMapper propertyMapper, QywxApi qywxApi) {
+    private final LokTarConfig lokTarConfig;
+
+    public CertbotTask(PropertyMapper propertyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig) {
         this.propertyMapper = propertyMapper;
         this.qywxApi = qywxApi;
+        this.lokTarConfig = lokTarConfig;
     }
 
     @Scheduled(cron = "0 30 10 * * MON-FRI")
     public void certbotNotice() {
-        if (!env.equals("pro")) {
+        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
             return;
         }
         Property property = propertyMapper.selectByPrimaryKey("cert");
         String expireDateStr = property.getValue();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.DATEFORMATDAY);
         LocalDate expireDate = LocalDate.parse(expireDateStr, formatter);
         // 获取当前日期
         LocalDate today = LocalDate.now();
@@ -46,11 +45,12 @@ public class CertbotTask {
         LocalDate todayPlus25Days = today.plusDays(25);
 
         if (todayPlus25Days.isAfter(expireDate)) {
-
-            String content = LokTarConstant.NOTICE_CERT_UPDATE + "\n\n"
-                    + "请更新证书"
-                    + "\n\n" + DateUtil.getMinuteSysDate();
-            qywxApi.sendTextMsg(new AgentMsgText(LokTarPrivateConstant.NOTICE_ZXB, LokTarPrivateConstant.AGENT002ID, content));
+            String content = new StringBuilder().append(LokTarConstant.NOTICE_CERT_UPDATE).append(System.lineSeparator())
+                    .append(System.lineSeparator())
+                    .append("请更新证书").append(System.lineSeparator())
+                    .append(System.lineSeparator())
+                    .append(DateUtil.getMinuteSysDate()).toString();
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
         }
     }
 }
