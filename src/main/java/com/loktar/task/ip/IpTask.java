@@ -1,8 +1,8 @@
 package com.loktar.task.ip;
 
 
+import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
-import com.loktar.conf.LokTarPrivateConstant;
 import com.loktar.domain.common.Property;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.common.PropertyMapper;
@@ -10,41 +10,44 @@ import com.loktar.util.DateUtil;
 import com.loktar.util.IPUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@Component
 @EnableScheduling
 public class IpTask {
-    @Value("${spring.profiles.active}")
-    private String env;
 
     private final QywxApi qywxApi;
 
     private final PropertyMapper propertyMapper;
 
-    public IpTask(QywxApi qywxApi, PropertyMapper propertyMapper) {
+    private final LokTarConfig lokTarConfig;
+
+
+    public IpTask(QywxApi qywxApi, PropertyMapper propertyMapper, LokTarConfig lokTarConfig) {
         this.qywxApi = qywxApi;
         this.propertyMapper = propertyMapper;
+        this.lokTarConfig = lokTarConfig;
     }
 
     @Scheduled(cron = "0 */10 * * * ?")
     private void notice() {
-        if (!env.equals("pro")) {
+        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
             return;
         }
         System.out.println("IP检测定时器：" + DateUtil.getTodayToSecond());
         Property ipProperty = propertyMapper.selectByPrimaryKey("yht_ip");
         String ip = IPUtil.getip();
         if (!ObjectUtils.isEmpty(ip) && !ipProperty.getValue().equals(ip)) {
-            String content = LokTarConstant.NOTICE_TITLE_IP + "\n\n"
-                    + ip
-                    + "\n\n" + DateUtil.getMinuteSysDate();
+            String content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_IP).append(System.lineSeparator())
+                    .append(System.lineSeparator())
+                    .append(ip).append(System.lineSeparator())
+                    .append(System.lineSeparator())
+                    .append(DateUtil.getMinuteSysDate()).toString();
             ipProperty.setValue(ip);
             propertyMapper.updateByPrimaryKey(ipProperty);
-            qywxApi.sendTextMsg(new AgentMsgText(LokTarPrivateConstant.NOTICE_ZXB, LokTarPrivateConstant.AGENT002ID, content));
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
         }
     }
 }
