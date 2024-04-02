@@ -26,7 +26,7 @@ public interface TrTorrentMapper {
 
     List<TrTorrent> getTrTorrentsByStatus(int status);
 
-    List<String> getNotRegisteredErrorName();
+    List<String> getErrorName();
 
     List<TrTorrent> getTorrentsByName(String name);
 

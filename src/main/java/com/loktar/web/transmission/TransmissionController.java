@@ -35,7 +35,7 @@ public class TransmissionController {
 
     @RequestMapping("/testRemoveTorrents.do")
     public void testRemoveTorrents() {
-        transmissionUtil.removeTorrents(new Integer[]{2873},true);
+        transmissionUtil.removeTorrents(new Integer[]{2486},true);
     }
 
     @RequestMapping("/testGetFreeSpaceByPath.do")
@@ -57,4 +57,11 @@ public class TransmissionController {
     public void refreshAllTorrents() {
         transmissionService.refreshAllTorrents();
     }
+
+    @RequestMapping("/autoRemoveError.do")
+    public void autoRemoveError() {
+        transmissionService.autoRemoveError();
+    }
+
+
 }

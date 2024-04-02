@@ -113,7 +113,8 @@ public class QyWeixinCallbackController {
                 for (Notice n : notices) {
                     replymsg.append(n.getNoticeTitle()).append(System.lineSeparator())
                             .append(n.getNoticeContent()).append(System.lineSeparator())
-                            .append(n.getNoticeTime()).append(System.lineSeparator());
+                            .append(n.getNoticeTime()).append(System.lineSeparator())
+                            .append(System.lineSeparator());
                 }
                 break;
             case EventCommandType.SHOW_DOWNLOAD_LIST:
@@ -138,7 +139,8 @@ public class QyWeixinCallbackController {
                 } else {
                     state = "未限速";
                 }
-                replymsg.append(state).append(System.lineSeparator());
+                replymsg.append(System.lineSeparator())
+                        .append(state).append(System.lineSeparator());
                 break;
             case EventCommandType.ALT_TRANSMISSION_SPEED:
                 TrResponse trResponseSession = transmissionUtil.getSession();
@@ -176,6 +178,7 @@ public class QyWeixinCallbackController {
                 replymsg.append("不支持该命令").append(System.lineSeparator());
                 break;
         }
+        replymsg.append(DateUtil.getMinuteSysDate());
         qywxApi.sendTextMsg(new AgentMsgText(receiveEventMsg.getFromUserName(), receiveEventMsg.getAgentID(), replymsg.toString()));
 
     }
