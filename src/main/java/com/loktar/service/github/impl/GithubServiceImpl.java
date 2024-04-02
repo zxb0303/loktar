@@ -76,7 +76,7 @@ public class GithubServiceImpl implements GithubService {
         URI uri = URI.create(MessageFormat.format(URL, registory));
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(uri)
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
                 .header("authorization", lokTarConfig.githubAuthorization)

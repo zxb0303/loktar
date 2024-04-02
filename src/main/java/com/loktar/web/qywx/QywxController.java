@@ -41,7 +41,7 @@ public class QywxController {
     @RequestMapping("/download.do")
     public void download() {
         String voicePath = "F:/voice/";
-        String mediaId = "3zUEeZmUuc-Eno-3qO9bDgClOpEoEL2XvqTyGpPpOqmrTswb-zG3rzsUOK8IKC5by";
+        String mediaId = "15nIsJJ02LJ4yc67RXJdBdwoMFAaNzNty8fVfT2f9TH-LB33FEPvCEw2kYFfetpq_";
         String agentId = lokTarConfig.qywxAgent003Id;
         String filename = qywxApi.saveMedia(voicePath, mediaId, agentId);
         System.out.println(filename);
