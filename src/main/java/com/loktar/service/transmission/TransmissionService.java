@@ -10,5 +10,7 @@ public interface TransmissionService {
 
     void autoRemove(Long minSizeGG,int days,String downloadDir);
 
+    void autoRemoveError();
+
     void autoStart();
 }

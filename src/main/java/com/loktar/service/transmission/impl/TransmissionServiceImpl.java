@@ -76,15 +76,11 @@ public class TransmissionServiceImpl implements TransmissionService {
             //空间不足，删除一下老的种子
             autoRemoveSize(leftSize, minSize, minSizeGB, days, downloadDir);
         }
-        //处理错误的种子
-        adtuRemoveError();
-
-
     }
-
-    private void adtuRemoveError() {
-        List<String> errorNames = trTorrentMapper.getNotRegisteredErrorName();
-        if(errorNames.size()>0){
+    @Override
+    public void autoRemoveError() {
+        List<String> errorNames = trTorrentMapper.getErrorName();
+        if (errorNames.size() > 0) {
             System.out.println("自动删除下列错误种子：");
         }
         for (String name : errorNames) {
@@ -102,7 +98,7 @@ public class TransmissionServiceImpl implements TransmissionService {
             if (trTorrents.size() > 1) {
                 //错误的>1个时，只删种不文件
                 for (TrTorrent t : trTorrents) {
-                    if (t.getError()!=0) {
+                    if (t.getError() != 0) {
                         removeIds.add(t.getId());
                         trTorrentMapper.deleteByPrimaryKey(t.getId());
                         trTorrentTrackerMapper.deleteByTorrentId(t.getId());

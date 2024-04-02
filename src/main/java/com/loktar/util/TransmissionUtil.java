@@ -45,7 +45,7 @@ public class TransmissionUtil {
         HttpClient httpClient = HttpClient.newHttpClient();
         String requestStr = objectMapper.writeValueAsString(trRequest);
         //TODO 打印可删
-        System.out.println(requestStr);
+        //System.out.println(requestStr);
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(lokTarConfig.transmissionUrl))
                 .timeout(Duration.ofSeconds(60))
@@ -64,10 +64,10 @@ public class TransmissionUtil {
             return rpc(trRequest);
         }
         //TODO 打印可删
-        System.out.println(response.body());
+        //System.out.println(response.body());
         TrResponse trResponse = objectMapper.readValue(response.body(), TrResponse.class);
         //TODO 打印可删
-        System.out.println(trResponse.toString());
+        //System.out.println(trResponse.toString());
         return trResponse;
     }
 

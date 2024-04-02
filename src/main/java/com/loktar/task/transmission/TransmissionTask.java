@@ -30,5 +30,7 @@ public class TransmissionTask {
         transmissionService.refreshAllTorrents();
         transmissionService.autoStart();
         transmissionService.autoRemove(lokTarConfig.transmissionMinSizeGB, lokTarConfig.transmissionDays, lokTarConfig.transmissionTempDownloadDir);
+        transmissionService.autoRemoveError();
+
     }
 }
