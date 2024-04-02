@@ -21,7 +21,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,10 +32,6 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
     private final SecondHandHouseMapper secondHandHouseMapper;
 
     private final PropertyMapper propertyMapper;
-
-    private final static String URL = "https://zwfw.fgj.hangzhou.gov.cn/jjhygl/webty/WebFyAction_getGpxxSelectList.jspx";
-
-    private final static String REQUEST_STR = "gply=1&starttime={0}&endtime={1}&page={2}&xqid=0";
 
     public SecondHandHouseServiceImpl(SecondHandHouseMapper secondHandHouseMapper, PropertyMapper propertyMapper) {
         this.secondHandHouseMapper = secondHandHouseMapper;
@@ -60,7 +55,13 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
         while ((DateUtil.string2Date(date).getTime() <= DateUtil.string2Date(yestodayStr).getTime())) {
             List<SecondHandHouse> secondHandHouses = getHouseData(date, property);
             System.out.println(date + "共" + secondHandHouses.size() + "条数据待处理");
-            secondHandHouseMapper.insertBatch(secondHandHouses);
+            for (SecondHandHouse secondHandHouse : secondHandHouses) {
+                if (ObjectUtils.isEmpty(secondHandHouseMapper.selectByPrimaryKey(secondHandHouse.getId()))) {
+                    secondHandHouseMapper.insert(secondHandHouse);
+                } else {
+                    secondHandHouseMapper.updateByPrimaryKey(secondHandHouse);
+                }
+            }
             System.out.println(date + "共" + secondHandHouses.size() + "条数据处理完成");
             date = DateUtil.format(DateUtil.getNextDay(DateUtil.string2Date(date)), DateUtil.DATEFORMATDAY);
         }
@@ -81,9 +82,9 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
         while (secondHandHouses.size() < totalNum) {
             Thread.sleep(2 * 1000);
             HttpClient httpClient = HttpClient.newHttpClient();
-            String requestBody = MessageFormat.format(REQUEST_STR, date, date, String.valueOf(pageName));
+            String requestBody = "gply=1&starttime=" + date + "&endtime=" + date + "&page=" + String.valueOf(pageName) + "&xqid=0";
             HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(URL))
+                    .uri(URI.create("https://zwfw.fgj.hangzhou.gov.cn/jjhygl/webty/WebFyAction_getGpxxSelectList.jspx"))
                     .timeout(Duration.ofSeconds(20))
                     .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                     .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_FORM)

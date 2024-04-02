@@ -37,7 +37,7 @@
       #{owner,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{detailUrl,jdbcType=VARCHAR}
       )
   </insert>
-    <update id="updateByPrimaryKey" parameterType="com.loktar.domain.land.Land">
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.land.Land">
     update land
     set `date` = #{date,jdbcType=DATE},
       city = #{city,jdbcType=VARCHAR},
@@ -71,22 +71,4 @@
     delete from land
     where TO_DAYS(`date`) <![CDATA[>=]]> TO_DAYS(#{date,jdbcType=DATE});
   </delete>
-  <insert id="insertBatch">
-    insert into land (`id`, `date`, city, area,
-                      land_no, land_name, `status`,
-                      acreage, land_usage, volumetric_rate,
-                      deal_price, build_price, premium_rate,
-                      `owner`, remark, detail_url
-    )
-    values
-    <foreach collection="list" separator="," item="item">
-    (#{item.id,jdbcType=INTEGER}, #{item.date,jdbcType=DATE}, #{item.city,jdbcType=VARCHAR}, #{item.area,jdbcType=VARCHAR},
-            #{item.landNo,jdbcType=VARCHAR}, #{item.landName,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR},
-            #{item.acreage,jdbcType=REAL}, #{item.landUsage,jdbcType=VARCHAR}, #{item.volumetricRate,jdbcType=VARCHAR},
-            #{item.dealPrice,jdbcType=REAL}, #{item.buildPrice,jdbcType=REAL}, #{item.premiumRate,jdbcType=VARCHAR},
-            #{item.owner,jdbcType=VARCHAR}, #{item.remark,jdbcType=VARCHAR}, #{item.detailUrl,jdbcType=VARCHAR}
-           )
-    </foreach>
-  </insert>
-
 </mapper>
