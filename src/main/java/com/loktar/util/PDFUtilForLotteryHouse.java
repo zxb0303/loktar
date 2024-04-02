@@ -50,8 +50,12 @@ public class PDFUtilForLotteryHouse {
                 String[] strs = result.split(";");
                 if (k == 0) {
                     getTableCellsNum = getTableCells(strs);
+                    System.out.println("pdf表格列数num:" + getTableCellsNum);
+                    if(getTableCellsNum==0){
+                        System.out.println("需要手动处理");
+                        return hZLotteryPeopleDTOV2s;
+                    }
                 }
-                System.out.println("列数num:" + getTableCellsNum);
                 for (int i = 0; i < strs.length; i++) {
                     //System.out.print(strs[i] + ";");
                     if (i % getTableCellsNum == 0 && StringUtils.isNumeric(strs[i])) {
@@ -67,7 +71,12 @@ public class PDFUtilForLotteryHouse {
                         if (i + 5 < strs.length && !StringUtils.isEmpty(strs[i + 5]) && !strs[i + 5].equals("/")) {
                             hZLotteryPeopleDTOV2.setHasOtherPeople(1);
                             hZLotteryPeopleDTOV2.setOtherBuyersName(strs[i + 5]);
-                            hZLotteryPeopleDTOV2.setOtherBuyersIdnumber(strs[i + 6]);
+                            if (getTableCellsNum > 6) {
+                                hZLotteryPeopleDTOV2.setOtherBuyersIdnumber(strs[i + 6]);
+                            } else {
+                                hZLotteryPeopleDTOV2.setOtherBuyersIdnumber("");
+                            }
+
                         }
                         hZLotteryPeopleDTOV2s.add(hZLotteryPeopleDTOV2);
                     }

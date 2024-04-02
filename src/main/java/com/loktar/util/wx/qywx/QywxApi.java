@@ -215,24 +215,24 @@ public class QywxApi {
 
         HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
         // 从响应头获取文件名
-        String filename = getFileName(response);
+        String filename =DateUtil.format(new Date(), DateUtil.DATEFORMATMINUTESECONDSTR)+LokTarConstant.VOICE_SUFFIX_AMR;
         Path destination = Paths.get(filePath + filename);
         // 将响应体写入到文件中，并确保如果文件已存在则覆盖
         Files.write(destination, response.body(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         return filename;
     }
 
-    private static String getFileName(HttpResponse<?> response) {
-        return response.headers().firstValue("Content-disposition")
-                .map(header -> header.split(";"))
-                .flatMap(parts -> {
-                    for (String part : parts) {
-                        if (part.trim().startsWith("filename=")) {
-                            return Optional.of(part.split("=")[1].replaceAll("\"", ""));
-                        }
-                    }
-                    return Optional.empty();
-                }).orElse(DateUtil.DATEFORMATMINUTESECONDSTR);
-    }
+//    private static String getFileName(HttpResponse<?> response) {
+//        return response.headers().firstValue("Content-disposition")
+//                .map(header -> header.split(";"))
+//                .flatMap(parts -> {
+//                    for (String part : parts) {
+//                        if (part.trim().startsWith("filename=")) {
+//                            return Optional.of(part.split("=")[1].replaceAll("\"", ""));
+//                        }
+//                    }
+//                    return Optional.empty();
+//                }).orElse(DateUtil.DATEFORMATMINUTESECONDSTR);
+//    }
 
 }
