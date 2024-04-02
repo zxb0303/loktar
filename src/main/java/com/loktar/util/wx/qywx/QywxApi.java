@@ -94,9 +94,7 @@ public class QywxApi {
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        System.out.println(response.body());
         AccessToken accessToken = objectMapper.readValue(response.body(), AccessToken.class);
-        System.out.println(accessToken);
         if (!StringUtils.isEmpty(accessToken.getAccessToken())) {
             redisUtil.set(KEY_ACCESSTOKEN + agentId, accessToken, accessToken.getExpiresIn());
         }

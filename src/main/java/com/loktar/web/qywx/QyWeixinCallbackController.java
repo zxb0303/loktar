@@ -178,7 +178,6 @@ public class QyWeixinCallbackController {
                 replymsg.append("不支持该命令").append(System.lineSeparator());
                 break;
         }
-        replymsg.append(DateUtil.getMinuteSysDate());
         qywxApi.sendTextMsg(new AgentMsgText(receiveEventMsg.getFromUserName(), receiveEventMsg.getAgentID(), replymsg.toString()));
 
     }
