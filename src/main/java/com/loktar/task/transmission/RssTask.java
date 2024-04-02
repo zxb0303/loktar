@@ -1,33 +1,33 @@
 package com.loktar.task.transmission;
 
 
-import com.loktar.conf.LokTarConfig;
-import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.transmission.TrRss;
 import com.loktar.service.transmission.RssService;
 import com.loktar.util.DelayUtil;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.List;
-@Component
+
+@Configuration
 @EnableScheduling
 public class RssTask {
+    @Value("${spring.profiles.active}")
+    private String env;
 
     private final RssService rssService;
-    private final LokTarConfig lokTarConfig;
 
-    public RssTask(RssService rssService, LokTarConfig lokTarConfig) {
+    public RssTask(RssService rssService) {
         this.rssService = rssService;
-        this.lokTarConfig = lokTarConfig;
     }
 
 
     @Scheduled(cron = "0 */1 * * * ?")
     private void refreshAndDealTrRssTorrents() {
-        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
+        if (!env.equals("pro")) {
             return;
         }
 //        System.out.println("Scheduled:refreshAndDealTrRssTorrents"+ DateUtil.format(new Date(),DateUtil.DATEFORMATSECOND));

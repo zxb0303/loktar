@@ -27,7 +27,12 @@ public class RedisController {
     }
     @GetMapping("get")
     public void get(){
+        String str1 = redisUtil.get("1").toString();
+        System.out.println(str1);
 
+        RestInfo restInfo = (RestInfo) redisUtil.get("2");
+
+        System.out.println(restInfo.toString());
 
         Object obj = redisUtil.get("qywx_accessToken_1000002");
         System.out.println(obj.toString());

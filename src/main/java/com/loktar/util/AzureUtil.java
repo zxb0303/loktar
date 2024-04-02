@@ -1,31 +1,29 @@
 package com.loktar.util;
 
-import com.loktar.conf.LokTarConfig;
-import com.loktar.conf.LokTarConstant;
+import com.loktar.conf.LokTarPrivateConstant;
 import com.microsoft.cognitiveservices.speech.*;
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Component;
+import org.apache.commons.lang3.ObjectUtils;
 
-@Component
 public class AzureUtil {
 
     public static String VOICE_REGION = "eastasia";
+    public static String SUFFIX_WAV = ".wav";
+    public static String SUFFIX_AMR = ".amr";
     public static String LANGUAGE = "zh-CN";
-    public static String DEFAULT_VOICE_NAME = "zh-CN-XiaoyiNeural";
-    private final LokTarConfig lokTarConfig;
-
-    public AzureUtil(LokTarConfig lokTarConfig) {
-        this.lokTarConfig = lokTarConfig;
-    }
+    public static String DEFAULT_VOICE_NAME = "zh-CN-XiaochenNeural";
 
     @SneakyThrows
-    public  void textToWav(String voicePath, String filename, String text) {
+    public static void textToWav(String filename, String text, String voicePath, String voiceName) {
         // 初始化 SpeechConfig
-        SpeechConfig config = SpeechConfig.fromSubscription(lokTarConfig.azureVoiceKey, VOICE_REGION);
-        config.setSpeechSynthesisVoiceName(DEFAULT_VOICE_NAME);
+        SpeechConfig config = SpeechConfig.fromSubscription(LokTarPrivateConstant.AZURE_VOICE_KEY, VOICE_REGION);
+        if (ObjectUtils.isEmpty(voiceName)) {
+            voiceName = DEFAULT_VOICE_NAME;
+        }
+        config.setSpeechSynthesisVoiceName(voiceName);
         // 指定输出音频的配置
-        AudioConfig audioConfig = AudioConfig.fromWavFileOutput(voicePath + filename);
+        AudioConfig audioConfig = AudioConfig.fromWavFileOutput(voicePath + filename + SUFFIX_WAV);
         // 使用指定的 AudioConfig 创建语音合成器
         SpeechSynthesizer synthesizer = new SpeechSynthesizer(config, audioConfig);
         // 开始语音合成
@@ -47,12 +45,12 @@ public class AzureUtil {
     }
 
     @SneakyThrows
-    public String wavToText(String voicePath,String filename) {
+    public static String wavToText(String filename, String voicePath) {
         // Build the speech configuration using the subscription key and service region.
-        SpeechConfig config = SpeechConfig.fromSubscription(lokTarConfig.azureVoiceKey, VOICE_REGION);
+        SpeechConfig config = SpeechConfig.fromSubscription(LokTarPrivateConstant.AZURE_VOICE_KEY, VOICE_REGION);
         config.setSpeechRecognitionLanguage(LANGUAGE);
         // Specify the audio file to be recognized.
-        String audioFilePath = voicePath + filename.replace(LokTarConstant.VOICE_SUFFIX_AMR, LokTarConstant.VOICE_SUFFIX_WAV);
+        String audioFilePath = voicePath + filename + SUFFIX_WAV;
         AudioConfig audioConfig = AudioConfig.fromWavFileInput(audioFilePath);
 
         // Create a speech recognizer using the configuration and audio input.
@@ -78,9 +76,9 @@ public class AzureUtil {
 //        String voicePath = "F:/voice/";
 //        String voiceName = "zh-CN-XiaochenNeural";
 //        textToWav(filename, text, voicePath, voiceName);
-//        String filename = "test.amr";
-//        String voicePath = "F:/voice/";
-//        System.out.println(wavToText(filename,voicePath));;
+        String filename = "test";
+        String voicePath = "F:/voice/";
+        System.out.println(wavToText(filename,voicePath));;
     }
 
 }
