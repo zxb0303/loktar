@@ -15,4 +15,6 @@ public interface LotteryPeopleMapper {
     int updateByPrimaryKey(LotteryPeople row);
 
     int deleteLotteryPeopleByHouseId(String houseId);
+
+    void insertBatch(List<LotteryPeople> lotteryPeoples);
 }

@@ -1,11 +1,9 @@
 package com.loktar.web.test;
 
 import com.loktar.mapper.cxy.EmployeeMapper;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.concurrent.CompletableFuture;
+import com.loktar.learn.test.*;
 
 @RestController
 @RequestMapping("test")
@@ -13,22 +11,22 @@ public class TestController {
 
     private final EmployeeMapper employeeMapper;
 
-    public TestController(EmployeeMapper employeeMapper) {
+    private final Config config;
+
+    public TestController(EmployeeMapper employeeMapper, Config config) {
         this.employeeMapper = employeeMapper;
+        this.config = config;
     }
 
     @RequestMapping("/test.do")
-    public void test2() {
+    public void test() {
 
     }
 
 
     @RequestMapping("/test1.do")
-    public ResponseEntity<Void> test1() {
-        CompletableFuture.runAsync(() -> {
-            // 异步执行的代码
-            System.out.println("123");
-        });
-            return ResponseEntity.noContent().build();
+    public void test1() {
+        String str = config.ip;
+        System.out.println(str);
     }
 }

@@ -1,9 +1,10 @@
 package com.loktar.service.transmission.impl;
 
 
+import com.loktar.conf.LokTarConfig;
 import com.loktar.domain.transmission.TrRss;
 import com.loktar.domain.transmission.TrRssTorrent;
-import com.loktar.dto.transmission.TrResponseDTO;
+import com.loktar.dto.transmission.TrResponse;
 import com.loktar.mapper.transmission.TrRssMapper;
 import com.loktar.mapper.transmission.TrRssTorrentMapper;
 import com.loktar.service.transmission.RssService;
@@ -25,9 +26,15 @@ public class RssServiceImpl implements RssService {
 
     private final TrRssTorrentMapper trRssTorrentMapper;
 
-    public RssServiceImpl(TrRssMapper trRssMapper, TrRssTorrentMapper trRssTorrentMapper) {
+    private final TransmissionUtil transmissionUtil;
+
+    private final LokTarConfig lokTarConfig;
+
+    public RssServiceImpl(TrRssMapper trRssMapper, TrRssTorrentMapper trRssTorrentMapper, TransmissionUtil transmissionUtil, LokTarConfig lokTarConfig) {
         this.trRssMapper = trRssMapper;
         this.trRssTorrentMapper = trRssTorrentMapper;
+        this.transmissionUtil = transmissionUtil;
+        this.lokTarConfig = lokTarConfig;
     }
 
     @Override
@@ -55,8 +62,8 @@ public class RssServiceImpl implements RssService {
             if (m.matches()) {
                 String downloadUrl = trRssTorrent.getDownloadUrl();
                 DelayUtil.delaySeconds(3, 5);
-                TrResponseDTO trResponseDTO = TransmissionUtil.addTorrent(downloadUrl, TransmissionUtil.TEMP_DOWNLOAD_DIR, false);
-                if (!ObjectUtils.isEmpty(trResponseDTO) && trResponseDTO.getResult().equals("success")) {
+                TrResponse trResponse = transmissionUtil.addTorrent(downloadUrl, lokTarConfig.transmissionTempDownloadDir, false);
+                if (!ObjectUtils.isEmpty(trResponse) && trResponse.getResult().equals(TrResponse.RESULT_SUCCESS)) {
                     System.out.println("RSS自动添加-" + trRss.getHostCnName() + ":" + trRssTorrent.getTitle());
                     trRssTorrent.setStatus(1);
                 } else {

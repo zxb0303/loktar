@@ -3,8 +3,8 @@ package com.loktar.web.qywx;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
-import com.loktar.conf.LokTarPrivateConstant;
 import com.loktar.domain.common.Property;
 import com.loktar.domain.qywx.QywxChatgptMsg;
 import com.loktar.dto.openai.OpenAiMessage;
@@ -49,20 +49,24 @@ public class QyWeixinCallbackChatGPTController {
 
     private final QywxChatgptMsgMapper qywxChatgptMsgMapper;
 
+    private final AzureUtil azureUtil;
+
+    private final ChatGPTUtil chatGPTUtil;
+
+    private final LokTarConfig lokTarConfig;
+
+
     @Value("${conf.voice.path}")
     private String voicePath;
 
-    @Value("${conf.ffmpeg.path}")
-    private String ffmpegPath;
-
-    private final static String STR_RECEIVE = "_receive_";
-    private final static String STR_REPLY = "_reply_";
-
-    public QyWeixinCallbackChatGPTController(RedisUtil redisUtil, QywxApi qywxApi, PropertyMapper propertyMapper, QywxChatgptMsgMapper qywxChatgptMsgMapper) {
+    public QyWeixinCallbackChatGPTController(RedisUtil redisUtil, QywxApi qywxApi, PropertyMapper propertyMapper, QywxChatgptMsgMapper qywxChatgptMsgMapper, AzureUtil azureUtil, ChatGPTUtil chatGPTUtil, LokTarConfig lokTarConfig) {
         this.redisUtil = redisUtil;
         this.qywxApi = qywxApi;
         this.propertyMapper = propertyMapper;
         this.qywxChatgptMsgMapper = qywxChatgptMsgMapper;
+        this.azureUtil = azureUtil;
+        this.chatGPTUtil = chatGPTUtil;
+        this.lokTarConfig = lokTarConfig;
     }
 
     @PostMapping("receive.do")
@@ -70,14 +74,18 @@ public class QyWeixinCallbackChatGPTController {
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce, @RequestBody String xml) {
         CompletableFuture.runAsync(() -> {
-            asyncDealMsg(msgSignature, timestamp, nonce, xml);
+            try {
+                asyncDealMsg(msgSignature, timestamp, nonce, xml);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
         return ResponseEntity.noContent().build();
     }
 
     @SneakyThrows
-    private void asyncDealMsg(String msgSignature, String timestamp,String nonce, String xml) {
-        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(LokTarPrivateConstant.TOEKN, LokTarPrivateConstant.ENCODINGAESKEY, LokTarPrivateConstant.CORPID);
+    private void asyncDealMsg(String msgSignature, String timestamp, String nonce, String xml) {
+        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.qywxToken, lokTarConfig.qywxEncodingAESKey, lokTarConfig.qywxCorpId);
         String xmlMsg = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, xml);
         System.out.println("after decrypt msg: ");
         System.out.println(xmlMsg);
@@ -101,10 +109,9 @@ public class QyWeixinCallbackChatGPTController {
             receiveMsg = ((ReceiveTextMsg) receiveBaseMsg).getContent();
         }
         if (receiveBaseMsg instanceof ReceiveVoiceMsg) {
-            receiveFileName = receiveBaseMsg.getFromUserName() + STR_RECEIVE + DateUtil.format(new Date(), DateUtil.DATEFORMATMINUTESECONDSTR);
-            qywxApi.getMediaAndSave(voicePath, receiveFileName, AzureUtil.SUFFIX_AMR, ((ReceiveVoiceMsg) receiveBaseMsg).getMediaId(), receiveBaseMsg.getAgentID());
-            FFmpegUtil.convertAmrToWav(ffmpegPath, voicePath + receiveFileName + AzureUtil.SUFFIX_AMR, voicePath + receiveFileName + AzureUtil.SUFFIX_WAV);
-            receiveMsg = AzureUtil.wavToText(receiveFileName, voicePath);
+            String amrFilename = qywxApi.saveMedia(voicePath, ((ReceiveVoiceMsg) receiveBaseMsg).getMediaId(), receiveBaseMsg.getAgentID());
+            FFmpegUtil.convertAmrToWav(voicePath, amrFilename);
+            receiveMsg = azureUtil.wavToText(voicePath, receiveFileName);
             qywxApi.sendTextMsg(new AgentMsgText(receiveBaseMsg.getFromUserName(), receiveBaseMsg.getAgentID(), "语音识别结果：\n" + receiveMsg));
         }
         dealWitchChatGPT(receiveFileName, receiveMsg, receiveBaseMsg);
@@ -117,7 +124,6 @@ public class QyWeixinCallbackChatGPTController {
         }
         Property chatgptModelProperty = propertyMapper.selectByPrimaryKey("chatgpt_model");
         Property chatgptMaxTokensProperty = propertyMapper.selectByPrimaryKey("chatgpt_maxtoken");
-        Property azureVoiceNameProperty = propertyMapper.selectByPrimaryKey("azure_voice_name");
 
         //记录收到的消息
         QywxChatgptMsg receiveQywxChatgptMsg = new QywxChatgptMsg();
@@ -145,7 +151,7 @@ public class QyWeixinCallbackChatGPTController {
         }
         OpenAiMessage openAiMessage = new OpenAiMessage(ChatGPTUtil.ROLE_USER, receiveMsg);
         openAiRequest.getMessages().add(openAiMessage);
-        OpenAiResponse openAiResponse = ChatGPTUtil.completions(openAiRequest);
+        OpenAiResponse openAiResponse = chatGPTUtil.completions(openAiRequest);
 
         if (ObjectUtils.isEmpty(openAiResponse)) {
             qywxApi.sendTextMsg(new AgentMsgText(receiveBaseMsg.getFromUserName(), receiveBaseMsg.getAgentID(), "token已达上限，请重置会话"));
@@ -164,14 +170,13 @@ public class QyWeixinCallbackChatGPTController {
         }
 
         Date date = new Date();
-        String replyFileNameBase = receiveBaseMsg.getFromUserName() + STR_REPLY + DateUtil.format(date, DateUtil.DATEFORMATMINUTESECONDSTR);
-        String voiceName = azureVoiceNameProperty.getValue();
+        String replyFileNameBase = DateUtil.format(date, DateUtil.DATEFORMATMINUTESECONDSTR);
         for (int i = 0; i < replyContents.size(); i++) {
             String reply = replyContents.get(i);
-            String replyFileName = replyFileNameBase + "_" + (i + 1);
-            AzureUtil.textToWav(replyFileName, reply, voicePath, voiceName);
-            FFmpegUtil.convertWavToAmr(ffmpegPath, voicePath + replyFileName + AzureUtil.SUFFIX_WAV, voicePath + replyFileName + AzureUtil.SUFFIX_AMR);
-            UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(voicePath + replyFileName + AzureUtil.SUFFIX_AMR), "voice", receiveBaseMsg.getAgentID());
+            String wavFileName = replyFileNameBase + "_" + (i + 1) + LokTarConstant.VOICE_SUFFIX_WAV;
+            azureUtil.textToWav(voicePath,wavFileName, reply);
+            FFmpegUtil.convertWavToAmr(voicePath, wavFileName);
+            UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(voicePath + wavFileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR)), receiveBaseMsg.getAgentID());
             qywxApi.sendVoiceMsg(new AgentMsgVoice(receiveBaseMsg.getFromUserName(), receiveBaseMsg.getAgentID(), uploadMediaRsp.getMediaId()));
         }
 
@@ -186,53 +191,33 @@ public class QyWeixinCallbackChatGPTController {
         replyQywxChatgptMsg.setTotaltokens(openAiResponse.getUsage().getTotalTokens());
         replyQywxChatgptMsg.setCreateTime(new Date());
         qywxChatgptMsgMapper.insert(replyQywxChatgptMsg);
-
     }
-
 
     public static List<String> splitTextBySentence(String text) {
         int maxLength = 280;
         List<String> result = new ArrayList<>();
         StringBuilder currentChunk = new StringBuilder();
-        // 正则表达式匹配任何中文句号、感叹号或问号，以及它们的转义序列
-        String[] sentences = text.split("(。|！|？|\\\\n)");
+        // 使用正向预查保留分隔符
+        String[] sentences = text.split("(?<=。|！|？|\n)");
 
         for (String sentence : sentences) {
-            // 检查句子后面跟着的是什么标点符号，需要考虑可能没有标点符号的情况
-            int endPosition = text.indexOf(sentence + "\\n") + sentence.length();
-            String punctuation = endPosition < text.length() ? text.substring(endPosition, endPosition + 1) : "";
-            // 加上相应的标点符号
-            String withPunctuation = sentence + (punctuation.equals("\\") ? "\\n" : punctuation);
-
-            if (currentChunk.length() + withPunctuation.length() <= maxLength) {
-                currentChunk.append(withPunctuation);
+            if (currentChunk.length() + sentence.length() <= maxLength) {
+                currentChunk.append(sentence);
             } else {
-                // 如果当前句子本身就超过了maxLength，需要特殊处理
-                if (withPunctuation.length() > maxLength) {
-                    // 如果当前chunk不为空，先添加进结果
-                    if (currentChunk.length() > 0) {
-                        result.add(currentChunk.toString());
-                        currentChunk = new StringBuilder();
-                    }
-                    // 将长句子拆分为小于maxLength的部分
-                    while (withPunctuation.length() > maxLength) {
-                        String part = withPunctuation.substring(0, maxLength);
-                        result.add(part);
-                        withPunctuation = withPunctuation.substring(maxLength);
-                    }
-                    // 将剩余部分作为新的开始
-                    currentChunk.append(withPunctuation);
-                } else {
+                if (currentChunk.length() > 0) {
                     result.add(currentChunk.toString());
-                    currentChunk = new StringBuilder(withPunctuation);
+                    currentChunk = new StringBuilder();
                 }
+                // 处理单个句子长度超过最大长度的情况
+                while (sentence.length() > maxLength) {
+                    String part = sentence.substring(0, maxLength);
+                    result.add(part);
+                    sentence = sentence.substring(maxLength);
+                }
+                currentChunk.append(sentence);
             }
-
-            // 移动text中的位置到下一句，考虑到可能的转义序列
-            text = text.substring(Math.min(text.length(), endPosition + (punctuation.equals("\\") ? 2 : 1)));
         }
 
-        // 不要忘记添加最后一个块（如果有的话）
         if (currentChunk.length() > 0) {
             result.add(currentChunk.toString());
         }
@@ -255,7 +240,7 @@ public class QyWeixinCallbackChatGPTController {
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp,
             @RequestParam("nonce") String nonce, @RequestParam("echostr") String echostr) {
-        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(LokTarPrivateConstant.TOEKN, LokTarPrivateConstant.ENCODINGAESKEY, LokTarPrivateConstant.CORPID);
+        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.qywxToken, lokTarConfig.qywxEncodingAESKey, lokTarConfig.qywxCorpId);
         String sEchoStr = wxcpt.VerifyURL(msgSignature, timestamp,
                 nonce, echostr);
         if (sEchoStr != null) {

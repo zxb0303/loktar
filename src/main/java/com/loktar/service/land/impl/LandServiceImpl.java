@@ -1,6 +1,8 @@
 package com.loktar.service.land.impl;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.land.Land;
@@ -25,18 +27,19 @@ import java.util.*;
 @Service
 public class LandServiceImpl implements LandService {
 
-
     private final LandMapper landMapper;
 
     private static Map<String, String> STATUS_MAP = new HashMap<String, String>();
 
     private final static String URL_DETAIL = "http://land.zzhz.zjol.com.cn/land/{0}.html";
 
-    private final static String URK_LIST= "http://land.zzhz.zjol.com.cn/lands_data_list?year={0}";
+    private final static String URK_LIST = "http://land.zzhz.zjol.com.cn/lands_data_list?year={0}";
 
+    private final static ObjectMapper objectMapper = new ObjectMapper();
 
     public LandServiceImpl(LandMapper landMapper) {
         this.landMapper = landMapper;
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
         STATUS_MAP.put("39", "已成交");
         STATUS_MAP.put("40", "未成交");
         STATUS_MAP.put("41", "流拍");
@@ -50,13 +53,7 @@ public class LandServiceImpl implements LandService {
         int num = landMapper.deleteByDate(DateUtil.getFirstDayOfYear(new Date()));
         System.out.println(year + "年土拍数据开始删除，共" + num + "条");
         List<Land> lands = getData(year);
-        for (Land land : lands) {
-            Land exist = landMapper.selectByPrimaryKey(land.getId());
-            if (exist != null) {
-                land.setId(land.getId() * -1);
-            }
-            landMapper.insert(land);
-        }
+        landMapper.insertBatch(lands);
         System.out.println(year + "年土拍数据更新完成，共" + lands.size() + "条");
     }
 
@@ -72,7 +69,7 @@ public class LandServiceImpl implements LandService {
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        LandResultDTO landResultDTO = new ObjectMapper().readValue(response.body(), LandResultDTO.class);
+        LandResultDTO landResultDTO = objectMapper.readValue(response.body(), LandResultDTO.class);
         for (LandDTO landDTO : landResultDTO.getData()) {
             Land land = changeLandDTO(landDTO);
             lands.add(land);

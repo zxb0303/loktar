@@ -26,7 +26,7 @@
       #{hasOtherPeople,jdbcType=INTEGER}, #{lotteryRank,jdbcType=INTEGER}, #{recordNum,jdbcType=LONGVARCHAR}
       )
   </insert>
-  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.lottery.LotteryPeople">
+    <update id="updateByPrimaryKey" parameterType="com.loktar.domain.lottery.LotteryPeople">
     update lottery_people
     set serial_num = #{serialNum,jdbcType=VARCHAR},
       house_id = #{houseId,jdbcType=VARCHAR},
@@ -53,4 +53,16 @@
     delete b from lottery_people b
         left join lottery_house c on b.house_id = c.house_id where c.house_id =#{houseId,jdbcType=VARCHAR};
   </delete>
+  <insert id="insertBatch">
+    insert into lottery_people (people_id, serial_num, house_id,
+                                `name`, identity_num, family_type,
+                                has_other_people, lottery_rank, record_num)
+    values
+    <foreach collection="list" separator="," item="item">
+    (#{item.peopleId,jdbcType=VARCHAR}, #{item.serialNum,jdbcType=VARCHAR}, #{item.houseId,jdbcType=VARCHAR},
+            #{item.name,jdbcType=VARCHAR}, #{item.identityNum,jdbcType=VARCHAR}, #{item.familyType,jdbcType=INTEGER},
+            #{item.hasOtherPeople,jdbcType=INTEGER}, #{item.lotteryRank,jdbcType=INTEGER}, #{item.recordNum,jdbcType=LONGVARCHAR}
+           )
+    </foreach>
+  </insert>
 </mapper>

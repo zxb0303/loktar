@@ -44,24 +44,17 @@
   <update id="truncate">
     truncate table tr_torrent_tracker;
   </update>
-  <insert id="insertOrUpdate" parameterType="com.loktar.domain.transmission.TrTorrentTracker">
-    insert into tr_torrent_tracker (id, torrent_id, `host`,
-                                    seeder_count, leecher_count, announce_state,
-                                    announce)
-    values (#{id,jdbcType=INTEGER}, #{torrentId,jdbcType=INTEGER}, #{host,jdbcType=VARCHAR},
-            #{seederCount,jdbcType=INTEGER}, #{leecherCount,jdbcType=INTEGER}, #{announceState,jdbcType=INTEGER},
-            #{announce,jdbcType=VARCHAR})
-      ON DUPLICATE KEY UPDATE
-                         torrent_id = #{torrentId,jdbcType=INTEGER},
-                         `host` = #{host,jdbcType=VARCHAR},
-                         seeder_count = #{seederCount,jdbcType=INTEGER},
-                         leecher_count = #{leecherCount,jdbcType=INTEGER},
-                         announce_state = #{announceState,jdbcType=INTEGER},
-                         announce = #{announce,jdbcType=VARCHAR}
-  </insert>
   <delete id="deleteByTorrentId" parameterType="java.lang.Integer">
     delete from tr_torrent_tracker
     where torrent_id = #{torrentId,jdbcType=INTEGER}
-
   </delete>
+  <insert id="insertBatch">
+    insert into tr_torrent_tracker (`id`, torrent_id, `host`, seeder_count, leecher_count, announce_state, announce)
+    values
+    <foreach collection="list" separator="," item="item">
+        (#{item.id,jdbcType=INTEGER}, #{item.torrentId,jdbcType=INTEGER}, #{item.host,jdbcType=VARCHAR}, #{item.seederCount,jdbcType=INTEGER},
+            #{item.leecherCount,jdbcType=INTEGER}, #{item.announceState,jdbcType=INTEGER}, #{item.announce,jdbcType=VARCHAR}
+           )
+    </foreach>
+  </insert>
 </mapper>
