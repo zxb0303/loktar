@@ -24,8 +24,10 @@ public class AzureUtil {
         // 初始化 SpeechConfig
         SpeechConfig config = SpeechConfig.fromSubscription(lokTarConfig.azureVoiceKey, VOICE_REGION);
         config.setSpeechSynthesisVoiceName(DEFAULT_VOICE_NAME);
+        String audioFilePath = voicePath + filename;
+        //System.out.println("textToWav audioFilePath:"+audioFilePath);
         // 指定输出音频的配置
-        AudioConfig audioConfig = AudioConfig.fromWavFileOutput(voicePath + filename);
+        AudioConfig audioConfig = AudioConfig.fromWavFileOutput(audioFilePath);
         // 使用指定的 AudioConfig 创建语音合成器
         SpeechSynthesizer synthesizer = new SpeechSynthesizer(config, audioConfig);
         // 开始语音合成
@@ -53,6 +55,7 @@ public class AzureUtil {
         config.setSpeechRecognitionLanguage(LANGUAGE);
         // Specify the audio file to be recognized.
         String audioFilePath = voicePath + filename.replace(LokTarConstant.VOICE_SUFFIX_AMR, LokTarConstant.VOICE_SUFFIX_WAV);
+        //System.out.println("wavToText audioFilePath:"+audioFilePath);
         AudioConfig audioConfig = AudioConfig.fromWavFileInput(audioFilePath);
 
         // Create a speech recognizer using the configuration and audio input.
