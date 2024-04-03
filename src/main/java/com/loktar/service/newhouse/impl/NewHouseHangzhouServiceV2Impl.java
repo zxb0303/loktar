@@ -22,6 +22,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.zip.GZIPInputStream;
 
 @Service
 public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service {
@@ -52,6 +54,8 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
     public final static String URL_PRESELL = "https://www.tmsf.com/newhouse/property_{0}_{1}_price.htm";
     public final static String URL_PRESELL_DETAIL = "https://www.tmsf.com/newhouse/NewPropertyHz_createPresellInfo.jspx?presellid={0}&sid={1}&propertyid={2}";
     public final static String URL_PRICE = "https://www.tmsf.com/newhouse/property_{0}_{1}_price.htm?presellid={2}&page={3}";
+    public final static String URL_HOUSE_INFO_UPGRADE = "https://www.tmsf.com/newhouse/property_{0}_{1}_infoUpgrade.htm";
+
 
     //TODO 加了图形验证，待调整
     public NewHouseHangzhouServiceV2Impl(NewHouseHangzhouV2Mapper newHouseHangzhouV2Mapper, PropertyMapper propertyMapper, NewHouseHangzhouPresellMapper newHouseHangzhouPresellMapper, NewHouseHangzhouDetailMapper newHouseHangzhouDetailMapper) {
@@ -83,18 +87,33 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
         int page = 1;
         int maxPage = 1;
         while (page <= maxPage) {
-            DelayUtil.delaySeconds(1,3);
+            DelayUtil.delaySeconds(1, 3);
             HttpClient httpClient = HttpClient.newHttpClient();
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(MessageFormat.format(URL_PRICE, newHouseHangzhouV2.getAreaCode(), newHouseHangzhouV2.getHouseId(), newHouseHangzhouPresell.getPresellId(), String.valueOf(page))))
                     .timeout(Duration.ofSeconds(10))
                     .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                     .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_HTML)
+                    .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
+                    .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
+                    .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
+                    .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_HTML)
+                    .header(LokTarConstant.HTTP_HEADER_REFERER, MessageFormat.format(URL_HOUSE_INFO_UPGRADE, newHouseHangzhouV2.getAreaCode(), newHouseHangzhouV2.getHouseId()))
                     .header("Cookie", property.getValue())
                     .GET()
                     .build();
-            HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            Document document = Jsoup.parse(response.body());
+            HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+            byte[] responseBody = response.body();
+            String contentEncoding = response.headers().firstValue("Content-Encoding").orElse("");
+            if ("gzip".equalsIgnoreCase(contentEncoding)) {
+                try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(responseBody))) {
+                    responseBody = gzipInputStream.readAllBytes(); // 解压缩后的数据
+                }
+            }
+            // 将解压缩后的数据转换为字符串
+            String responseString = new String(responseBody);
+            System.out.println(responseString);
+            Document document = Jsoup.parse(responseString);
             if (page == 1) {
                 Element pageDiv = document.selectFirst("[class=spagenext]");
                 String str = pageDiv.selectFirst("span").html();
@@ -137,27 +156,39 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
                 page = page - 1;
             }
         }
-        for (NewHouseHangzhouDetail newHouseHangzhouDetail : newHouseHangzhouDetails) {
-            newHouseHangzhouDetailMapper.insert(newHouseHangzhouDetail);
-        }
+        newHouseHangzhouDetailMapper.insertBatch(newHouseHangzhouDetails);
         newHouseHangzhouPresell.setUpdateStatus(1);
         newHouseHangzhouPresellMapper.updateByPrimaryKey(newHouseHangzhouPresell);
     }
 
     @SneakyThrows
     private void getPresell(NewHouseHangzhouV2 newHouseHangzhouV2) {
-        DelayUtil.delaySeconds(1,3);
+        DelayUtil.delaySeconds(1, 3);
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(URL_PRESELL, newHouseHangzhouV2.getAreaCode(), newHouseHangzhouV2.getHouseId())))
                 .timeout(Duration.ofSeconds(10))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_HTML)
+                .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
+                .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
+                .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
+                .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_HTML)
+                .header(LokTarConstant.HTTP_HEADER_REFERER, MessageFormat.format(URL_HOUSE_INFO_UPGRADE, newHouseHangzhouV2.getAreaCode(), newHouseHangzhouV2.getHouseId()))
                 .header("Cookie", property.getValue())
                 .GET()
                 .build();
-        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        Document document = Jsoup.parse(response.body());
+        HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+        byte[] responseBody = response.body();
+        String contentEncoding = response.headers().firstValue("Content-Encoding").orElse("");
+        if ("gzip".equalsIgnoreCase(contentEncoding)) {
+            try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(responseBody))) {
+                responseBody = gzipInputStream.readAllBytes(); // 解压缩后的数据
+            }
+        }
+        // 将解压缩后的数据转换为字符串
+        String responseString = new String(responseBody);
+        Document document = Jsoup.parse(responseString);
         List<Element> elements = document.getElementById("presell_dd").select("a");
         for (Element e : elements) {
             if (e.html().equals("全部")) {
@@ -179,20 +210,31 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
     }
 
     private NewHouseHangzhouPresell getPresellDetail(NewHouseHangzhouV2 newHouseHangzhouV2, NewHouseHangzhouPresell newHouseHangzhouPresell) throws Exception {
-        DelayUtil.delaySeconds(1,3);
+        DelayUtil.delaySeconds(1, 3);
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(URL_PRESELL_DETAIL, newHouseHangzhouPresell.getPresellId(), newHouseHangzhouV2.getAreaCode(), newHouseHangzhouV2.getHouseId())))
                 .timeout(Duration.ofSeconds(10))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
-                .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
+                .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_HTML)
+                .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
+                .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
+                .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
+                .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_HTML)
                 .header("Cookie", property.getValue())
                 .GET()
                 .build();
-        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        //TODO 打印
-        System.out.println(response.body());
-        NewHouseHangzhouPresellResultDTO newHouseHangzhouPresellResultDTO = objectMapper.readValue(response.body(), NewHouseHangzhouPresellResultDTO.class);
+        HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+        byte[] responseBody = response.body();
+        String contentEncoding = response.headers().firstValue("Content-Encoding").orElse("");
+        if ("gzip".equalsIgnoreCase(contentEncoding)) {
+            try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(responseBody))) {
+                responseBody = gzipInputStream.readAllBytes(); // 解压缩后的数据
+            }
+        }
+        // 将解压缩后的数据转换为字符串
+        String responseString = new String(responseBody);
+        NewHouseHangzhouPresellResultDTO newHouseHangzhouPresellResultDTO = objectMapper.readValue(responseString, NewHouseHangzhouPresellResultDTO.class);
         if (ObjectUtils.isEmpty(newHouseHangzhouV2.getNameSpread()) && !ObjectUtils.isEmpty(newHouseHangzhouPresellResultDTO.getPre())) {
             newHouseHangzhouV2.setNameSpread(newHouseHangzhouPresellResultDTO.getPre().getPropertyname());
             newHouseHangzhouV2.setArea(newHouseHangzhouPresellResultDTO.getPre().getDistrictname());
@@ -216,18 +258,31 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
     @SneakyThrows
     private NewHouseHangzhouV2 getHouse(String areaCode, String houseId) {
         NewHouseHangzhouV2 newHouseHangzhouV2 = new NewHouseHangzhouV2();
-        DelayUtil.delaySeconds(1,3);
+        DelayUtil.delaySeconds(1, 3);
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(URL_HOUSE_INFO, areaCode, houseId)))
                 .timeout(Duration.ofSeconds(10))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_HTML)
+                .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
+                .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
+                .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
+                .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_HTML)
                 .header("Cookie", property.getValue())
                 .GET()
                 .build();
-        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        Document document = Jsoup.parse(response.body());
+        HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+        byte[] responseBody = response.body();
+        String contentEncoding = response.headers().firstValue("Content-Encoding").orElse("");
+        if ("gzip".equalsIgnoreCase(contentEncoding)) {
+            try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(responseBody))) {
+                responseBody = gzipInputStream.readAllBytes(); // 解压缩后的数据
+            }
+        }
+        // 将解压缩后的数据转换为字符串
+        String responseString = new String(responseBody);
+        Document document = Jsoup.parse(responseString);
         Element nameDiv = document.selectFirst("[class=house_title_name]");
         List<Element> divs = document.select("[class=house_essential_list_mian]");
         Element typeDiv = divs.get(2).selectFirst("[class=house_essential_list_right]");

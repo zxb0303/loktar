@@ -60,7 +60,9 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
         while ((DateUtil.string2Date(date).getTime() <= DateUtil.string2Date(yestodayStr).getTime())) {
             List<SecondHandHouse> secondHandHouses = getHouseData(date, property);
             System.out.println(date + "共" + secondHandHouses.size() + "条数据待处理");
-            secondHandHouseMapper.insertBatch(secondHandHouses);
+            if (secondHandHouses.size() > 0) {
+                secondHandHouseMapper.insertBatch(secondHandHouses);
+            }
             System.out.println(date + "共" + secondHandHouses.size() + "条数据处理完成");
             date = DateUtil.format(DateUtil.getNextDay(DateUtil.string2Date(date)), DateUtil.DATEFORMATDAY);
         }
@@ -79,12 +81,12 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
         int totalNum = 1;
         int pageName = 1;
         while (secondHandHouses.size() < totalNum) {
-            Thread.sleep(2 * 1000);
+            Thread.sleep(500);
             HttpClient httpClient = HttpClient.newHttpClient();
             String requestBody = MessageFormat.format(REQUEST_STR, date, date, String.valueOf(pageName));
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(URL))
-                    .timeout(Duration.ofSeconds(20))
+                    .timeout(Duration.ofSeconds(30))
                     .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                     .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_FORM)
                     .header("Cookie", property.getValue())
@@ -97,8 +99,7 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
                 SecondHandHouseResultDTO secondHandHouseResultDTO = objectMapper.readValue(response.body(), SecondHandHouseResultDTO.class);
                 if (secondHandHouseResultDTO.getList() == null) {
                     System.out.println("cookie失效");
-                    secondHandHouses = new ArrayList<>();
-                    return secondHandHouses;
+                    throw new Exception("cookie失效");
                 }
                 List<SecondHandHouseDTO> secondHandHouseDTOS = secondHandHouseResultDTO.getList();
                 for (SecondHandHouseDTO secondHandHouseDTO : secondHandHouseDTOS) {

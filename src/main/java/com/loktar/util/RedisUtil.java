@@ -377,11 +377,11 @@ public class RedisUtil {
      * @param values 值 可以是多个
      * @return 成功个数
      */
-    public long sSetAndTime(String key, long time, TimeUnit timeUnit, Object... values) {
+    public long sSetAndTime(String key, long time, Object... values) {
         try {
             Long count = redisTemplate.opsForSet().add(key, values);
             if (time > 0) {
-                expire(key, time, timeUnit);
+                expire(key, time, TimeUnit.SECONDS);
             }
             return count;
         } catch (Exception e) {
