@@ -2,9 +2,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-src/main/java/com/loktar/conf/LokTarPrivateConstant.java
+src/main/java/com/loktar/web/icbc/ICBCRefund.java
 src/main/resources/application-dev.yml
-src/main/resources/application-pro.yml
 src/main/resources/mybatis-generator.properties
 ### STS ###
 .apt_generated

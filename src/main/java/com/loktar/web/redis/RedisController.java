@@ -17,7 +17,7 @@ public class RedisController {
     }
 
 
-    @GetMapping("save")
+    @GetMapping("save.do")
     public void save(){
         redisUtil.set("1","222");
         RestInfo restInfo = new RestInfo();
@@ -25,12 +25,24 @@ public class RedisController {
         restInfo.setName("zhangsan");
         redisUtil.set("2",restInfo);
     }
-    @GetMapping("get")
+    @GetMapping("get.do")
     public void get(){
-
-
         Object obj = redisUtil.get("qywx_accessToken_1000002");
         System.out.println(obj.toString());
+    }
+
+    @GetMapping("set1.do")
+    public void set1(){
+        redisUtil.sSetAndTime("111",10,"111");
+    }
+
+    @GetMapping("set2.do")
+    public void set2(){
+        redisUtil.sSetAndTime("111",100,"222");
+    }
+    @GetMapping("getSet.do")
+    public void getSet(){
+        System.out.println(redisUtil.sGetSetSize("111"));
     }
 
 

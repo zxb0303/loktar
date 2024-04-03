@@ -19,4 +19,6 @@ public interface NewHouseHangzhouDetailMapper {
     int selectCountByHouseId(String houseId);
 
     int getAvgPrice(String houseId);
+
+    void insertBatch(List<NewHouseHangzhouDetail> newHouseHangzhouDetails);
 }

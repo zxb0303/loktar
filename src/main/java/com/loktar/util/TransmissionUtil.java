@@ -44,7 +44,7 @@ public class TransmissionUtil {
         }
         HttpClient httpClient = HttpClient.newHttpClient();
         String requestStr = objectMapper.writeValueAsString(trRequest);
-        //TODO 打印可删
+        //TODO 打印
         //System.out.println(requestStr);
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(lokTarConfig.transmissionUrl))
@@ -63,10 +63,10 @@ public class TransmissionUtil {
             redisUtil.set(TRANSMISSION_SESSION_ID, sessionId, TRANSMISSION_SESSION_ID_EXPIRE);
             return rpc(trRequest);
         }
-        //TODO 打印可删
+        //TODO 打印
         //System.out.println(response.body());
         TrResponse trResponse = objectMapper.readValue(response.body(), TrResponse.class);
-        //TODO 打印可删
+        //TODO 打印
         //System.out.println(trResponse.toString());
         return trResponse;
     }

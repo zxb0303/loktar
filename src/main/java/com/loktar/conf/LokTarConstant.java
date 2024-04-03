@@ -6,16 +6,22 @@ public class LokTarConstant {
     public static final String HTTP_HEADER_ACCEPT_NAME = "Accept";
     public static final String HTTP_HEADER_ACCEPT_VALUE_JSON = "application/json";
     public static final String HTTP_HEADER_ACCEPT_VALUE_HTML = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
-
     public static final String HTTP_HEADER_CONTENT_TYPE_NAME = "Content-type";
     public static final String HTTP_HEADER_CONTENT_TYPE_VALUE_JSON = "application/json; charset=utf-8";
     public static final String HTTP_HEADER_CONTENT_TYPE_VALUE_FORM = "application/x-www-form-urlencoded; charset=UTF-8";
+    public static final String HTTP_HEADER_CONTENT_TYPE_VALUE_HTML = "text/html; charset=UTF-8";
     public static final String HTTP_HEADER_CONTENT_TYPE_VALUE_MULTIPART = "multipart/form-data; boundary=";
     public static final String HTTP_HEADER_CONTENT_TYPE_VALUE_MULTIPART_PREFIX = "--------------------------";
     public static final String HTTP_HEADER_ACCEPT_LANGUAGE_NAME = "Accept-Language";
     public static final String HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN = "zh-CN,zh;q=0.9,en;q=0.8";
+    public static final String HTTP_HEADER_ACCEPT_ENCODING_NAME = "Accept-Encoding";
+    public static final String HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP = "gzip, deflate, br, zstd";
+    public static final String HTTP_HEADER_REFERER = "Referer";
+
 
     public static final String REDIS_KEY_PREFIX_OPENAI_REQUEST = "openai_request_";
+    public static final String REDIS_KEY_JELLYFIN_PLAYING_SET = "jellyfin_playing_set";
+
 
     public final static String NOTICE_TITLE_GITHUB = "GitHub项目更新通知";
     public final static String NOTICE_TITLE_LOTTERY = "杭州新房摇号通知";

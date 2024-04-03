@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 @RestController
 @RequestMapping("jellyfin")
@@ -25,15 +25,14 @@ public class JellyfinWebhookController {
     private final TransmissionUtil transmissionUtil;
     private final JellyfinUtil jellyfinUtil;
     private final LokTarConfig lokTarConfig;
+    private final RedisUtil redisUtil;
 
-    //TODO Set改redis 代码优化
-    private Set<String> userPlayingSet = new HashSet<>();
-
-    public JellyfinWebhookController(QywxApi qywxApi, TransmissionUtil transmissionUtil, JellyfinUtil jellyfinUtil, LokTarConfig lokTarConfig) {
+    public JellyfinWebhookController(QywxApi qywxApi, TransmissionUtil transmissionUtil, JellyfinUtil jellyfinUtil, LokTarConfig lokTarConfig, RedisUtil redisUtil) {
         this.qywxApi = qywxApi;
         this.transmissionUtil = transmissionUtil;
         this.jellyfinUtil = jellyfinUtil;
         this.lokTarConfig = lokTarConfig;
+        this.redisUtil = redisUtil;
     }
 
     @RequestMapping("/webhook.do")
@@ -70,9 +69,12 @@ public class JellyfinWebhookController {
         String eventType = notification.getNotificationType().equals("PlaybackStart") ? LokTarConstant.NOTICE_JELLYFIN_START : LokTarConstant.NOTICE_JELLYFIN_STOP;
 
         if (notification.getNotificationType().equals("PlaybackStart")) {
-            userPlayingSet.add(notification.getNotificationUsername());
+            long expireTime = calculateSecondsDifference(notification);
+            long existExpireTime = redisUtil.getExpire(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET);
+            expireTime = expireTime > existExpireTime ? expireTime : existExpireTime;
+            redisUtil.sSetAndTime(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET, expireTime, notification.getNotificationUsername());
         } else {
-            userPlayingSet.remove(notification.getNotificationUsername());
+            redisUtil.setRemove(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET, notification.getNotificationUsername());
         }
 
         contentBuilder.append(eventType).append(System.lineSeparator())
@@ -104,7 +106,7 @@ public class JellyfinWebhookController {
                 transmissionUtil.altSpeedEnabled(true);
                 content = "Transmission已自动开启限速";
             }
-            if ("PlaybackStop".equals(notification.getNotificationType()) && userPlayingSet.isEmpty() && trResponseSession.getArguments().getAltSpeedEnabled()) {
+            if ("PlaybackStop".equals(notification.getNotificationType()) && redisUtil.sGetSetSize(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET) == 0 && trResponseSession.getArguments().getAltSpeedEnabled()) {
                 transmissionUtil.altSpeedEnabled(false);
                 content = "Transmission已自动关闭限速";
             }
@@ -120,7 +122,15 @@ public class JellyfinWebhookController {
         }
     }
 
-    private boolean isLocalNetwork(String remoteEndPoint) {
+    private static long calculateSecondsDifference(Notification notification) {
+        // 将字符串解析为LocalTime对象
+        LocalTime startTime = LocalTime.parse(notification.getPlaybackPosition());
+        LocalTime endTime = LocalTime.parse(notification.getRunTime());
+        // 计算两个时间之间的差异，以秒为单位
+        return ChronoUnit.SECONDS.between(startTime, endTime);
+    }
+
+    private static boolean isLocalNetwork(String remoteEndPoint) {
         try {
             String ipAddress = remoteEndPoint.split(":")[0]; // 假设remoteEndPoint的格式为IP:PORT
             InetAddress address = InetAddress.getByName(ipAddress);
