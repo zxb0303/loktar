@@ -26,7 +26,7 @@ public class AttendanceMain {
     // TODO 需要预处理daily表中是否都是正常班和正常晚班
     // TODO 需要预处理daily表中日期格式带不带-
     public static String MONTH = "202403";
-    public static String MAX_DAY = "07";
+    public static String MAX_DAY = "31";
 
     // TODO  30天的请假数据是从85列开始，31天的请假数据是从86列开始
     public static int columns = 86;
@@ -289,9 +289,27 @@ public class AttendanceMain {
                 }
             }
 
-            //调休规则
+            //调休规则 原规则
             //单个员工当月 正常晚班的日子+正常班且是周六（排除法定补班日）的考勤上班打卡早于9点30分、无早退、无忘记打卡、无请假 可调休
-            if (classCell.getStringCellValue().contains("正常晚班") || (classCell.getStringCellValue().contains("正常班") && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) && !Arrays.asList(SPECIALWORKDAYS).contains(dateCell.getStringCellValue()) && !Arrays.asList(SPECIALWEEKDAYS).contains(dateCell.getStringCellValue())) {
+//            if (classCell.getStringCellValue().contains("正常晚班") || (classCell.getStringCellValue().contains("正常班") && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) && !Arrays.asList(SPECIALWORKDAYS).contains(dateCell.getStringCellValue()) && !Arrays.asList(SPECIALWEEKDAYS).contains(dateCell.getStringCellValue())) {
+//                RestInfo restInfo = restInfoMap.get(jobNoCell.getStringCellValue());
+//                if (ObjectUtils.isEmpty(restInfo)) {
+//                    restInfo = new RestInfo();
+//                    restInfo.setName(nameCell.getStringCellValue());
+//                    restInfo.setJobNo(jobNoCell.getStringCellValue());
+//                    restInfo.setTotalDays(0);
+//                    restInfo.setEligibleDays(0);
+//                }
+//                restInfo.setTotalDays(restInfo.getTotalDays() + 1);
+//                if (checkOutResultCell.getStringCellValue().contains("正常") && checkInTimeCell.getStringCellValue().trim().compareTo("09:30") <= 0) {
+//                    restInfo.setEligibleDays(restInfo.getEligibleDays() + 1);
+//                }
+//                restInfoMap.put(restInfo.getJobNo(), restInfo);
+//            }
+
+            //调休规则 原规则 2024.3月的新规则
+            //单个员工当月 工作班的周六考勤上班打卡早于9点30分、无早退、无忘记打卡、无请假 可调休
+            if ((classCell.getStringCellValue().contains("正常班") && calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) && !Arrays.asList(SPECIALWORKDAYS).contains(dateCell.getStringCellValue()) && !Arrays.asList(SPECIALWEEKDAYS).contains(dateCell.getStringCellValue())) {
                 RestInfo restInfo = restInfoMap.get(jobNoCell.getStringCellValue());
                 if (ObjectUtils.isEmpty(restInfo)) {
                     restInfo = new RestInfo();
@@ -306,6 +324,7 @@ public class AttendanceMain {
                 }
                 restInfoMap.put(restInfo.getJobNo(), restInfo);
             }
+
         }
         int rowNumRest = 1;
         Iterator<String> iterator = restInfoMap.keySet().iterator();

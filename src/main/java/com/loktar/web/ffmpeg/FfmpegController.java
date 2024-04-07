@@ -13,9 +13,11 @@ public class FfmpegController {
     @RequestMapping("/execute.do")
     public void execute() {
         String voicePath ="/loktar/voice/";
-        String wavFilename = "20240329103527_1.wav";
+        String wavFilename = "20240329172212_2.wav";
         FFmpegUtil.convertWavToAmrPro(voicePath,wavFilename);
-        System.out.println("111");
+//        String wavFilename = "20240402134417.amr";
+//        FFmpegUtil.convertAmrToWavPro(voicePath,wavFilename);
+
     }
 }
 
