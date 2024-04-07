@@ -23,6 +23,7 @@ public class PDFUtilForLotteryHouse {
         File[] pdfFiles = file.listFiles();
         for (int k = 0; k < pdfFiles.length; k++) {
             File pdfFile = pdfFiles[k];
+            System.out.println(pdfFile.getName());
             try {
                 //TODO 试试能不能替换成pdfbox
                 PdfDocument pdf = new PdfDocument();
