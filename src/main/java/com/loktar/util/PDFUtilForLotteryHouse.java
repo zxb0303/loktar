@@ -48,6 +48,8 @@ public class PDFUtilForLotteryHouse {
                 String result = builder.toString();
                 result = result.replaceAll("\n", "").replaceAll("\r", "");
                 String[] strs = result.split(";");
+                //TODO
+                System.out.println(result);
                 if (k == 0) {
                     getTableCellsNum = getTableCells(strs);
                     System.out.println("pdf表格列数num:" + getTableCellsNum);
@@ -97,9 +99,6 @@ public class PDFUtilForLotteryHouse {
         return -1;
     }
 
-    public static void main(String[] args) {
-
-    }
 
     public static Map<String, Integer> getTextContentFromPDFUrl(String pdfUrl, String pdfPath) {
         Map<String, Integer> map = new HashMap<>();
