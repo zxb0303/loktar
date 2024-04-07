@@ -9,10 +9,7 @@ import com.spire.pdf.utilities.PdfTableExtractor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PDFUtilForLotteryHouse {
     public static List<HZLotteryPeopleDTOV2> getTableContentFromPDFUrl(String pdfUrl, String pdfPath) {
@@ -21,6 +18,7 @@ public class PDFUtilForLotteryHouse {
         String fileFold = PDFBoxUtil.splitPDFFromUrl(pdfUrl, pdfPath);
         File file = new File(pdfPath + fileFold);
         File[] pdfFiles = file.listFiles();
+        Arrays.sort(pdfFiles, Comparator.comparing(File::getName));
         for (int k = 0; k < pdfFiles.length; k++) {
             File pdfFile = pdfFiles[k];
             System.out.println(pdfFile.getName());
@@ -106,6 +104,7 @@ public class PDFUtilForLotteryHouse {
         String fileFold = PDFBoxUtil.splitPDFFromUrl(pdfUrl, pdfPath);
         File file = new File(pdfPath + fileFold);
         File[] pdfFiles = file.listFiles();
+        Arrays.sort(pdfFiles, Comparator.comparing(File::getName));
         for (File pdfFile : pdfFiles) {
             try {
                 PdfDocument pdf = new PdfDocument();
