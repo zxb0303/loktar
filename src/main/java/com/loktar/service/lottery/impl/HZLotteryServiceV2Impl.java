@@ -3,6 +3,7 @@ package com.loktar.service.lottery.impl;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.lottery.LotteryHouse;
 import com.loktar.domain.lottery.LotteryOtherPeople;
@@ -11,12 +12,14 @@ import com.loktar.dto.lottery.HZLotteryHouseDTO;
 import com.loktar.dto.lottery.HZLotteryHouseDetailResultDTO;
 import com.loktar.dto.lottery.HZLotteryHouseResultDTO;
 import com.loktar.dto.lottery.HZLotteryPeopleDTOV2;
+import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.lottery.LotteryHouseMapper;
 import com.loktar.mapper.lottery.LotteryOtherPeopleMapper;
 import com.loktar.mapper.lottery.LotteryPeopleMapper;
 import com.loktar.service.lottery.HZLotteryServiceV2;
 import com.loktar.util.HZnotaryUtil;
 import com.loktar.util.PDFUtilForLotteryHouse;
+import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -48,13 +51,19 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
 
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
+    private final QywxApi qywxApi;
+
+    private final LokTarConfig lokTarConfig;
+
     @Value("${conf.pdf.path}")
     private String pdfPath;
 
-    public HZLotteryServiceV2Impl(LotteryHouseMapper lotteryHouseMapper, LotteryPeopleMapper lotteryPeopleMapper, LotteryOtherPeopleMapper lotteryOtherPeopleMapper) {
+    public HZLotteryServiceV2Impl(LotteryHouseMapper lotteryHouseMapper, LotteryPeopleMapper lotteryPeopleMapper, LotteryOtherPeopleMapper lotteryOtherPeopleMapper, QywxApi qywxApi, LokTarConfig lokTarConfig) {
         this.lotteryHouseMapper = lotteryHouseMapper;
         this.lotteryPeopleMapper = lotteryPeopleMapper;
         this.lotteryOtherPeopleMapper = lotteryOtherPeopleMapper;
+        this.qywxApi = qywxApi;
+        this.lokTarConfig = lokTarConfig;
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
@@ -112,6 +121,10 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
         List<LotteryOtherPeople> lotteryOtherPeoples = new ArrayList<LotteryOtherPeople>();
         String pdfUrl = HZnotaryUtil.getPDFUrlByHouseNameAndType(lotteryHouse.getHouseName(), HZnotaryUtil.TYPE_REGIST);
         List<HZLotteryPeopleDTOV2> hZLotteryPeopleDTOV2s = PDFUtilForLotteryHouse.getTableContentFromPDFUrl(pdfUrl, pdfPath);
+        if (hZLotteryPeopleDTOV2s.size() == 0) {
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, lotteryHouse.getHouseName() + "(" + lotteryHouse.getHouseId() + ")数据需手动处理"));
+            return;
+        }
         String pdfUrl2 = HZnotaryUtil.getPDFUrlByHouseNameAndType(lotteryHouse.getHouseName(), HZnotaryUtil.TYPE_RESULT);
         Map<String, Integer> rankMap = PDFUtilForLotteryHouse.getTextContentFromPDFUrl(pdfUrl2, pdfPath);
         for (HZLotteryPeopleDTOV2 hZLotteryPeopleDTOV2 : hZLotteryPeopleDTOV2s) {
