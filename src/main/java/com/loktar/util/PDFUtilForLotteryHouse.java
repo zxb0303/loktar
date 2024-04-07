@@ -51,7 +51,7 @@ public class PDFUtilForLotteryHouse {
                 if (k == 0) {
                     getTableCellsNum = getTableCells(strs);
                     System.out.println("pdf表格列数num:" + getTableCellsNum);
-                    if(getTableCellsNum==0){
+                    if (getTableCellsNum == 0) {
                         System.out.println("需要手动处理");
                         return hZLotteryPeopleDTOV2s;
                     }
