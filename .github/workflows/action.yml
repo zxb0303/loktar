@@ -67,4 +67,4 @@ jobs:
 
       - name: Send Webhook Notification
         run: |
-          curl -X POST -d "version=loktar:"${{ env.PROJECT_VERSION }} ${{ secrets.WEB_HOOK_URL }}
+          curl -X POST -d "version=loktar:${{ env.PROJECT_VERSION }}" ${{ secrets.WEB_HOOK_URL }}
