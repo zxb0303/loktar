@@ -20,7 +20,7 @@ public class LokTarConstant {
 
 
     public static final String REDIS_KEY_PREFIX_OPENAI_REQUEST = "openai_request_";
-    public static final String REDIS_KEY_JELLYFIN_PLAYING_SET = "jellyfin_playing_set";
+    public static final String REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET = "jellyfin_remote_playing_set";
 
 
     public final static String NOTICE_TITLE_GITHUB = "GitHub项目更新通知";
@@ -29,15 +29,15 @@ public class LokTarConstant {
     public final static String NOTICE_TITLE_CAR_VERSION = "沃尔沃车机系统更新通知";
     public final static String NOTICE_TITLE_WORK = "干活通知";
     public final static String NOTICE_TITLE_CONTRAC = "合作合同到期通知";
-
     public final static String NOTICE_TITLE_EMPLOYEE = "劳动合同到期通知";
-
     public final static String NOTICE_CERT_UPDATE = "证书更新通知";
     public final static String NOTICE_JELLYFIN = "Jellyfin常规通知";
     public final static String NOTICE_JELLYFIN_START = "Jellyfin开始播放通知";
     public final static String NOTICE_JELLYFIN_STOP = "Jellyfin停止播放通知";
 
     public final static String WX_RECEICE_MSGTYPE = "MsgType";
+
+    public final static String JELLYFIN_NOT_NOTIFY = "adult";
     public final static String VOICE_SUFFIX_WAV = ".wav";
     public final static String VOICE_SUFFIX_AMR = ".amr";
 
