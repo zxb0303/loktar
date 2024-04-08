@@ -57,7 +57,7 @@ public class JellyfinWebhookController {
         contentBuilder.append(System.lineSeparator())
                 .append(System.lineSeparator())
                 .append(DateUtil.getMinuteSysDate());
-        if (!notification.getNotificationUsername().equals("adult")) {
+        if (!notification.getNotificationUsername().equals(LokTarConstant.JELLYFIN_NOT_NOTIFY)) {
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, contentBuilder.toString()));
         }
 
@@ -68,13 +68,13 @@ public class JellyfinWebhookController {
         String playName = getPlayName(notification);
         String eventType = notification.getNotificationType().equals("PlaybackStart") ? LokTarConstant.NOTICE_JELLYFIN_START : LokTarConstant.NOTICE_JELLYFIN_STOP;
 
-        if (notification.getNotificationType().equals("PlaybackStart")) {
+        if (notification.getNotificationType().equals("PlaybackStart")&&!isLocalNetwork(session.getRemoteEndPoint())) {
             long expireTime = calculateSecondsDifference(notification);
-            long existExpireTime = redisUtil.getExpire(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET);
+            long existExpireTime = redisUtil.getExpire(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET);
             expireTime = expireTime > existExpireTime ? expireTime : existExpireTime;
-            redisUtil.sSetAndTime(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET, expireTime, notification.getNotificationUsername());
+            redisUtil.sSetAndTime(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, expireTime, notification.getNotificationUsername());
         } else {
-            redisUtil.setRemove(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET, notification.getNotificationUsername());
+            redisUtil.setRemove(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, notification.getNotificationUsername());
         }
 
         contentBuilder.append(eventType).append(System.lineSeparator())
@@ -106,7 +106,7 @@ public class JellyfinWebhookController {
                 transmissionUtil.altSpeedEnabled(true);
                 content = "Transmission已自动开启限速";
             }
-            if ("PlaybackStop".equals(notification.getNotificationType()) && redisUtil.sGetSetSize(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET) == 0 && trResponseSession.getArguments().getAltSpeedEnabled()) {
+            if ("PlaybackStop".equals(notification.getNotificationType()) && redisUtil.sGetSetSize(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET) == 0 && trResponseSession.getArguments().getAltSpeedEnabled()) {
                 transmissionUtil.altSpeedEnabled(false);
                 content = "Transmission已自动关闭限速";
             }

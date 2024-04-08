@@ -21,7 +21,7 @@ public class PDFUtilForLotteryHouse {
         Arrays.sort(pdfFiles, Comparator.comparing(File::getName));
         for (int k = 0; k < pdfFiles.length; k++) {
             File pdfFile = pdfFiles[k];
-            System.out.println(pdfFile.getName());
+            //System.out.println(pdfFile.getName());
             try {
                 //TODO 试试能不能替换成pdfbox
                 PdfDocument pdf = new PdfDocument();
@@ -47,8 +47,7 @@ public class PDFUtilForLotteryHouse {
                 String result = builder.toString();
                 result = result.replaceAll("\n", "").replaceAll("\r", "");
                 String[] strs = result.split(";");
-                //TODO
-                System.out.println(result);
+                //System.out.println(result);
                 if (k == 0) {
                     getTableCellsNum = getTableCells(strs);
                     System.out.println("pdf表格列数num:" + getTableCellsNum);

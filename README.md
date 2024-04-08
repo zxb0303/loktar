@@ -64,13 +64,15 @@ conf:
   <artifactId>mybatis-spring-boot-starter</artifactId>
   <version>3.0.3</version>
 </dependency>
-
+```
+```xml
 <dependency>
   <groupId>com.mysql</groupId>
   <artifactId>mysql-connector-j</artifactId>
   <version>8.3.0</version>
 </dependency>
-
+```
+```xml
 <dependency>
   <groupId>org.mybatis.generator</groupId>
   <artifactId>mybatis-generator-core</artifactId>
@@ -251,12 +253,12 @@ services:
 https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2272 </br>
 微软语音 SDK 需要 Open SSL 1.x 才能运行。目前支持的linux版本为需要Ubuntu 18.04/20.04 或者 Debian 10/11
 
-|Ubuntu LTS 版本| 名称              |
-| --- |-----------------|
-|24.04| Noble Numbat    |
-|22.04| Jammy Jellyfish |
-|20.04| Focal Fossa     |
-|18.04| Bionic Beaver   |
+| Ubuntu LTS 版本 | 名称              |
+|---------------|-----------------|
+| 24.04         | Noble Numbat    |
+| 22.04         | Jammy Jellyfish |
+| 20.04         | Focal Fossa     |
+| 18.04         | Bionic Beaver   |
 
 | Debian LTS 版本 | 名称       |
 |---------------|----------|
@@ -275,7 +277,9 @@ ARG JAR_FILE
 ADD $JAR_FILE /app.jar
 ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Shanghai", "/app.jar"]
 ```
-## 3.2 pom.xml的build中添加plugin
+## 3.2 使用dockerfile-maven-plugin构建并推送镜像
+### 3.2.1 idea及windows本地配置docker信息
+### 3.2.2 pom.xml的build中添加plugin
 ```xml
 <plugin>
   <groupId>com.spotify</groupId>
@@ -293,6 +297,9 @@ ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Shanghai", "/app.jar"]
 </plugin>
 ```
 **注：敏感信息写在/user/.m2/settings.xml**
+## 3.3 使用github action构建并推送镜像
+参考[action.yml](.github%2Fworkflows%2Faction.yml)
+
 
 
 
