@@ -98,7 +98,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
                     .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
                     .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_HTML)
                     .header(LokTarConstant.HTTP_HEADER_REFERER, MessageFormat.format(URL_HOUSE_INFO_UPGRADE, newHouseHangzhouV2.getAreaCode(), newHouseHangzhouV2.getHouseId()))
-                    .header("Cookie", property.getValue())
+                    .header(LokTarConstant.HTTP_HEADER_COOKIE_NAME, property.getValue())
                     .GET()
                     .build();
             HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
@@ -173,7 +173,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
                 .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_HTML)
                 .header(LokTarConstant.HTTP_HEADER_REFERER, MessageFormat.format(URL_HOUSE_INFO_UPGRADE, newHouseHangzhouV2.getAreaCode(), newHouseHangzhouV2.getHouseId()))
-                .header("Cookie", property.getValue())
+                .header(LokTarConstant.HTTP_HEADER_COOKIE_NAME, property.getValue())
                 .GET()
                 .build();
         HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
@@ -218,7 +218,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
                 .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_HTML)
-                .header("Cookie", property.getValue())
+                .header(LokTarConstant.HTTP_HEADER_COOKIE_NAME, property.getValue())
                 .GET()
                 .build();
         HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
@@ -265,7 +265,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
                 .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_HTML)
-                .header("Cookie", property.getValue())
+                .header(LokTarConstant.HTTP_HEADER_COOKIE_NAME, property.getValue())
                 .GET()
                 .build();
         HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
