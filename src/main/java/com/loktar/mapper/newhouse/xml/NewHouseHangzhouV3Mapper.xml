@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.newhouse.NewHouseHangzhouV3Mapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.newhouse.NewHouseHangzhouV3">
+    <id column="house_id" jdbcType="VARCHAR" property="houseId" />
+    <result column="temp_house_id" jdbcType="VARCHAR" property="tempHouseId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="useful" jdbcType="VARCHAR" property="useful" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="company" jdbcType="VARCHAR" property="company" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from new_house_hangzhou_v3
+    where house_id = #{houseId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV3">
+    insert into new_house_hangzhou_v3 (house_id, temp_house_id, `name`, 
+      useful, address, company, 
+      phone, create_time, update_time
+      )
+    values (#{houseId,jdbcType=VARCHAR}, #{tempHouseId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{useful,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{company,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV3">
+    update new_house_hangzhou_v3
+    set temp_house_id = #{tempHouseId,jdbcType=VARCHAR},
+      `name` = #{name,jdbcType=VARCHAR},
+      useful = #{useful,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      company = #{company,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where house_id = #{houseId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select house_id, temp_house_id, `name`, useful, address, company, phone, create_time, 
+    update_time
+    from new_house_hangzhou_v3
+    where house_id = #{houseId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select house_id, temp_house_id, `name`, useful, address, company, phone, create_time, 
+    update_time
+    from new_house_hangzhou_v3
+  </select>
+  <select id="selectByName" resultMap="BaseResultMap">
+    select house_id, temp_house_id, `name`, useful, address, company, phone, create_time,
+           update_time
+    from new_house_hangzhou_v3 where `name`=#{param1,jdbcType=VARCHAR}
+  </select>
+
+</mapper>

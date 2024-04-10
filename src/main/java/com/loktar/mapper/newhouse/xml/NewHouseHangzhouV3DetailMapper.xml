@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.newhouse.NewHouseHangzhouV3DetailMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.newhouse.NewHouseHangzhouV3Detail">
+    <id column="detail_id" jdbcType="VARCHAR" property="detailId" />
+    <result column="build_id" jdbcType="VARCHAR" property="buildId" />
+    <result column="presell_id" jdbcType="VARCHAR" property="presellId" />
+    <result column="house_id" jdbcType="VARCHAR" property="houseId" />
+    <result column="build_no" jdbcType="VARCHAR" property="buildNo" />
+    <result column="unit_no" jdbcType="VARCHAR" property="unitNo" />
+    <result column="room_no" jdbcType="VARCHAR" property="roomNo" />
+    <result column="build_area" jdbcType="VARCHAR" property="buildArea" />
+    <result column="inner_area" jdbcType="VARCHAR" property="innerArea" />
+    <result column="area_rate" jdbcType="VARCHAR" property="areaRate" />
+    <result column="unit_price" jdbcType="VARCHAR" property="unitPrice" />
+    <result column="total_price" jdbcType="VARCHAR" property="totalPrice" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from new_house_hangzhou_v3_detail
+    where detail_id = #{detailId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV3Detail">
+    insert into new_house_hangzhou_v3_detail (detail_id, build_id, presell_id, 
+      house_id, build_no, unit_no, 
+      room_no, build_area, inner_area, 
+      area_rate, unit_price, total_price, 
+      `status`, create_time, update_time
+      )
+    values (#{detailId,jdbcType=VARCHAR}, #{buildId,jdbcType=VARCHAR}, #{presellId,jdbcType=VARCHAR}, 
+      #{houseId,jdbcType=VARCHAR}, #{buildNo,jdbcType=VARCHAR}, #{unitNo,jdbcType=VARCHAR}, 
+      #{roomNo,jdbcType=VARCHAR}, #{buildArea,jdbcType=VARCHAR}, #{innerArea,jdbcType=VARCHAR}, 
+      #{areaRate,jdbcType=VARCHAR}, #{unitPrice,jdbcType=VARCHAR}, #{totalPrice,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV3Detail">
+    update new_house_hangzhou_v3_detail
+    set build_id = #{buildId,jdbcType=VARCHAR},
+      presell_id = #{presellId,jdbcType=VARCHAR},
+      house_id = #{houseId,jdbcType=VARCHAR},
+      build_no = #{buildNo,jdbcType=VARCHAR},
+      unit_no = #{unitNo,jdbcType=VARCHAR},
+      room_no = #{roomNo,jdbcType=VARCHAR},
+      build_area = #{buildArea,jdbcType=VARCHAR},
+      inner_area = #{innerArea,jdbcType=VARCHAR},
+      area_rate = #{areaRate,jdbcType=VARCHAR},
+      unit_price = #{unitPrice,jdbcType=VARCHAR},
+      total_price = #{totalPrice,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where detail_id = #{detailId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select detail_id, build_id, presell_id, house_id, build_no, unit_no, room_no, build_area, 
+    inner_area, area_rate, unit_price, total_price, `status`, create_time, update_time
+    from new_house_hangzhou_v3_detail
+    where detail_id = #{detailId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select detail_id, build_id, presell_id, house_id, build_no, unit_no, room_no, build_area, 
+    inner_area, area_rate, unit_price, total_price, `status`, create_time, update_time
+    from new_house_hangzhou_v3_detail
+  </select>
+</mapper>
