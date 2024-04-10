@@ -89,7 +89,7 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
                     .timeout(Duration.ofSeconds(30))
                     .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                     .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_FORM)
-                    .header("Cookie", property.getValue())
+                    .header(LokTarConstant.HTTP_HEADER_COOKIE_NAME, property.getValue())
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
                     .build();
             HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
@@ -124,7 +124,7 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
      */
     private SecondHandHouse changeDTO(SecondHandHouseDTO secondHandHouseDTO) {
         SecondHandHouse secondHandHouse = new SecondHandHouse();
-        secondHandHouse.setId(secondHandHouseDTO.getGpfyid());
+//        secondHandHouse.setId(secondHandHouseDTO.getGpfyid());
         secondHandHouse.setFwtybh(secondHandHouseDTO.getFwtybh());
         secondHandHouse.setXzqhname(secondHandHouseDTO.getXzqhname());
         if (ObjectUtils.isEmpty(secondHandHouse.getXzqhname())) {
