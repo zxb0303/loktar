@@ -17,10 +17,14 @@ public class LokTarConstant {
     public static final String HTTP_HEADER_ACCEPT_ENCODING_NAME = "Accept-Encoding";
     public static final String HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP = "gzip, deflate, br, zstd";
     public static final String HTTP_HEADER_REFERER = "Referer";
+    public static final String HTTP_HEADER_CONTENT_ENCODING_NAME = "Content-Encoding";
+    public static final String HTTP_HEADER_CONTENT_ENCODING_VALUE_GZIP = "gzip";
+    public static final String HTTP_HEADER_COOKIE_NAME = "Cookie";
 
 
     public static final String REDIS_KEY_PREFIX_OPENAI_REQUEST = "openai_request_";
     public static final String REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET = "jellyfin_remote_playing_set";
+    public static final String REDIS_KEY_NEWHOUSE_COOKIE = "newhouse_cookie";
 
 
     public final static String NOTICE_TITLE_GITHUB = "GitHub项目更新通知";
