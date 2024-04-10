@@ -194,8 +194,8 @@ table.tableName=tr_torrent_tracker
 ## 2.7 服务需要使用到ffmpeg 方案调整
 原方案：
 * 在dockerfile中安装ffmpeg
-* 而且由于直接安装的ffmpeg没有amr格式处理能力故改用www.deb-multimedia.org的版本
-* 又因为打包过程访问不便，改用仓库镜像
+* 而由于直接安装的ffmpeg没有amr格式处理能力故改用www.deb-multimedia.org的版本
+* 又因为打包过程访问不便，改用阿里云仓库镜像
 ```dockerfile
 FROM openjdk:8-jre
 #用阿里云仓库镜像
@@ -251,7 +251,7 @@ services:
 ```
 ## 2.8 docker部署后提示Runtime error: Failed to initialize platform (azure-c-shared). Error
 https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2272 </br>
-微软语音 SDK 需要 Open SSL 1.x 才能运行。目前支持的linux版本为需要Ubuntu 18.04/20.04 或者 Debian 10/11
+微软语音 SDK 需要 Open SSL 1.x 才能运行。目前支持的linux版本需要是Ubuntu 18.04/20.04 或者 Debian 10/11
 
 | Ubuntu LTS 版本 | 名称              |
 |---------------|-----------------|
