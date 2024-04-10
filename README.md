@@ -154,17 +154,17 @@ table.tableName=tr_torrent_tracker
 * 1.5.5 lombok继承类警告
   * 方式一：添加@EqualsAndHashCode(callSuper=true)
   * 方式二：添加lombok.config、并在pom.xml下添加插件
-# 2.代码调整
-## 2.1 @Deprecated调整
+## 2.代码调整
+### 2.1 @Deprecated调整
 * 2.1.1 @autowired<br/>
 改为使用构造器方式注入
 * 2.1.2 StringUtils.isEmpty()<br/>
 改为org.apache.commons.lang3.StringUtils
-## 2.2 com.alibaba.fastjson->com.fasterxml.jackson
+### 2.2 com.alibaba.fastjson->com.fasterxml.jackson
 参考[JacksonTest.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Flearn%2Fjackson%2FJacksonTest.java)
-## 2.3 修改redis序列化
+### 2.3 修改redis序列化
 参考[RedisConfig.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fconf%2FRedisConfig.java)
-## 2.4 org.apache.http.impl.client、org.springframework.web.client->java.net.http
+### 2.4 org.apache.http.impl.client、org.springframework.web.client->java.net.http
 参考[Http.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Flearn%2Fjdk11%2FHttp.java)
 <br/><br/>
 **注：文件上传使用httpmime构建对象**
@@ -177,7 +177,7 @@ table.tableName=tr_torrent_tracker
 ```
 参考[QywxApi.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Futil%2Fwx%2Fqywx%2FQywxApi.java)
 
-## 2.5 xml解析使用jackson-dataformat-xml
+### 2.5 xml解析使用jackson-dataformat-xml
 ```xml
 <dependency>
     <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -187,11 +187,11 @@ table.tableName=tr_torrent_tracker
 ```
 参考[QyWeixinCallbackController.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fqywx%2FQyWeixinCallbackController.java)
 
-## 2.6 CompletableFuture.runAsync无法抛出异常
+### 2.6 CompletableFuture.runAsync无法抛出异常
 需要加trycatch
 参考[QyWeixinCallbackController.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fqywx%2FQyWeixinCallbackController.java)
 
-## 2.7 服务需要使用到ffmpeg 方案调整
+### 2.7 服务需要使用到ffmpeg 方案调整
 原方案：
 * 在dockerfile中安装ffmpeg
 * 而由于直接安装的ffmpeg没有amr格式处理能力故改用www.deb-multimedia.org的版本
@@ -249,7 +249,7 @@ services:
       POST: 1
     network_mode: "bridge"
 ```
-## 2.8 docker部署后提示Runtime error: Failed to initialize platform (azure-c-shared). Error
+### 2.8 docker部署后提示Runtime error: Failed to initialize platform (azure-c-shared). Error
 https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2272 </br>
 微软语音 SDK 需要 Open SSL 1.x 才能运行。目前支持的linux版本需要是Ubuntu 18.04/20.04 或者 Debian 10/11
 
@@ -267,8 +267,8 @@ https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2272 </br>
 | 10            | Buster   |
 
 因个人习惯用ubuntu，基础镜像由eclipse-temurin:21-jammy调整为ibm-semeru-runtimes:open-21-jre-focal
-# 3.打包发布
-## 3.1 添加Dockerfile文件
+## 3.打包发布
+### 3.1 添加Dockerfile文件
 ```dockerfile
 FROM ibm-semeru-runtimes:open-21-jre-focal
 ARG JAR_EXPOSE=8080
@@ -277,9 +277,9 @@ ARG JAR_FILE
 ADD $JAR_FILE /app.jar
 ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Shanghai", "/app.jar"]
 ```
-## 3.2 使用dockerfile-maven-plugin构建并推送镜像
-### 3.2.1 idea及windows本地配置docker信息
-### 3.2.2 pom.xml的build中添加plugin
+### 3.2 使用dockerfile-maven-plugin构建并推送镜像
+* 3.2.1 idea及windows本地配置docker信息
+* 3.2.2 pom.xml的build中添加plugin
 ```xml
 <plugin>
   <groupId>com.spotify</groupId>
@@ -297,9 +297,14 @@ ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Shanghai", "/app.jar"]
 </plugin>
 ```
 **注：敏感信息写在/user/.m2/settings.xml**
-## 3.3 使用github action构建并推送镜像
+### 3.3 使用github action构建并推送镜像
 参考[action.yml](.github%2Fworkflows%2Faction.yml)
-
+## 4.其他
+### 4.1 Github单独删除某个文件的所有历史记录
+https://blog.csdn.net/q258523454/article/details/83899911</br>
+* git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch src/main/resources/config/application-test.yml' --prune-empty --tag-name-filter cat -- --all
+* git push origin --force --all
+* git push origin --force --tags
 
 
 
