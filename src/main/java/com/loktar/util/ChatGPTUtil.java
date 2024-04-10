@@ -29,7 +29,7 @@ public class ChatGPTUtil {
     public final static String BASE_URL = "https://api.openai.com";
     public final static String URL_LIST_MODELS = BASE_URL + "/v1/models";
     public final static String URL_CHAT_COMPLETIONS = BASE_URL + "/v1/chat/completions";
-    public final static String GPT_MODEL_4_TURBO_PREVIEW = "gpt-4-turbo-preview";
+    public final static String GPT_MODEL_4_TURBO_PREVIEW = "gpt-4-turbo";
     public final static String ROLE_SYSTEM = "system";
     public final static String ROLE_USER = "user";
     public final static String ROLE_ASSISTANT = "assistant";

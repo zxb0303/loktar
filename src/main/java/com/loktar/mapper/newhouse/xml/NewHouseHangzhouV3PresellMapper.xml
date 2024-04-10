@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.newhouse.NewHouseHangzhouV3PresellMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.newhouse.NewHouseHangzhouV3Presell">
+    <id column="presell_id" jdbcType="VARCHAR" property="presellId" />
+    <result column="house_id" jdbcType="VARCHAR" property="houseId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from new_house_hangzhou_v3_presell
+    where presell_id = #{presellId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV3Presell">
+    insert into new_house_hangzhou_v3_presell (presell_id, house_id, `status`, 
+      create_time, update_time)
+    values (#{presellId,jdbcType=VARCHAR}, #{houseId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV3Presell">
+    update new_house_hangzhou_v3_presell
+    set house_id = #{houseId,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where presell_id = #{presellId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select presell_id, house_id, `status`, create_time, update_time
+    from new_house_hangzhou_v3_presell
+    where presell_id = #{presellId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select presell_id, house_id, `status`, create_time, update_time
+    from new_house_hangzhou_v3_presell
+  </select>
+  <insert id="insertBatch">
+    insert into new_house_hangzhou_v3_presell (presell_id, house_id,`status`, create_time, update_time)
+    values
+    <foreach collection="list" item="item" separator=",">
+        (#{item.presellId,jdbcType=VARCHAR},  #{item.houseId,jdbcType=VARCHAR},
+            #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}
+           )
+    </foreach>
+  </insert>
+  <select id="selectByHouseId" resultMap="BaseResultMap">
+    select presell_id, house_id, `status`, create_time, update_time
+    from new_house_hangzhou_v3_presell
+    where house_id = #{houseId,jdbcType=VARCHAR}
+  </select>
+
+</mapper>
