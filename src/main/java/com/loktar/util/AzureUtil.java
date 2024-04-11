@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AzureUtil {
 
-    public static String VOICE_REGION = "eastasia";
+    public static String VOICE_REGION = "eastus";
     public static String LANGUAGE = "zh-CN";
     public static String DEFAULT_VOICE_NAME = "zh-CN-XiaoyiNeural";
     private final LokTarConfig lokTarConfig;
