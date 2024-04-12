@@ -17,6 +17,7 @@ import com.loktar.mapper.transmission.TrTorrentMapper;
 import com.loktar.service.common.NoticeServer;
 import com.loktar.util.BandwagonhostUtil;
 import com.loktar.util.DateUtil;
+import com.loktar.util.RedisUtil;
 import com.loktar.util.TransmissionUtil;
 import com.loktar.util.wx.aes.WXBizMsgCrypt;
 import com.loktar.util.wx.qywx.QywxApi;
@@ -36,6 +37,7 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping("qywx/callback")
 public class QyWeixinCallbackController {
 
+    private final RedisUtil redisUtil;
 
     private final TransmissionUtil transmissionUtil;
 
@@ -52,7 +54,8 @@ public class QyWeixinCallbackController {
     private final static ObjectMapper xmlMapper = new XmlMapper();
 
 
-    public QyWeixinCallbackController(TransmissionUtil transmissionUtil, NoticeServer noticeServer, QywxApi qywxApi, BandwagonhostUtil bandwagonhostUtil, LokTarConfig lokTarConfig, TrTorrentMapper trTorrentMapper) {
+    public QyWeixinCallbackController(RedisUtil redisUtil, TransmissionUtil transmissionUtil, NoticeServer noticeServer, QywxApi qywxApi, BandwagonhostUtil bandwagonhostUtil, LokTarConfig lokTarConfig, TrTorrentMapper trTorrentMapper) {
+        this.redisUtil = redisUtil;
         this.transmissionUtil = transmissionUtil;
         this.noticeServer = noticeServer;
         this.qywxApi = qywxApi;
@@ -66,6 +69,9 @@ public class QyWeixinCallbackController {
     public ResponseEntity receive(
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce, @RequestBody String xml) {
+        if (!redisUtil.setIfAbsent(msgSignature,timestamp, 30)) {
+            return ResponseEntity.noContent().build();
+        }
         CompletableFuture.runAsync(() -> {
             try {
                 asyncDealMsg(msgSignature, timestamp, nonce, xml);
@@ -75,7 +81,6 @@ public class QyWeixinCallbackController {
         });
         return ResponseEntity.noContent().build();
     }
-
     @SneakyThrows
     private void asyncDealMsg(String msgSignature, String timestamp, String nonce, String xml) {
         WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.qywxToken, lokTarConfig.qywxEncodingAESKey, lokTarConfig.qywxCorpId);
