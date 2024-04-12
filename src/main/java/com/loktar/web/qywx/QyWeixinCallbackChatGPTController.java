@@ -111,6 +111,7 @@ public class QyWeixinCallbackChatGPTController {
         if (receiveBaseMsg instanceof ReceiveVoiceMsg) {
             receiveFileName = qywxApi.saveMedia(voicePath, ((ReceiveVoiceMsg) receiveBaseMsg).getMediaId(), receiveBaseMsg.getAgentID());
             FFmpegUtil.convertAmrToWav(voicePath, receiveFileName);
+            testFileExist(voicePath,receiveFileName);
             receiveMsg = azureUtil.wavToText(voicePath, receiveFileName);
             qywxApi.sendTextMsg(new AgentMsgText(receiveBaseMsg.getFromUserName(), receiveBaseMsg.getAgentID(), "语音识别结果：\n" + receiveMsg));
         }
@@ -176,6 +177,7 @@ public class QyWeixinCallbackChatGPTController {
             String wavFileName = replyFileNameBase + "_" + (i + 1) + LokTarConstant.VOICE_SUFFIX_WAV;
             azureUtil.textToWav(voicePath, wavFileName, reply);
             FFmpegUtil.convertWavToAmr(voicePath, wavFileName);
+            testFileExist(voicePath,wavFileName);
             UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(voicePath + wavFileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR)), receiveBaseMsg.getAgentID());
             qywxApi.sendVoiceMsg(new AgentMsgVoice(receiveBaseMsg.getFromUserName(), receiveBaseMsg.getAgentID(), uploadMediaRsp.getMediaId()));
         }
@@ -223,6 +225,24 @@ public class QyWeixinCallbackChatGPTController {
         }
 
         return result;
+    }
+
+    @SneakyThrows
+    private void testFileExist(String voicePath, String fileName) {
+        System.out.println("fileName："+fileName);
+        String coverFileName = fileName.lastIndexOf(LokTarConstant.VOICE_SUFFIX_WAV) != -1 ? fileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR) : fileName.replace(LokTarConstant.VOICE_SUFFIX_AMR, LokTarConstant.VOICE_SUFFIX_WAV);
+        System.out.println(coverFileName);
+        int times = 10;
+         while (times > 0) {
+            File file = new File(voicePath + coverFileName);
+            if (file.exists()) {
+                System.out.println("file exist "+DateUtil.getTodayToSecond());
+                break;
+            }
+             System.out.println("file not exist "+DateUtil.getTodayToSecond());
+             times--;
+             Thread.sleep(1000);
+        }
     }
 
     /**

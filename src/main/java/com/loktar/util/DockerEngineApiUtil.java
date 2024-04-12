@@ -71,11 +71,11 @@ public class DockerEngineApiUtil {
 
                 });
         //TODO 内容返回了 但是文件还未生成
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            Thread.sleep(4000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
 //        try {
 //            dockerClient.execStartCmd(execCreateCmdResponse.getId())
 //                    .withDetach(false)
