@@ -1,16 +1,12 @@
 # SpringBoot3+Java21 学习记录
 ## 1.项目搭建流程
 ### 1.1 idea通过spring initialize创建新工程
-* spring-boot-starter:
-  * 这是Spring Boot的核心起步依赖，包含了自动配置支持、日志库以及对使用Spring核心功能（如依赖注入）所需的基本组件。它是构建任何Spring Boot应用的基础，不特定于任何特定的应用类型。
-  如果你的项目是一个简单的Spring应用或者不需要Web功能，使用这个起步依赖就足够了。
-* spring-boot-starter-web:
-  * 这个起步依赖包含了spring-boot-starter的所有内容，同时还添加了开发Web应用所需的依赖，如Spring MVC、Tomcat（作为默认的嵌入式servlet容器）、Jackson（用于JSON处理）等。
-  使用这个起步依赖，你可以非常方便地开发RESTful应用或者传统的基于servlet的Web应用。它是构建Web层的基础，提供了大量开箱即用的特性来帮助你快速开发Web接口。
-* spring-boot-starter-test:
-  * Spring Boot 用于测试的起步依赖，它包含了开发者进行单元测试和集成测试时常用的一系列库。通过将这个依赖添加到你的项目中，你可以轻松地编写和运行测试，利用Spring Boot提供的测试支持功能。这个起步依赖专为测试环境设计，因此它的作用域被设置为 test，这意味着它只在测试编译和执行阶段可用，不会被包含进生产环境的构建中。
+仅添加
+* spring-boot-starter
+* spring-boot-starter-web
+* spring-boot-starter-test
 ### 1.2.修改配置文件格式
-* application.properties修改为application.yml， application-dev.yml， application-pro.yml
+* application.properties修改为application.yml、 application-dev.yml、 application-pro.yml
 ```yaml
 #application-dev.yml示例
 spring:
@@ -156,10 +152,20 @@ table.tableName=tr_torrent_tracker
   * 方式二：添加lombok.config、并在pom.xml下添加插件
 ## 2.代码调整
 ### 2.1 @Deprecated调整
-* 2.1.1 @autowired<br/>
-改为使用构造器方式注入
-* 2.1.2 StringUtils.isEmpty()<br/>
-改为org.apache.commons.lang3.StringUtils
+* 2.1.1 @autowired->使用构造器方式注入
+```java
+public class GithubController {
+    private final GithubService githubService;
+    private final QywxApi QywxApi;
+    private final LokTarConfig lokTarConfig;
+    public GithubController(GithubService githubService, com.loktar.util.wx.qywx.QywxApi qywxApi, LokTarConfig lokTarConfig) {
+        this.githubService = githubService;
+        this.QywxApi = qywxApi;
+        this.lokTarConfig = lokTarConfig;
+    }
+}
+```
+* 2.1.2 org.springframework.util.StringUtils->org.apache.commons.lang3.StringUtils
 ### 2.2 com.alibaba.fastjson->com.fasterxml.jackson
 参考[JacksonTest.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Flearn%2Fjackson%2FJacksonTest.java)
 ### 2.3 修改redis序列化
@@ -176,7 +182,6 @@ table.tableName=tr_torrent_tracker
 </dependency>
 ```
 参考[QywxApi.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Futil%2Fwx%2Fqywx%2FQywxApi.java)
-
 ### 2.5 xml解析使用jackson-dataformat-xml
 ```xml
 <dependency>
@@ -186,11 +191,9 @@ table.tableName=tr_torrent_tracker
 </dependency>
 ```
 参考[QyWeixinCallbackController.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fqywx%2FQyWeixinCallbackController.java)
-
 ### 2.6 CompletableFuture.runAsync无法抛出异常
 需要加trycatch
 参考[QyWeixinCallbackController.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fqywx%2FQyWeixinCallbackController.java)
-
 ### 2.7 服务需要使用到ffmpeg 方案调整
 原方案：
 * 在dockerfile中安装ffmpeg
@@ -265,7 +268,6 @@ https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2272 </br>
 | 12            | Bookworm |
 | 11            | Bullseye |
 | 10            | Buster   |
-
 因个人习惯用ubuntu，基础镜像由eclipse-temurin:21-jammy调整为ibm-semeru-runtimes:open-21-jre-focal
 ## 3.打包发布
 ### 3.1 添加Dockerfile文件
@@ -299,8 +301,31 @@ ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Shanghai", "/app.jar"]
 **注：敏感信息写在/user/.m2/settings.xml**
 ### 3.3 使用github action构建并推送镜像
 参考[action.yml](.github%2Fworkflows%2Faction.yml)
-## 4.其他
-### 4.1 Github单独删除某个文件的所有历史记录
+## 4.本项目功能介绍
+### 4.1 Github关注的项目版本更新后推送企业微信消息
+[GithubTask.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Ftask%2Fgithub%2FGithubTask.java)
+### 4.2 Jellyfin用户播放后推送企业微信消息，并自动对Transmission进行限速及取消限速操作
+[JellyfinWebhookController.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fjellyfin%2FJellyfinWebhookController.java)
+### 4.3 浙江省土地拍卖记录爬虫
+[LandTask.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Ftask%2Fland%2FLandTask.java)
+### 4.4 杭州市摇号数据爬虫
+[LotteryTask.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Ftask%2Flottery%2FLotteryTask.java)
+### 4.5 杭州市新房一房一价数据爬虫(由透明售房网V2调整为房管局数据V3 开发中)
+[NewHouseV3Controller.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fnewhouse%2FNewHouseV3Controller.java)
+### 4.6 企业微信接入ChatGPT进行对话，使用Azure语音服务进行文本与语音互换
+[QyWeixinCallbackChatGPTController.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fqywx%2FQyWeixinCallbackChatGPTController.java)
+### 4.7 企业微信消息接收，实现信息查询，例如Transmission下载列表查询，主动开启及关闭限速等操作
+[QyWeixinCallbackController.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fqywx%2FQyWeixinCallbackController.java)
+### 4.8 杭州市二手房数据爬虫
+[SecondController.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fsecond%2FSecondController.java)
+### 4.9 基于企业微信消息实现定时通知
+[CommonTask.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Ftask%2Fcommon%2FCommonTask.java)
+### 4.10 PT网站RSS订阅及自动推送Transmission
+[RssTask.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Ftask%2Ftransmission%2FRssTask.java)
+### 4.11 Transmission自动删除错误种子，自动根据硬盘大小删除保种数据
+[TransmissionTask.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Ftask%2Ftransmission%2FTransmissionTask.java)
+## 5.其他
+### 5.1 Github单独删除某个文件的所有历史记录
 https://blog.csdn.net/q258523454/article/details/83899911</br>
 * git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch src/main/resources/config/application-test.yml' --prune-empty --tag-name-filter cat -- --all
 * git push origin --force --all

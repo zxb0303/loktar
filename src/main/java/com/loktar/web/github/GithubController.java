@@ -19,7 +19,7 @@ public class GithubController {
 
     public GithubController(GithubService githubService, com.loktar.util.wx.qywx.QywxApi qywxApi, LokTarConfig lokTarConfig) {
         this.githubService = githubService;
-        QywxApi = qywxApi;
+        this.QywxApi = qywxApi;
         this.lokTarConfig = lokTarConfig;
     }
 
