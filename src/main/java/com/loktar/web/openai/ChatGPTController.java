@@ -9,6 +9,7 @@ import com.loktar.dto.wx.UploadMediaRsp;
 import com.loktar.dto.wx.agentmsg.AgentMsgVoice;
 import com.loktar.util.AzureUtil;
 import com.loktar.util.ChatGPTUtil;
+import com.loktar.util.DateUtil;
 import com.loktar.util.FFmpegUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
@@ -63,12 +64,30 @@ public class ChatGPTController {
         String wavFileName = UUID.randomUUID().toString() + LokTarConstant.VOICE_SUFFIX_WAV;
         azureUtil.textToWav(voicePath, wavFileName, "你叫什么名字");
         FFmpegUtil.convertWavToAmr(voicePath, wavFileName);
+        testFileExist(voicePath,wavFileName);
         String filepath = voicePath + wavFileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR);
         UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(filepath), lokTarConfig.qywxAgent003Id);
         System.out.println(uploadMediaRsp.getMediaId());
         qywxApi.sendVoiceMsg(new AgentMsgVoice(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent003Id, uploadMediaRsp.getMediaId()));
     }
 
+    @SneakyThrows
+    private void testFileExist(String voicePath, String fileName) {
+        System.out.println("fileName："+fileName);
+        String coverFileName = fileName.lastIndexOf(LokTarConstant.VOICE_SUFFIX_WAV) != -1 ? fileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR) : fileName.replace(LokTarConstant.VOICE_SUFFIX_AMR, LokTarConstant.VOICE_SUFFIX_WAV);
+        System.out.println(coverFileName);
+        int times = 10;
+        while (times > 0) {
+            File file = new File(voicePath + coverFileName);
+            if (file.exists()) {
+                System.out.println("file exist "+ DateUtil.getTodayToSecond());
+                break;
+            }
+            System.out.println("file not exist "+DateUtil.getTodayToSecond());
+            times--;
+            Thread.sleep(1000);
+        }
+    }
 
 
 }
