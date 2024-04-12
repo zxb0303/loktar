@@ -78,6 +78,9 @@ public class QyWeixinCallbackChatGPTController {
     public ResponseEntity receive(
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce, @RequestBody String xml) {
+        if (!redisUtil.setIfAbsent(msgSignature,timestamp, 30)) {
+            return ResponseEntity.noContent().build();
+        }
         CompletableFuture.runAsync(() -> {
             try {
                 asyncDealMsg(msgSignature, timestamp, nonce, xml);
@@ -234,17 +237,17 @@ public class QyWeixinCallbackChatGPTController {
 
     @SneakyThrows
     private void testFileExist(String voicePath, String fileName) {
-        System.out.println("fileName："+fileName);
+        //System.out.println("fileName："+fileName);
         String coverFileName = fileName.lastIndexOf(LokTarConstant.VOICE_SUFFIX_WAV) != -1 ? fileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR) : fileName.replace(LokTarConstant.VOICE_SUFFIX_AMR, LokTarConstant.VOICE_SUFFIX_WAV);
-        System.out.println(coverFileName);
+        //System.out.println(coverFileName);
         int times = 10;
          while (times > 0) {
             File file = new File(voicePath + coverFileName);
             if (file.exists()) {
-                System.out.println("file exist "+DateUtil.getTodayToSecond());
+                //System.out.println("file exist "+DateUtil.getTodayToSecond());
                 break;
             }
-             System.out.println("file not exist "+DateUtil.getTodayToSecond());
+             //System.out.println("file not exist "+DateUtil.getTodayToSecond());
              times--;
              Thread.sleep(1000);
         }
