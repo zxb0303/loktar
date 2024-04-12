@@ -1,6 +1,7 @@
 package com.loktar.web.qywx;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.loktar.conf.LokTarConfig;
@@ -55,6 +56,9 @@ public class QyWeixinCallbackChatGPTController {
 
     private final LokTarConfig lokTarConfig;
 
+    private final static ObjectMapper xmlMapper = new XmlMapper();
+
+
 
     @Value("${conf.voice.path}")
     private String voicePath;
@@ -67,6 +71,7 @@ public class QyWeixinCallbackChatGPTController {
         this.azureUtil = azureUtil;
         this.chatGPTUtil = chatGPTUtil;
         this.lokTarConfig = lokTarConfig;
+        xmlMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
     }
 
     @PostMapping("receive.do")
@@ -95,13 +100,13 @@ public class QyWeixinCallbackChatGPTController {
         ReceiceMsgType type = ReceiceMsgType.getByName(msgType);
         switch (type) {
             case ReceiceMsgType.TEXT:
-                receiveBaseMsg = new XmlMapper().setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE).readValue(xmlMsg, ReceiveTextMsg.class);
+                receiveBaseMsg = xmlMapper.readValue(xmlMsg, ReceiveTextMsg.class);
                 break;
             case ReceiceMsgType.VOICE:
-                receiveBaseMsg = new XmlMapper().setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE).readValue(xmlMsg, ReceiveVoiceMsg.class);
+                receiveBaseMsg = xmlMapper.readValue(xmlMsg, ReceiveVoiceMsg.class);
                 break;
             default:
-                receiveBaseMsg = new XmlMapper().setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE).readValue(xmlMsg, ReceiveBaseMsg.class);
+                receiveBaseMsg = xmlMapper.readValue(xmlMsg, ReceiveBaseMsg.class);
         }
         String receiveFileName = null;
         String receiveMsg = null;
