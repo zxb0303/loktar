@@ -24,6 +24,11 @@ import java.util.Locale;
 
 public class RssUtil {
 
+    public final static ObjectMapper xmlMapper = new XmlMapper();
+
+    static {
+        xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
     @SneakyThrows
     public static List<TrRssTorrent> getRssData(TrRss trRss) {
         List<TrRssTorrent> trRssTorrents = new ArrayList<TrRssTorrent>();
@@ -37,8 +42,6 @@ public class RssUtil {
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        ObjectMapper xmlMapper = new XmlMapper();
-        xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         RssFeed rssFeed  = xmlMapper.readValue(response.body(), RssFeed.class);
         rssFeed.getChannel().getItem().forEach(item -> {
             TrRssTorrent trRssTorrent = new TrRssTorrent();

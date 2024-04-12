@@ -1,6 +1,7 @@
 package com.loktar.web.qywx;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.loktar.conf.LokTarConfig;
@@ -45,18 +46,20 @@ public class QyWeixinCallbackController {
     private final BandwagonhostUtil bandwagonhostUtil;
 
     private final LokTarConfig lokTarConfig;
-    private final TrTorrentMapper transmissionMapper;
+
     private final TrTorrentMapper trTorrentMapper;
 
+    private final static ObjectMapper xmlMapper = new XmlMapper();
 
-    public QyWeixinCallbackController(TransmissionUtil transmissionUtil, NoticeServer noticeServer, QywxApi qywxApi, BandwagonhostUtil bandwagonhostUtil, LokTarConfig lokTarConfig, TrTorrentMapper transmissionMapper, TrTorrentMapper trTorrentMapper) {
+
+    public QyWeixinCallbackController(TransmissionUtil transmissionUtil, NoticeServer noticeServer, QywxApi qywxApi, BandwagonhostUtil bandwagonhostUtil, LokTarConfig lokTarConfig, TrTorrentMapper trTorrentMapper) {
         this.transmissionUtil = transmissionUtil;
         this.noticeServer = noticeServer;
         this.qywxApi = qywxApi;
         this.bandwagonhostUtil = bandwagonhostUtil;
         this.lokTarConfig = lokTarConfig;
-        this.transmissionMapper = transmissionMapper;
         this.trTorrentMapper = trTorrentMapper;
+        xmlMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
     }
 
     @PostMapping("receive.do")
@@ -84,11 +87,11 @@ public class QyWeixinCallbackController {
         ReceiceMsgType type = ReceiceMsgType.getByName(msgType);
         switch (type) {
             case ReceiceMsgType.TEXT:
-                ReceiveTextMsg receiveTextMsg = new XmlMapper().setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE).readValue(xmlMsg, ReceiveTextMsg.class);
+                ReceiveTextMsg receiveTextMsg = xmlMapper.readValue(xmlMsg, ReceiveTextMsg.class);
                 dealTextMsg(receiveTextMsg);
                 return;
             case ReceiceMsgType.EVENT:
-                ReceiveEventMsg receiveEventMsg = new XmlMapper().setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE).readValue(xmlMsg, ReceiveEventMsg.class);
+                ReceiveEventMsg receiveEventMsg = xmlMapper.readValue(xmlMsg, ReceiveEventMsg.class);
                 dealEventMsg(receiveEventMsg);
                 return;
             default:

@@ -14,6 +14,8 @@ import java.time.Duration;
 
 public class IPUtil {
     private final static String URL = "https://api.seeip.org/geoip";
+    private final static ObjectMapper objectMapper = new ObjectMapper();
+
     @SneakyThrows
     public static String getip() {
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -26,7 +28,7 @@ public class IPUtil {
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         String responseBody = response.body();
-        ObjectNode objectNode = (ObjectNode) new ObjectMapper().readTree(responseBody);
+        ObjectNode objectNode = (ObjectNode) objectMapper.readTree(responseBody);
         String ip = objectNode.get("ip").asText();
         return ip;
     }
