@@ -54,11 +54,11 @@ public class GithubServiceImpl implements GithubService {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            GithubRelease githubRelease = getGithubReleaseDTO(githubRepository.getRepository());
+            GithubRelease githubRelease = getGithubRelease(githubRepository.getRepository());
             if (StringUtils.isEmpty(githubRepository.getLastTagName()) || githubRelease.getId() > githubRepository.getLastTagId()) {
                 String content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_GITHUB).append(System.lineSeparator())
                         .append(System.lineSeparator())
-                        .append(githubRepository.getRepository()).append(":").append(githubRepository.getLastTagName()).append(System.lineSeparator())
+                        .append(githubRepository.getRepository()).append(":").append(githubRelease.getTagName()).append(System.lineSeparator())
                         .append(System.lineSeparator())
                         .append(DateUtil.getMinuteSysDate()).toString();
                 qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
@@ -71,7 +71,7 @@ public class GithubServiceImpl implements GithubService {
     }
 
     @SneakyThrows
-    private GithubRelease getGithubReleaseDTO(String registory) {
+    private GithubRelease getGithubRelease(String registory) {
         HttpClient httpClient = HttpClient.newHttpClient();
         URI uri = URI.create(MessageFormat.format(URL, registory));
         HttpRequest httpRequest = HttpRequest.newBuilder()
