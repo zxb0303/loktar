@@ -10,7 +10,7 @@
     </parent>
     <groupId>com</groupId>
     <artifactId>loktar</artifactId>
-    <version>4.4.3</version>
+    <version>4.4.4</version>
     <name>loktar</name>
     <description>loktar</description>
     <properties>
@@ -156,10 +156,9 @@
         </dependency>
         <dependency>
             <groupId>com.azure</groupId>
-            <artifactId>azure-ai-formrecognizer</artifactId>
-            <version>4.1.6</version>
+            <artifactId>azure-ai-documentintelligence</artifactId>
+            <version>1.0.0-beta.2</version>
         </dependency>
-
 
     </dependencies>
 

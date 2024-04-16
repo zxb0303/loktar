@@ -2,6 +2,7 @@ package com.loktar.web.newhouse;
 
 
 import com.loktar.domain.newhouse.NewHouseHangzhouV3;
+import com.loktar.domain.newhouse.NewHouseHangzhouV3Detail;
 import com.loktar.domain.newhouse.NewHouseHangzhouV3Presell;
 import com.loktar.domain.newhouse.NewHouseHangzhouV3PresellBuild;
 import com.loktar.service.newhouse.NewHouseHangzhouV3Service;
@@ -21,6 +22,12 @@ public class NewHouseV3Controller {
     }
 
 
+
+    @RequestMapping("/memberLogin.do")
+    public void memberLogin() {
+        newHouseHangzhouV3Service.memberLogin();
+    }
+
     @RequestMapping("/getNewHouseDataByName.do")
     public void getNewHouseData(String houseName) {
         NewHouseHangzhouV3 newHouseHangzhouV3 = newHouseHangzhouV3Service.getNewHouseData(houseName);
@@ -36,9 +43,15 @@ public class NewHouseV3Controller {
     public void getNewHousePresellBuildDataByHouseId(String houseId) {
         List<NewHouseHangzhouV3PresellBuild> newHouseHangzhouV3PresellBuilds = newHouseHangzhouV3Service.getNewHousePresellBuildDataByHouseId(houseId);
     }
-
-    @RequestMapping("/memberLogin.do")
-    public void memberLogin() {
-        newHouseHangzhouV3Service.memberLogin();
+    @RequestMapping("/getNewHouseDetailByHouseId.do")
+    public void getNewHouseDetailByHouseId(String houseId) {
+        List<NewHouseHangzhouV3Detail> newHouseHangzhouV3Details = newHouseHangzhouV3Service.getNewHouseDetailByHouseId(houseId);
     }
+
+    @RequestMapping("/getNewHouseDetailByHouseIdAndAzure.do")
+    public void coverImages(String houseId) {
+        newHouseHangzhouV3Service.getNewHouseDetailByHouseIdAndAzure(houseId);
+    }
+
+
 }

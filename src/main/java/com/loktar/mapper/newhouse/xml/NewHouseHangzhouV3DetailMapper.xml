@@ -36,7 +36,7 @@
       #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
       )
   </insert>
-  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV3Detail">
+    <update id="updateByPrimaryKey" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV3Detail">
     update new_house_hangzhou_v3_detail
     set build_id = #{buildId,jdbcType=VARCHAR},
       presell_id = #{presellId,jdbcType=VARCHAR},
@@ -65,4 +65,22 @@
     inner_area, area_rate, unit_price, total_price, `status`, create_time, update_time
     from new_house_hangzhou_v3_detail
   </select>
+  <insert id="insertBatch">
+    insert into new_house_hangzhou_v3_detail (detail_id, build_id, presell_id,
+                                              house_id, build_no, unit_no,
+                                              room_no, build_area, inner_area,
+                                              area_rate, unit_price, total_price,
+                                              `status`, create_time, update_time
+    )
+    values
+    <foreach collection="list" item="item" separator=",">
+     (#{item.detailId,jdbcType=VARCHAR}, #{item.buildId,jdbcType=VARCHAR}, #{item.presellId,jdbcType=VARCHAR},
+            #{item.houseId,jdbcType=VARCHAR}, #{item.buildNo,jdbcType=VARCHAR}, #{item.unitNo,jdbcType=VARCHAR},
+            #{item.roomNo,jdbcType=VARCHAR}, #{item.buildArea,jdbcType=VARCHAR}, #{item.innerArea,jdbcType=VARCHAR},
+            #{item.areaRate,jdbcType=VARCHAR}, #{item.unitPrice,jdbcType=VARCHAR}, #{item.totalPrice,jdbcType=VARCHAR},
+            #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}
+           )
+    </foreach>
+  </insert>
+
 </mapper>

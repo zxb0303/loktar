@@ -50,7 +50,7 @@ public class QyWeixinCallbackChatGPTController {
 
     private final QywxChatgptMsgMapper qywxChatgptMsgMapper;
 
-    private final AzureUtil azureUtil;
+    private final AzureVoiceUtil azureVoiceUtil;
 
     private final ChatGPTUtil chatGPTUtil;
 
@@ -63,12 +63,12 @@ public class QyWeixinCallbackChatGPTController {
     @Value("${conf.voice.path}")
     private String voicePath;
 
-    public QyWeixinCallbackChatGPTController(RedisUtil redisUtil, QywxApi qywxApi, PropertyMapper propertyMapper, QywxChatgptMsgMapper qywxChatgptMsgMapper, AzureUtil azureUtil, ChatGPTUtil chatGPTUtil, LokTarConfig lokTarConfig) {
+    public QyWeixinCallbackChatGPTController(RedisUtil redisUtil, QywxApi qywxApi, PropertyMapper propertyMapper, QywxChatgptMsgMapper qywxChatgptMsgMapper, AzureVoiceUtil azureVoiceUtil, ChatGPTUtil chatGPTUtil, LokTarConfig lokTarConfig) {
         this.redisUtil = redisUtil;
         this.qywxApi = qywxApi;
         this.propertyMapper = propertyMapper;
         this.qywxChatgptMsgMapper = qywxChatgptMsgMapper;
-        this.azureUtil = azureUtil;
+        this.azureVoiceUtil = azureVoiceUtil;
         this.chatGPTUtil = chatGPTUtil;
         this.lokTarConfig = lokTarConfig;
         xmlMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
@@ -120,7 +120,7 @@ public class QyWeixinCallbackChatGPTController {
             receiveFileName = qywxApi.saveMedia(voicePath, ((ReceiveVoiceMsg) receiveBaseMsg).getMediaId(), receiveBaseMsg.getAgentID());
             FFmpegUtil.convertAmrToWav(voicePath, receiveFileName);
             testFileExist(voicePath,receiveFileName);
-            receiveMsg = azureUtil.wavToText(voicePath, receiveFileName);
+            receiveMsg = azureVoiceUtil.wavToText(voicePath, receiveFileName);
             qywxApi.sendTextMsg(new AgentMsgText(receiveBaseMsg.getFromUserName(), receiveBaseMsg.getAgentID(), "语音识别结果：\n" + receiveMsg));
         }
         dealWitchChatGPT(receiveFileName, receiveMsg, receiveBaseMsg);
@@ -183,7 +183,7 @@ public class QyWeixinCallbackChatGPTController {
         for (int i = 0; i < replyContents.size(); i++) {
             String reply = replyContents.get(i);
             String wavFileName = replyFileNameBase + "_" + (i + 1) + LokTarConstant.VOICE_SUFFIX_WAV;
-            azureUtil.textToWav(voicePath, wavFileName, reply);
+            azureVoiceUtil.textToWav(voicePath, wavFileName, reply);
             FFmpegUtil.convertWavToAmr(voicePath, wavFileName);
             testFileExist(voicePath,wavFileName);
             UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(voicePath + wavFileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR)), receiveBaseMsg.getAgentID());

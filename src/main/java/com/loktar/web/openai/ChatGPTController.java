@@ -7,7 +7,7 @@ import com.loktar.dto.openai.OpenAiRequest;
 import com.loktar.dto.openai.OpenAiResponse;
 import com.loktar.dto.wx.UploadMediaRsp;
 import com.loktar.dto.wx.agentmsg.AgentMsgVoice;
-import com.loktar.util.AzureUtil;
+import com.loktar.util.AzureVoiceUtil;
 import com.loktar.util.ChatGPTUtil;
 import com.loktar.util.DateUtil;
 import com.loktar.util.FFmpegUtil;
@@ -28,7 +28,7 @@ public class ChatGPTController {
 
     private final QywxApi qywxApi;
 
-    private final AzureUtil azureUtil;
+    private final AzureVoiceUtil azureVoiceUtil;
 
     private final ChatGPTUtil chatGPTUtil;
 
@@ -37,9 +37,9 @@ public class ChatGPTController {
     @Value("${conf.voice.path}")
     private String voicePath;
 
-    public ChatGPTController(QywxApi qywxApi, AzureUtil azureUtil, ChatGPTUtil chatGPTUtil, LokTarConfig lokTarConfig) {
+    public ChatGPTController(QywxApi qywxApi, AzureVoiceUtil azureVoiceUtil, ChatGPTUtil chatGPTUtil, LokTarConfig lokTarConfig) {
         this.qywxApi = qywxApi;
-        this.azureUtil = azureUtil;
+        this.azureVoiceUtil = azureVoiceUtil;
         this.chatGPTUtil = chatGPTUtil;
         this.lokTarConfig = lokTarConfig;
     }
@@ -62,7 +62,7 @@ public class ChatGPTController {
     @RequestMapping("/testVoiceAndSend.do")
     public void testVoiceAndSend() {
         String wavFileName = UUID.randomUUID().toString() + LokTarConstant.VOICE_SUFFIX_WAV;
-        azureUtil.textToWav(voicePath, wavFileName, "你叫什么名字");
+        azureVoiceUtil.textToWav(voicePath, wavFileName, "你叫什么名字");
         FFmpegUtil.convertWavToAmr(voicePath, wavFileName);
         testFileExist(voicePath,wavFileName);
         String filepath = voicePath + wavFileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR);

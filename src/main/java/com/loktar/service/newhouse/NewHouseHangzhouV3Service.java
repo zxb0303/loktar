@@ -1,6 +1,7 @@
 package com.loktar.service.newhouse;
 
 import com.loktar.domain.newhouse.NewHouseHangzhouV3;
+import com.loktar.domain.newhouse.NewHouseHangzhouV3Detail;
 import com.loktar.domain.newhouse.NewHouseHangzhouV3Presell;
 import com.loktar.domain.newhouse.NewHouseHangzhouV3PresellBuild;
 
@@ -14,4 +15,8 @@ public interface NewHouseHangzhouV3Service {
     List<NewHouseHangzhouV3PresellBuild> getNewHousePresellBuildDataByHouseId(String houseId);
 
     void memberLogin();
+
+    List<NewHouseHangzhouV3Detail> getNewHouseDetailByHouseId(String houseId);
+
+    void getNewHouseDetailByHouseIdAndAzure(String houseId);
 }
