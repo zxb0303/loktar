@@ -31,6 +31,15 @@ public class LokTarConfig {
     @Value("${conf.azure.voiceKey}")
     public String azureVoiceKey;
 
+    @Value("${conf.azure.voiceRegion}")
+    public String azureVoiceRegion;
+
+    @Value("${conf.azure.docIntelligenceKey}")
+    public String azureDocIntelligenceKey;
+
+    @Value("${conf.azure.docIntelligenceEndpoint}")
+    public String azureDocIntelligenceEndpoint;
+
     @Value("${conf.bwg.apiKey}")
     public String bwgApiKey;
 
@@ -88,7 +97,11 @@ public class LokTarConfig {
     @Value("${conf.common.clashRssUrl}")
     public String commonClashRssUrl;
 
+    @Value("${conf.newhouse.originalPath}")
+    public String newhouseOriginalPath;
 
+    @Value("${conf.newhouse.coverPath}")
+    public String newhouseCoverPath;
 
 
 }
