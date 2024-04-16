@@ -15,4 +15,6 @@ public interface NewHouseHangzhouV3PresellBuildMapper {
     int updateByPrimaryKey(NewHouseHangzhouV3PresellBuild row);
 
     void insertBatch(List<NewHouseHangzhouV3PresellBuild> newHouseHangzhouV3PresellBuilds);
+
+    List<NewHouseHangzhouV3PresellBuild> selectByHouseId(String houseId);
 }

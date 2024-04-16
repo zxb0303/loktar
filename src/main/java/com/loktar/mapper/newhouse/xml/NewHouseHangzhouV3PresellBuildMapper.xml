@@ -39,7 +39,7 @@
     select build_id, build_no, presell_id, house_id, create_time, update_time
     from new_house_hangzhou_v3_presell_build
   </select>
-  <insert id="insertBatch">
+    <insert id="insertBatch">
     insert into new_house_hangzhou_v3_presell_build (build_id, build_no, presell_id,house_id, create_time, update_time)
     values
     <foreach collection="list" item="item" separator=",">
@@ -47,5 +47,9 @@
       #{item.houseId,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
+  <select id="selectByHouseId" resultMap="BaseResultMap">
+    select build_id, build_no, presell_id, house_id, create_time, update_time
+    from new_house_hangzhou_v3_presell_build where house_id = #{item.houseId,jdbcType=VARCHAR}
+  </select>
 
 </mapper>

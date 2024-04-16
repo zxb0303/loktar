@@ -13,4 +13,6 @@ public interface NewHouseHangzhouV3DetailMapper {
     List<NewHouseHangzhouV3Detail> selectAll();
 
     int updateByPrimaryKey(NewHouseHangzhouV3Detail row);
+
+    void insertBatch(List<NewHouseHangzhouV3Detail> newHouseHangzhouV3Details);
 }

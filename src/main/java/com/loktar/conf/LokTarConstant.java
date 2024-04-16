@@ -45,6 +45,13 @@ public class LokTarConstant {
     public final static String VOICE_SUFFIX_WAV = ".wav";
     public final static String VOICE_SUFFIX_AMR = ".amr";
 
+    public final static String PIC_SUFFIX_PNG = ".png";
+    public final static String PIC_SUFFIX_JPG = ".jpg";
+
+    public final static String PIC_TYPE_JPG = "jpg";
+
+    public final static String AZURE_DOCINTELLIGENCE_MODEL_ID = "newhouse";
+
     public final static String ENV_PRO = "pro";
 
 

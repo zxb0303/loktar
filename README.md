@@ -310,7 +310,7 @@ ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Shanghai", "/app.jar"]
 [LandTask.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Ftask%2Fland%2FLandTask.java)
 ### 4.4 杭州市摇号数据爬虫
 [LotteryTask.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Ftask%2Flottery%2FLotteryTask.java)
-### 4.5 杭州市新房一房一价数据爬虫(由透明售房网V2调整为房管局数据V3 开发中)
+### 4.5 杭州市新房一房一价数据爬虫
 [NewHouseV3Controller.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fnewhouse%2FNewHouseV3Controller.java)
 ### 4.6 企业微信接入ChatGPT进行对话，使用Azure语音服务进行文本与语音互换
 [QyWeixinCallbackChatGPTController.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Fqywx%2FQyWeixinCallbackChatGPTController.java)
