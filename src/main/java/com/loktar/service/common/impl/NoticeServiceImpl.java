@@ -35,4 +35,9 @@ public class NoticeServiceImpl implements NoticeServer {
     public List<Notice> getUnsendNoticesByNoticeUser(String noticeUser) {
         return noticeMapper.getUnsendNoticesByNoticeUser(noticeUser);
     }
+
+    @Override
+    public int updateByPrimaryKey(Notice notice) {
+        return noticeMapper.updateByPrimaryKey(notice);
+    }
 }

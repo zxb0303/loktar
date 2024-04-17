@@ -7,6 +7,7 @@
     <result column="notice_content" jdbcType="VARCHAR" property="noticeContent" />
     <result column="notice_time" jdbcType="VARCHAR" property="noticeTime" />
     <result column="notice_user" jdbcType="VARCHAR" property="noticeUser" />
+    <result column="status" jdbcType="INTEGER" property="status" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from notice
@@ -14,33 +15,36 @@
   </delete>
   <insert id="insert" parameterType="com.loktar.domain.common.Notice">
     insert into notice (notice_id, notice_title, notice_content, 
-      notice_time, notice_user)
+      notice_time, notice_user, `status`
+      )
     values (#{noticeId,jdbcType=INTEGER}, #{noticeTitle,jdbcType=VARCHAR}, #{noticeContent,jdbcType=VARCHAR}, 
-      #{noticeTime,jdbcType=VARCHAR}, #{noticeUser,jdbcType=VARCHAR})
+      #{noticeTime,jdbcType=VARCHAR}, #{noticeUser,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}
+      )
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.loktar.domain.common.Notice">
     update notice
     set notice_title = #{noticeTitle,jdbcType=VARCHAR},
       notice_content = #{noticeContent,jdbcType=VARCHAR},
       notice_time = #{noticeTime,jdbcType=VARCHAR},
-      notice_user = #{noticeUser,jdbcType=VARCHAR}
+      notice_user = #{noticeUser,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=INTEGER}
     where notice_id = #{noticeId,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select notice_id, notice_title, notice_content, notice_time, notice_user
+    select notice_id, notice_title, notice_content, notice_time, notice_user, `status`
     from notice
     where notice_id = #{noticeId,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select notice_id, notice_title, notice_content, notice_time, notice_user
+    select notice_id, notice_title, notice_content, notice_time, notice_user, `status`
     from notice
   </select>
   <select id="getUnsendNotices" resultMap="BaseResultMap">
-    select notice_id, notice_title, notice_content, notice_time, notice_user
-    from notice where notice_time<![CDATA[>]]>now() order by notice_time;
+    select notice_id, notice_title, notice_content, notice_time, notice_user, `status`
+    from notice where `status` = 0 order by notice_time;
   </select>
   <select id="getUnsendNoticesByNoticeUser" resultMap="BaseResultMap">
-    select notice_id, notice_title, notice_content, notice_time, notice_user
-    from notice where notice_time<![CDATA[>]]>now() and notice_user = #{noticeUser,jdbcType=VARCHAR} order by notice_time;
+    select notice_id, notice_title, notice_content, notice_time, notice_user, `status`
+    from notice where `status` = 0 and notice_user = #{noticeUser,jdbcType=VARCHAR} order by notice_time;
   </select>
 </mapper>
