@@ -102,7 +102,7 @@
     from tr_torrent where `status` = #{status,jdbcType=INTEGER} order by added_date;
   </select>
   <select id="getErrorName" resultType="java.lang.String">
-      select DISTINCT name from tr_torrent where error_string  like '%not registered%'  or error_string like '%Please Verify Local Data%';
+      select DISTINCT name from tr_torrent where error_string like '%not registered%' or error_string like '%Please Verify Local Data%' error_string like '%Torrent banned%';
   </select>
   <select id="getTorrentsByName" resultMap="BaseResultMap">
     select id, `name`, `status`, total_size, download_dir, error, error_string, hash_string,
