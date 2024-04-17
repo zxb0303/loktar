@@ -35,7 +35,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 
 @RestController
@@ -81,12 +80,8 @@ public class QyWeixinCallbackChatGPTController {
         if (!redisUtil.setIfAbsent(msgSignature,timestamp, 30)) {
             return ResponseEntity.noContent().build();
         }
-        CompletableFuture.runAsync(() -> {
-            try {
-                asyncDealMsg(msgSignature, timestamp, nonce, xml);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        Thread.ofVirtual().start(() -> {
+            asyncDealMsg(msgSignature, timestamp, nonce, xml);
         });
         return ResponseEntity.noContent().build();
     }

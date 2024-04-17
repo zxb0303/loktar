@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 
 @RestController
@@ -72,12 +71,8 @@ public class QyWeixinCallbackController {
         if (!redisUtil.setIfAbsent(msgSignature,timestamp, 30)) {
             return ResponseEntity.noContent().build();
         }
-        CompletableFuture.runAsync(() -> {
-            try {
-                asyncDealMsg(msgSignature, timestamp, nonce, xml);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        Thread.ofVirtual().start(() -> {
+            asyncDealMsg(msgSignature, timestamp, nonce, xml);
         });
         return ResponseEntity.noContent().build();
     }
