@@ -110,7 +110,7 @@ public class QyWeixinCallbackController {
                         .append("添加通知，标题，内容，时间(格式：yyyyMMddHHmm)").append(System.lineSeparator());
                 break;
             case EventCommandType.SHOW_NOTICE:
-                List<Notice> notices = noticeServer.getUnsendNoticesByNoticeUser(receiveEventMsg.getFromUserName());
+                List<Notice> notices = noticeServer.getUnsendNotices();
                 replymsg.append("当前待通知如下：").append(System.lineSeparator())
                         .append(System.lineSeparator());
                 for (Notice n : notices) {
@@ -202,6 +202,7 @@ public class QyWeixinCallbackController {
                 notice.setNoticeContent(strs[2]);
                 notice.setNoticeTime(DateUtil.format(DateUtil.parase(strs[3], DateUtil.DATEFORMATMINUTESTR), DateUtil.DATEFORMATMINUTE));
                 notice.setNoticeUser(receiveTextMsg.getFromUserName());
+                notice.setStatus(0);
                 int result = noticeServer.insert(notice);
                 String replymsg = "添加通知失败";
                 if (result == 1) {

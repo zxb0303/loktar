@@ -13,4 +13,6 @@ public interface NoticeServer {
     List<Notice> getUnsendNotices();
 
     List<Notice> getUnsendNoticesByNoticeUser(String noticeUser);
+
+    int updateByPrimaryKey(Notice notice);
 }

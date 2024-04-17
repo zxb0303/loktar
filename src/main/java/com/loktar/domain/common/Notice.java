@@ -13,6 +13,8 @@ public class Notice implements Serializable {
 
     private String noticeUser;
 
+    private Integer status;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getNoticeId() {
@@ -55,6 +57,14 @@ public class Notice implements Serializable {
         this.noticeUser = noticeUser == null ? null : noticeUser.trim();
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -66,6 +76,7 @@ public class Notice implements Serializable {
         sb.append(", noticeContent=").append(noticeContent);
         sb.append(", noticeTime=").append(noticeTime);
         sb.append(", noticeUser=").append(noticeUser);
+        sb.append(", status=").append(status);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();
