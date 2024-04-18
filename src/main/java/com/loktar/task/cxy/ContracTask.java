@@ -6,13 +6,14 @@ import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.cxy.Contract;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.cxy.ContractMapper;
-import com.loktar.util.DateUtil;
+import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -37,7 +38,7 @@ public class ContracTask {
         if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
             return;
         }
-        System.out.println("合同到期监测器：" + DateUtil.getTodayToSecond());
+        System.out.println("合同到期监测器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
 
         List<Contract> contracts = contractMapper.getNeedNoticeContracts();
         if (ObjectUtils.isEmpty(contracts)) {
@@ -58,7 +59,7 @@ public class ContracTask {
             cntract.setStatus(1);
             contractMapper.updateByPrimaryKey(cntract);
         }
-        content = content.append(DateUtil.getMinuteSysDate());
+        content = content.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE));
         //qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
         qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeCxy, lokTarConfig.qywxAgent002Id, content.toString()));
     }

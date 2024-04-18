@@ -7,11 +7,13 @@ import com.loktar.domain.common.Property;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.common.PropertyMapper;
 import com.loktar.util.CarUtil;
-import com.loktar.util.DateUtil;
+import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 @EnableScheduling
@@ -42,7 +44,7 @@ public class CarTask {
                     .append(System.lineSeparator())
                     .append(lastVersion).append(System.lineSeparator())
                     .append(System.lineSeparator())
-                    .append(DateUtil.getMinuteSysDate()).toString();
+                    .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE)).toString();
             xc90AppVersionProperty.setValue(lastVersion);
             propertyMapper.updateByPrimaryKey(xc90AppVersionProperty);
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));

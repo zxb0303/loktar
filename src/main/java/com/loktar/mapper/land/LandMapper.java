@@ -16,7 +16,7 @@ public interface LandMapper {
 
     int updateByPrimaryKey(Land row);
 
-    int deleteByDate(Date date);
+    int deleteByDate(String date);
 
     void insertBatch(List<Land> lands);
 }

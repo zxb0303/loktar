@@ -6,10 +6,11 @@ import com.loktar.domain.lottery.LotteryHouse;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.lottery.LotteryHouseMapper;
 import com.loktar.service.common.CommonService;
-import com.loktar.util.DateUtil;
+import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -31,7 +32,8 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public void sendLotteryNotice() {
-        StringBuilder content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_LOTTERY + "(" + DateUtil.getYestodayStr() + ")").append(System.lineSeparator());
+        String yestodayStr = DateTimeUtil.getDatetimeStr(LocalDateTime.now().minusDays(1), DateTimeUtil.FORMATTER_DATE);
+        StringBuilder content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_LOTTERY + "(" + yestodayStr + ")").append(System.lineSeparator());
         List<LotteryHouse> lotteryHouses = lotteryHouseMapper.getYesterdayLotteryHouses();
         if (lotteryHouses.size() == 0) {
             return;
@@ -50,7 +52,7 @@ public class CommonServiceImpl implements CommonService {
                     .append(System.lineSeparator());
 
         }
-        content.append(DateUtil.getMinuteSysDate());
+        content.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE));
         qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content.toString()));
     }
 

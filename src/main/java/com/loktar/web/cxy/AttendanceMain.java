@@ -3,7 +3,7 @@ package com.loktar.web.cxy;
 import com.loktar.dto.cxy.HardWork;
 import com.loktar.dto.cxy.Leave;
 import com.loktar.dto.cxy.RestInfo;
-import com.loktar.util.DateUtil;
+import com.loktar.util.DateTimeUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
@@ -133,7 +133,7 @@ public class AttendanceMain {
             Cell newCell = newRow.createCell(4);
             Calendar calendar1 = Calendar.getInstance();
             String date1 = newRow.getCell(5).getStringCellValue();
-            calendar1.setTime(DateUtil.parase(date1, DateUtil.DATEFORMATDAY));
+            calendar1.setTime(DateTimeUtil.parseDate(date1, DateTimeUtil.FORMATTER_DATE));
             newCell.setCellValue(0);
             if (calendar1.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && calendar1.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
                 newCell.setCellValue(1);
@@ -186,7 +186,8 @@ public class AttendanceMain {
             String date = dateCell.getStringCellValue();
             //TODO 需要预处理daily表中日期格式带不带-
             //calendar.setTime(DateUtil.parase(date, DateUtil.DATEFORMAT2));
-            calendar.setTime(DateUtil.parase(date, DateUtil.DATEFORMATDAY));
+            calendar.setTime(DateTimeUtil.parseDate(date, DateTimeUtil.FORMATTER_DATE));
+
             //标记迟到
             //正常班或者正常晚班 上班打卡结果包含迟到
             // 且 出勤是1

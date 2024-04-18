@@ -5,13 +5,14 @@ import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.wx.UploadMediaRsp;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.dto.wx.agentmsg.AgentMsgVoice;
-import com.loktar.util.DateUtil;
+import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("wxapi")
@@ -30,7 +31,7 @@ public class QywxController {
 
         String content = LokTarConstant.NOTICE_TITLE_GITHUB + "\n\n"
                 + "试试"
-                + "\n\n" + DateUtil.getMinuteSysDate();
+                + "\n\n" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE);
         qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent003Id, content));
 
 

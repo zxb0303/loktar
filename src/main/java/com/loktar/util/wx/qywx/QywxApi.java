@@ -11,7 +11,7 @@ import com.loktar.domain.qywx.QywxMenu;
 import com.loktar.dto.wx.*;
 import com.loktar.dto.wx.agentmsg.*;
 import com.loktar.mapper.qywx.QywxMenuMapper;
-import com.loktar.util.DateUtil;
+import com.loktar.util.DateTimeUtil;
 import com.loktar.util.RedisUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +31,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -56,17 +57,16 @@ public class QywxApi {
     private final LokTarConfig lokTarConfig;
 
     private final static ObjectMapper objectMapper = new ObjectMapper();
-    private static Map<String,String> AGENTMAP = new HashMap<>();
-
+    private static Map<String, String> AGENTMAP = new HashMap<>();
 
 
     public QywxApi(RedisUtil redisUtil, QywxMenuMapper qywxMenuMapper, LokTarConfig lokTarConfig) {
         this.redisUtil = redisUtil;
         this.qywxMenuMapper = qywxMenuMapper;
         this.lokTarConfig = lokTarConfig;
-        AGENTMAP.put(lokTarConfig.qywxAgent002Id,lokTarConfig.qywxAgent002Secert);
-        AGENTMAP.put(lokTarConfig.qywxAgent003Id,lokTarConfig.qywxAgent003Secert);
-        AGENTMAP.put(lokTarConfig.qywxAgent004Id,lokTarConfig.qywxAgent004Secert);
+        AGENTMAP.put(lokTarConfig.qywxAgent002Id, lokTarConfig.qywxAgent002Secert);
+        AGENTMAP.put(lokTarConfig.qywxAgent003Id, lokTarConfig.qywxAgent003Secert);
+        AGENTMAP.put(lokTarConfig.qywxAgent004Id, lokTarConfig.qywxAgent004Secert);
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
@@ -182,7 +182,7 @@ public class QywxApi {
     }
 
     @SneakyThrows
-    public UploadMediaRsp uploadMedia(File file,  String agentId) {
+    public UploadMediaRsp uploadMedia(File file, String agentId) {
         HttpClient httpClient = HttpClient.newHttpClient();
         String boundary = LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_MULTIPART_PREFIX + System.currentTimeMillis();
         HttpRequest.BodyPublisher bodyPublisher = ofMimeMultipartData(file, boundary);
@@ -205,6 +205,7 @@ public class QywxApi {
         multipart.writeTo(baos);
         return HttpRequest.BodyPublishers.ofByteArray(baos.toByteArray());
     }
+
     @SneakyThrows
     public String saveMedia(String filePath, String mediaId, String agentId) {
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -215,7 +216,7 @@ public class QywxApi {
 
         HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
         // 从响应头获取文件名
-        String filename =DateUtil.format(new Date(), DateUtil.DATEFORMATMINUTESECONDSTR)+LokTarConstant.VOICE_SUFFIX_AMR;
+        String filename = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_FILENAME) + LokTarConstant.VOICE_SUFFIX_AMR;
         Path destination = Paths.get(filePath + filename);
         // 将响应体写入到文件中，并确保如果文件已存在则覆盖
         Files.write(destination, response.body(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);

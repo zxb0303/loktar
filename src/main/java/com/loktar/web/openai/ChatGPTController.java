@@ -9,7 +9,7 @@ import com.loktar.dto.wx.UploadMediaRsp;
 import com.loktar.dto.wx.agentmsg.AgentMsgVoice;
 import com.loktar.util.AzureVoiceUtil;
 import com.loktar.util.ChatGPTUtil;
-import com.loktar.util.DateUtil;
+import com.loktar.util.DateTimeUtil;
 import com.loktar.util.FFmpegUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -80,10 +81,10 @@ public class ChatGPTController {
         while (times > 0) {
             File file = new File(voicePath + coverFileName);
             if (file.exists()) {
-                System.out.println("file exist "+ DateUtil.getTodayToSecond());
+                System.out.println("file exist "+ DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
                 break;
             }
-            System.out.println("file not exist "+DateUtil.getTodayToSecond());
+            System.out.println("file not exist "+DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
             times--;
             Thread.sleep(1000);
         }
