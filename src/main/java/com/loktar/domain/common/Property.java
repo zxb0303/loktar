@@ -1,7 +1,7 @@
 package com.loktar.domain.common;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class Property implements Serializable {
     private String id;
@@ -10,7 +10,7 @@ public class Property implements Serializable {
 
     private String status;
 
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     private String value;
 
@@ -40,11 +40,11 @@ public class Property implements Serializable {
         this.status = status == null ? null : status.trim();
     }
 
-    public Date getUpdateTime() {
+    public LocalDateTime getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
     }
 

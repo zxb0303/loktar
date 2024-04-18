@@ -29,8 +29,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.GZIPInputStream;
@@ -312,7 +312,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
         }
         newHouseHangzhouV2.setAreaCode(areaCode);
         newHouseHangzhouV2.setAddress(addressDiv.html());
-        newHouseHangzhouV2.setUpdateTime(new Date());
+        newHouseHangzhouV2.setUpdateTime(LocalDateTime.now());
         if (ObjectUtils.isEmpty(newHouseHangzhouV2Mapper.selectByPrimaryKey(houseId))) {
             newHouseHangzhouV2Mapper.insert(newHouseHangzhouV2);
         } else {
