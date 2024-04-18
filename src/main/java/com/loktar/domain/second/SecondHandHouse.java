@@ -1,7 +1,7 @@
 package com.loktar.domain.second;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class SecondHandHouse implements Serializable {
     private Integer id;
@@ -26,7 +26,7 @@ public class SecondHandHouse implements Serializable {
 
     private String status;
 
-    private Date statusTime;
+    private LocalDateTime statusTime;
 
     private static final long serialVersionUID = 1L;
 
@@ -118,11 +118,11 @@ public class SecondHandHouse implements Serializable {
         this.status = status == null ? null : status.trim();
     }
 
-    public Date getStatusTime() {
+    public LocalDateTime getStatusTime() {
         return statusTime;
     }
 
-    public void setStatusTime(Date statusTime) {
+    public void setStatusTime(LocalDateTime statusTime) {
         this.statusTime = statusTime;
     }
 

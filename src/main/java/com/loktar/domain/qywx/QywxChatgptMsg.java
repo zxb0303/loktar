@@ -1,7 +1,7 @@
 package com.loktar.domain.qywx;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class QywxChatgptMsg implements Serializable {
     private Integer id;
@@ -18,7 +18,7 @@ public class QywxChatgptMsg implements Serializable {
 
     private Integer totaltokens;
 
-    private Date createTime;
+    private LocalDateTime createTime;
 
     private String text;
 
@@ -80,11 +80,11 @@ public class QywxChatgptMsg implements Serializable {
         this.totaltokens = totaltokens;
     }
 
-    public Date getCreateTime() {
+    public LocalDateTime getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
 

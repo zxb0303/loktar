@@ -2,12 +2,12 @@ package com.loktar.dto.github;
 
 import lombok.Data;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 @Data
 public class GithubRelease {
     private int id;
     private String tagName;
-    private Date createdAt;
+    private ZonedDateTime createdAt;
     private boolean prerelease;
 }

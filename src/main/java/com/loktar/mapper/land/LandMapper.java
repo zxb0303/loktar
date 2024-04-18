@@ -1,8 +1,6 @@
 package com.loktar.mapper.land;
 
 import com.loktar.domain.land.Land;
-
-import java.util.Date;
 import java.util.List;
 
 public interface LandMapper {

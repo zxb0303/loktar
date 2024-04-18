@@ -1,10 +1,11 @@
 package com.loktar.util;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.Locale;
 
 public class DateTimeUtil {
     public static DateTimeFormatter FORMATTER_DATESECOND = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -13,25 +14,30 @@ public class DateTimeUtil {
     public static DateTimeFormatter FORMATTER_YEAR = DateTimeFormatter.ofPattern("yyyy");
     public static DateTimeFormatter FORMATTER_FILENAME = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     public static DateTimeFormatter FORMATTER_QYWX_RECEIVE = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+    public static DateTimeFormatter FORMATTER_RSS_ITEM_PUB = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy hh:mm:ss Z", Locale.ENGLISH);
 
 
     public static String getDatetimeStr(LocalDateTime datetime, DateTimeFormatter format) {
         return datetime.format(format);
     }
 
-    public static String getDatetimeStr(Date date, DateTimeFormatter format) {
-        Instant instant = date.toInstant();
-        LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-        return getDatetimeStr(localDateTime, format);
-    }
-
-    public static Date parseDate(String dateStr, DateTimeFormatter format) {
-        LocalDateTime localDateTime = parse(dateStr, format);
-        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-    }
+//    public static String getDatetimeStr(Date date, DateTimeFormatter format) {
+//        Instant instant = date.toInstant();
+//        LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+//        return getDatetimeStr(localDateTime, format);
+//    }
+//
+//    public static Date parseDate(String dateStr, DateTimeFormatter format) {
+//        LocalDateTime localDateTime = parse(dateStr, format);
+//        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+//    }
 
     public static LocalDateTime parse(String dateStr, DateTimeFormatter format) {
         return LocalDateTime.parse(dateStr, format);
+    }
+
+    public static LocalDate parseLocalDate(String dateStr, DateTimeFormatter format) {
+        return LocalDate.parse(dateStr, format);
     }
 
     public static LocalDateTime convertSecondsToDateTime(long seconds) {

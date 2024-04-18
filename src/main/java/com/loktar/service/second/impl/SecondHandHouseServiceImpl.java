@@ -25,7 +25,6 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -146,7 +145,7 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
         secondHandHouse.setGplxrxm(secondHandHouseDTO.getGplxrxm());
         secondHandHouse.setScgpshsj(secondHandHouseDTO.getScgpshsj());
         secondHandHouse.setStatus("挂牌");
-        secondHandHouse.setStatusTime(new Date());
+        secondHandHouse.setStatusTime(LocalDateTime.now());
         return secondHandHouse;
     }
 }
