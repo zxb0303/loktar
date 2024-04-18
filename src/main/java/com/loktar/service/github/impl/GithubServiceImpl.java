@@ -27,6 +27,8 @@ import java.net.http.HttpResponse;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -61,11 +63,13 @@ public class GithubServiceImpl implements GithubService {
                         .append(System.lineSeparator())
                         .append(githubRepository.getRepository()).append(":").append(githubRelease.getTagName()).append(System.lineSeparator())
                         .append(System.lineSeparator())
-                        .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE)).toString();
+                        .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE)).toString();
                 qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
                 githubRepository.setLastTagId(githubRelease.getId());
                 githubRepository.setLastTagName(githubRelease.getTagName());
-                githubRepository.setPublishedAt(DateTimeUtil.getDatetimeStr(githubRelease.getCreatedAt(), DateTimeUtil.FORMATTER_DATESECOND));
+                ZonedDateTime localZonedDateTime = githubRelease.getCreatedAt().withZoneSameInstant(ZoneId.systemDefault());
+                LocalDateTime localDateTime = localZonedDateTime.toLocalDateTime();
+                githubRepository.setPublishedAt(DateTimeUtil.getDatetimeStr(localDateTime, DateTimeUtil.FORMATTER_DATESECOND));
                 githubRepositoryMapper.updateByPrimaryKey(githubRepository);
             }
         }
@@ -85,7 +89,8 @@ public class GithubServiceImpl implements GithubService {
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         String responseBody = response.body();
-        List<GithubRelease> githubReleases = objectMapper.readValue(responseBody, new TypeReference<List<GithubRelease>>() {});
+        List<GithubRelease> githubReleases = objectMapper.readValue(responseBody, new TypeReference<List<GithubRelease>>() {
+        });
         for (GithubRelease githubRelease : githubReleases) {
             if (!githubRelease.isPrerelease()) {
                 return githubRelease;

@@ -1,7 +1,7 @@
 package com.loktar.domain.newhouse;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class NewHouseHangzhouV2 implements Serializable {
     private String houseId;
@@ -36,7 +36,7 @@ public class NewHouseHangzhouV2 implements Serializable {
 
     private String address;
 
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     private static final long serialVersionUID = 1L;
 
@@ -168,11 +168,11 @@ public class NewHouseHangzhouV2 implements Serializable {
         this.address = address == null ? null : address.trim();
     }
 
-    public Date getUpdateTime() {
+    public LocalDateTime getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
     }
 

@@ -15,12 +15,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class RssUtil {
 
@@ -59,13 +59,9 @@ public class RssUtil {
             }else{
                 trRssTorrent.setDownloadUrl(item.getLink());
             }
-            String dateStr = item.getPubDate();
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss Z", Locale.ENGLISH);
-            try {
-                trRssTorrent.setPubDate(sdf.parse(dateStr));
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
+            ZonedDateTime localZonedDateTime = ZonedDateTime.parse(item.getPubDate(), DateTimeUtil.FORMATTER_RSS_ITEM_PUB).withZoneSameInstant(ZoneId.systemDefault());
+            LocalDateTime localDateTime = localZonedDateTime.toLocalDateTime();
+            trRssTorrent.setPubDate(localDateTime);
             trRssTorrent.setStatus(0);
             trRssTorrents.add(trRssTorrent);
         });

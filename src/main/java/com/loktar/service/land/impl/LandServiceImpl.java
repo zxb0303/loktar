@@ -87,7 +87,7 @@ public class LandServiceImpl implements LandService {
     private Land changeLandDTO(LandDTO landDTO) throws ParseException {
         Land land = new Land();
         land.setId(StringUtils.isEmpty(landDTO.getId()) ? 0 : Integer.valueOf(landDTO.getId()));
-        land.setDate(DateTimeUtil.parseDate(landDTO.getYuEndTime(), DateTimeUtil.FORMATTER_DATE));
+        land.setDate(DateTimeUtil.parseLocalDate(landDTO.getYuEndTime(), DateTimeUtil.FORMATTER_DATE));
         land.setCity(landDTO.getCityName());
         land.setArea(landDTO.getUrbanName());
         land.setLandNo(landDTO.getNum());

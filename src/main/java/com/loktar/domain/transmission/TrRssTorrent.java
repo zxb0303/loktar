@@ -1,7 +1,7 @@
 package com.loktar.domain.transmission;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class TrRssTorrent implements Serializable {
     private Integer rssTorrentId;
@@ -14,7 +14,7 @@ public class TrRssTorrent implements Serializable {
 
     private String downloadUrl;
 
-    private Date pubDate;
+    private LocalDateTime pubDate;
 
     private String title;
 
@@ -60,11 +60,11 @@ public class TrRssTorrent implements Serializable {
         this.downloadUrl = downloadUrl == null ? null : downloadUrl.trim();
     }
 
-    public Date getPubDate() {
+    public LocalDateTime getPubDate() {
         return pubDate;
     }
 
-    public void setPubDate(Date pubDate) {
+    public void setPubDate(LocalDateTime pubDate) {
         this.pubDate = pubDate;
     }
 

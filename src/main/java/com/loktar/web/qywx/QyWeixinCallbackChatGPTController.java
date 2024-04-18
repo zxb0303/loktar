@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -139,7 +138,7 @@ public class QyWeixinCallbackChatGPTController {
         receiveQywxChatgptMsg.setPromptTokens(0);
         receiveQywxChatgptMsg.setCompletionTokens(0);
         receiveQywxChatgptMsg.setTotaltokens(0);
-        receiveQywxChatgptMsg.setCreateTime(new Date());
+        receiveQywxChatgptMsg.setCreateTime(LocalDateTime.now());
         qywxChatgptMsgMapper.insert(receiveQywxChatgptMsg);
 
         if (receiveMsg.equals("重置会话")) {
@@ -173,8 +172,6 @@ public class QyWeixinCallbackChatGPTController {
         for (int j = 0; j < replyContents.size(); j++) {
             qywxApi.sendTextMsg(new AgentMsgText(receiveBaseMsg.getFromUserName(), receiveBaseMsg.getAgentID(), replyContents.get(j)));
         }
-
-        Date date = new Date();
         String replyFileNameBase = DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_FILENAME);
         for (int i = 0; i < replyContents.size(); i++) {
             String reply = replyContents.get(i);
@@ -195,7 +192,7 @@ public class QyWeixinCallbackChatGPTController {
         replyQywxChatgptMsg.setPromptTokens(openAiResponse.getUsage().getPromptTokens());
         replyQywxChatgptMsg.setCompletionTokens(openAiResponse.getUsage().getCompletionTokens());
         replyQywxChatgptMsg.setTotaltokens(openAiResponse.getUsage().getTotalTokens());
-        replyQywxChatgptMsg.setCreateTime(new Date());
+        replyQywxChatgptMsg.setCreateTime(LocalDateTime.now());
         qywxChatgptMsgMapper.insert(replyQywxChatgptMsg);
     }
 
