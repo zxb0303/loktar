@@ -14,7 +14,7 @@ public class DateTimeUtil {
     public static DateTimeFormatter FORMATTER_YEAR = DateTimeFormatter.ofPattern("yyyy");
     public static DateTimeFormatter FORMATTER_FILENAME = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     public static DateTimeFormatter FORMATTER_QYWX_RECEIVE = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-    public static DateTimeFormatter FORMATTER_RSS_ITEM_PUB = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy hh:mm:ss Z", Locale.ENGLISH);
+    public static DateTimeFormatter FORMATTER_RSS_ITEM_PUB = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
 
 
     public static String getDatetimeStr(LocalDateTime datetime, DateTimeFormatter format) {
