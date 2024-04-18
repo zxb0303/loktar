@@ -23,6 +23,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,9 +55,9 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
     public void updateSecondHandHouseData() {
         Property property = propertyMapper.selectByPrimaryKey("second_hand_house");
         String dateStr = secondHandHouseMapper.getMaxDate();
-        LocalDateTime date = DateTimeUtil.parse(dateStr, DateTimeUtil.FORMATTER_DATE).plusDays(1);
+        LocalDate date = DateTimeUtil.parseLocalDate(dateStr, DateTimeUtil.FORMATTER_DATE).plusDays(1);
         dateStr = DateTimeUtil.getDatetimeStr(date, DateTimeUtil.FORMATTER_DATE);
-        LocalDateTime yestoday = LocalDateTime.now().minusDays(1);
+        LocalDate yestoday = LocalDate.now().minusDays(1);
         while(date.isBefore(yestoday)){
             List<SecondHandHouse> secondHandHouses = getHouseData(dateStr, property);
             System.out.println(dateStr + "共" + secondHandHouses.size() + "条数据待处理");
