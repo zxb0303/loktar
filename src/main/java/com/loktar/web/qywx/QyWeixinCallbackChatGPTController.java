@@ -32,6 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -174,7 +175,7 @@ public class QyWeixinCallbackChatGPTController {
         }
 
         Date date = new Date();
-        String replyFileNameBase = DateUtil.format(date, DateUtil.DATEFORMATMINUTESECONDSTR);
+        String replyFileNameBase = DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_FILENAME);
         for (int i = 0; i < replyContents.size(); i++) {
             String reply = replyContents.get(i);
             String wavFileName = replyFileNameBase + "_" + (i + 1) + LokTarConstant.VOICE_SUFFIX_WAV;
@@ -239,10 +240,10 @@ public class QyWeixinCallbackChatGPTController {
          while (times > 0) {
             File file = new File(voicePath + coverFileName);
             if (file.exists()) {
-                //System.out.println("file exist "+DateUtil.getTodayToSecond());
+                //System.out.println("file exist "+DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
                 break;
             }
-             //System.out.println("file not exist "+DateUtil.getTodayToSecond());
+             //System.out.println("file not exist "+DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
              times--;
              Thread.sleep(1000);
         }

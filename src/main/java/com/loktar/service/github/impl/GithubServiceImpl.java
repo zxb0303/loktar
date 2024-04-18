@@ -13,7 +13,7 @@ import com.loktar.dto.github.GithubRelease;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.github.GithubRepositoryMapper;
 import com.loktar.service.github.GithubService;
-import com.loktar.util.DateUtil;
+import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +26,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -60,11 +61,11 @@ public class GithubServiceImpl implements GithubService {
                         .append(System.lineSeparator())
                         .append(githubRepository.getRepository()).append(":").append(githubRelease.getTagName()).append(System.lineSeparator())
                         .append(System.lineSeparator())
-                        .append(DateUtil.getMinuteSysDate()).toString();
+                        .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE)).toString();
                 qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
                 githubRepository.setLastTagId(githubRelease.getId());
                 githubRepository.setLastTagName(githubRelease.getTagName());
-                githubRepository.setPublishedAt(DateUtil.format(githubRelease.getCreatedAt(), DateUtil.DATEFORMATSECOND));
+                githubRepository.setPublishedAt(DateTimeUtil.getDatetimeStr(githubRelease.getCreatedAt(), DateTimeUtil.FORMATTER_DATESECOND));
                 githubRepositoryMapper.updateByPrimaryKey(githubRepository);
             }
         }
