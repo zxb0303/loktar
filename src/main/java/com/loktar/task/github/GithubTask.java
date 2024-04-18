@@ -25,7 +25,7 @@ public class GithubTask {
     }
 
 
-    @Scheduled(cron = "0 */30 * * * ?")
+    @Scheduled(cron = "0 */20 * * * ?")
     private void notice() {
         if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
             return;
