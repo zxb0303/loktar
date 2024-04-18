@@ -15,10 +15,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.*;
 
 public class AttendanceMain {
@@ -134,9 +131,9 @@ public class AttendanceMain {
             // 再设置法定节假日为0
             Cell newCell = newRow.createCell(4);
             String date1 = newRow.getCell(5).getStringCellValue();
-            LocalDateTime localDateTime1 = DateTimeUtil.parse(date1, DateTimeUtil.FORMATTER_DATE);
+            LocalDate localDate1 = DateTimeUtil.parseLocalDate(date1, DateTimeUtil.FORMATTER_DATE);
             newCell.setCellValue(0);
-            if (localDateTime1.getDayOfWeek() != DayOfWeek.SATURDAY && localDateTime1.getDayOfWeek() != DayOfWeek.SUNDAY) {
+            if (localDate1.getDayOfWeek() != DayOfWeek.SATURDAY && localDate1.getDayOfWeek() != DayOfWeek.SUNDAY) {
                 newCell.setCellValue(1);
             }
             if (Arrays.asList(SPECIALWORKDAYS).contains(date1)) {
@@ -186,7 +183,7 @@ public class AttendanceMain {
             String date = dateCell.getStringCellValue();
             //TODO 需要预处理daily表中日期格式带不带-
             //calendar.setTime(DateUtil.parase(date, DateUtil.DATEFORMAT2));
-            LocalDateTime localDateTime = DateTimeUtil.parse(date, DateTimeUtil.FORMATTER_DATE);
+            LocalDate localDate = DateTimeUtil.parseLocalDate(date, DateTimeUtil.FORMATTER_DATE);
 
             //标记迟到
             //正常班或者正常晚班 上班打卡结果包含迟到
@@ -255,7 +252,7 @@ public class AttendanceMain {
                 }
             }
 
-            if (classCell.getStringCellValue().contains("正常班") && localDateTime.getDayOfWeek() == DayOfWeek.SATURDAY && !Arrays.asList(SPECIALWORKDAYS).contains(dateCell.getStringCellValue()) && !Arrays.asList(SPECIALWEEKDAYS).contains(dateCell.getStringCellValue())) {
+            if (classCell.getStringCellValue().contains("正常班") && localDate.getDayOfWeek() == DayOfWeek.SATURDAY && !Arrays.asList(SPECIALWORKDAYS).contains(dateCell.getStringCellValue()) && !Arrays.asList(SPECIALWEEKDAYS).contains(dateCell.getStringCellValue())) {
                 dateCell.setCellStyle(cellStyle2);
                 if (!checkInTimeCell.getStringCellValue().trim().equals("-") && checkInTimeCell.getStringCellValue().trim().compareTo("09:30") <= 0 && checkOutTimeCell.getStringCellValue().trim().compareTo("18:00") >= 0) {
                     weekendOverTimeFlagCell.setCellValue(1);
@@ -310,7 +307,7 @@ public class AttendanceMain {
 
             //调休规则 原规则 2024.3月的新规则
             //单个员工当月 工作班的周六考勤上班打卡早于9点30分、无早退、无忘记打卡、无请假 可调休
-            if ((classCell.getStringCellValue().contains("正常班") && localDateTime.getDayOfWeek() == DayOfWeek.SATURDAY) && !Arrays.asList(SPECIALWORKDAYS).contains(dateCell.getStringCellValue()) && !Arrays.asList(SPECIALWEEKDAYS).contains(dateCell.getStringCellValue())) {
+            if ((classCell.getStringCellValue().contains("正常班") && localDate.getDayOfWeek() == DayOfWeek.SATURDAY) && !Arrays.asList(SPECIALWORKDAYS).contains(dateCell.getStringCellValue()) && !Arrays.asList(SPECIALWEEKDAYS).contains(dateCell.getStringCellValue())) {
                 RestInfo restInfo = restInfoMap.get(jobNoCell.getStringCellValue());
                 if (ObjectUtils.isEmpty(restInfo)) {
                     restInfo = new RestInfo();
