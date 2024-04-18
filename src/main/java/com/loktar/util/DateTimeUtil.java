@@ -21,16 +21,9 @@ public class DateTimeUtil {
         return datetime.format(format);
     }
 
-//    public static String getDatetimeStr(Date date, DateTimeFormatter format) {
-//        Instant instant = date.toInstant();
-//        LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-//        return getDatetimeStr(localDateTime, format);
-//    }
-//
-//    public static Date parseDate(String dateStr, DateTimeFormatter format) {
-//        LocalDateTime localDateTime = parse(dateStr, format);
-//        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-//    }
+    public static String getDatetimeStr(LocalDate date, DateTimeFormatter format) {
+        return date.format(format);
+    }
 
     public static LocalDateTime parse(String dateStr, DateTimeFormatter format) {
         return LocalDateTime.parse(dateStr, format);

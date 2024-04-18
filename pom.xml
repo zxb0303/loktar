@@ -10,7 +10,7 @@
     </parent>
     <groupId>com</groupId>
     <artifactId>loktar</artifactId>
-    <version>4.4.8</version>
+    <version>4.4.9</version>
     <name>loktar</name>
     <description>loktar</description>
     <properties>
@@ -159,7 +159,11 @@
             <artifactId>azure-ai-documentintelligence</artifactId>
             <version>1.0.0-beta.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.17.0</version>
+        </dependency>
     </dependencies>
 
     <build>
