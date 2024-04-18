@@ -10,7 +10,7 @@ import com.loktar.dto.land.LandDTO;
 import com.loktar.dto.land.LandResultDTO;
 import com.loktar.mapper.land.LandMapper;
 import com.loktar.service.land.LandService;
-import com.loktar.util.DateUtil;
+import com.loktar.util.DateTimeUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,11 @@ import java.net.http.HttpResponse;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.Duration;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class LandServiceImpl implements LandService {
@@ -50,7 +54,10 @@ public class LandServiceImpl implements LandService {
 
     @Override
     public void updateLandData(String year) {
-        int num = landMapper.deleteByDate(DateUtil.getFirstDayOfYear(new Date()));
+        LocalDateTime firstDayOfYear = LocalDateTime.now().withDayOfYear(1);
+        firstDayOfYear = firstDayOfYear.withYear(Integer.parseInt(year));
+        String yearfirstDate = DateTimeUtil.getDatetimeStr(firstDayOfYear, DateTimeUtil.FORMATTER_DATE);
+        int num = landMapper.deleteByDate(yearfirstDate);
         System.out.println(year + "年土拍数据开始删除，共" + num + "条");
         List<Land> lands = getData(year);
         landMapper.insertBatch(lands);
@@ -80,7 +87,7 @@ public class LandServiceImpl implements LandService {
     private Land changeLandDTO(LandDTO landDTO) throws ParseException {
         Land land = new Land();
         land.setId(StringUtils.isEmpty(landDTO.getId()) ? 0 : Integer.valueOf(landDTO.getId()));
-        land.setDate(DateUtil.string2Date(landDTO.getYuEndTime()));
+        land.setDate(DateTimeUtil.parseDate(landDTO.getYuEndTime(), DateTimeUtil.FORMATTER_DATE));
         land.setCity(landDTO.getCityName());
         land.setArea(landDTO.getUrbanName());
         land.setLandNo(landDTO.getNum());

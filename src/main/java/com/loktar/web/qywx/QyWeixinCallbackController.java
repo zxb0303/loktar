@@ -15,10 +15,7 @@ import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.dto.wx.receivemsg.*;
 import com.loktar.mapper.transmission.TrTorrentMapper;
 import com.loktar.service.common.NoticeServer;
-import com.loktar.util.BandwagonhostUtil;
-import com.loktar.util.DateUtil;
-import com.loktar.util.RedisUtil;
-import com.loktar.util.TransmissionUtil;
+import com.loktar.util.*;
 import com.loktar.util.wx.aes.WXBizMsgCrypt;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
@@ -28,6 +25,7 @@ import org.dom4j.Element;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 
@@ -68,7 +66,7 @@ public class QyWeixinCallbackController {
     public ResponseEntity receive(
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce, @RequestBody String xml) {
-        if (!redisUtil.setIfAbsent(msgSignature,timestamp, 30)) {
+        if (!redisUtil.setIfAbsent(msgSignature, timestamp, 30)) {
             return ResponseEntity.noContent().build();
         }
         Thread.ofVirtual().start(() -> {
@@ -76,6 +74,7 @@ public class QyWeixinCallbackController {
         });
         return ResponseEntity.noContent().build();
     }
+
     @SneakyThrows
     private void asyncDealMsg(String msgSignature, String timestamp, String nonce, String xml) {
         WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.qywxToken, lokTarConfig.qywxEncodingAESKey, lokTarConfig.qywxCorpId);
@@ -162,11 +161,12 @@ public class QyWeixinCallbackController {
                     VPSInfo vpsInfo = bandwagonhostUtil.getVPSData(veid);
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTimeInMillis(vpsInfo.getDataNextReset() * 1000);
+                    LocalDateTime LocalDateTime = DateTimeUtil.convertSecondsToDateTime(vpsInfo.getDataNextReset());
                     replymsg.append(System.lineSeparator())
                             .append(vpsInfo.getHostname()).append(System.lineSeparator())
                             .append("IP：").append(vpsInfo.getIpAddresses()[0]).append(System.lineSeparator())
                             .append("Bandwidth：").append(vpsInfo.getDataCounter() / 1024 / 1024 / 1024 + "GB" + "/" + vpsInfo.getPlanMonthlyData() / 1024 / 1024 / 1024 + "GB").append(System.lineSeparator())
-                            .append("Reset：").append(DateUtil.format(calendar.getTime(), DateUtil.DATEFORMATDAY)).append(System.lineSeparator());
+                            .append("Reset：").append(DateTimeUtil.getDatetimeStr(LocalDateTime, DateTimeUtil.FORMATTER_DATE)).append(System.lineSeparator());
                 }
                 break;
             case EventCommandType.UDATE_WX_MENU:
@@ -200,7 +200,10 @@ public class QyWeixinCallbackController {
                 Notice notice = new Notice();
                 notice.setNoticeTitle(strs[1]);
                 notice.setNoticeContent(strs[2]);
-                notice.setNoticeTime(DateUtil.format(DateUtil.parase(strs[3], DateUtil.DATEFORMATMINUTESTR), DateUtil.DATEFORMATMINUTE));
+                String receiceDatetimeStr = strs[3];
+                LocalDateTime localDateTime = DateTimeUtil.parse(receiceDatetimeStr, DateTimeUtil.FORMATTER_QYWX_RECEIVE);
+                String datetimeStr = DateTimeUtil.getDatetimeStr(localDateTime, DateTimeUtil.FORMATTER_DATEMINUTE);
+                notice.setNoticeTime(datetimeStr);
                 notice.setNoticeUser(receiveTextMsg.getFromUserName());
                 notice.setStatus(0);
                 int result = noticeServer.insert(notice);

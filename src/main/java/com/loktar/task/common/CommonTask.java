@@ -7,7 +7,6 @@ import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.service.common.CommonService;
 import com.loktar.service.common.NoticeServer;
 import com.loktar.util.DateTimeUtil;
-import com.loktar.util.DateUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -52,13 +51,13 @@ public class CommonTask {
         List<Notice> notices = noticeServer.getUnsendNotices();
         for (Notice notice : notices) {
             LocalDateTime now = LocalDateTime.now();
-            LocalDateTime noticeTime = LocalDateTime.parse(notice.getNoticeTime(), DateTimeUtil.DATEFORMATMINUTE_FORMATTER);
-            if (now.compareTo(noticeTime) > 0) {
+            LocalDateTime noticeTime = LocalDateTime.parse(notice.getNoticeTime(), DateTimeUtil.FORMATTER_DATEMINUTE);
+            if (now.isAfter(noticeTime)) {
                 String content = new StringBuilder().append(notice.getNoticeTitle()).append(System.lineSeparator())
                         .append(System.lineSeparator())
                         .append(notice.getNoticeContent()).append(System.lineSeparator())
                         .append(System.lineSeparator())
-                        .append(DateUtil.getMinuteSysDate()).toString();
+                        .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE)).toString();
                 qywxApi.sendTextMsg(new AgentMsgText(notice.getNoticeUser(), lokTarConfig.qywxAgent002Id, content));
                 notice.setStatus(1);
                 noticeServer.updateByPrimaryKey(notice);
@@ -112,7 +111,7 @@ public class CommonTask {
             String content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_WORK).append(System.lineSeparator())
                     .append(System.lineSeparator())
                     .append(lokTarConfig.commonCxyNoticeText).append(System.lineSeparator())
-                    .append(DateUtil.getMinuteSysDate()).toString();
+                    .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE)).toString();
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeCxy, lokTarConfig.qywxAgent002Id, content));
         }
     }

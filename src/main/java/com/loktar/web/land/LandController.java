@@ -2,11 +2,11 @@ package com.loktar.web.land;
 
 
 import com.loktar.service.land.LandService;
-import com.loktar.util.DateUtil;
+import com.loktar.util.DateTimeUtil;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("land")
@@ -19,7 +19,7 @@ public class LandController {
 
     @RequestMapping("/update.do")
     public void update() {
-        String year = DateUtil.format(new Date(), DateUtil.DATEFORMATYEAR);
+        String year = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_YEAR);
         System.out.println(year);
         landService.updateLandData(year);
     }

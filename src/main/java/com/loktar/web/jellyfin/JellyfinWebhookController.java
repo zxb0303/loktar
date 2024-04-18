@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
@@ -56,7 +57,7 @@ public class JellyfinWebhookController {
         }
         contentBuilder.append(System.lineSeparator())
                 .append(System.lineSeparator())
-                .append(DateUtil.getMinuteSysDate());
+                .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE));
         if (!notification.getNotificationUsername().equals(LokTarConstant.JELLYFIN_NOT_NOTIFY)) {
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, contentBuilder.toString()));
         }

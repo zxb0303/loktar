@@ -67,9 +67,9 @@
     volumetric_rate, deal_price, build_price, premium_rate, `owner`, remark, detail_url
     from land
   </select>
-  <delete id="deleteByDate" parameterType="java.util.Date">
+  <delete id="deleteByDate" parameterType="java.lang.String">
     delete from land
-    where TO_DAYS(`date`) <![CDATA[>=]]> TO_DAYS(#{date,jdbcType=DATE});
+    where `date` <![CDATA[>=]]> #{date,jdbcType=VARCHAR};
   </delete>
   <insert id="insertBatch">
     insert into land (`date`, city, area,

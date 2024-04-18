@@ -11,10 +11,10 @@ import com.loktar.dto.second.SecondHandHouseResultDTO;
 import com.loktar.mapper.common.PropertyMapper;
 import com.loktar.mapper.second.SecondHandHouseMapper;
 import com.loktar.service.second.SecondHandHouseService;
-import com.loktar.util.DateUtil;
+import com.loktar.util.DateTimeUtil;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -23,6 +23,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,20 +53,27 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
      */
     @Override
     public void updateSecondHandHouseData() {
-        String date = secondHandHouseMapper.getMaxDate();
-        String yestodayStr = DateUtil.getYestodayStr();
         Property property = propertyMapper.selectByPrimaryKey("second_hand_house");
-        date = DateUtil.format(DateUtil.getNextDay(DateUtil.string2Date(date)), DateUtil.DATEFORMATDAY);
-
-        while ((DateUtil.string2Date(date).getTime() <= DateUtil.string2Date(yestodayStr).getTime())) {
-            List<SecondHandHouse> secondHandHouses = getHouseData(date, property);
-            System.out.println(date + "共" + secondHandHouses.size() + "条数据待处理");
+        String dateStr = secondHandHouseMapper.getMaxDate();
+        LocalDateTime date = DateTimeUtil.parse(dateStr, DateTimeUtil.FORMATTER_DATE).plusDays(1);
+        dateStr = DateTimeUtil.getDatetimeStr(date, DateTimeUtil.FORMATTER_DATE);
+        LocalDateTime yestoday = LocalDateTime.now().minusDays(1);
+        while(date.isBefore(yestoday)){
+            List<SecondHandHouse> secondHandHouses = getHouseData(dateStr, property);
+            System.out.println(dateStr + "共" + secondHandHouses.size() + "条数据待处理");
             if (secondHandHouses.size() > 0) {
                 secondHandHouseMapper.insertBatch(secondHandHouses);
             }
-            System.out.println(date + "共" + secondHandHouses.size() + "条数据处理完成");
-            date = DateUtil.format(DateUtil.getNextDay(DateUtil.string2Date(date)), DateUtil.DATEFORMATDAY);
+            System.out.println(dateStr + "共" + secondHandHouses.size() + "条数据处理完成");
+            date=date.plusDays(1);
+            dateStr = DateTimeUtil.getDatetimeStr(date, DateTimeUtil.FORMATTER_DATE);
         }
+
+
+
+
+
+
     }
 
     /**
