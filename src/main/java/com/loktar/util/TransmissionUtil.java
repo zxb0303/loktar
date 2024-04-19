@@ -23,7 +23,7 @@ import java.util.List;
 
 @Component
 public class TransmissionUtil {
-    public final static String TRANSMISSION_SESSION_ID = "X-Transmission-Session-Id";
+    private final static String TRANSMISSION_SESSION_ID = "X-Transmission-Session-Id";
     private final static long TRANSMISSION_SESSION_ID_EXPIRE = 28 * 60;
     private final static String AUTHORIZATION = "Authorization";
     private final RedisUtil redisUtil;
@@ -38,7 +38,7 @@ public class TransmissionUtil {
 
     @SneakyThrows
     private TrResponse rpc(TrRequest trRequest) {
-        String sessionId = (String) redisUtil.get(TRANSMISSION_SESSION_ID);
+        String sessionId = (String) redisUtil.get(LokTarConstant.REDIS_KEY_TRANSMISSION_SESSIONID);
         if (StringUtils.isEmpty(sessionId)) {
             sessionId = "";
         }
@@ -60,7 +60,7 @@ public class TransmissionUtil {
 
         if (response.statusCode() == 409) {
             sessionId = response.headers().firstValue(TRANSMISSION_SESSION_ID).orElse(null);
-            redisUtil.set(TRANSMISSION_SESSION_ID, sessionId, TRANSMISSION_SESSION_ID_EXPIRE);
+            redisUtil.set(LokTarConstant.REDIS_KEY_TRANSMISSION_SESSIONID, sessionId, TRANSMISSION_SESSION_ID_EXPIRE);
             return rpc(trRequest);
         }
         //TODO 打印
