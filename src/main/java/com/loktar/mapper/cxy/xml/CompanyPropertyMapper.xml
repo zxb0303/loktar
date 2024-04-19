@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.cxy.CompanyPropertyMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.cxy.CompanyProperty">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="zhuti" jdbcType="VARCHAR" property="zhuti" />
+    <result column="zichanbianhao" jdbcType="VARCHAR" property="zichanbianhao" />
+    <result column="shebeimingcheng" jdbcType="VARCHAR" property="shebeimingcheng" />
+    <result column="pinpai" jdbcType="VARCHAR" property="pinpai" />
+    <result column="xinghao" jdbcType="VARCHAR" property="xinghao" />
+    <result column="shuliang" jdbcType="VARCHAR" property="shuliang" />
+    <result column="danjia" jdbcType="VARCHAR" property="danjia" />
+    <result column="jine" jdbcType="VARCHAR" property="jine" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from company_property
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.cxy.CompanyProperty">
+    insert into company_property (id, zhuti, zichanbianhao, 
+      shebeimingcheng, pinpai, xinghao, 
+      shuliang, danjia, jine
+      )
+    values (#{id,jdbcType=INTEGER}, #{zhuti,jdbcType=VARCHAR}, #{zichanbianhao,jdbcType=VARCHAR}, 
+      #{shebeimingcheng,jdbcType=VARCHAR}, #{pinpai,jdbcType=VARCHAR}, #{xinghao,jdbcType=VARCHAR}, 
+      #{shuliang,jdbcType=VARCHAR}, #{danjia,jdbcType=VARCHAR}, #{jine,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.cxy.CompanyProperty">
+    update company_property
+    set zhuti = #{zhuti,jdbcType=VARCHAR},
+      zichanbianhao = #{zichanbianhao,jdbcType=VARCHAR},
+      shebeimingcheng = #{shebeimingcheng,jdbcType=VARCHAR},
+      pinpai = #{pinpai,jdbcType=VARCHAR},
+      xinghao = #{xinghao,jdbcType=VARCHAR},
+      shuliang = #{shuliang,jdbcType=VARCHAR},
+      danjia = #{danjia,jdbcType=VARCHAR},
+      jine = #{jine,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, zhuti, zichanbianhao, shebeimingcheng, pinpai, xinghao, shuliang, danjia, 
+    jine
+    from company_property
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, zhuti, zichanbianhao, shebeimingcheng, pinpai, xinghao, shuliang, danjia, 
+    jine
+    from company_property
+  </select>
+</mapper>
