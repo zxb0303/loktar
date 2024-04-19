@@ -25,6 +25,7 @@ public class LokTarConstant {
     public static final String REDIS_KEY_PREFIX_OPENAI_REQUEST = "openai_request_";
     public static final String REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET = "jellyfin_remote_playing_set";
     public static final String REDIS_KEY_NEWHOUSE_COOKIE = "newhouse_cookie";
+    public static final String REDIS_KEY_TRANSMISSION_SESSIONID = "transmission_sessionid";
 
 
     public final static String NOTICE_TITLE_GITHUB = "GitHub项目更新通知";
