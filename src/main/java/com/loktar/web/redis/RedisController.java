@@ -19,11 +19,11 @@ public class RedisController {
 
     @GetMapping("save.do")
     public void save(){
-        redisUtil.set("1","222");
+        //redisUtil.set("1","222");
         RestInfo restInfo = new RestInfo();
         restInfo.setEligibleDays(1);
         restInfo.setName("zhangsan");
-        redisUtil.set("2",restInfo);
+        redisUtil.set("2",restInfo,5);
     }
     @GetMapping("get.do")
     public void get(){
