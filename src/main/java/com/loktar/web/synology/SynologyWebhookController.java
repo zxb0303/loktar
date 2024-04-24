@@ -4,6 +4,7 @@ import com.loktar.conf.LokTarConfig;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +21,7 @@ public class SynologyWebhookController {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @RequestMapping("/sendMsg.do")
+    @GetMapping("/sendMsg.do")
     public void send(String title,String text,String touser) {
         String content = title + System.lineSeparator() +
                 System.lineSeparator() +

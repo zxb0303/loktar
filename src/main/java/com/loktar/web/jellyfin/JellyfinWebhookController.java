@@ -9,6 +9,7 @@ import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.util.*;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +37,7 @@ public class JellyfinWebhookController {
         this.redisUtil = redisUtil;
     }
 
-    @RequestMapping("/webhook.do")
+    @PostMapping("/webhook.do")
     public void webhook(@RequestBody Notification notification) {
         HtmlEntityDecoderUtil.decodeHtmlEntities(notification);
         StringBuilder contentBuilder = new StringBuilder();

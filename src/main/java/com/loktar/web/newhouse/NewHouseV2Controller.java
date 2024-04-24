@@ -2,6 +2,7 @@ package com.loktar.web.newhouse;
 
 
 import com.loktar.service.newhouse.NewHouseHangzhouV2Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,7 +17,7 @@ public class NewHouseV2Controller {
     }
 
 
-    @RequestMapping("/getNewHouseData.do")
+    @GetMapping("/getNewHouseData.do")
     public String getNewHouseData(String ids) {
         if (!"_".contains(ids)) {
             return "ids不对。应该是areaCode_houseId";

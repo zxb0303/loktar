@@ -6,6 +6,7 @@ import com.loktar.domain.newhouse.NewHouseHangzhouV3Detail;
 import com.loktar.domain.newhouse.NewHouseHangzhouV3Presell;
 import com.loktar.domain.newhouse.NewHouseHangzhouV3PresellBuild;
 import com.loktar.service.newhouse.NewHouseHangzhouV3Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,32 +24,32 @@ public class NewHouseV3Controller {
 
 
 
-    @RequestMapping("/memberLogin.do")
+    @GetMapping("/memberLogin.do")
     public void memberLogin() {
         newHouseHangzhouV3Service.memberLogin();
     }
 
-    @RequestMapping("/getNewHouseDataByName.do")
+    @GetMapping("/getNewHouseDataByName.do")
     public void getNewHouseData(String houseName) {
         NewHouseHangzhouV3 newHouseHangzhouV3 = newHouseHangzhouV3Service.getNewHouseData(houseName);
     }
 
-    @RequestMapping("/getNewHousePresellDataByHouseId.do")
+    @GetMapping("/getNewHousePresellDataByHouseId.do")
     public void getNewHousePresellDataByHouseId(String houseId) {
         System.out.println(houseId);
         List<NewHouseHangzhouV3Presell> newHouseHangzhouV3 = newHouseHangzhouV3Service.getNewHousePresellDataByHouseId(houseId);
     }
 
-    @RequestMapping("/getNewHousePresellBuildDataByHouseId.do")
+    @GetMapping("/getNewHousePresellBuildDataByHouseId.do")
     public void getNewHousePresellBuildDataByHouseId(String houseId) {
         List<NewHouseHangzhouV3PresellBuild> newHouseHangzhouV3PresellBuilds = newHouseHangzhouV3Service.getNewHousePresellBuildDataByHouseId(houseId);
     }
-    @RequestMapping("/getNewHouseDetailByHouseId.do")
+    @GetMapping("/getNewHouseDetailByHouseId.do")
     public void getNewHouseDetailByHouseId(String houseId) {
         List<NewHouseHangzhouV3Detail> newHouseHangzhouV3Details = newHouseHangzhouV3Service.getNewHouseDetailByHouseId(houseId);
     }
 
-    @RequestMapping("/getNewHouseDetailByHouseIdAndAzure.do")
+    @GetMapping("/getNewHouseDetailByHouseIdAndAzure.do")
     public void coverImages(String houseId) {
         newHouseHangzhouV3Service.getNewHouseDetailByHouseIdAndAzure(houseId);
     }
