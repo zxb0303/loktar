@@ -7,39 +7,8 @@
 * spring-boot-starter-test
 ### 1.2.修改配置文件格式
 * application.properties修改为application.yml、 application-dev.yml、 application-pro.yml
-```yaml
-#application-dev.yml示例
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/database?&useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    initialSize: 10
-    maxActive: 100
-  data:
-    redis:
-      host: localhost
-      password: '123456'
-      database: 11
-      port: 6379
-      timeout: 3000
-      lettuce:
-        pool:
-          max-active: -1  # 最大连接数，负值表示没有限制，默认8
-          max-wait: 8    # 最大阻塞等待时间，负值表示没限制，默认-1
-          max-idle: -1     # 最大空闲连接，默认8
-          min-idle: 20     # 最小空闲连接，默认0
-conf:
-  pdf:
-    path: F:/pdf/
-  voice:
-    path: F:/voice/
-  ffmpeg:
-    path: D:/ffmpeg/bin/ffmpeg.exe
-  cert:
-    path: F:/cert/
-```
+* 参考[application.yml](src%2Fmain%2Fresources%2Fapplication.yml)
+* 参考[application-test.yml](src%2Fmain%2Fresources%2Fapplication-test.yml)
 ### 1.3.创建目录结构
 * src
   * com.loktar
