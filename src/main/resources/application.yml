@@ -14,9 +14,5 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
   mapperLocations: classpath:com/loktar/mapper/**/xml/*.xml
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
+
 
