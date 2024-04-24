@@ -1,60 +1,65 @@
 spring:
   datasource:
-    url:
-    username:
-    password:
-    driver-class-name:
+    url: jdbc:mysql://localhost:3306/database?&useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
   data:
     redis:
-      host:
-      password:
-      database:
-      port:
-      timeout:
+      host: localhost
+      password: '123456'
+      database: 11
+      port: 6379
+      timeout: 3000
       lettuce:
         pool:
-          max-active:
-          max-wait:
-          max-idle:
-          min-idle:
+          max-active: -1
+          max-wait: 8
+          max-idle: -1
+          min-idle: 20
 conf:
   transmission:
-    url:
-    authorization:
-    minSizeGB:
-    days:
-    tempDownloadDir:
+    url: https://xxx/transmission/rpc
+    authorization: Basic xxx
+    minSizeGB: 900
+    days: 15
+    tempDownloadDir: /downloads2/complete
   jellyfin:
-    url:
-    token:
+    url: https://xxx/Sessions?deviceId={0}
+    token: xxx
   docker:
-    tcpUrl:
-    apiVersion:
+    tcpUrl: tcp://xxx:2375
+    apiVersion: 1.41
   qywx:
-    corpid:
-    token:
-    encodingAeskey:
-    noticeZxb:
-    noticeCxy:
-    agent002Id:
-    agent002Secert:
-    agent003Id:
-    agent003Secert:
-    agent004Id:
-    agent004Secert:
+    corpid: xxx
+    token: xxx
+    encodingAeskey: xxx
+    noticeZxb: xxx
+    noticeCxy: xxx
+    agent002Id: xxx
+    agent002Secert: xxx
+    agent003Id: xxx
+    agent003Secert: xxx
+    agent004Id: xxx
+    agent004Secert: xxx
   github:
-    authorization:
+    authorization: xxx
   azure:
-    voiceKey:
+    voiceKey: xxx
+    voiceRegion: xxx
+    docIntelligenceKey: xxx
+    docIntelligenceEndpoint: https://xxx.cognitiveservices.azure.com/
   bwg:
-    apiKey:
+    apiKey: xxx
   openai:
-    apiKey:
+    apiKey: Bearer xxx
   pdf:
-    path:
+    path: F:/pdf/
   voice:
-    path:
+    path: F:/voice/
+  newhouse:
+    originalPath: F:/newhouse/original/{0}/{1}/{2}/
+    coverPath: F:/newhouse/conversion/{0}/{1}/{2}/
   common:
-    cxyNoticeText:
-    clashRssUrl:
-
+    cxyNoticeText: xxx
+    clashRssUrl: xxx
