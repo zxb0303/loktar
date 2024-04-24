@@ -2,6 +2,7 @@ package com.loktar.web.cxy;
 
 import com.loktar.domain.cxy.CompanyProperty;
 import com.loktar.mapper.cxy.CompanyPropertyMapper;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,7 +18,7 @@ public class CompanyPropertyController {
         this.companyPropertyMapper = companyPropertyMapper;
     }
 
-    @RequestMapping("/test.do")
+    @GetMapping("/test.do")
     public void test() {
         List<CompanyProperty> tests = companyPropertyMapper.selectAll();
         for (CompanyProperty companyProperty : tests) {
@@ -34,11 +35,7 @@ public class CompanyPropertyController {
                     System.out.println(companyProperty.getZhuti() + ";" + newBianhao + ";" + companyProperty.getShebeimingcheng() + ";" + companyProperty.getPinpai() + ";" + companyProperty.getXinghao() + ";" + "1" + ";" + companyProperty.getDanjia() + ";" + companyProperty.getDanjia());
                 }
             }
-
-
         }
-
-
     }
 
     public static String replaceEnd(String a, String b) {

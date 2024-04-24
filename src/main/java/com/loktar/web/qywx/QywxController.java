@@ -8,6 +8,7 @@ import com.loktar.dto.wx.agentmsg.AgentMsgVoice;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +27,7 @@ public class QywxController {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @RequestMapping("/send.do")
+    @GetMapping("/send.do")
     public void send() {
 
         String content = LokTarConstant.NOTICE_TITLE_GITHUB + "\n\n"
@@ -39,7 +40,7 @@ public class QywxController {
     }
 
     @SneakyThrows
-    @RequestMapping("/download.do")
+    @GetMapping("/download.do")
     public void download() {
         String voicePath = "F:/voice/";
         String mediaId = "15nIsJJ02LJ4yc67RXJdBdwoMFAaNzNty8fVfT2f9TH-LB33FEPvCEw2kYFfetpq_";
@@ -48,7 +49,7 @@ public class QywxController {
         System.out.println(filename);
     }
 
-    @RequestMapping("/upload.do")
+    @GetMapping("/upload.do")
     public void upload() {
         String voicePath = "F:/voice/";
         String amrFilename = "501cdd80-42e3-4b85-889f-5ca8f8005960.amr";
