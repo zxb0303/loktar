@@ -18,7 +18,7 @@ public class NewHouseV2Controller {
 
     @RequestMapping("/getNewHouseData.do")
     public String getNewHouseData(String ids) {
-        if (ids.indexOf("_") == -1) {
+        if (!"_".contains(ids)) {
             return "ids不对。应该是areaCode_houseId";
         }
         String[] strs = ids.split("_");

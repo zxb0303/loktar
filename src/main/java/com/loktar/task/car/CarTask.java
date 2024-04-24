@@ -40,11 +40,11 @@ public class CarTask {
         Property xc90AppVersionProperty = propertyMapper.selectByPrimaryKey("xc90_app_version");
         String lastVersion = CarUtil.getLastVersion();
         if (!lastVersion.equals(xc90AppVersionProperty.getValue())) {
-            String content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_CAR_VERSION).append(System.lineSeparator())
-                    .append(System.lineSeparator())
-                    .append(lastVersion).append(System.lineSeparator())
-                    .append(System.lineSeparator())
-                    .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE)).toString();
+            String content = LokTarConstant.NOTICE_TITLE_CAR_VERSION + System.lineSeparator() +
+                    System.lineSeparator() +
+                    lastVersion + System.lineSeparator() +
+                    System.lineSeparator() +
+                    DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             xc90AppVersionProperty.setValue(lastVersion);
             propertyMapper.updateByPrimaryKey(xc90AppVersionProperty);
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));

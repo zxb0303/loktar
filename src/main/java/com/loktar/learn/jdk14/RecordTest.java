@@ -6,7 +6,7 @@ public class RecordTest {
         Person person = new Person("alex",18);
         System.out.println(person.age());
         System.out.println(person.name());
-        System.out.println(person.toString());
+        System.out.println(person);
     }
 
 }

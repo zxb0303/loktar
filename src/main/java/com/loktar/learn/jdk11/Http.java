@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class Http {
-    public static void main(String[] args) throws Exception {
+    @SneakyThrows
+    public static void main(String[] args)  {
         //异步请求示例
         //test1();
         //同步请求示例
@@ -45,10 +46,10 @@ public class Http {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-        List<GithubRelease> githubReleases = objectMapper.readValue(response.body(), new TypeReference<List<GithubRelease>>(){});
+        List<GithubRelease> githubReleases = objectMapper.readValue(response.body(), new TypeReference<>() {});
         for (GithubRelease githubRelease : githubReleases) {
             if (!githubRelease.isPrerelease()) {
-               System.out.println(githubRelease.toString());
+               System.out.println(githubRelease);
             }
         }
     }

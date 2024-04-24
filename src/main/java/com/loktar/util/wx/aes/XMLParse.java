@@ -19,7 +19,6 @@ import java.io.StringReader;
 
 /**
  * XMLParse class
- *
  * 提供提取消息格式中的密文及生成回复消息格式的接口.
  */
 class XMLParse {
@@ -35,7 +34,7 @@ class XMLParse {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-			String FEATURE = null;
+			String FEATURE;
 			// This is the PRIMARY defense. If DTDs (doctypes) are disallowed, almost all XML entity attacks are prevented
 			// Xerces 2 only - http://xerces.apache.org/xerces2-j/features.html#disallow-doctype-decl
 			FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
@@ -93,10 +92,13 @@ class XMLParse {
 	 * @return 生成的xml字符串
 	 */
 	public static String generate(String encrypt, String signature, String timestamp, String nonce) {
-
-		String format = "<xml>\n" + "<Encrypt><![CDATA[%1$s]]></Encrypt>\n"
-				+ "<MsgSignature><![CDATA[%2$s]]></MsgSignature>\n"
-				+ "<TimeStamp>%3$s</TimeStamp>\n" + "<Nonce><![CDATA[%4$s]]></Nonce>\n" + "</xml>";
+		String format = """
+                <xml>
+                <Encrypt><![CDATA[%1$s]]></Encrypt>
+                <MsgSignature><![CDATA[%2$s]]></MsgSignature>
+                <TimeStamp>%3$s</TimeStamp>
+                <Nonce><![CDATA[%4$s]]></Nonce>
+                </xml>""";
 		return String.format(format, encrypt, signature, timestamp, nonce);
 
 	}

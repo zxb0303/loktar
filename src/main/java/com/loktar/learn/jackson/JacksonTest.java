@@ -12,7 +12,8 @@ import lombok.SneakyThrows;
 import java.util.List;
 
 public class JacksonTest {
-    public static void main(String[] args) throws Exception {
+    @SneakyThrows
+    public static void main(String[] args)  {
         //常见示例
         //test1();
         //创建json对象、属性有数组
@@ -104,7 +105,7 @@ public class JacksonTest {
         arguments.put("delete-local-data", false);
         arguments.set("ids", idsArray);
         obj.set("arguments", arguments);
-        System.out.println(obj.toString());
+        System.out.println(obj);
     }
 
     @SneakyThrows
@@ -158,7 +159,7 @@ public class JacksonTest {
         String s = jsonArray.toString();
         System.out.println(s);
         //json字符串数组转List
-        List<String> list = mapper.readValue(str1, new TypeReference<List<String>>(){});
+        List<String> list = mapper.readValue(str1, new TypeReference<>() {});
 
         //json字符串与java对象的转换
         GithubRepository githubRepository = new GithubRepository();

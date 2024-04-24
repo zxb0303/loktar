@@ -15,7 +15,7 @@ public enum AgentMsgType {
     NEWS("news"),
     MARKDOWN("markdown");
 
-    private String name;
+    private final String name;
     public static AgentMsgType getByName(String name) {
         for (AgentMsgType type : AgentMsgType.values()) {
             if (type.getName().equals(name)) {

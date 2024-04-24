@@ -74,15 +74,13 @@ public class QyWeixinCallbackChatGPTController {
     }
 
     @PostMapping("receive.do")
-    public ResponseEntity receive(
+    public ResponseEntity<Void> receive(
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce, @RequestBody String xml) {
         if (!redisUtil.setIfAbsent(msgSignature,timestamp, 30)) {
             return ResponseEntity.noContent().build();
         }
-        Thread.ofVirtual().start(() -> {
-            asyncDealMsg(msgSignature, timestamp, nonce, xml);
-        });
+        Thread.ofVirtual().start(() -> asyncDealMsg(msgSignature, timestamp, nonce, xml));
         return ResponseEntity.noContent().build();
     }
 
@@ -96,16 +94,11 @@ public class QyWeixinCallbackChatGPTController {
         String msgType = rawRootElement.element(LokTarConstant.WX_RECEICE_MSGTYPE).getTextTrim();
         ReceiveBaseMsg receiveBaseMsg;
         ReceiceMsgType type = ReceiceMsgType.getByName(msgType);
-        switch (type) {
-            case ReceiceMsgType.TEXT:
-                receiveBaseMsg = xmlMapper.readValue(xmlMsg, ReceiveTextMsg.class);
-                break;
-            case ReceiceMsgType.VOICE:
-                receiveBaseMsg = xmlMapper.readValue(xmlMsg, ReceiveVoiceMsg.class);
-                break;
-            default:
-                receiveBaseMsg = xmlMapper.readValue(xmlMsg, ReceiveBaseMsg.class);
-        }
+        receiveBaseMsg = switch (type) {
+            case ReceiceMsgType.TEXT -> xmlMapper.readValue(xmlMsg, ReceiveTextMsg.class);
+            case ReceiceMsgType.VOICE -> xmlMapper.readValue(xmlMsg, ReceiveVoiceMsg.class);
+            default -> xmlMapper.readValue(xmlMsg, ReceiveBaseMsg.class);
+        };
         String receiveFileName = null;
         String receiveMsg = null;
         if (receiveBaseMsg instanceof ReceiveTextMsg) {
@@ -151,7 +144,7 @@ public class QyWeixinCallbackChatGPTController {
         if (ObjectUtils.isEmpty(openAiRequest)) {
             openAiRequest = ChatGPTUtil.getDefalutRequest();
             openAiRequest.setModel(chatgptModelProperty.getValue());
-            openAiRequest.setMaxTokens(Integer.valueOf(chatgptMaxTokensProperty.getValue()));
+            openAiRequest.setMaxTokens(Integer.parseInt(chatgptMaxTokensProperty.getValue()));
         }
         OpenAiMessage openAiMessage = new OpenAiMessage(ChatGPTUtil.ROLE_USER, receiveMsg);
         openAiRequest.getMessages().add(openAiMessage);
@@ -161,7 +154,7 @@ public class QyWeixinCallbackChatGPTController {
             qywxApi.sendTextMsg(new AgentMsgText(receiveBaseMsg.getFromUserName(), receiveBaseMsg.getAgentID(), "token已达上限，请重置会话"));
             return;
         }
-        OpenAiMessage replyMsg = openAiResponse.getChoices().get(0).getMessage();
+        OpenAiMessage replyMsg = openAiResponse.getChoices().getFirst().getMessage();
         openAiRequest.getMessages().add(replyMsg);
         redisUtil.set(LokTarConstant.REDIS_KEY_PREFIX_OPENAI_REQUEST + receiveBaseMsg.getFromUserName(), openAiRequest, 3600);
 
@@ -169,8 +162,8 @@ public class QyWeixinCallbackChatGPTController {
         replyContent = replyContent.replace("\n\n", "");
         List<String> replyContents = splitTextBySentence(replyContent);
 
-        for (int j = 0; j < replyContents.size(); j++) {
-            qywxApi.sendTextMsg(new AgentMsgText(receiveBaseMsg.getFromUserName(), receiveBaseMsg.getAgentID(), replyContents.get(j)));
+        for (String content : replyContents) {
+            qywxApi.sendTextMsg(new AgentMsgText(receiveBaseMsg.getFromUserName(), receiveBaseMsg.getAgentID(), content));
         }
         String replyFileNameBase = DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_FILENAME);
         for (int i = 0; i < replyContents.size(); i++) {
@@ -207,7 +200,7 @@ public class QyWeixinCallbackChatGPTController {
             if (currentChunk.length() + sentence.length() <= maxLength) {
                 currentChunk.append(sentence);
             } else {
-                if (currentChunk.length() > 0) {
+                if (!currentChunk.isEmpty()) {
                     result.add(currentChunk.toString());
                     currentChunk = new StringBuilder();
                 }
@@ -221,7 +214,7 @@ public class QyWeixinCallbackChatGPTController {
             }
         }
 
-        if (currentChunk.length() > 0) {
+        if (!currentChunk.isEmpty()) {
             result.add(currentChunk.toString());
         }
 
@@ -257,7 +250,7 @@ public class QyWeixinCallbackChatGPTController {
      */
     @SneakyThrows
     @GetMapping("receive.do")
-    public ResponseEntity msgValid(
+    public ResponseEntity<String> msgValid(
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp,
             @RequestParam("nonce") String nonce, @RequestParam("echostr") String echostr) {

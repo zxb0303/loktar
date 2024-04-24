@@ -37,7 +37,7 @@ public class ChatGPTUtil {
     private final static ObjectMapper objectMapper = new ObjectMapper();
     private final LokTarConfig lokTarConfig;
 
-    private static int maxPromptTokens = 3000;
+    private static final int maxPromptTokens = 3000;
 
     public ChatGPTUtil(LokTarConfig lokTarConfig) {
         this.lokTarConfig = lokTarConfig;
@@ -78,9 +78,7 @@ public class ChatGPTUtil {
         if (response.body().contains("error")) {
             return null;
         }
-        OpenAiResponse openAiResponse = objectMapper.readValue(response.body(), OpenAiResponse.class);
-
-        return openAiResponse;
+        return objectMapper.readValue(response.body(), OpenAiResponse.class);
     }
 
     @SneakyThrows

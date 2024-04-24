@@ -65,10 +65,7 @@ public class TransmissionUtil {
         }
         //TODO 打印
         //System.out.println(response.body());
-        TrResponse trResponse = objectMapper.readValue(response.body(), TrResponse.class);
-        //TODO 打印
-        //System.out.println(trResponse.toString());
-        return trResponse;
+        return objectMapper.readValue(response.body(), TrResponse.class);
     }
 
     public TrResponse addTorrent(String url, String downloadDir, boolean paused) {

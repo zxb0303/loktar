@@ -1,26 +1,22 @@
 package com.loktar.web.test;
 
-import com.loktar.mapper.cxy.EmployeeMapper;
+import com.loktar.learn.test.Config;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.loktar.learn.test.*;
 
 @RestController
 @RequestMapping("test")
 public class TestController {
 
-    private final EmployeeMapper employeeMapper;
-
     private final Config config;
 
-    public TestController(EmployeeMapper employeeMapper, Config config) {
-        this.employeeMapper = employeeMapper;
+    public TestController( Config config) {
         this.config = config;
     }
 
     @RequestMapping("/test.do")
     public void test() {
-
+        System.out.println(1);
     }
 
 

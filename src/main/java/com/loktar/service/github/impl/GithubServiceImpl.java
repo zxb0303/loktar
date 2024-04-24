@@ -60,11 +60,11 @@ public class GithubServiceImpl implements GithubService {
             }
             GithubRelease githubRelease = getGithubRelease(githubRepository.getRepository());
             if (StringUtils.isEmpty(githubRepository.getLastTagName()) || githubRelease.getId() > githubRepository.getLastTagId()) {
-                String content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_GITHUB).append(System.lineSeparator())
-                        .append(System.lineSeparator())
-                        .append(githubRepository.getRepository()).append(":").append(githubRelease.getTagName()).append(System.lineSeparator())
-                        .append(System.lineSeparator())
-                        .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE)).toString();
+                String content = LokTarConstant.NOTICE_TITLE_GITHUB + System.lineSeparator() +
+                        System.lineSeparator() +
+                        githubRepository.getRepository() + ":" + githubRelease.getTagName() + System.lineSeparator() +
+                        System.lineSeparator() +
+                        DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
                 qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
                 githubRepository.setLastTagId(githubRelease.getId());
                 githubRepository.setLastTagName(githubRelease.getTagName());
@@ -90,13 +90,13 @@ public class GithubServiceImpl implements GithubService {
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         String responseBody = response.body();
-        List<GithubRelease> githubReleases = objectMapper.readValue(responseBody, new TypeReference<List<GithubRelease>>() {
+        List<GithubRelease> githubReleases = objectMapper.readValue(responseBody, new TypeReference<>() {
         });
         for (GithubRelease githubRelease : githubReleases) {
             if (!githubRelease.isPrerelease()) {
                 return githubRelease;
             }
         }
-        return githubReleases.get(0);
+        return githubReleases.getFirst();
     }
 }

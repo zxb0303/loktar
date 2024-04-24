@@ -42,11 +42,11 @@ public class IpTask {
         Property ipProperty = propertyMapper.selectByPrimaryKey("yht_ip");
         String ip = IPUtil.getip();
         if (!ObjectUtils.isEmpty(ip) && !ipProperty.getValue().equals(ip)) {
-            String content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_IP).append(System.lineSeparator())
-                    .append(System.lineSeparator())
-                    .append(ip).append(System.lineSeparator())
-                    .append(System.lineSeparator())
-                    .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE)).toString();
+            String content = LokTarConstant.NOTICE_TITLE_IP + System.lineSeparator() +
+                    System.lineSeparator() +
+                    ip + System.lineSeparator() +
+                    System.lineSeparator() +
+                    DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             ipProperty.setValue(ip);
             propertyMapper.updateByPrimaryKey(ipProperty);
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));

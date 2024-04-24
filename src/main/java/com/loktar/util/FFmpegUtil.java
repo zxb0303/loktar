@@ -86,64 +86,6 @@ public class FFmpegUtil {
         new FFmpegExecutor(ffmpeg).createJob(builder).run();
     }
 
-    //合并mp4 中途先转ts
-    public static void mergeMP4FilesUseTs(String ffmpegPath, String ffprobePath, String inputFolderPath, String outputFilePath) {
-        try {
-            FFmpeg ffmpeg = new FFmpeg(ffmpegPath);
-            FFprobe ffprobe = new FFprobe(ffprobePath);
-
-            FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
-
-            // 获取文件夹中的所有MP4文件
-            List<Path> inputFiles = Files.list(Paths.get(inputFolderPath))
-                    .filter(file -> file.toString().endsWith(".mp4"))
-                    .collect(Collectors.toList());
-
-            // 将所有输入文件转换为.ts格式，并添加到builder中
-            for (Path inputFile : inputFiles) {
-                String tsFile = inputFile.toString().replace(".mp4", ".ts");
-                FFmpegBuilder builder = new FFmpegBuilder()
-                        .setInput(inputFile.toString())
-                        .overrideOutputFiles(true)
-                        .addOutput(tsFile)
-                        .setFormat("mpegts")
-                        .done();
-                executor.createJob(builder).run();
-            }
-
-            // 重新获取文件夹中的所有.ts文件
-            List<Path> tsFiles = Files.list(Paths.get(inputFolderPath))
-                    .filter(file -> file.toString().endsWith(".ts"))
-                    .collect(Collectors.toList());
-
-            // 创建一个包含所有.ts文件路径的字符串，用'|'分隔
-            String concatFiles = tsFiles.stream()
-                    .map(Path::toString)
-                    .collect(Collectors.joining("|"));
-
-            // 使用FFmpeg的concat协议将所有.ts文件合并为一个文件
-            FFmpegBuilder builder = new FFmpegBuilder()
-                    .setInput("concat:" + concatFiles)
-                    .overrideOutputFiles(true)
-                    .addOutput(outputFilePath + ".ts")
-                    .setFormat("mpegts")
-                    .done();
-
-            executor.createJob(builder).run();
-
-            // 将合并后的.ts文件转换回MP4格式
-            FFmpegBuilder convertBuilder = new FFmpegBuilder()
-                    .setInput(outputFilePath + ".ts")
-                    .overrideOutputFiles(true)
-                    .addOutput(outputFilePath + ".mp4")
-                    .setFormat("mp4")
-                    .done();
-
-            executor.createJob(convertBuilder).run();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     //合并mp4 小米摄像头的视频用这个方法
     public static void mergeMP4Files(String ffmpegPath, String ffprobePath, String inputFolderPath, String outputFilePath) {
@@ -156,7 +98,7 @@ public class FFmpegUtil {
             // 获取文件夹中的所有MP4文件
             List<Path> inputFiles = Files.list(Paths.get(inputFolderPath))
                     .filter(file -> file.toString().endsWith(".mp4"))
-                    .collect(Collectors.toList());
+                    .toList();
 
             // 创建一个临时文件，其中列出了所有输入文件
             Path listFile = Files.createTempFile("ffmpeg-input-list", ".txt");

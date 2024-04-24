@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum TextCommandType {
     ADD_NOTICE("添加通知");
 
-    private String name;
+    private final String name;
 
     public static TextCommandType getByName(String name) {
         for (TextCommandType type : TextCommandType.values()) {

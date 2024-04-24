@@ -54,8 +54,7 @@ public class LotteryController {
     public void test1() {
         String pdfUrl = "http://down.hz-notary.com:10006/pdf/2022/1126/221126082946440_37750059084723307.pdf";
         List<HZLotteryPeopleDTOV2> hZLotteryPeopleDTOV2s = PDFUtilForLotteryHouse.getTableContentFromPDFUrl(pdfUrl, pdfPath);
-        for (int i = 0; i < hZLotteryPeopleDTOV2s.size(); i++) {
-            HZLotteryPeopleDTOV2 hZLotteryPeopleDTOV2 = hZLotteryPeopleDTOV2s.get(i);
+        for (HZLotteryPeopleDTOV2 hZLotteryPeopleDTOV2 : hZLotteryPeopleDTOV2s) {
             System.out.println(hZLotteryPeopleDTOV2.getPeopleId() + ";" + hZLotteryPeopleDTOV2.getSerialNum() + ";" +
                     hZLotteryPeopleDTOV2.getName() + ";" +
                     hZLotteryPeopleDTOV2.getIdentityNum() + ";" +

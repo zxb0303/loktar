@@ -1,7 +1,6 @@
 package com.loktar.web.cxy;
 
 import com.loktar.domain.cxy.CompanyProperty;
-import com.loktar.learn.test.Config;
 import com.loktar.mapper.cxy.CompanyPropertyMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,12 +11,9 @@ import java.util.List;
 @RequestMapping("companyProperty")
 public class CompanyPropertyController {
 
-    private final Config config;
-
     private final CompanyPropertyMapper companyPropertyMapper;
 
-    public CompanyPropertyController(Config config, CompanyPropertyMapper companyPropertyMapper) {
-        this.config = config;
+    public CompanyPropertyController( CompanyPropertyMapper companyPropertyMapper) {
         this.companyPropertyMapper = companyPropertyMapper;
     }
 
@@ -30,9 +26,9 @@ public class CompanyPropertyController {
                 System.out.println(companyProperty.getZhuti() + ";" + companyProperty.getZichanbianhao() + ";" + companyProperty.getShebeimingcheng() + ";" + companyProperty.getPinpai() + ";" + companyProperty.getXinghao() + ";" + "1" + ";" + companyProperty.getDanjia() + ";" + companyProperty.getDanjia());
             } else {
                 //22060014
-                int start = Integer.valueOf(strs[2]);
+                int start = Integer.parseInt(strs[2]);
                 //22060023
-                int end = Integer.valueOf(replaceEnd(strs[2], strs[3]));
+                int end = Integer.parseInt(replaceEnd(strs[2], strs[3]));
                 for (int i = start; i <= end; i++) {
                     String newBianhao = strs[0] + "-" + strs[1] + "-" + i;
                     System.out.println(companyProperty.getZhuti() + ";" + newBianhao + ";" + companyProperty.getShebeimingcheng() + ";" + companyProperty.getPinpai() + ";" + companyProperty.getXinghao() + ";" + "1" + ";" + companyProperty.getDanjia() + ";" + companyProperty.getDanjia());

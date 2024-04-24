@@ -6,7 +6,7 @@ public class TextBlocks {
     Hello,
     This is a multi-line
     text block.
-                """;
+               \s""";
         System.out.println(textBlock);
 
         String indentedBlock = """

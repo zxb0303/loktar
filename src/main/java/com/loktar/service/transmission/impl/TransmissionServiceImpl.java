@@ -80,20 +80,20 @@ public class TransmissionServiceImpl implements TransmissionService {
     @Override
     public void autoRemoveError() {
         List<String> errorNames = trTorrentMapper.getErrorName();
-        if (errorNames.size() > 0) {
+        if (!errorNames.isEmpty()) {
             System.out.println("自动删除下列错误种子：");
         }
         for (String name : errorNames) {
             System.out.println(name);
             List<TrTorrent> trTorrents = trTorrentMapper.getTorrentsByName(name);
-            List<Integer> removeIds = new ArrayList<Integer>();
+            List<Integer> removeIds = new ArrayList<>();
             if (trTorrents.size() == 1) {
                 //错误的只有1个时，删种删文件
-                TrTorrent errorTrTorrent = trTorrents.get(0);
+                TrTorrent errorTrTorrent = trTorrents.getFirst();
                 removeIds.add(errorTrTorrent.getId());
                 trTorrentMapper.deleteByPrimaryKey(errorTrTorrent.getId());
                 trTorrentTrackerMapper.deleteByTorrentId(errorTrTorrent.getId());
-                transmissionUtil.removeTorrents(removeIds.toArray(new Integer[removeIds.size()]), true);
+                transmissionUtil.removeTorrents(removeIds.toArray(new Integer[0]), true);
             }
             if (trTorrents.size() > 1) {
                 //错误的>1个时，只删种不文件
@@ -104,16 +104,16 @@ public class TransmissionServiceImpl implements TransmissionService {
                         trTorrentTrackerMapper.deleteByTorrentId(t.getId());
                     }
                 }
-                transmissionUtil.removeTorrents(removeIds.toArray(new Integer[removeIds.size()]), false);
+                transmissionUtil.removeTorrents(removeIds.toArray(new Integer[0]), false);
             }
         }
     }
 
     private void autoRemoveSize(long leftSize, long minSize, Long minSizeGB, int days, String downloadDir) {
-        List<Integer> tempIds = new ArrayList<Integer>();
+        List<Integer> tempIds = new ArrayList<>();
         List<String> tempNames = new ArrayList<>();
         //TODO 打印
-        System.out.println("当前空间：" + Math.floor(leftSize / 1024 / 1024 / 1024) + ";不足" + minSizeGB + "GB");
+        System.out.println("当前空间：" + Math.floor((double) leftSize / 1024 / 1024 / 1024) + ";不足" + minSizeGB + "GB");
         System.out.println("自动删除下列种子：");
         while (leftSize <= minSize) {
             TrTorrent worstTorrent = trTorrentMapper.getworstTorrent(days, downloadDir);
@@ -121,7 +121,7 @@ public class TransmissionServiceImpl implements TransmissionService {
                 return;
             }
             //TODO 打印
-            System.out.println(Math.floor(worstTorrent.getTotalSize() / 1024 / 1024 / 1024) + ";" + worstTorrent.getName() + ";" + worstTorrent.getTotalSize().toString());
+            System.out.println(Math.floor((double) worstTorrent.getTotalSize() / 1024 / 1024 / 1024) + ";" + worstTorrent.getName() + ";" + worstTorrent.getTotalSize().toString());
             tempNames.add(worstTorrent.getName());
             List<TrTorrent> needRemoveTrTorrents = trTorrentMapper.getTorrentsByNameAndSize(worstTorrent.getName(), worstTorrent.getTotalSize());
             for (TrTorrent needRemoveTrTorrent : needRemoveTrTorrents) {
@@ -131,25 +131,25 @@ public class TransmissionServiceImpl implements TransmissionService {
             }
             leftSize = leftSize + worstTorrent.getTotalSize();
         }
-        TrResponse needRemoveTrResponse = transmissionUtil.getTorrents(tempIds.toArray(new Integer[tempIds.size()]));
+        TrResponse needRemoveTrResponse = transmissionUtil.getTorrents(tempIds.toArray(new Integer[0]));
         List<TrResponseTorrent> needRemoveTorrents = needRemoveTrResponse.getArguments().getTorrents();
-        List<Integer> trueRemoveIds = new ArrayList<Integer>();
+        List<Integer> trueRemoveIds = new ArrayList<>();
         for (TrResponseTorrent needRemoveTorrent : needRemoveTorrents) {
             if (needRemoveTorrent.getDownloadDir().equals(lokTarConfig.transmissionTempDownloadDir) && tempNames.contains(needRemoveTorrent.getName())) {
                 trueRemoveIds.add(Integer.valueOf(String.valueOf(needRemoveTorrent.getId())));
             }
         }
-        transmissionUtil.removeTorrents(trueRemoveIds.toArray(new Integer[trueRemoveIds.size()]), true);
+        transmissionUtil.removeTorrents(trueRemoveIds.toArray(new Integer[0]), true);
     }
 
 
     @Override
     public void autoStart() {
         List<TrTorrent> needStartTrTorrents = trTorrentMapper.getNeedStartTrTorrents();
-        if (needStartTrTorrents.size() == 0) {
+        if (needStartTrTorrents.isEmpty()) {
             return;
         }
-        List<Integer> ids = new ArrayList<Integer>();
+        List<Integer> ids = new ArrayList<>();
         for (TrTorrent needStartTrTorrent : needStartTrTorrents) {
             ids.add(needStartTrTorrent.getId());
             needStartTrTorrent.setStatus(6);

@@ -61,7 +61,7 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
         while(date.isBefore(yestoday)){
             List<SecondHandHouse> secondHandHouses = getHouseData(dateStr, property);
             System.out.println(dateStr + "共" + secondHandHouses.size() + "条数据待处理");
-            if (secondHandHouses.size() > 0) {
+            if (!secondHandHouses.isEmpty()) {
                 secondHandHouseMapper.insertBatch(secondHandHouses);
             }
             System.out.println(dateStr + "共" + secondHandHouses.size() + "条数据处理完成");
@@ -85,7 +85,7 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
      */
     @SneakyThrows
     private List<SecondHandHouse> getHouseData(String date, Property property) {
-        List<SecondHandHouse> secondHandHouses = new ArrayList<SecondHandHouse>();
+        List<SecondHandHouse> secondHandHouses = new ArrayList<>();
         int totalNum = 1;
         int pageName = 1;
         while (secondHandHouses.size() < totalNum) {

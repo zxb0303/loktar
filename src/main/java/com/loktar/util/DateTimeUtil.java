@@ -8,13 +8,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class DateTimeUtil {
-    public static DateTimeFormatter FORMATTER_DATESECOND = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    public static DateTimeFormatter FORMATTER_DATEMINUTE = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    public static DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    public static DateTimeFormatter FORMATTER_YEAR = DateTimeFormatter.ofPattern("yyyy");
-    public static DateTimeFormatter FORMATTER_FILENAME = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-    public static DateTimeFormatter FORMATTER_QYWX_RECEIVE = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-    public static DateTimeFormatter FORMATTER_RSS_ITEM_PUB = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+    public final static DateTimeFormatter FORMATTER_DATESECOND = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public final static DateTimeFormatter FORMATTER_DATEMINUTE = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    public final static DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public final static DateTimeFormatter FORMATTER_YEAR = DateTimeFormatter.ofPattern("yyyy");
+    public final static DateTimeFormatter FORMATTER_FILENAME = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    public final static DateTimeFormatter FORMATTER_QYWX_RECEIVE = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+    public final static DateTimeFormatter FORMATTER_RSS_ITEM_PUB = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
 
 
     public static String getDatetimeStr(LocalDateTime datetime, DateTimeFormatter format) {

@@ -16,7 +16,7 @@ public class RegexTest {
 //            System.out.println("No match found");
 //        }
         String str = "Perfect.Singer.2024.S01E03.WEB-DL.1080p.H264.AAC-CMCTV";
-        Pattern r = Pattern.compile( "(?!.*\\[FROZEN\\])(?!.*720).*CMCT$|(?!.*\\[FROZEN\\])(?=.*(?:2023|2024)).*CMCTV$");
+        Pattern r = Pattern.compile("(?!.*\\[FROZEN])(?!.*720).*CMCT$|(?!.*\\[FROZEN])(?=.*(?:2023|2024)).*CMCTV$");
         Matcher m = r.matcher(str);
         if (m.matches()) {
             System.out.println(1);

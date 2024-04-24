@@ -30,7 +30,7 @@ public class PDFUtilForLotteryHouse {
                 PdfTableExtractor extractor = new PdfTableExtractor(pdf);
                 for (int page = 0; page < pdf.getPages().getCount(); page++) {
                     PdfTable[] tableLists = extractor.extractTable(page);
-                    if (tableLists != null && tableLists.length > 0) {
+                    if (tableLists != null) {
                         for (PdfTable table : tableLists) {
                             int row = table.getRowCount();
                             int column = table.getColumnCount();
@@ -38,7 +38,7 @@ public class PDFUtilForLotteryHouse {
                                 for (int j = 0; j < column; j++) {
                                     String text = table.getText(i, j);
                                     text = text.replace(";", ",");
-                                    builder.append(text + ";");
+                                    builder.append(text).append(";");
                                 }
                             }
                         }

@@ -2,7 +2,6 @@ package com.loktar.learn.jdk11;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 public class FileOperations {
@@ -11,10 +10,11 @@ public class FileOperations {
 
         // 写入文件
         String content = "Hello, world!";
-        Files.writeString(Path.of(filePath), content);
+        Path path = Path.of(filePath);
+        Files.writeString(path, content);
 
         // 读取文件
-        String fileContent = Files.readString(Path.of(filePath));
+        String fileContent = Files.readString(path);
         System.out.println("文件内容：\n" + fileContent);
 
         // 逐行写入文件

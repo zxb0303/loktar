@@ -4,8 +4,6 @@ spring:
     username:
     password:
     driver-class-name:
-    initialSize:
-    maxActive:
   data:
     redis:
       host:

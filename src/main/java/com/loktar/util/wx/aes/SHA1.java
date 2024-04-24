@@ -13,7 +13,6 @@ import java.util.Arrays;
 
 /**
  * SHA1 class
- *
  * 计算消息签名接口.
  */
 class SHA1 {
@@ -31,7 +30,7 @@ class SHA1 {
 			  {
 		try {
 			String[] array = new String[] { token, timestamp, nonce, encrypt };
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			// 字符串排序
 			Arrays.sort(array);
 			for (int i = 0; i < 4; i++) {
@@ -43,15 +42,15 @@ class SHA1 {
 			md.update(str.getBytes());
 			byte[] digest = md.digest();
 
-			StringBuffer hexstr = new StringBuffer();
-			String shaHex = "";
-			for (int i = 0; i < digest.length; i++) {
-				shaHex = Integer.toHexString(digest[i] & 0xFF);
-				if (shaHex.length() < 2) {
-					hexstr.append(0);
-				}
-				hexstr.append(shaHex);
-			}
+			StringBuilder hexstr = new StringBuilder();
+			String shaHex;
+            for (byte b : digest) {
+                shaHex = Integer.toHexString(b & 0xFF);
+                if (shaHex.length() < 2) {
+                    hexstr.append(0);
+                }
+                hexstr.append(shaHex);
+            }
 			return hexstr.toString();
 		} catch (Exception e) {
 			e.printStackTrace();

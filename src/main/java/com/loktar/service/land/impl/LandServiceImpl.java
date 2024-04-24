@@ -20,7 +20,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.MessageFormat;
-import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public class LandServiceImpl implements LandService {
 
     private final LandMapper landMapper;
 
-    private static Map<String, String> STATUS_MAP = new HashMap<String, String>();
+    private static final Map<String, String> STATUS_MAP = new HashMap<>();
 
     private final static String URL_DETAIL = "http://land.zzhz.zjol.com.cn/land/{0}.html";
 
@@ -66,7 +65,7 @@ public class LandServiceImpl implements LandService {
 
     @SneakyThrows
     private List<Land> getData(String year) {
-        List<Land> lands = new ArrayList<Land>();
+        List<Land> lands = new ArrayList<>();
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(URK_LIST, year)))
@@ -84,20 +83,20 @@ public class LandServiceImpl implements LandService {
         return lands;
     }
 
-    private Land changeLandDTO(LandDTO landDTO) throws ParseException {
+    private Land changeLandDTO(LandDTO landDTO) {
         Land land = new Land();
-        land.setId(StringUtils.isEmpty(landDTO.getId()) ? 0 : Integer.valueOf(landDTO.getId()));
+        land.setId(StringUtils.isEmpty(landDTO.getId()) ? 0 : Integer.parseInt(landDTO.getId()));
         land.setDate(DateTimeUtil.parseLocalDate(landDTO.getYuEndTime(), DateTimeUtil.FORMATTER_DATE));
         land.setCity(landDTO.getCityName());
         land.setArea(landDTO.getUrbanName());
         land.setLandNo(landDTO.getNum());
         land.setLandName(landDTO.getName());
         land.setStatus(STATUS_MAP.get(landDTO.getPaystatusId()));
-        land.setAcreage(StringUtils.isEmpty(landDTO.getTArea()) ? 0 : Float.valueOf(landDTO.getTArea()));
+        land.setAcreage(StringUtils.isEmpty(landDTO.getTArea()) ? 0 : Float.parseFloat(landDTO.getTArea()));
         land.setLandUsage(landDTO.getPlanName());
         land.setVolumetricRate(landDTO.getFar());
-        land.setDealPrice(StringUtils.isEmpty(landDTO.getPayPrice()) ? 0 : Float.valueOf(landDTO.getPayPrice()));
-        land.setBuildPrice(StringUtils.isEmpty(landDTO.getBuildPrice()) ? 0 : Float.valueOf(landDTO.getBuildPrice()));
+        land.setDealPrice(StringUtils.isEmpty(landDTO.getPayPrice()) ? 0 : Float.parseFloat(landDTO.getPayPrice()));
+        land.setBuildPrice(StringUtils.isEmpty(landDTO.getBuildPrice()) ? 0 : Float.parseFloat(landDTO.getBuildPrice()));
         land.setPremiumRate(landDTO.getPremiumRatio());
         land.setOwner(landDTO.getOwner());
         land.setRemark(landDTO.getNewMemo());

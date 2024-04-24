@@ -44,7 +44,6 @@ public class BandwagonhostUtil {
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        VPSInfo vpsInfo = objectMapper.readValue(response.body(), VPSInfo.class);
-        return vpsInfo;
+        return objectMapper.readValue(response.body(), VPSInfo.class);
     }
 }

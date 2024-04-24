@@ -10,7 +10,7 @@ public enum ReceiceMsgType {
     VOICE("voice"),
     EVENT("event") ;
 
-    private String name;
+    private final String name;
     public static ReceiceMsgType getByName(String name) {
         for (ReceiceMsgType type : ReceiceMsgType.values()) {
             if (type.getName().equals(name)) {

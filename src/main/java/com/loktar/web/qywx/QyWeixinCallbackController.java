@@ -63,15 +63,13 @@ public class QyWeixinCallbackController {
     }
 
     @PostMapping("receive.do")
-    public ResponseEntity receive(
+    public ResponseEntity<Void> receive(
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce, @RequestBody String xml) {
         if (!redisUtil.setIfAbsent(msgSignature, timestamp, 30)) {
             return ResponseEntity.noContent().build();
         }
-        Thread.ofVirtual().start(() -> {
-            asyncDealMsg(msgSignature, timestamp, nonce, xml);
-        });
+        Thread.ofVirtual().start(() -> asyncDealMsg(msgSignature, timestamp, nonce, xml));
         return ResponseEntity.noContent().build();
     }
 
@@ -124,8 +122,7 @@ public class QyWeixinCallbackController {
                         .append(System.lineSeparator());
                 List<TrTorrent> torrents = trTorrentMapper.getTrTorrentsByStatus(4);
                 for (TrTorrent trTorrent : torrents) {
-                    replymsg.append(trTorrent.getName()).append(System.lineSeparator())
-                            .append("(" + String.format("%.2f", trTorrent.getPercentDone() * 100) + "%)").append(System.lineSeparator());
+                    replymsg.append(trTorrent.getName()).append(System.lineSeparator()).append("(").append(String.format("%.2f", trTorrent.getPercentDone() * 100)).append("%)").append(System.lineSeparator());
                 }
                 break;
             case EventCommandType.SHOW_CLASH_RSS:
@@ -135,7 +132,7 @@ public class QyWeixinCallbackController {
                 break;
             case EventCommandType.SHOW_TRANSMISSION_ALT_SPEED:
                 replymsg.append("Transmission当前限速状态：").append(System.lineSeparator());
-                String state = "";
+                String state;
                 if (transmissionUtil.getSession().getArguments().getAltSpeedEnabled()) {
                     state = "已限速";
                 } else {
@@ -165,7 +162,7 @@ public class QyWeixinCallbackController {
                     replymsg.append(System.lineSeparator())
                             .append(vpsInfo.getHostname()).append(System.lineSeparator())
                             .append("IP：").append(vpsInfo.getIpAddresses()[0]).append(System.lineSeparator())
-                            .append("Bandwidth：").append(vpsInfo.getDataCounter() / 1024 / 1024 / 1024 + "GB" + "/" + vpsInfo.getPlanMonthlyData() / 1024 / 1024 / 1024 + "GB").append(System.lineSeparator())
+                            .append("Bandwidth：").append(vpsInfo.getDataCounter() / 1024 / 1024 / 1024).append("GB").append("/").append(vpsInfo.getPlanMonthlyData() / 1024 / 1024 / 1024).append("GB").append(System.lineSeparator())
                             .append("Reset：").append(DateTimeUtil.getDatetimeStr(LocalDateTime, DateTimeUtil.FORMATTER_DATE)).append(System.lineSeparator());
                 }
                 break;
@@ -221,7 +218,7 @@ public class QyWeixinCallbackController {
 
     @SneakyThrows
     @GetMapping("receive.do")
-    public ResponseEntity msgValid(
+    public ResponseEntity<String> msgValid(
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp,
             @RequestParam("nonce") String nonce, @RequestParam("echostr") String echostr) {
