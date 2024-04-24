@@ -3,6 +3,7 @@ package com.loktar.web.transmission;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.service.transmission.TransmissionService;
 import com.loktar.util.TransmissionUtil;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,7 @@ public class TransmissionController {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @RequestMapping("/testAdd.do")
+    @GetMapping("/testAdd.do")
     public void testAdd() {
         String url="";
         String downloadDir="/downloads2/complete";
@@ -27,38 +28,38 @@ public class TransmissionController {
         transmissionUtil.addTorrent(url,downloadDir,paused);
     }
 
-    @RequestMapping("/testStart.do")
+    @GetMapping("/testStart.do")
     public void testStart() {
         Integer[] ids= new Integer[]{2919};
         transmissionUtil.startTorrents(ids);
     }
 
-    @RequestMapping("/testRemoveTorrents.do")
+    @GetMapping("/testRemoveTorrents.do")
     public void testRemoveTorrents() {
         transmissionUtil.removeTorrents(new Integer[]{2486},true);
     }
 
-    @RequestMapping("/testGetFreeSpaceByPath.do")
+    @GetMapping("/testGetFreeSpaceByPath.do")
     public void testGetFreeSpaceByPath() {
         System.out.println(transmissionUtil.getFreeSpaceByPath(lokTarConfig.transmissionTempDownloadDir).toString());
     }
 
-    @RequestMapping("/altSpeedEnabled.do")
+    @GetMapping("/altSpeedEnabled.do")
     public void altSpeedEnabled() {
         transmissionUtil.altSpeedEnabled(false);
     }
 
-    @RequestMapping("/getSession.do")
+    @GetMapping("/getSession.do")
     public void getSession() {
         transmissionUtil.getSession();
     }
 
-    @RequestMapping("/refreshAllTorrents.do")
+    @GetMapping("/refreshAllTorrents.do")
     public void refreshAllTorrents() {
         transmissionService.refreshAllTorrents();
     }
 
-    @RequestMapping("/autoRemoveError.do")
+    @GetMapping("/autoRemoveError.do")
     public void autoRemoveError() {
         transmissionService.autoRemoveError();
     }

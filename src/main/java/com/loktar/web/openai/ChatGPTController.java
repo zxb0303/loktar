@@ -12,6 +12,7 @@ import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,7 +42,7 @@ public class ChatGPTController {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @RequestMapping("/completions.do")
+    @GetMapping("/completions.do")
     public void completions(String text) {
         OpenAiMessage openAiMessage = new OpenAiMessage(ChatGPTUtil.ROLE_USER, text);
         if (ObjectUtils.isEmpty(openAiRequest)) {
@@ -56,7 +57,7 @@ public class ChatGPTController {
     }
 
     @SneakyThrows
-    @RequestMapping("/testVoiceAndSend.do")
+    @GetMapping("/testVoiceAndSend.do")
     public void testVoiceAndSend() {
         String wavFileName = UUIDUtil.randomUUID() + LokTarConstant.VOICE_SUFFIX_WAV;
         azureVoiceUtil.textToWav(voicePath, wavFileName, "你叫什么名字");
