@@ -118,11 +118,11 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
      * @createTime: 2021-05-06 12:56
      */
     private void getLotteryPeopleData(LotteryHouse lotteryHouse) {
-        List<LotteryPeople> lotteryPeoples = new ArrayList<LotteryPeople>();
-        List<LotteryOtherPeople> lotteryOtherPeoples = new ArrayList<LotteryOtherPeople>();
+        List<LotteryPeople> lotteryPeoples = new ArrayList<>();
+        List<LotteryOtherPeople> lotteryOtherPeoples = new ArrayList<>();
         String pdfUrl = HZnotaryUtil.getPDFUrlByHouseNameAndType(lotteryHouse.getHouseName(), HZnotaryUtil.TYPE_REGIST);
         List<HZLotteryPeopleDTOV2> hZLotteryPeopleDTOV2s = PDFUtilForLotteryHouse.getTableContentFromPDFUrl(pdfUrl, pdfPath);
-        if (hZLotteryPeopleDTOV2s.size() == 0) {
+        if (hZLotteryPeopleDTOV2s.isEmpty()) {
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, lotteryHouse.getHouseName() + "(" + lotteryHouse.getHouseId() + ")数据需手动处理"));
             return;
         }
@@ -204,8 +204,7 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         HZLotteryHouseDetailResultDTO hZLotteryHouseDetailResultDTO = objectMapper.readValue(response.body(), HZLotteryHouseDetailResultDTO.class);
-        LotteryHouse lotteryHouse = changeLotteryHouseDTO(hZLotteryHouseDetailResultDTO.getData(), true);
-        return lotteryHouse;
+        return changeLotteryHouseDTO(hZLotteryHouseDetailResultDTO.getData(), true);
     }
 
     /**
@@ -217,7 +216,7 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
      */
     @SneakyThrows
     private List<LotteryHouse> getRecentHZLotteryHouses() {
-        List<LotteryHouse> lotteryHouses = new ArrayList<LotteryHouse>();
+        List<LotteryHouse> lotteryHouses = new ArrayList<>();
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(URL_HOUSE_LIST))

@@ -41,11 +41,11 @@ public class CertbotTask {
         LocalDate expireDate = DateTimeUtil.parseLocalDate(expireDateStr, DateTimeUtil.FORMATTER_DATE);
         LocalDate todayAdd25Days = LocalDate.now().plusDays(25);
         if (todayAdd25Days.isAfter(expireDate)) {
-            String content = new StringBuilder().append(LokTarConstant.NOTICE_CERT_UPDATE).append(System.lineSeparator())
-                    .append(System.lineSeparator())
-                    .append("请更新证书").append(System.lineSeparator())
-                    .append(System.lineSeparator())
-                    .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE)).toString();
+            String content = LokTarConstant.NOTICE_CERT_UPDATE + System.lineSeparator() +
+                    System.lineSeparator() +
+                    "请更新证书" + System.lineSeparator() +
+                    System.lineSeparator() +
+                    DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
         }
     }

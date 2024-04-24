@@ -22,7 +22,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Component
 public class DockerEngineApiUtil {
 
-    public static String FFMPEG_COMTAINER_NAME = "jrottenberg-ffmpeg";
+    public final static String FFMPEG_COMTAINER_NAME = "jrottenberg-ffmpeg";
 
     public static DockerClientConfig config;
 
@@ -30,10 +30,7 @@ public class DockerEngineApiUtil {
 
     public static DockerClient dockerClient;
 
-    private final LokTarConfig lokTarConfig;
-
     public DockerEngineApiUtil(LokTarConfig lokTarConfig) {
-        this.lokTarConfig = lokTarConfig;
         config = DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost(lokTarConfig.dockerTcpUrl)
                 .withDockerTlsVerify(false)

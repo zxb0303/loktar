@@ -10,14 +10,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class AzureVoiceUtil {
 
-    public static String LANGUAGE = "zh-CN";
-    public static String DEFAULT_VOICE_NAME = "zh-CN-XiaoyiNeural";
-    private final LokTarConfig lokTarConfig;
+    public final static String LANGUAGE = "zh-CN";
+    public final static String DEFAULT_VOICE_NAME = "zh-CN-XiaoyiNeural";
     private static SpeechConfig config;
 
     public AzureVoiceUtil(LokTarConfig lokTarConfig) {
-        this.lokTarConfig = lokTarConfig;
-        config = SpeechConfig.fromSubscription(this.lokTarConfig.azureVoiceKey, this.lokTarConfig.azureVoiceRegion);
+        config = SpeechConfig.fromSubscription(lokTarConfig.azureVoiceKey, lokTarConfig.azureVoiceRegion);
         config.setSpeechSynthesisVoiceName(DEFAULT_VOICE_NAME);
         config.setSpeechRecognitionLanguage(LANGUAGE);
     }
@@ -28,8 +26,7 @@ public class AzureVoiceUtil {
         AudioConfig audioConfig = AudioConfig.fromWavFileOutput(audioFilePath);
         SpeechSynthesizer synthesizer = new SpeechSynthesizer(config, audioConfig);
         SpeechSynthesisResult result = synthesizer.SpeakTextAsync(text).get();
-        if (result.getReason() == ResultReason.SynthesizingAudioCompleted) {
-        } else if (result.getReason() == ResultReason.Canceled) {
+        if (result.getReason() == ResultReason.Canceled) {
             SpeechSynthesisCancellationDetails cancellation = SpeechSynthesisCancellationDetails.fromResult(result);
             System.out.println("CANCELED: Reason=" + cancellation.getReason());
             System.out.println("CANCELED: ErrorCode=" + cancellation.getErrorCode());

@@ -2,19 +2,16 @@ package com.loktar.web.rss;
 
 import com.loktar.domain.transmission.TrRss;
 import com.loktar.mapper.transmission.TrRssMapper;
-import com.loktar.service.transmission.RssService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("rss")
 public class RssController {
-    private final RssService rssService;
 
     private final TrRssMapper trRssMapper;
 
-    public RssController(RssService rssService, TrRssMapper trRssMapper) {
-        this.rssService = rssService;
+    public RssController(TrRssMapper trRssMapper) {
         this.trRssMapper = trRssMapper;
     }
 

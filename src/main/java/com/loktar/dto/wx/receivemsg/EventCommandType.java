@@ -15,7 +15,7 @@ public enum EventCommandType {
     UDATE_WX_MENU("更新菜单"),
     ALT_TRANSMISSION_SPEED("TR限速开关");
 
-    private String name;
+    private final String name;
 
     public static EventCommandType getByName(String name) {
         for (EventCommandType type : EventCommandType.values()) {

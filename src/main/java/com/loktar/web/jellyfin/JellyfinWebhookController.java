@@ -8,12 +8,12 @@ import com.loktar.dto.transmission.TrResponse;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.util.*;
 import com.loktar.util.wx.qywx.QywxApi;
+import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -72,7 +72,7 @@ public class JellyfinWebhookController {
         if ("PlaybackStart".equals(notification.getNotificationType()) && !isLocalNetwork(session.getRemoteEndPoint())) {
             long expireTime = calculateSecondsDifference(notification);
             long existExpireTime = redisUtil.getExpire(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET);
-            expireTime = expireTime > existExpireTime ? expireTime : existExpireTime;
+            expireTime = Math.max(expireTime, existExpireTime);
             redisUtil.sSetAndTime(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, expireTime, notification.getNotificationUsername());
         } else {
             redisUtil.setRemove(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, notification.getNotificationUsername());
@@ -131,40 +131,36 @@ public class JellyfinWebhookController {
         return ChronoUnit.SECONDS.between(startTime, endTime);
     }
 
+    @SneakyThrows
     private static boolean isLocalNetwork(String remoteEndPoint) {
-        try {
-            String ipAddress = remoteEndPoint.split(":")[0];
-            InetAddress address = InetAddress.getByName(ipAddress);
-            String ip = IPUtil.getip();
+        String ipAddress = remoteEndPoint.split(":")[0];
+        InetAddress address = InetAddress.getByName(ipAddress);
+        String ip = IPUtil.getip();
 
-            if (remoteEndPoint.equals(ip)) {
-                return true;
-            }
+        if (remoteEndPoint.equals(ip)) {
+            return true;
+        }
 
-            // 检查是否为回环地址
-            if (address.isLoopbackAddress()) {
-                return true;
-            }
+        // 检查是否为回环地址
+        if (address.isLoopbackAddress()) {
+            return true;
+        }
 
-            // 转换为字节形式
-            byte[] bytes = address.getAddress();
+        // 转换为字节形式
+        byte[] bytes = address.getAddress();
 
-            // 检查是否为私有地址
-            // 10.x.x.x
-            if ((bytes[0] & 0xFF) == 10) {
-                return true;
-            }
-            // 172.16.x.x - 172.31.x.x
-            if (((bytes[0] & 0xFF) == 172) && ((bytes[1] & 0xF0) == 16)) {
-                return true;
-            }
-            // 192.168.x.x
-            if (((bytes[0] & 0xFF) == 192) && ((bytes[1] & 0xFF) == 168)) {
-                return true;
-            }
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            return false;
+        // 检查是否为私有地址
+        // 10.x.x.x
+        if ((bytes[0] & 0xFF) == 10) {
+            return true;
+        }
+        // 172.16.x.x - 172.31.x.x
+        if (((bytes[0] & 0xFF) == 172) && ((bytes[1] & 0xF0) == 16)) {
+            return true;
+        }
+        // 192.168.x.x
+        if (((bytes[0] & 0xFF) == 192) && ((bytes[1] & 0xFF) == 168)) {
+            return true;
         }
 
         return false;

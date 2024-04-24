@@ -34,7 +34,7 @@ public enum KeyButtonType {
     // 选择地理位置
     LOCATION_SELECT("location_select");
 
-    private String name;
+    private final String name;
     public static KeyButtonType getByName(String name) {
         for (KeyButtonType type : KeyButtonType.values()) {
             if (type.getName().equals(name)) {

@@ -57,7 +57,7 @@ public class QywxApi {
     private final LokTarConfig lokTarConfig;
 
     private final static ObjectMapper objectMapper = new ObjectMapper();
-    private static Map<String, String> AGENTMAP = new HashMap<>();
+    private final static Map<String, String> AGENTMAP = new HashMap<>();
 
 
     public QywxApi(RedisUtil redisUtil, QywxMenuMapper qywxMenuMapper, LokTarConfig lokTarConfig) {
@@ -166,8 +166,7 @@ public class QywxApi {
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         System.out.println(response.body());
-        BaseResult baseResult = objectMapper.readValue(response.body(), AgentMsgRsp.class);
-        return baseResult;
+        return objectMapper.readValue(response.body(), AgentMsgRsp.class);
     }
 
     private Menu.Button getButton(QywxMenu config) {
@@ -176,8 +175,7 @@ public class QywxApi {
             case KeyButtonType.VIEW:
                 return new Menu.ViewButton(config.getName(), config.getUrl(), config.getOrder());
             default:
-                return new Menu.KeyButton(type, config.getName(), config.getKey(),
-                        config.getOrder());
+                return new Menu.KeyButton(type, config.getName(), config.getKey(),config.getOrder());
         }
     }
 

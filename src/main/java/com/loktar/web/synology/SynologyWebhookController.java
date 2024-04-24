@@ -22,11 +22,11 @@ public class SynologyWebhookController {
 
     @RequestMapping("/sendMsg.do")
     public void send(String title,String text,String touser) {
-        String content = new StringBuilder().append(title).append(System.lineSeparator())
-                .append(System.lineSeparator())
-                .append(text).append(System.lineSeparator())
-                .append(System.lineSeparator())
-                .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE)).toString();
+        String content = title + System.lineSeparator() +
+                System.lineSeparator() +
+                text + System.lineSeparator() +
+                System.lineSeparator() +
+                DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
         qywxApi.sendTextMsg(new AgentMsgText(touser, lokTarConfig.qywxAgent002Id, content));
     }
 }
