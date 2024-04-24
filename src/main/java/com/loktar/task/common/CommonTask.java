@@ -12,8 +12,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Calendar;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @Component
@@ -53,11 +55,11 @@ public class CommonTask {
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime noticeTime = LocalDateTime.parse(notice.getNoticeTime(), DateTimeUtil.FORMATTER_DATEMINUTE);
             if (now.isAfter(noticeTime)) {
-                String content = new StringBuilder().append(notice.getNoticeTitle()).append(System.lineSeparator())
-                        .append(System.lineSeparator())
-                        .append(notice.getNoticeContent()).append(System.lineSeparator())
-                        .append(System.lineSeparator())
-                        .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE)).toString();
+                String content = notice.getNoticeTitle() + System.lineSeparator() +
+                        System.lineSeparator() +
+                        notice.getNoticeContent() + System.lineSeparator() +
+                        System.lineSeparator() +
+                        DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
                 qywxApi.sendTextMsg(new AgentMsgText(notice.getNoticeUser(), lokTarConfig.qywxAgent002Id, content));
                 notice.setStatus(1);
                 noticeServer.updateByPrimaryKey(notice);
@@ -97,21 +99,23 @@ public class CommonTask {
         if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
             return;
         }
-        Calendar today = Calendar.getInstance();
-        Calendar sendDay = Calendar.getInstance();
-        sendDay.set(Calendar.DATE, 1);
-        sendDay.roll(Calendar.DATE, -1);
-        if (sendDay.get(Calendar.DAY_OF_WEEK) == 1) {
-            sendDay.add(Calendar.DATE, -2);
+
+        LocalDate today = LocalDate.now();
+        LocalDate lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
+
+        // 如果最后一天是周日，则向前推两天到周五
+        if (lastDayOfMonth.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            lastDayOfMonth = lastDayOfMonth.minusDays(2);
         }
-        if (sendDay.get(Calendar.DAY_OF_WEEK) == 7) {
-            sendDay.add(Calendar.DATE, -1);
+        // 如果最后一天是周六，则向前推一天到周五
+        else if (lastDayOfMonth.getDayOfWeek() == DayOfWeek.SATURDAY) {
+            lastDayOfMonth = lastDayOfMonth.minusDays(1);
         }
-        if (today.get(Calendar.DAY_OF_YEAR) == sendDay.get(Calendar.DAY_OF_YEAR)) {
-            String content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_WORK).append(System.lineSeparator())
-                    .append(System.lineSeparator())
-                    .append(lokTarConfig.commonCxyNoticeText).append(System.lineSeparator())
-                    .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE)).toString();
+        if (today.equals(lastDayOfMonth)) {
+            String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator() +
+                    System.lineSeparator() +
+                    lokTarConfig.commonCxyNoticeText + System.lineSeparator() +
+                    DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeCxy, lokTarConfig.qywxAgent002Id, content));
         }
     }
