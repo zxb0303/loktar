@@ -67,9 +67,9 @@ public class JellyfinWebhookController {
 
     private void handlePlaybackEvents(Notification notification, Session session, StringBuilder contentBuilder) {
         String playName = getPlayName(notification);
-        String eventType = notification.getNotificationType().equals("PlaybackStart") ? LokTarConstant.NOTICE_JELLYFIN_START : LokTarConstant.NOTICE_JELLYFIN_STOP;
+        String eventType = "PlaybackStart".equals(notification.getNotificationType()) ? LokTarConstant.NOTICE_JELLYFIN_START : LokTarConstant.NOTICE_JELLYFIN_STOP;
 
-        if (notification.getNotificationType().equals("PlaybackStart") && !isLocalNetwork(session.getRemoteEndPoint())) {
+        if ("PlaybackStart".equals(notification.getNotificationType()) && !isLocalNetwork(session.getRemoteEndPoint())) {
             long expireTime = calculateSecondsDifference(notification);
             long existExpireTime = redisUtil.getExpire(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET);
             expireTime = expireTime > existExpireTime ? expireTime : existExpireTime;
@@ -133,7 +133,7 @@ public class JellyfinWebhookController {
 
     private static boolean isLocalNetwork(String remoteEndPoint) {
         try {
-            String ipAddress = remoteEndPoint.split(":")[0]; // 假设remoteEndPoint的格式为IP:PORT
+            String ipAddress = remoteEndPoint.split(":")[0];
             InetAddress address = InetAddress.getByName(ipAddress);
             String ip = IPUtil.getip();
 

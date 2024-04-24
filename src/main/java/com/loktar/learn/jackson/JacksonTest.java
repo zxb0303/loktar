@@ -102,8 +102,8 @@ public class JacksonTest {
         }
         obj.put("method", "torrent-remove");
         arguments.put("delete-local-data", false);
-        arguments.put("ids", idsArray);
-        obj.put("arguments", arguments);
+        arguments.set("ids", idsArray);
+        obj.set("arguments", arguments);
         System.out.println(obj.toString());
     }
 

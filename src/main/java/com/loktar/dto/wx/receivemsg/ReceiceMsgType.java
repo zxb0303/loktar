@@ -13,8 +13,9 @@ public enum ReceiceMsgType {
     private String name;
     public static ReceiceMsgType getByName(String name) {
         for (ReceiceMsgType type : ReceiceMsgType.values()) {
-            if (type.getName().equals(name))
+            if (type.getName().equals(name)) {
                 return type;
+            }
         }
         return null;
     }

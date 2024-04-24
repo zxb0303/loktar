@@ -156,7 +156,7 @@ public class QyWeixinCallbackController {
                 break;
             case EventCommandType.SHOW_BWG_fLOW:
                 replymsg.append("当前搬瓦工VPS信息如下：").append(System.lineSeparator());
-                String veids[] = new String[]{"1830460"};
+                String[] veids = new String[]{"1830460"};
                 for (String veid : veids) {
                     VPSInfo vpsInfo = bandwagonhostUtil.getVPSData(veid);
                     Calendar calendar = Calendar.getInstance();

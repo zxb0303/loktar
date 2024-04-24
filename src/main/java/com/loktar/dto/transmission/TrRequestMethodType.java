@@ -18,8 +18,9 @@ public enum TrRequestMethodType {
     private String name;
     public static TrRequestMethodType getByName(String name) {
         for (TrRequestMethodType type : TrRequestMethodType.values()) {
-            if (type.getName().equals(name))
+            if (type.getName().equals(name)){
                 return type;
+            }
         }
         return null;
     }

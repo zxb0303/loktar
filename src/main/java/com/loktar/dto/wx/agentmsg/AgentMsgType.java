@@ -18,8 +18,9 @@ public enum AgentMsgType {
     private String name;
     public static AgentMsgType getByName(String name) {
         for (AgentMsgType type : AgentMsgType.values()) {
-            if (type.getName().equals(name))
+            if (type.getName().equals(name)) {
                 return type;
+            }
         }
         return null;
     }

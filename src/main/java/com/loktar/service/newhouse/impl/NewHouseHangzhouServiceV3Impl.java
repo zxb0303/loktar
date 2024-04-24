@@ -350,7 +350,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
                 DocumentTable documentTable = analyzeLayoutResult.getTables().get(0);
                 List<DocumentTableCell> cells = documentTable.getCells();
                 for (int rowIndex = 0; rowIndex < documentTable.getRowCount(); rowIndex++) {
-                    if (getDocumentTableCellByRowAndColown(cells, rowIndex, 0).getContent().equals("楼栋")) {
+                    if ("楼栋".equals(getDocumentTableCellByRowAndColown(cells, rowIndex, 0).getContent())) {
                         continue;
                     }
                     NewHouseHangzhouV3Detail newHouseHangzhouV3Detail = new NewHouseHangzhouV3Detail();
