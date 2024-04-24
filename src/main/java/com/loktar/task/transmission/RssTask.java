@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Calendar;
+import java.time.LocalTime;
 import java.util.List;
 @Component
 @EnableScheduling
@@ -30,13 +30,10 @@ public class RssTask {
         if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
             return;
         }
-//        System.out.println("Scheduled:refreshAndDealTrRssTorrents"+ DateUtil.format(new Date(),DateUtil.DATEFORMATSECOND));
-        Calendar calendar = Calendar.getInstance();
-        int minute = calendar.get(Calendar.MINUTE);
-//        System.out.println("minute:"+minute);
+        LocalTime now = LocalTime.now();
+        int minute = now.getMinute();
         List<TrRss> trRsss = rssService.getTrRsssByStatus(1);
         for (TrRss trRss : trRsss) {
-            //System.out.println("minute%interval:"+minute % trRss.getIntervalMinutes());
             if (minute % trRss.getIntervalMinutes() == 0) {
                 DelayUtil.delaySeconds(2, 5);
                 //TODO 打印

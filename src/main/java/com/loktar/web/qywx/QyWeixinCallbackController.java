@@ -15,7 +15,10 @@ import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.dto.wx.receivemsg.*;
 import com.loktar.mapper.transmission.TrTorrentMapper;
 import com.loktar.service.common.NoticeServer;
-import com.loktar.util.*;
+import com.loktar.util.BandwagonhostUtil;
+import com.loktar.util.DateTimeUtil;
+import com.loktar.util.RedisUtil;
+import com.loktar.util.TransmissionUtil;
 import com.loktar.util.wx.aes.WXBizMsgCrypt;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
@@ -26,7 +29,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.List;
 
 
@@ -156,8 +158,6 @@ public class QyWeixinCallbackController {
                 String[] veids = new String[]{"1830460"};
                 for (String veid : veids) {
                     VPSInfo vpsInfo = bandwagonhostUtil.getVPSData(veid);
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTimeInMillis(vpsInfo.getDataNextReset() * 1000);
                     LocalDateTime LocalDateTime = DateTimeUtil.convertSecondsToDateTime(vpsInfo.getDataNextReset());
                     replymsg.append(System.lineSeparator())
                             .append(vpsInfo.getHostname()).append(System.lineSeparator())
