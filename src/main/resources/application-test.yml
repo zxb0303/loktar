@@ -17,6 +17,10 @@ spring:
           max-wait: 8
           max-idle: -1
           min-idle: 20
+  security:
+    user:
+      name: user
+      password: t2vUT!FiA%2QA!
 conf:
   transmission:
     url: https://xxx/transmission/rpc
