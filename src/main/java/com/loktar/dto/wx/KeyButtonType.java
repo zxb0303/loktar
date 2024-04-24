@@ -37,8 +37,9 @@ public enum KeyButtonType {
     private String name;
     public static KeyButtonType getByName(String name) {
         for (KeyButtonType type : KeyButtonType.values()) {
-            if (type.getName().equals(name))
+            if (type.getName().equals(name)) {
                 return type;
+            }
         }
         return null;
     }

@@ -68,7 +68,7 @@ public class PDFUtilForLotteryHouse {
                         hZLotteryPeopleDTOV2.setFamilyType(Integer.valueOf(strs[i + 4]));
                         //hZLotteryPeopleDTOV2.setFamilyType(strs[i+3].equals("是")?1:0);
                         hZLotteryPeopleDTOV2.setHasOtherPeople(0);
-                        if (i + 5 < strs.length && !StringUtils.isEmpty(strs[i + 5]) && !strs[i + 5].equals("/")) {
+                        if (i + 5 < strs.length && !StringUtils.isEmpty(strs[i + 5]) && !"/".equals(strs[i + 5])) {
                             hZLotteryPeopleDTOV2.setHasOtherPeople(1);
                             hZLotteryPeopleDTOV2.setOtherBuyersName(strs[i + 5]);
                             if (getTableCellsNum > 6) {

@@ -247,17 +247,17 @@ public class AttendanceMain {
             //上班打卡时间<=9:30 并且 下班打卡时间>=21:00，标记周末加班 周末晚班
             if (classCell.getStringCellValue().contains("正常晚班")) {
                 dateCell.setCellStyle(cellStyle1);
-                if (!checkInTimeCell.getStringCellValue().trim().equals("-") && !checkInTimeCell.getStringCellValue().trim().equals("-") && checkOutTimeCell.getStringCellValue().trim().compareTo("21:00") >= 0) {
+                if (!"-".equals(checkInTimeCell.getStringCellValue().trim()) && !"-".equals(checkInTimeCell.getStringCellValue().trim()) && checkOutTimeCell.getStringCellValue().trim().compareTo("21:00") >= 0) {
                     weekdayOverTimeFlagCell.setCellValue(1);
                 }
             }
 
             if (classCell.getStringCellValue().contains("正常班") && localDate.getDayOfWeek() == DayOfWeek.SATURDAY && !Arrays.asList(SPECIALWORKDAYS).contains(dateCell.getStringCellValue()) && !Arrays.asList(SPECIALWEEKDAYS).contains(dateCell.getStringCellValue())) {
                 dateCell.setCellStyle(cellStyle2);
-                if (!checkInTimeCell.getStringCellValue().trim().equals("-") && checkInTimeCell.getStringCellValue().trim().compareTo("09:30") <= 0 && checkOutTimeCell.getStringCellValue().trim().compareTo("18:00") >= 0) {
+                if (!"-".equals(checkInTimeCell.getStringCellValue().trim()) && checkInTimeCell.getStringCellValue().trim().compareTo("09:30") <= 0 && checkOutTimeCell.getStringCellValue().trim().compareTo("18:00") >= 0) {
                     weekendOverTimeFlagCell.setCellValue(1);
                 }
-                if (!checkInTimeCell.getStringCellValue().trim().equals("-") && checkInTimeCell.getStringCellValue().trim().compareTo("09:30") <= 0 && checkOutTimeCell.getStringCellValue().trim().compareTo("21:00") >= 0) {
+                if (!"-".equals(checkInTimeCell.getStringCellValue().trim()) && checkInTimeCell.getStringCellValue().trim().compareTo("09:30") <= 0 && checkOutTimeCell.getStringCellValue().trim().compareTo("21:00") >= 0) {
                     weekendHardTimeFlagCell.setCellValue(1);
                 }
             }
@@ -279,7 +279,7 @@ public class AttendanceMain {
                 Leave leave = getLeaveByNameAndDate(leaves, nameCell.getStringCellValue(), dateCell.getStringCellValue());
                 if (!ObjectUtils.isEmpty(leave)) {
                     leaveTypeCell.setCellValue(leave.getLeaveType());
-                    if (leave.getLeaveTime().equals("全天")) {
+                    if ("全天".equals(leave.getLeaveTime())) {
                         leaveTimeCell.setCellValue(1);
                     } else {
                         leaveTimeCell.setCellValue(0.5);
@@ -408,7 +408,7 @@ public class AttendanceMain {
                     String leaveType = str.split("\\(")[0];
                     leave.setLeaveType(leaveType);
                     String leaveTime = str.split("\\(")[1].replace(")", "");
-                    if (leaveTime.equals("下午,上午") || leaveTime.equals("上午,下午")) {
+                    if ("下午,上午".equals(leaveTime) || "上午,下午".equals(leaveTime)) {
                         leaveTime = "全天";
                     }
 
@@ -450,7 +450,7 @@ public class AttendanceMain {
         }
         for (int i = 0; i < leaves.size(); i++) {
             Leave leave = leaves.get(i);
-            if (leave.getLeaveType().equals("调休假")) {
+            if ("调休假".equals(leave.getLeaveType())) {
                 leave.setLeaveType("调休");
                 leaves.set(i, leave);
             }

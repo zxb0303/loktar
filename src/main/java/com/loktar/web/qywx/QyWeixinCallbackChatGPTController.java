@@ -141,7 +141,7 @@ public class QyWeixinCallbackChatGPTController {
         receiveQywxChatgptMsg.setCreateTime(LocalDateTime.now());
         qywxChatgptMsgMapper.insert(receiveQywxChatgptMsg);
 
-        if (receiveMsg.equals("重置会话")) {
+        if ("重置会话".equals(receiveMsg)) {
             redisUtil.del(LokTarConstant.REDIS_KEY_PREFIX_OPENAI_REQUEST + receiveBaseMsg.getFromUserName());
             qywxApi.sendTextMsg(new AgentMsgText(receiveBaseMsg.getFromUserName(), receiveBaseMsg.getAgentID(), "会话已重置"));
             return;

@@ -105,7 +105,7 @@ public class PDFMain {
             }
             int pageCount = document.getNumberOfPages();
             for (int i = 0; i < pageCount; i++) {
-                BufferedImage image = renderer.renderImageWithDPI(i, 150); // Render the page using specified DPI
+                BufferedImage image = renderer.renderImageWithDPI(i, 150);
                 String fileName = String.format("%s/%03d.jpg", outputFolder.getPath(), i + 1);
                 ImageIO.write(image, "JPEG", new File(fileName));
             }

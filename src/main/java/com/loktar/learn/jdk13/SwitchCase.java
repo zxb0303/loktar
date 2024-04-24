@@ -12,15 +12,15 @@ public class SwitchCase {
             default -> "Invalid day";
         };
 
-        System.out.println(dayName);  // 输出: Wednesday
+        System.out.println(dayName);
 
         int day2 = 5;
         String dayType = switch (day2) {
             case 1, 2, 3, 4, 5 -> {
-                yield "Weekday";  // 使用yield返回一个值
+                yield "Weekday";
             }
             case 6, 7 -> {
-                System.out.println("It's a weekend!");  // 执行语句
+                System.out.println("It's a weekend!");
                 yield "Weekend";
             }
             default -> {
@@ -28,7 +28,7 @@ public class SwitchCase {
             }
         };
 
-        System.out.println(dayType);  // 输出: Weekend
+        System.out.println(dayType);
 
 //        String dayName = switch (getDayOfWeek()) {
 //            case 1 -> "Monday";
