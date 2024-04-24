@@ -12,8 +12,9 @@ public enum TextCommandType {
 
     public static TextCommandType getByName(String name) {
         for (TextCommandType type : TextCommandType.values()) {
-            if (type.getName().equals(name))
+            if (type.getName().equals(name)) {
                 return type;
+            }
         }
         return null;
     }

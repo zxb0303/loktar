@@ -25,7 +25,7 @@ public class FFmpegUtil {
 
     @Value("${spring.profiles.active}")
     public void setEnv(String env) {
-        FFmpegUtil.env = env; // 静态字段赋值
+        FFmpegUtil.env = env;
     }
 
     public static void convertWavToAmr(String voicePath, String filename) {
@@ -63,8 +63,10 @@ public class FFmpegUtil {
                 .overrideOutputFiles(true)
                 .addOutput(voicePath + wavFilename.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR))
                 .setAudioCodec("libopencore_amrnb")
-                .addExtraArgs("-ar", "8000") // Set the audio sample rate to 8000 Hz
-                .addExtraArgs("-ac", "1") // Set the audio to mono (single channel)
+                // Set the audio sample rate to 8000 Hz
+                .addExtraArgs("-ar", "8000")
+                // Set the audio to mono (single channel)
+                .addExtraArgs("-ac", "1")
                 .done();
         new FFmpegExecutor(ffmpeg).createJob(builder).run();
     }
@@ -93,7 +95,7 @@ public class FFmpegUtil {
             FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 
             // 获取文件夹中的所有MP4文件
-            List<Path> inputFiles = Files.list(Paths.get(inputFolderPath))  // 请将此路径替换为你的输入文件夹的路径
+            List<Path> inputFiles = Files.list(Paths.get(inputFolderPath))
                     .filter(file -> file.toString().endsWith(".mp4"))
                     .collect(Collectors.toList());
 
@@ -123,7 +125,7 @@ public class FFmpegUtil {
             FFmpegBuilder builder = new FFmpegBuilder()
                     .setInput("concat:" + concatFiles)
                     .overrideOutputFiles(true)
-                    .addOutput(outputFilePath + ".ts")  // 合并后的.ts文件
+                    .addOutput(outputFilePath + ".ts")
                     .setFormat("mpegts")
                     .done();
 
@@ -133,7 +135,7 @@ public class FFmpegUtil {
             FFmpegBuilder convertBuilder = new FFmpegBuilder()
                     .setInput(outputFilePath + ".ts")
                     .overrideOutputFiles(true)
-                    .addOutput(outputFilePath + ".mp4")  // 输出文件，包括路径和文件名
+                    .addOutput(outputFilePath + ".mp4")
                     .setFormat("mp4")
                     .done();
 
@@ -152,7 +154,7 @@ public class FFmpegUtil {
             FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 
             // 获取文件夹中的所有MP4文件
-            List<Path> inputFiles = Files.list(Paths.get(inputFolderPath))  // 请将此路径替换为你的输入文件夹的路径
+            List<Path> inputFiles = Files.list(Paths.get(inputFolderPath))
                     .filter(file -> file.toString().endsWith(".mp4"))
                     .collect(Collectors.toList());
 
@@ -165,12 +167,12 @@ public class FFmpegUtil {
             // 使用FFmpeg的concat demuxer将所有MP4文件合并为一个文件
             FFmpegBuilder builder = new FFmpegBuilder()
                     .setInput(listFile.toString())
-                    .addExtraArgs("-f", "concat")  // 设置输入格式为concat
+                    .addExtraArgs("-f", "concat")
                     .setFormat("mp4")
                     .addExtraArgs("-safe", "0")
                     .overrideOutputFiles(true)
-                    .addOutput(outputFilePath + ".mp4")  // 输出文件，包括路径和文件名
-                    .setVideoCodec("copy")  // 直接复制视频流，不进行转码
+                    .addOutput(outputFilePath + ".mp4")
+                    .setVideoCodec("copy")
                     .setAudioCodec("aac")
                     .done();
 

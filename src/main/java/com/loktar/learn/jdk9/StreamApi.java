@@ -10,27 +10,24 @@ public class StreamApi {
         List<Integer> numbers = Stream.of(1, 2, 3, 4, 5, 6)
                 .takeWhile(n -> n < 4)
                 .collect(Collectors.toList());
-        System.out.println("takeWhile 示例：" + numbers); // 输出：[1, 2, 3]
+        System.out.println("takeWhile 示例：" + numbers);
 
         // dropWhile() 方法示例
         List<Integer> numbers2 = Stream.of(1, 2, 3, 4, 5, 6)
                 .dropWhile(n -> n < 4)
                 .collect(Collectors.toList());
-        System.out.println("dropWhile 示例：" + numbers2); // 输出：[4, 5, 6]
+        System.out.println("dropWhile 示例：" + numbers2);
 
         // ofNullable() 方法示例
         String name = null;
         List<String> names = Stream.ofNullable(name)
                 .collect(Collectors.toList());
-        System.out.println("ofNullable 示例：" + names); // 输出：[]
+        System.out.println("ofNullable 示例：" + names);
 
         // iterate() 方法的重载示例
         List<Integer> evenNumbers = Stream.iterate(0, n -> n < 10, n -> n + 2)
                 .collect(Collectors.toList());
-        System.out.println("iterate 重载示例：" + evenNumbers); // 输出：[0, 2, 4, 6, 8]
-
-        //
-
+        System.out.println("iterate 重载示例：" + evenNumbers);
 
         // 可能不会按顺序打印
         Stream.of("Java", "Python", "C++")
@@ -44,7 +41,7 @@ public class StreamApi {
 
         //Stream 接口中的新方法示例
         Stream.of("Java", "Python", "C++")
-                .forEachOrdered(System.out::println); // 输出：Java Python C++
+                .forEachOrdered(System.out::println);
     }
 
 }

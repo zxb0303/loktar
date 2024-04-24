@@ -106,7 +106,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
             String contentEncoding = response.headers().firstValue("Content-Encoding").orElse("");
             if ("gzip".equalsIgnoreCase(contentEncoding)) {
                 try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(responseBody))) {
-                    responseBody = gzipInputStream.readAllBytes(); // 解压缩后的数据
+                    responseBody = gzipInputStream.readAllBytes();
                 }
             }
             // 将解压缩后的数据转换为字符串
@@ -181,7 +181,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
         String contentEncoding = response.headers().firstValue("Content-Encoding").orElse("");
         if ("gzip".equalsIgnoreCase(contentEncoding)) {
             try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(responseBody))) {
-                responseBody = gzipInputStream.readAllBytes(); // 解压缩后的数据
+                responseBody = gzipInputStream.readAllBytes();
             }
         }
         // 将解压缩后的数据转换为字符串
@@ -189,7 +189,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
         Document document = Jsoup.parse(responseString);
         List<Element> elements = document.getElementById("presell_dd").select("a");
         for (Element e : elements) {
-            if (e.html().equals("全部")) {
+            if ("全部".equals(e.html())) {
                 continue;
             }
             NewHouseHangzhouPresell newHouseHangzhouPresell = new NewHouseHangzhouPresell();
@@ -226,7 +226,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
         String contentEncoding = response.headers().firstValue("Content-Encoding").orElse("");
         if ("gzip".equalsIgnoreCase(contentEncoding)) {
             try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(responseBody))) {
-                responseBody = gzipInputStream.readAllBytes(); // 解压缩后的数据
+                responseBody = gzipInputStream.readAllBytes();
             }
         }
         // 将解压缩后的数据转换为字符串
@@ -273,7 +273,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
         String contentEncoding = response.headers().firstValue("Content-Encoding").orElse("");
         if ("gzip".equalsIgnoreCase(contentEncoding)) {
             try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(responseBody))) {
-                responseBody = gzipInputStream.readAllBytes(); // 解压缩后的数据
+                responseBody = gzipInputStream.readAllBytes();
             }
         }
         // 将解压缩后的数据转换为字符串

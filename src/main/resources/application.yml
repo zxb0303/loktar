@@ -7,6 +7,9 @@ server:
   port: 8080
   servlet:
     context-path: /loktar
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
 mybatis:
   configuration:
     map-underscore-to-camel-case: true

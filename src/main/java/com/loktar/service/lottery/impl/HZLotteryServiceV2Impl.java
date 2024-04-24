@@ -93,6 +93,7 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
      * @author: zxb
      * @createTime: 2021-05-06 12:01
      */
+    @Override
     public void updateLotteryPeoples(List<LotteryHouse> lotteryHouses) {
         for (LotteryHouse lotteryHouse : lotteryHouses) {
             int MaxRank = lotteryHouseMapper.getMaxRankByHouseId(lotteryHouse.getHouseId());

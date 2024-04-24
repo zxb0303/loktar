@@ -29,10 +29,12 @@ public class CompanyPropertyController {
             if (strs.length < 4) {
                 System.out.println(companyProperty.getZhuti() + ";" + companyProperty.getZichanbianhao() + ";" + companyProperty.getShebeimingcheng() + ";" + companyProperty.getPinpai() + ";" + companyProperty.getXinghao() + ";" + "1" + ";" + companyProperty.getDanjia() + ";" + companyProperty.getDanjia());
             } else {
-                int start = Integer.valueOf(strs[2]);//22060014
-                int end = Integer.valueOf(replaceEnd(strs[2], strs[3]));//22060023
+                //22060014
+                int start = Integer.valueOf(strs[2]);
+                //22060023
+                int end = Integer.valueOf(replaceEnd(strs[2], strs[3]));
                 for (int i = start; i <= end; i++) {
-                    String newBianhao = strs[0] + "-" + strs[1] + "-" + String.valueOf(i);
+                    String newBianhao = strs[0] + "-" + strs[1] + "-" + i;
                     System.out.println(companyProperty.getZhuti() + ";" + newBianhao + ";" + companyProperty.getShebeimingcheng() + ";" + companyProperty.getPinpai() + ";" + companyProperty.getXinghao() + ";" + "1" + ";" + companyProperty.getDanjia() + ";" + companyProperty.getDanjia());
                 }
             }

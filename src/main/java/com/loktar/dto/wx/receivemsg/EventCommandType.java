@@ -19,8 +19,9 @@ public enum EventCommandType {
 
     public static EventCommandType getByName(String name) {
         for (EventCommandType type : EventCommandType.values()) {
-            if (type.getName().equals(name))
+            if (type.getName().equals(name)){
                 return type;
+            }
         }
         return null;
     }
