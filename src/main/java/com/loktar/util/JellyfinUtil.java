@@ -41,7 +41,7 @@ public class JellyfinUtil {
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         String responseBody = response.body();
-        List<Session> sessions = objectMapper.readValue(responseBody, new TypeReference<List<Session>>(){});
-        return sessions.get(0);
+        List<Session> sessions = objectMapper.readValue(responseBody, new TypeReference<>(){});
+        return sessions.getFirst();
     }
 }

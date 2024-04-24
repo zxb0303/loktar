@@ -19,9 +19,7 @@ public class VirtualThread {
 
         });
         // 也可以指定虚拟线程的名字
-        Thread thread2 = Thread.ofVirtual().name("virtual thread").start(() -> {
-            System.out.println("Hello, virtual thread22!");
-        });
+        Thread thread2 = Thread.ofVirtual().name("virtual thread").start(() -> System.out.println("Hello, virtual thread22!"));
         threads.add(thread2);
         threads.add(thread1);
         for (Thread thread : threads){

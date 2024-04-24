@@ -7,10 +7,7 @@ import com.loktar.dto.openai.OpenAiRequest;
 import com.loktar.dto.openai.OpenAiResponse;
 import com.loktar.dto.wx.UploadMediaRsp;
 import com.loktar.dto.wx.agentmsg.AgentMsgVoice;
-import com.loktar.util.AzureVoiceUtil;
-import com.loktar.util.ChatGPTUtil;
-import com.loktar.util.DateTimeUtil;
-import com.loktar.util.FFmpegUtil;
+import com.loktar.util.*;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
@@ -20,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("chatgpt")
@@ -53,7 +49,7 @@ public class ChatGPTController {
         }
         openAiRequest.getMessages().add(openAiMessage);
         OpenAiResponse openAiResponse = chatGPTUtil.completions(openAiRequest);
-        OpenAiMessage replyMsg = openAiResponse.getChoices().get(0).getMessage();
+        OpenAiMessage replyMsg = openAiResponse.getChoices().getFirst().getMessage();
         openAiRequest.getMessages().add(replyMsg);
         System.out.println(replyMsg.content);
 
@@ -62,7 +58,7 @@ public class ChatGPTController {
     @SneakyThrows
     @RequestMapping("/testVoiceAndSend.do")
     public void testVoiceAndSend() {
-        String wavFileName = UUID.randomUUID().toString() + LokTarConstant.VOICE_SUFFIX_WAV;
+        String wavFileName = UUIDUtil.randomUUID() + LokTarConstant.VOICE_SUFFIX_WAV;
         azureVoiceUtil.textToWav(voicePath, wavFileName, "你叫什么名字");
         FFmpegUtil.convertWavToAmr(voicePath, wavFileName);
         testFileExist(voicePath,wavFileName);

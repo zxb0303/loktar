@@ -21,26 +21,26 @@ import java.util.*;
 public class AttendanceMain {
 
     //style需要缓存，否则太多个会卡，文件也会变大
-    private static Map<String, CellStyle> STYLE_MAP = new HashMap<String, CellStyle>();
+    private final static Map<String, CellStyle> STYLE_MAP = new HashMap<>();
     // TODO 需要预处理daily表中是否都是正常班和正常晚班
     // TODO 需要预处理daily表中日期格式带不带-
-    public static String MONTH = "202403";
-    public static String MAX_DAY = "31";
+    private final static String MONTH = "202403";
+    private final static String MAX_DAY = "31";
 
     // TODO  30天的请假数据是从85列开始，31天的请假数据是从86列开始
-    public static int columns = 86;
+    private final static int columns = 86;
 
     // TODO 法定补班日 eg:"2023-06-25"
-    public static String[] SPECIALWORKDAYS = new String[]{};
+    private final static String[] SPECIALWORKDAYS = new String[]{};
     // TODO 法定节假日（除周末） eg:"2023-06-22", "2023-06-23"
-    public static String[] SPECIALWEEKDAYS = new String[]{};
+    private final static String[] SPECIALWEEKDAYS = new String[]{};
 
-    public final static String ATTENDANCE_PATH = "";
+    private final static String ATTENDANCE_PATH = "";
 
-    public static String DAILY_FILE_PATH = ATTENDANCE_PATH + MONTH + "/每日统计_" + MONTH + "01_" + MONTH + MAX_DAY + ".xlsx";
-    public static String MONTH_FILE_PATH = ATTENDANCE_PATH + MONTH + "/月度汇总_" + MONTH + "01_" + MONTH + MAX_DAY + ".xlsx";
-    public static String RESULT_FILE_PATH = ATTENDANCE_PATH + MONTH + "/result_" + MONTH + ".xlsx";
-    public static String TEMPLATE_FILE_PATH = ATTENDANCE_PATH + "template.xlsx";
+    private final static String DAILY_FILE_PATH = ATTENDANCE_PATH + MONTH + "/每日统计_" + MONTH + "01_" + MONTH + MAX_DAY + ".xlsx";
+    private final static String MONTH_FILE_PATH = ATTENDANCE_PATH + MONTH + "/月度汇总_" + MONTH + "01_" + MONTH + MAX_DAY + ".xlsx";
+    private final static String RESULT_FILE_PATH = ATTENDANCE_PATH + MONTH + "/result_" + MONTH + ".xlsx";
+    private final static String TEMPLATE_FILE_PATH = ATTENDANCE_PATH + "template.xlsx";
 
 
     @SneakyThrows
@@ -49,7 +49,7 @@ public class AttendanceMain {
     }
 
     @SneakyThrows
-    public static void deal() {
+    private static void deal() {
         ZipSecureFile.setMinInflateRatio(-1.0d);
         InputStream oldInp = new FileInputStream(DAILY_FILE_PATH);
         Workbook oldWb = WorkbookFactory.create(oldInp);
@@ -264,7 +264,6 @@ public class AttendanceMain {
 
             //标记申请加班
             //规则： 班次为正常班且申请了加班（month表中是正常+加班的才算，休息+加班的不算） 标记工作日加班
-            //HardWork hardWork = getHardWorkByJobNoAndDate(hardWorks, jobNoCell.getStringCellValue(), dateCell.getStringCellValue());
             HardWork hardWork = getHardWorkByNameAndDate(hardWorks, nameCell.getStringCellValue(), dateCell.getStringCellValue());
 
             if (classCell.getStringCellValue().contains("正常班") && !ObjectUtils.isEmpty(hardWork)) {
@@ -325,9 +324,7 @@ public class AttendanceMain {
 
         }
         int rowNumRest = 1;
-        Iterator<String> iterator = restInfoMap.keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
+        for (String key : restInfoMap.keySet()) {
             RestInfo value = restInfoMap.get(key);
             Row newRow = newSheetRest.createRow(rowNumRest);
             Cell newCellName = newRow.createCell(0);
@@ -483,15 +480,6 @@ public class AttendanceMain {
             }
         }
         return hardWorks;
-    }
-
-    public static HardWork getHardWorkByJobNoAndDate(List<HardWork> hardWorks, String jobNo, String date) {
-        for (HardWork hardWork : hardWorks) {
-            if (hardWork.getJobNo().equals(jobNo) && hardWork.getDate().equals(date)) {
-                return hardWork;
-            }
-        }
-        return null;
     }
 
     public static HardWork getHardWorkByNameAndDate(List<HardWork> hardWorks, String name, String date) {

@@ -2,7 +2,6 @@ package com.loktar.learn.jdk8;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Stream {
     public static void main(String[] args) {
@@ -18,9 +17,9 @@ public class Stream {
         //转换为大写字母并排序
         List<String> uppercaseNames = names.stream().map(name->{
             return name.toUpperCase();
-        }).sorted().collect(Collectors.toList());
-        List<String> uppercaseNames2 = names.stream().map(String::toUpperCase).sorted().collect(Collectors.toList());
-        uppercaseNames.stream().forEach(System.out::println);
+        }).sorted().toList();
+        List<String> uppercaseNames2 = names.stream().map(String::toUpperCase).sorted().toList();
+        uppercaseNames.forEach(System.out::println);
 
         //求长度之和
         int totleLength = names.stream().mapToInt(String::length).sum();

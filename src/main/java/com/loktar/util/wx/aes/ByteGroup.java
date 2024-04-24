@@ -3,7 +3,7 @@ package com.loktar.util.wx.aes;
 import java.util.ArrayList;
 
 class ByteGroup {
-	ArrayList<Byte> byteContainer = new ArrayList<Byte>();
+	final ArrayList<Byte> byteContainer = new ArrayList<>();
 
 	public byte[] toBytes() {
 		byte[] bytes = new byte[byteContainer.size()];

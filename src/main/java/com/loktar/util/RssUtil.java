@@ -31,7 +31,7 @@ public class RssUtil {
     }
     @SneakyThrows
     public static List<TrRssTorrent> getRssData(TrRss trRss) {
-        List<TrRssTorrent> trRssTorrents = new ArrayList<TrRssTorrent>();
+        List<TrRssTorrent> trRssTorrents = new ArrayList<>();
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(trRss.getRssUrl()))
@@ -52,7 +52,7 @@ public class RssUtil {
             if (idStr.contains("&")) {
                 idStr = idStr.split("&")[0];
             }
-            int id = Integer.valueOf(idStr);
+            int id = Integer.parseInt(idStr);
             trRssTorrent.setRssTorrentId(id);
             if(!ObjectUtils.isEmpty(item.getEnclosure())){
                 trRssTorrent.setDownloadUrl(item.getEnclosure().getUrl());
@@ -74,7 +74,7 @@ public class RssUtil {
         trRss.setRssId(111);
         trRss.setRssUrl("");
         List<TrRssTorrent> trRssTorrents = getRssData(trRss);
-        System.out.println(trRssTorrents.toString());
+        System.out.println(trRssTorrents);
     }
 
 }

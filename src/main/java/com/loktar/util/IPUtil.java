@@ -29,8 +29,7 @@ public class IPUtil {
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         String responseBody = response.body();
         ObjectNode objectNode = (ObjectNode) objectMapper.readTree(responseBody);
-        String ip = objectNode.get("ip").asText();
-        return ip;
+        return objectNode.get("ip").asText();
     }
     public static void main(String[] args) {
         System.out.println(getip());

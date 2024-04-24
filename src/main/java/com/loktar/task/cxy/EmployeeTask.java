@@ -43,17 +43,15 @@ public class EmployeeTask {
             return;
         }
         StringBuilder content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_EMPLOYEE).append(System.lineSeparator());
-        for (int i = 0; i < employees.size(); i++) {
-            Employee employee = employees.get(i);
+        for (Employee employee : employees) {
             content.append(System.lineSeparator())
                     .append(employee.getName()).append(System.lineSeparator())
-                    .append(System.lineSeparator())
-                    .append(employee.getEndDate() + "到期").append(System.lineSeparator())
+                    .append(System.lineSeparator()).append(employee.getEndDate()).append("到期").append(System.lineSeparator())
                     .append(System.lineSeparator());
             employee.setStatus(1);
             employeeMapper.updateByPrimaryKey(employee);
         }
-        content = content.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE));
+        content.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE));
         //qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
         qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeCxy, lokTarConfig.qywxAgent002Id, content.toString()));
     }

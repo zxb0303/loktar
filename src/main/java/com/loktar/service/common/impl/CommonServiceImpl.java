@@ -33,17 +33,13 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public void sendLotteryNotice() {
         String yestodayStr = DateTimeUtil.getDatetimeStr(LocalDateTime.now().minusDays(1), DateTimeUtil.FORMATTER_DATE);
-        StringBuilder content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_LOTTERY + "(" + yestodayStr + ")").append(System.lineSeparator());
+        StringBuilder content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_LOTTERY + "(").append(yestodayStr).append(")").append(System.lineSeparator());
         List<LotteryHouse> lotteryHouses = lotteryHouseMapper.getYesterdayLotteryHouses();
-        if (lotteryHouses.size() == 0) {
+        if (lotteryHouses.isEmpty()) {
             return;
         }
-        for (int i = 0; i < lotteryHouses.size(); i++) {
-            LotteryHouse lotteryHouse = lotteryHouses.get(i);
-            String name = lotteryHouse.getHouseName();
-            String area = "";
-            int price = 0;
-            double totalChance = lotteryHouse.getTotalHouseNum() * 1.0 / lotteryHouse.getTotalPeopleNum() * 1.0;
+        for (LotteryHouse lotteryHouse : lotteryHouses) {
+            double totalChance = lotteryHouse.getTotalHouseNum() * 1.0 / lotteryHouse.getTotalPeopleNum();
             String totalChanceStr = totalChance >= 1 ? "100%" : String.format("%.2f", totalChance * 100) + "%";
             content.append(System.lineSeparator())
                     .append(lotteryHouse.getHouseName()).append(System.lineSeparator())

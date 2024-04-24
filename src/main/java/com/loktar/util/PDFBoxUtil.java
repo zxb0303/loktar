@@ -31,7 +31,7 @@ public class PDFBoxUtil {
             fileFold.mkdir();
             while(iterator.hasNext()) {
                 PDDocument pd = iterator.next();
-                String filename = String.format("%04d",Integer.valueOf(i+1));
+                String filename = String.format("%04d", i + 1);
                 pd.save(fileFold.getPath()+"/"+filename+".pdf");
                 i=i+1;
             }

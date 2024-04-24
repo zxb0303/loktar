@@ -136,7 +136,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
         Document document = Jsoup.parse(responseString);
         Element houseElement = document.selectFirst("[class=content]").selectFirst("[class=loupan]").selectFirst("[class=loupan_left]");
         List<Element> lis = houseElement.select("li");
-        String onclickStr = lis.get(0).select("a").attr("onclick");
+        String onclickStr = lis.getFirst().select("a").attr("onclick");
         Pattern r = Pattern.compile("goToWsslDetail\\(\"([^\"]+)\"\\)");
         Matcher m = r.matcher(onclickStr);
         String houseId = null;
@@ -197,7 +197,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
         String responseString = new String(responseBody);
         Document document = Jsoup.parse(responseString);
         List<Element> LinkDivs = document.select("[class=lptypebarin]");
-        List<Element> presellAs = LinkDivs.get(0).select("a");
+        List<Element> presellAs = LinkDivs.getFirst().select("a");
         List<NewHouseHangzhouV3Presell> newHouseHangzhouV3Presells = new ArrayList<>();
         for (Element presellA : presellAs) {
             String presellId = presellA.text();
@@ -347,7 +347,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
                 System.out.println(jpgfilePath);
                 PicUtil.converPNGtoJPG(pngfilePath, jpgfilePath);
                 AnalyzeResult analyzeLayoutResult = AzureDocIntelligenceUtil.getAnalyze(LokTarConstant.AZURE_DOCINTELLIGENCE_MODEL_ID, jpgfilePath);
-                DocumentTable documentTable = analyzeLayoutResult.getTables().get(0);
+                DocumentTable documentTable = analyzeLayoutResult.getTables().getFirst();
                 List<DocumentTableCell> cells = documentTable.getCells();
                 for (int rowIndex = 0; rowIndex < documentTable.getRowCount(); rowIndex++) {
                     if ("楼栋".equals(getDocumentTableCellByRowAndColown(cells, rowIndex, 0).getContent())) {
@@ -366,7 +366,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
                     newHouseHangzhouV3Detail.setAreaRate(getDocumentTableCellByRowAndColown(cells, rowIndex, 4).getContent());
                     newHouseHangzhouV3Detail.setUnitPrice(getDocumentTableCellByRowAndColown(cells, rowIndex, 5).getContent());
                     newHouseHangzhouV3Detail.setTotalPrice(getDocumentTableCellByRowAndColown(cells, rowIndex, 6).getContent());
-                    String statusStr = getDocumentTableCellByRowAndColown(cells, rowIndex, 7).getContent().replaceAll("[^\u4E00-\u9FA5]", "");
+                    String statusStr = getDocumentTableCellByRowAndColown(cells, rowIndex, 7).getContent().replaceAll("[^一-龥]", "");
                     newHouseHangzhouV3Detail.setStatus(STATUS_MAP.get(statusStr));
                     newHouseHangzhouV3Details.add(newHouseHangzhouV3Detail);
                 }
@@ -380,15 +380,9 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
     }
 
     private DocumentTableCell getDocumentTableCellByRowAndColown(List<DocumentTableCell> cells, int rowIndex, int colownIndex) {
-        int finalRowIndex = rowIndex;
-        int finalColownIndex = colownIndex;
-        Optional<DocumentTableCell> documentTableCell = cells.stream().filter(cell -> cell.getRowIndex() == finalRowIndex && cell.getColumnIndex() == finalColownIndex)
+        Optional<DocumentTableCell> documentTableCell = cells.stream().filter(cell -> cell.getRowIndex() == rowIndex && cell.getColumnIndex() == colownIndex)
                 .findFirst();
-        if (documentTableCell.isPresent()) {
-            DocumentTableCell cell = documentTableCell.get();
-            return cell;
-        }
-        return null;
+        return documentTableCell.orElse(null);
     }
 
 

@@ -16,16 +16,12 @@ public class SwitchCase {
 
         int day2 = 5;
         String dayType = switch (day2) {
-            case 1, 2, 3, 4, 5 -> {
-                yield "Weekday";
-            }
+            case 1, 2, 3, 4, 5 -> "Weekday";
             case 6, 7 -> {
                 System.out.println("It's a weekend!");
                 yield "Weekend";
             }
-            default -> {
-                yield "Invalid day";
-            }
+            default -> "Invalid day";
         };
 
         System.out.println(dayType);

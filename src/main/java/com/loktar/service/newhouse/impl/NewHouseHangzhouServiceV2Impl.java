@@ -117,7 +117,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
                 Element pageDiv = document.selectFirst("[class=spagenext]");
                 String str = pageDiv.selectFirst("span").html();
                 String str2 = str.split("总数")[0];
-                maxPage = Integer.valueOf(str2.split("/")[1].trim());
+                maxPage = Integer.parseInt(str2.split("/")[1].trim());
             }
             List<Element> trs = document.selectFirst("[class=onbuildshow]").selectFirst("[class=onbuildshow_contant colordg ft14]").selectFirst("[class=sjtd]").select("tr");
             for (Element tr : trs) {
@@ -126,7 +126,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
                 newHouseHangzhouDetail.setDetailId(UUID.randomUUID().toString());
                 newHouseHangzhouDetail.setHouseId(newHouseHangzhouV2.getHouseId());
                 newHouseHangzhouDetail.setPresellId(newHouseHangzhouPresell.getPresellId());
-                String buildAndUnitStr = tds.get(0).select("a").html();
+                String buildAndUnitStr = tds.getFirst().select("a").html();
                 String[] buildAndUnitStrArr = buildAndUnitStr.split("幢");
                 if (buildAndUnitStrArr.length >= 1) {
                     newHouseHangzhouDetail.setBuildNo(buildAndUnitStrArr[0]);
@@ -150,7 +150,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
             }
             page = page + 1;
             //如果没抓到数据，就再来一次
-            if (trs.size() == 0) {
+            if (trs.isEmpty()) {
                 Thread.sleep(2000);
                 page = page - 1;
             }
@@ -196,7 +196,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
             newHouseHangzhouPresell.setPresellId(e.id().split("_")[1]);
             newHouseHangzhouPresell.setHouseId(newHouseHangzhouV2.getHouseId());
             newHouseHangzhouPresell.setPresellNo(e.html());
-            newHouseHangzhouPresell = getPresellDetail(newHouseHangzhouV2, newHouseHangzhouPresell);
+            getPresellDetail(newHouseHangzhouV2, newHouseHangzhouPresell);
             if (ObjectUtils.isEmpty(newHouseHangzhouPresellMapper.selectByPrimaryKey(newHouseHangzhouPresell.getPresellId()))) {
                 newHouseHangzhouPresell.setUpdateStatus(0);
                 newHouseHangzhouPresellMapper.insert(newHouseHangzhouPresell);
@@ -290,15 +290,15 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
         Element totalHouseNumDiv = divs.get(9).selectFirst("[class=house_essential_list_right]");
         Element carParkNumDiv = divs.get(11).selectFirst("[class=house_essential_list_right]");
         List<Element> divs2 = document.select("[class=house_essential_list_all]");
-        Element addressDiv = divs2.get(0).selectFirst("[class=house_essential_list_right]");
+        Element addressDiv = divs2.getFirst().selectFirst("[class=house_essential_list_right]");
         newHouseHangzhouV2.setHouseId(houseId);
         newHouseHangzhouV2.setName(nameDiv.html());
         newHouseHangzhouV2.setPrice(0);
         newHouseHangzhouV2.setType(typeDiv.html());
         String plotRadioStr = plotRatioDiv.html();
-        Double plotRadio = 0d;
+        double plotRadio = 0d;
         if (StringUtils.isNumeric(plotRadioStr)) {
-            plotRadio = Double.valueOf(plotRadioStr);
+            plotRadio = Double.parseDouble(plotRadioStr);
         }
         newHouseHangzhouV2.setPlotRatio(plotRadio);
         newHouseHangzhouV2.setGreenRatio(greenRatioDiv.html());

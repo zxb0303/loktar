@@ -17,13 +17,11 @@ import java.nio.file.Files;
 @Component
 public class AzureDocIntelligenceUtil {
     private static DocumentIntelligenceClient client;
-    private final LokTarConfig lokTarConfig;
 
     public AzureDocIntelligenceUtil(LokTarConfig lokTarConfig) {
-        this.lokTarConfig = lokTarConfig;
         client = new DocumentIntelligenceClientBuilder()
-                .credential(new AzureKeyCredential(this.lokTarConfig.azureDocIntelligenceKey))
-                .endpoint(this.lokTarConfig.azureDocIntelligenceEndpoint)
+                .credential(new AzureKeyCredential(lokTarConfig.azureDocIntelligenceKey))
+                .endpoint(lokTarConfig.azureDocIntelligenceEndpoint)
                 .buildClient();
     }
 
@@ -38,7 +36,6 @@ public class AzureDocIntelligenceUtil {
                         null,
                         null,
                         new AnalyzeDocumentRequest().setBase64Source(Files.readAllBytes(selectionMarkDocument.toPath())));
-        AnalyzeResult analyzeLayoutResult = analyzeLayoutResultPoller.getFinalResult().getAnalyzeResult();
-        return analyzeLayoutResult;
+        return analyzeLayoutResultPoller.getFinalResult().getAnalyzeResult();
     }
 }

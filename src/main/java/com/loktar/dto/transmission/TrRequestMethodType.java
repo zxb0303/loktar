@@ -15,7 +15,7 @@ public enum TrRequestMethodType {
     TORRENT_GET("torrent-get"),
     FREE_SPACE("free-space");
 
-    private String name;
+    private final String name;
     public static TrRequestMethodType getByName(String name) {
         for (TrRequestMethodType type : TrRequestMethodType.values()) {
             if (type.getName().equals(name)){

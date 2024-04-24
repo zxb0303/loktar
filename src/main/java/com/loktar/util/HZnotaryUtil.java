@@ -17,12 +17,12 @@ import java.util.List;
 
 public class HZnotaryUtil {
 
-    public static String TYPE_REGIST = "登记";
-    public static String TYPE_RESULT = "摇号结果";
+    public final static String TYPE_REGIST = "登记";
+    public final static String TYPE_RESULT = "摇号结果";
 
-    public static String URL_INDEX = "https://www.hz-notary.com/lottery/index?page.pageNum={0}";
-    public static String URL_DETAIL = "https://www.hz-notary.com/lottery/detail?lottery.id={0}";
-    public static String URL_DETAIL_CONTENT = "https://www.hz-notary.com/lottery/detail_content?lotteryContent.id={0}";
+    public final static String URL_INDEX = "https://www.hz-notary.com/lottery/index?page.pageNum={0}";
+    public final static String URL_DETAIL = "https://www.hz-notary.com/lottery/detail?lottery.id={0}";
+    public final static String URL_DETAIL_CONTENT = "https://www.hz-notary.com/lottery/detail_content?lotteryContent.id={0}";
 
     @SneakyThrows
     private static String getLotteryId(String houseName) {
@@ -98,8 +98,7 @@ public class HZnotaryUtil {
         }
         Document document = Jsoup.parse(response.body());
         Element Atag = document.selectFirst("[class=detail_content]").selectFirst("a");
-        String href = Atag.attr("href");
-        return href;
+        return Atag.attr("href");
     }
 
     /**
@@ -110,7 +109,6 @@ public class HZnotaryUtil {
     public static String getPDFUrlByHouseNameAndType(String houseName, String type) {
         String lotteryId = getLotteryId(houseName);
         String lotteryContentId = getLotteryContentId(lotteryId, type);
-        String pdfUrl = getPdfUrl(lotteryContentId);
-        return pdfUrl;
+        return getPdfUrl(lotteryContentId);
     }
 }

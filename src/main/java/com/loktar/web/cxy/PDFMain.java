@@ -152,23 +152,20 @@ public class PDFMain {
         if (files == null) {
             return null;
         }
-        Arrays.sort(files, new Comparator<File>() {
-            @Override
-            public int compare(File f1, File f2) {
-                String filename1 = f1.getName().substring(0, f1.getName().lastIndexOf('.'));
-                String filename2 = f2.getName().substring(0, f2.getName().lastIndexOf('.'));
-                String[] split1 = filename1.split("-(?=[0-9]+$)", 2);
-                String[] split2 = filename2.split("-(?=[0-9]+$)", 2);
-                int number1 = Integer.parseInt(split1[0]);
-                int number2 = Integer.parseInt(split2[0]);
-                if (number1 != number2) {
-                    return number1 - number2;
-                }
-                if (split1.length == 2 && split2.length == 2) {
-                    return Integer.parseInt(split1[1]) - Integer.parseInt(split2[1]);
-                }
-                return split1.length - split2.length;
+        Arrays.sort(files, (f1, f2) -> {
+            String filename1 = f1.getName().substring(0, f1.getName().lastIndexOf('.'));
+            String filename2 = f2.getName().substring(0, f2.getName().lastIndexOf('.'));
+            String[] split1 = filename1.split("-(?=[0-9]+$)", 2);
+            String[] split2 = filename2.split("-(?=[0-9]+$)", 2);
+            int number1 = Integer.parseInt(split1[0]);
+            int number2 = Integer.parseInt(split2[0]);
+            if (number1 != number2) {
+                return number1 - number2;
             }
+            if (split1.length == 2 && split2.length == 2) {
+                return Integer.parseInt(split1[1]) - Integer.parseInt(split2[1]);
+            }
+            return split1.length - split2.length;
         });
         return files;
     }

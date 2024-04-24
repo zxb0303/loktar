@@ -28,14 +28,13 @@ public class CarUtil {
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        JsonNode jsonObject = (JsonNode) objectMapper.readTree(response.body());
+        JsonNode jsonObject = objectMapper.readTree(response.body());
         JsonNode jsonContent = jsonObject.get("jsonContent");
         ArrayNode jsonArrayBody = (ArrayNode) jsonContent.get("body");
         JsonNode lastVersionObject = jsonArrayBody.get(1);
         ArrayNode jsonArrayChildren = (ArrayNode) lastVersionObject.get("children");
         JsonNode jsonArrayChildren1 = jsonArrayChildren.get(0);
-        String lastVersion = jsonArrayChildren1.get("children").asText().replace("软件", "").replace("更新", "");
-        return lastVersion;
+        return jsonArrayChildren1.get("children").asText().replace("软件", "").replace("更新", "");
     }
 
     public static void main(String[] args) {

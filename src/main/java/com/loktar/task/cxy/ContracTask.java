@@ -45,21 +45,19 @@ public class ContracTask {
             return;
         }
         StringBuilder content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_CONTRAC).append(System.lineSeparator());
-        for (int i = 0; i < contracts.size(); i++) {
-            Contract cntract = contracts.get(i);
+        for (Contract cntract : contracts) {
             content.append(System.lineSeparator())
                     .append(cntract.getParty()).append(System.lineSeparator())
                     .append(System.lineSeparator())
                     .append(cntract.getCounterParty())
                     .append(System.lineSeparator())
                     .append(cntract.getNumber()).append(System.lineSeparator())
-                    .append(System.lineSeparator())
-                    .append(cntract.getEndDate() + "到期").append(System.lineSeparator())
+                    .append(System.lineSeparator()).append(cntract.getEndDate()).append("到期").append(System.lineSeparator())
                     .append(System.lineSeparator());
             cntract.setStatus(1);
             contractMapper.updateByPrimaryKey(cntract);
         }
-        content = content.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE));
+        content.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE));
         //qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
         qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeCxy, lokTarConfig.qywxAgent002Id, content.toString()));
     }
