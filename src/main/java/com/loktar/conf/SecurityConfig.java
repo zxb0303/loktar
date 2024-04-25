@@ -12,7 +12,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").authenticated()
                         .requestMatchers("/jellyfin/**").permitAll()
                         .requestMatchers("/qywx/callback/chatgpt/**").permitAll()
                         .requestMatchers("/qywx/callback/**").permitAll()
