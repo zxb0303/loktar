@@ -17,6 +17,7 @@ public class SecurityConfig {
                         .requestMatchers("/qywx/callback/chatgpt/**").permitAll()
                         .requestMatchers("/qywx/callback/**").permitAll()
                         .requestMatchers("/synology/**").permitAll()
+                        .requestMatchers("/github/notifyMsg.do").permitAll()
                         .requestMatchers("/test/**").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form

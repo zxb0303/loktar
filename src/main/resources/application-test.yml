@@ -57,13 +57,11 @@ conf:
     apiKey: xxx
   openai:
     apiKey: Bearer xxx
-  pdf:
-    path: F:/pdf/
-  voice:
-    path: F:/voice/
-  newhouse:
-    originalPath: F:/newhouse/original/{0}/{1}/{2}/
-    coverPath: F:/newhouse/conversion/{0}/{1}/{2}/
+  path:
+    pdf: F:/pdf/
+    voice: F:/voice/
+    newhouseOriginal: F:/newhouse/original/{0}/{1}/{2}/
+    newhousecover: F:/newhouse/conversion/{0}/{1}/{2}/
   common:
     cxyNoticeText: xxx
     clashRssUrl: xxx
