@@ -237,6 +237,7 @@ https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2272 </br>
 | 12            | Bookworm |
 | 11            | Bullseye |
 | 10            | Buster   |
+
 因个人习惯用ubuntu，基础镜像由eclipse-temurin:21-jammy调整为ibm-semeru-runtimes:open-21-jre-focal
 ## 3.打包发布
 ### 3.1 添加Dockerfile文件
