@@ -5,6 +5,7 @@ import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.service.github.GithubService;
 import com.loktar.util.wx.qywx.QywxApi;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +31,7 @@ public class GithubController {
     }
 
 
-    @GetMapping("/notifyMsg.do")
+    @PostMapping("/notifyMsg.do")
     public void notifyMsg(String version) {
         QywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), version+"已经推送到镜像仓库"));
     }
