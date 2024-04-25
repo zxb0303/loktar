@@ -4,12 +4,14 @@ package com.loktar.task.transmission;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.service.transmission.TransmissionService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
 @EnableScheduling
+@Profile(LokTarConstant.ENV_PRO)
 public class TransmissionTask {
     private final TransmissionService transmissionService;
 
@@ -22,14 +24,11 @@ public class TransmissionTask {
 
     @Scheduled(cron = "0 */10 * * * ?")
     private void refresh() {
-        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
-            return;
-        }
         //TODO 打印
         System.out.println("transmission:refreshTorrents");
         transmissionService.refreshAllTorrents();
         transmissionService.autoStart();
-        transmissionService.autoRemove(lokTarConfig.transmissionMinSizeGB, lokTarConfig.transmissionDays, lokTarConfig.transmissionTempDownloadDir);
+        transmissionService.autoRemove(lokTarConfig.getTransmission().getMinSizeGB(), lokTarConfig.getTransmission().getDays(), lokTarConfig.getTransmission().getTempDownloadDir());
         transmissionService.autoRemoveError();
 
     }

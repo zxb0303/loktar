@@ -77,7 +77,7 @@ public class QyWeixinCallbackController {
 
     @SneakyThrows
     private void asyncDealMsg(String msgSignature, String timestamp, String nonce, String xml) {
-        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.qywxToken, lokTarConfig.qywxEncodingAESKey, lokTarConfig.qywxCorpId);
+        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.getQywx().getToken(), lokTarConfig.getQywx().getEncodingAeskey(), lokTarConfig.getQywx().getCorpid());
         String xmlMsg = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, xml);
         System.out.println("after decrypt msg: ");
         System.out.println(xmlMsg);
@@ -130,7 +130,7 @@ public class QyWeixinCallbackController {
             case EventCommandType.SHOW_CLASH_RSS:
                 replymsg.append("Clash订阅地址：").append(System.lineSeparator())
                         .append(System.lineSeparator())
-                        .append(lokTarConfig.commonClashRssUrl).append(System.lineSeparator());
+                        .append(lokTarConfig.getCommon().getClashRssUrl()).append(System.lineSeparator());
                 break;
             case EventCommandType.SHOW_TRANSMISSION_ALT_SPEED:
                 replymsg.append("Transmission当前限速状态：").append(System.lineSeparator());
@@ -222,7 +222,7 @@ public class QyWeixinCallbackController {
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp,
             @RequestParam("nonce") String nonce, @RequestParam("echostr") String echostr) {
-        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.qywxToken, lokTarConfig.qywxEncodingAESKey, lokTarConfig.qywxCorpId);
+        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.getQywx().getToken(), lokTarConfig.getQywx().getEncodingAeskey(), lokTarConfig.getQywx().getCorpid());
         String sEchoStr = wxcpt.VerifyURL(msgSignature, timestamp,
                 nonce, echostr);
         if (sEchoStr != null) {

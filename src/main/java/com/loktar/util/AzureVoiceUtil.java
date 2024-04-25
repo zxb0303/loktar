@@ -15,7 +15,7 @@ public class AzureVoiceUtil {
     private static SpeechConfig config;
 
     public AzureVoiceUtil(LokTarConfig lokTarConfig) {
-        config = SpeechConfig.fromSubscription(lokTarConfig.azureVoiceKey, lokTarConfig.azureVoiceRegion);
+        config = SpeechConfig.fromSubscription(lokTarConfig.getAzure().getVoiceKey(), lokTarConfig.getAzure().getVoiceRegion());
         config.setSpeechSynthesisVoiceName(DEFAULT_VOICE_NAME);
         config.setSpeechRecognitionLanguage(LANGUAGE);
     }

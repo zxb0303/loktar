@@ -20,8 +20,8 @@ public class AzureDocIntelligenceUtil {
 
     public AzureDocIntelligenceUtil(LokTarConfig lokTarConfig) {
         client = new DocumentIntelligenceClientBuilder()
-                .credential(new AzureKeyCredential(lokTarConfig.azureDocIntelligenceKey))
-                .endpoint(lokTarConfig.azureDocIntelligenceEndpoint)
+                .credential(new AzureKeyCredential(lokTarConfig.getAzure().getDocIntelligenceKey()))
+                .endpoint(lokTarConfig.getAzure().getDocIntelligenceEndpoint())
                 .buildClient();
     }
 

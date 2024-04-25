@@ -32,7 +32,7 @@ public class GithubController {
 
     @GetMapping("/notifyMsg.do")
     public void notifyMsg(String version) {
-        QywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, version+"已经推送到镜像仓库"));
+        QywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), version+"已经推送到镜像仓库"));
     }
 
 

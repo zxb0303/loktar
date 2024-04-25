@@ -27,7 +27,6 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,14 +54,11 @@ public class QyWeixinCallbackChatGPTController {
 
     private final LokTarConfig lokTarConfig;
 
+    private final FFmpegUtil ffmpegUtil;
+
     private final static ObjectMapper xmlMapper = new XmlMapper();
-
-
-
-    @Value("${conf.voice.path}")
-    private String voicePath;
-
-    public QyWeixinCallbackChatGPTController(RedisUtil redisUtil, QywxApi qywxApi, PropertyMapper propertyMapper, QywxChatgptMsgMapper qywxChatgptMsgMapper, AzureVoiceUtil azureVoiceUtil, ChatGPTUtil chatGPTUtil, LokTarConfig lokTarConfig) {
+    
+    public QyWeixinCallbackChatGPTController(RedisUtil redisUtil, QywxApi qywxApi, PropertyMapper propertyMapper, QywxChatgptMsgMapper qywxChatgptMsgMapper, AzureVoiceUtil azureVoiceUtil, ChatGPTUtil chatGPTUtil, LokTarConfig lokTarConfig, FFmpegUtil ffmpegUtil) {
         this.redisUtil = redisUtil;
         this.qywxApi = qywxApi;
         this.propertyMapper = propertyMapper;
@@ -70,6 +66,7 @@ public class QyWeixinCallbackChatGPTController {
         this.azureVoiceUtil = azureVoiceUtil;
         this.chatGPTUtil = chatGPTUtil;
         this.lokTarConfig = lokTarConfig;
+        this.ffmpegUtil = ffmpegUtil;
         xmlMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
     }
 
@@ -86,7 +83,7 @@ public class QyWeixinCallbackChatGPTController {
 
     @SneakyThrows
     private void asyncDealMsg(String msgSignature, String timestamp, String nonce, String xml) {
-        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.qywxToken, lokTarConfig.qywxEncodingAESKey, lokTarConfig.qywxCorpId);
+        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.getQywx().getToken(), lokTarConfig.getQywx().getEncodingAeskey(), lokTarConfig.getQywx().getCorpid());
         String xmlMsg = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, xml);
         System.out.println("after decrypt msg: ");
         System.out.println(xmlMsg);
@@ -105,10 +102,10 @@ public class QyWeixinCallbackChatGPTController {
             receiveMsg = ((ReceiveTextMsg) receiveBaseMsg).getContent();
         }
         if (receiveBaseMsg instanceof ReceiveVoiceMsg) {
-            receiveFileName = qywxApi.saveMedia(voicePath, ((ReceiveVoiceMsg) receiveBaseMsg).getMediaId(), receiveBaseMsg.getAgentID());
-            FFmpegUtil.convertAmrToWav(voicePath, receiveFileName);
-            testFileExist(voicePath,receiveFileName);
-            receiveMsg = azureVoiceUtil.wavToText(voicePath, receiveFileName);
+            receiveFileName = qywxApi.saveMedia(lokTarConfig.getPath().getVoice(), ((ReceiveVoiceMsg) receiveBaseMsg).getMediaId(), receiveBaseMsg.getAgentID());
+            ffmpegUtil.convertAmrToWav(lokTarConfig.getPath().getVoice(), receiveFileName);
+            testFileExist(lokTarConfig.getPath().getVoice(),receiveFileName);
+            receiveMsg = azureVoiceUtil.wavToText(lokTarConfig.getPath().getVoice(), receiveFileName);
             qywxApi.sendTextMsg(new AgentMsgText(receiveBaseMsg.getFromUserName(), receiveBaseMsg.getAgentID(), "语音识别结果：\n" + receiveMsg));
         }
         dealWitchChatGPT(receiveFileName, receiveMsg, receiveBaseMsg);
@@ -169,10 +166,10 @@ public class QyWeixinCallbackChatGPTController {
         for (int i = 0; i < replyContents.size(); i++) {
             String reply = replyContents.get(i);
             String wavFileName = replyFileNameBase + "_" + (i + 1) + LokTarConstant.VOICE_SUFFIX_WAV;
-            azureVoiceUtil.textToWav(voicePath, wavFileName, reply);
-            FFmpegUtil.convertWavToAmr(voicePath, wavFileName);
-            testFileExist(voicePath,wavFileName);
-            UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(voicePath + wavFileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR)), receiveBaseMsg.getAgentID());
+            azureVoiceUtil.textToWav(lokTarConfig.getPath().getVoice(), wavFileName, reply);
+            ffmpegUtil.convertWavToAmr(lokTarConfig.getPath().getVoice(), wavFileName);
+            testFileExist(lokTarConfig.getPath().getVoice(),wavFileName);
+            UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(lokTarConfig.getPath().getVoice() + wavFileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR)), receiveBaseMsg.getAgentID());
             qywxApi.sendVoiceMsg(new AgentMsgVoice(receiveBaseMsg.getFromUserName(), receiveBaseMsg.getAgentID(), uploadMediaRsp.getMediaId()));
         }
 
@@ -228,7 +225,7 @@ public class QyWeixinCallbackChatGPTController {
         //System.out.println(coverFileName);
         int times = 10;
          while (times > 0) {
-            File file = new File(voicePath + coverFileName);
+            File file = new File(lokTarConfig.getPath().getVoice() + coverFileName);
             if (file.exists()) {
                 //System.out.println("file exist "+DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
                 break;
@@ -254,7 +251,7 @@ public class QyWeixinCallbackChatGPTController {
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp,
             @RequestParam("nonce") String nonce, @RequestParam("echostr") String echostr) {
-        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.qywxToken, lokTarConfig.qywxEncodingAESKey, lokTarConfig.qywxCorpId);
+        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.getQywx().getToken(), lokTarConfig.getQywx().getEncodingAeskey(), lokTarConfig.getQywx().getCorpid());
         String sEchoStr = wxcpt.VerifyURL(msgSignature, timestamp,
                 nonce, echostr);
         if (sEchoStr != null) {

@@ -8,6 +8,7 @@ import com.loktar.service.common.CommonService;
 import com.loktar.service.common.NoticeServer;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Component
 @EnableScheduling
+@Profile("pro")
 public class CommonTask {
 
     private final CommonService commonService;
@@ -47,9 +49,6 @@ public class CommonTask {
      */
     @Scheduled(cron = "0 */1 * * * ?")
     public void commonNotice() {
-        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
-            return;
-        }
         List<Notice> notices = noticeServer.getUnsendNotices();
         for (Notice notice : notices) {
             LocalDateTime now = LocalDateTime.now();
@@ -60,7 +59,7 @@ public class CommonTask {
                         notice.getNoticeContent() + System.lineSeparator() +
                         System.lineSeparator() +
                         DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
-                qywxApi.sendTextMsg(new AgentMsgText(notice.getNoticeUser(), lokTarConfig.qywxAgent002Id, content));
+                qywxApi.sendTextMsg(new AgentMsgText(notice.getNoticeUser(), lokTarConfig.getQywx().getAgent002Id(), content));
                 notice.setStatus(1);
                 noticeServer.updateByPrimaryKey(notice);
             }
@@ -78,9 +77,6 @@ public class CommonTask {
      */
     @Scheduled(cron = "0 30 7 * * ?")
     private void lotteryNotice() {
-        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
-            return;
-        }
 //        commonService.sendLandNotice();
 //        commonService.sendSecondHandHouseNotice();
         commonService.sendLotteryNotice();
@@ -96,10 +92,6 @@ public class CommonTask {
      */
     @Scheduled(cron = "0 30 17 * * ?")
     private void CXYnotice() {
-        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
-            return;
-        }
-
         LocalDate today = LocalDate.now();
         LocalDate lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
 
@@ -114,9 +106,9 @@ public class CommonTask {
         if (today.equals(lastDayOfMonth)) {
             String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator() +
                     System.lineSeparator() +
-                    lokTarConfig.commonCxyNoticeText + System.lineSeparator() +
+                    lokTarConfig.getCommon().getCxyNoticeText() + System.lineSeparator() +
                     DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
-            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeCxy, lokTarConfig.qywxAgent002Id, content));
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeCxy(), lokTarConfig.getQywx().getAgent002Id(), content));
         }
     }
 
