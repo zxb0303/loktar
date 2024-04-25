@@ -6,40 +6,40 @@ import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Configuration
 @Component
 public class FFmpegUtil {
 
-    private static String env;
+    private final Environment environment;
 
-    @Value("${spring.profiles.active}")
-    public void setEnv(String env) {
-        FFmpegUtil.env = env;
+    public FFmpegUtil(Environment environment) {
+        this.environment = environment;
     }
 
-    public static void convertWavToAmr(String voicePath, String filename) {
-        if (!env.equals(LokTarConstant.ENV_PRO)) {
+    public void convertWavToAmr(String voicePath, String filename) {
+        if (!Arrays.asList(environment.getActiveProfiles()).contains(LokTarConstant.ENV_PRO)) {
             convertWavToAmrDev(voicePath, filename);
+        } else {
+            convertWavToAmrPro(voicePath, filename);
         }
-        convertWavToAmrPro(voicePath, filename);
     }
 
-    public static void convertAmrToWav(String voicePath, String filename) {
-        if (!env.equals(LokTarConstant.ENV_PRO)) {
+    public void convertAmrToWav(String voicePath, String filename) {
+        if (!Arrays.asList(environment.getActiveProfiles()).contains(LokTarConstant.ENV_PRO)) {
             convertAmrToWavDev(voicePath, filename);
+        } else {
+            convertAmrToWavPro(voicePath, filename);
         }
-        convertAmrToWavPro(voicePath, filename);
     }
 
 

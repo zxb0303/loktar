@@ -52,7 +52,7 @@ public class ChatGPTUtil {
                 .timeout(Duration.ofSeconds(10))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
-                .header("Authorization", lokTarConfig.openaiApiKey)
+                .header("Authorization", lokTarConfig.getOpenai().getApiKey())
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
@@ -69,7 +69,7 @@ public class ChatGPTUtil {
                 .timeout(Duration.ofSeconds(60))
                 .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_JSON)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
-                .header("Authorization", lokTarConfig.openaiApiKey)
+                .header("Authorization", lokTarConfig.getOpenai().getApiKey())
                 .POST(HttpRequest.BodyPublishers.ofString(requestStr))
                 .build();
 //        System.out.println(requestStr);

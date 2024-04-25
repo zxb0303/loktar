@@ -65,7 +65,7 @@ public class GithubServiceImpl implements GithubService {
                         githubRepository.getRepository() + ":" + githubRelease.getTagName() + System.lineSeparator() +
                         System.lineSeparator() +
                         DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
-                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
+                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), content));
                 githubRepository.setLastTagId(githubRelease.getId());
                 githubRepository.setLastTagName(githubRelease.getTagName());
                 ZonedDateTime localZonedDateTime = githubRelease.getCreatedAt().withZoneSameInstant(ZoneId.systemDefault());
@@ -85,7 +85,7 @@ public class GithubServiceImpl implements GithubService {
                 .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
-                .header("authorization", lokTarConfig.githubAuthorization)
+                .header("authorization", lokTarConfig.getGithub().getAuthorization())
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
