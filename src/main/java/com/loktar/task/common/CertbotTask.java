@@ -8,6 +8,7 @@ import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.common.PropertyMapper;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 
 @Component
 @EnableScheduling
+@Profile(LokTarConstant.ENV_PRO)
 public class CertbotTask {
 
     private final PropertyMapper propertyMapper;
@@ -33,9 +35,6 @@ public class CertbotTask {
 
     @Scheduled(cron = "0 30 10 * * MON-FRI")
     public void certbotNotice() {
-        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
-            return;
-        }
         Property property = propertyMapper.selectByPrimaryKey("cert");
         String expireDateStr = property.getValue();
         LocalDate expireDate = DateTimeUtil.parseLocalDate(expireDateStr, DateTimeUtil.FORMATTER_DATE);
@@ -46,7 +45,7 @@ public class CertbotTask {
                     "请更新证书" + System.lineSeparator() +
                     System.lineSeparator() +
                     DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
-            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), content));
         }
     }
 }

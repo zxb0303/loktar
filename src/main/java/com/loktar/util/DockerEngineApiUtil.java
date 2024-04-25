@@ -32,9 +32,9 @@ public class DockerEngineApiUtil {
 
     public DockerEngineApiUtil(LokTarConfig lokTarConfig) {
         config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-                .withDockerHost(lokTarConfig.dockerTcpUrl)
+                .withDockerHost(lokTarConfig.getDocker().getTcpUrl())
                 .withDockerTlsVerify(false)
-                .withApiVersion(lokTarConfig.dockerTcpApiVersion)
+                .withApiVersion(lokTarConfig.getDocker().getApiVersion())
                 .build();
         httpClient = new ApacheDockerHttpClient.Builder()
                 .dockerHost(config.getDockerHost())

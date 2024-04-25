@@ -34,7 +34,7 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
             case LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET:
                 transmissionUtil.altSpeedEnabled(false);
                 String content = "Transmission已自动关闭限速(redis key 过期)";
-                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
+                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), content));
                 break;
         }
     }

@@ -317,7 +317,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
                     }
                 }
                 base64String = base64String.replace("\\/", "/");
-                String path = MessageFormat.format(lokTarConfig.newhouseOriginalPath, houseId, newHouseHangzhouV3PresellBuild.getPresellId(), newHouseHangzhouV3PresellBuild.getBuildId());
+                String path = MessageFormat.format(lokTarConfig.getPath().getNewhouseOriginal(), houseId, newHouseHangzhouV3PresellBuild.getPresellId(), newHouseHangzhouV3PresellBuild.getBuildId());
                 String filename = String.format("%04d", page) + LokTarConstant.PIC_SUFFIX_PNG;
                 //TODO 打印
                 System.out.println(path + filename);
@@ -336,8 +336,8 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
         List<NewHouseHangzhouV3Detail> newHouseHangzhouV3Details = new ArrayList<>();
         List<NewHouseHangzhouV3PresellBuild> newHouseHangzhouV3PresellBuilds = newHouseHangzhouV3PresellBuildMapper.selectByHouseId(houseId);
         for (NewHouseHangzhouV3PresellBuild newHouseHangzhouV3PresellBuild : newHouseHangzhouV3PresellBuilds) {
-            String pngfilesFoldpath = MessageFormat.format(lokTarConfig.newhouseOriginalPath, houseId, newHouseHangzhouV3PresellBuild.getPresellId(), newHouseHangzhouV3PresellBuild.getBuildId());
-            String jpgfilesFoldpath = MessageFormat.format(lokTarConfig.newhouseCoverPath, houseId, newHouseHangzhouV3PresellBuild.getPresellId(), newHouseHangzhouV3PresellBuild.getBuildId());
+            String pngfilesFoldpath = MessageFormat.format(lokTarConfig.getPath().getNewhouseOriginal(), houseId, newHouseHangzhouV3PresellBuild.getPresellId(), newHouseHangzhouV3PresellBuild.getBuildId());
+            String jpgfilesFoldpath = MessageFormat.format(lokTarConfig.getPath().getNewhouseCover(), houseId, newHouseHangzhouV3PresellBuild.getPresellId(), newHouseHangzhouV3PresellBuild.getBuildId());
             File dir = new File(pngfilesFoldpath);
             String[] pngfilesName = dir.list();
             for (String pngfileName : pngfilesName) {

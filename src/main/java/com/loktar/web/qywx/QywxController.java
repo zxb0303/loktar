@@ -33,10 +33,10 @@ public class QywxController {
         String content = LokTarConstant.NOTICE_TITLE_GITHUB + "\n\n"
                 + "试试"
                 + "\n\n" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE);
-        qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent003Id, content));
+        qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent003Id(), content));
 
 
-        qywxApi.sendVoiceMsg(new AgentMsgVoice(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent003Id, "3zUEeZmUuc-Eno-3qO9bDgClOpEoEL2XvqTyGpPpOqmrTswb-zG3rzsUOK8IKC5by"));
+        qywxApi.sendVoiceMsg(new AgentMsgVoice(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent003Id(), "3zUEeZmUuc-Eno-3qO9bDgClOpEoEL2XvqTyGpPpOqmrTswb-zG3rzsUOK8IKC5by"));
     }
 
     @SneakyThrows
@@ -44,7 +44,7 @@ public class QywxController {
     public void download() {
         String voicePath = "F:/voice/";
         String mediaId = "15nIsJJ02LJ4yc67RXJdBdwoMFAaNzNty8fVfT2f9TH-LB33FEPvCEw2kYFfetpq_";
-        String agentId = lokTarConfig.qywxAgent003Id;
+        String agentId = lokTarConfig.getQywx().getAgent003Id();
         String filename = qywxApi.saveMedia(voicePath, mediaId, agentId);
         System.out.println(filename);
     }
@@ -53,7 +53,7 @@ public class QywxController {
     public void upload() {
         String voicePath = "F:/voice/";
         String amrFilename = "501cdd80-42e3-4b85-889f-5ca8f8005960.amr";
-        String agentId = lokTarConfig.qywxAgent003Id;
+        String agentId = lokTarConfig.getQywx().getAgent003Id();
         UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(voicePath + amrFilename), agentId);
         System.out.println(uploadMediaRsp.getMediaId());
     }

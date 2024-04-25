@@ -1,107 +1,96 @@
 package com.loktar.conf;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConfigurationProperties(prefix = "conf")
 @Data
 public class LokTarConfig {
-    @Value("${spring.profiles.active}")
-    public String env;
-
-    @Value("${conf.transmission.url}")
-    public String transmissionUrl;
-
-    @Value("${conf.transmission.authorization}")
-    public String transmissionAuthorization;
-
-    @Value("${conf.transmission.minSizeGB}")
-    public long transmissionMinSizeGB;
-
-    @Value("${conf.transmission.days}")
-    public int transmissionDays;
-
-    @Value("${conf.transmission.tempDownloadDir}")
-    public String transmissionTempDownloadDir;
-
-    @Value("${conf.github.authorization}")
-    public String githubAuthorization;
-
-    @Value("${conf.azure.voiceKey}")
-    public String azureVoiceKey;
-
-    @Value("${conf.azure.voiceRegion}")
-    public String azureVoiceRegion;
-
-    @Value("${conf.azure.docIntelligenceKey}")
-    public String azureDocIntelligenceKey;
-
-    @Value("${conf.azure.docIntelligenceEndpoint}")
-    public String azureDocIntelligenceEndpoint;
-
-    @Value("${conf.bwg.apiKey}")
-    public String bwgApiKey;
-
-    @Value("${conf.openai.apiKey}")
-    public String openaiApiKey;
-
-    @Value("${conf.jellyfin.url}")
-    public String jellyfinUrl;
-
-    @Value("${conf.jellyfin.token}")
-    public String jellyfinToken;
-
-    @Value("${conf.docker.tcpUrl}")
-    public String dockerTcpUrl;
-
-    @Value("${conf.docker.apiVersion}")
-    public String dockerTcpApiVersion;
-
-    @Value("${conf.qywx.corpid}")
-    public String qywxCorpId;
-
-    @Value("${conf.qywx.token}")
-    public String qywxToken;
-
-    @Value("${conf.qywx.encodingAeskey}")
-    public String qywxEncodingAESKey;
-
-    @Value("${conf.qywx.noticeZxb}")
-    public String qywxNoticeZxb;
-
-    @Value("${conf.qywx.noticeCxy}")
-    public String qywxNoticeCxy;
-
-    @Value("${conf.qywx.agent002Id}")
-    public String qywxAgent002Id;
-
-    @Value("${conf.qywx.agent002Secert}")
-    public String qywxAgent002Secert;
-
-    @Value("${conf.qywx.agent003Id}")
-    public String qywxAgent003Id;
-
-    @Value("${conf.qywx.agent003Secert}")
-    public String qywxAgent003Secert;
-
-    @Value("${conf.qywx.agent004Id}")
-    public String qywxAgent004Id;
-
-    @Value("${conf.qywx.agent004Secert}")
-    public String qywxAgent004Secert;
-
-    @Value("${conf.common.cxyNoticeText}")
-    public String commonCxyNoticeText;
-
-    @Value("${conf.common.clashRssUrl}")
-    public String commonClashRssUrl;
-
-    @Value("${conf.newhouse.originalPath}")
-    public String newhouseOriginalPath;
-
-    @Value("${conf.newhouse.coverPath}")
-    public String newhouseCoverPath;
+    
+    private Transmission transmission;
+    private Jellyfin jellyfin;
+    private Docker docker;
+    private Qywx qywx;
+    private Github github;
+    private Azure azure;
+    private Bwg bwg;
+    private Openai openai;
+    private Path path;
+    private Common common;
 
 
+    @Data
+    public static class Transmission {
+        private String url;
+        private String authorization;
+        private long minSizeGB;
+        private int days;
+        private String tempDownloadDir;
+    }
+
+    @Data
+    public static class Jellyfin {
+        private String url;
+        private String token;
+    }
+
+    @Data
+    public static class Docker {
+        private String tcpUrl;
+        private String apiVersion;
+    }
+
+    @Data
+    public static class Qywx {
+        private String corpid;
+        private String token;
+        private String encodingAeskey;
+        private String noticeZxb;
+        private String noticeCxy;
+        private String agent002Id;
+        private String agent002Secert;
+        private String agent003Id;
+        private String agent003Secert;
+        private String agent004Id;
+        private String agent004Secert;
+    }
+
+    @Data
+    public static class Github {
+        private String authorization;
+    }
+
+    @Data
+    public static class Azure {
+        private String voiceKey;
+        private String voiceRegion;
+        private String docIntelligenceKey;
+        private String docIntelligenceEndpoint;
+    }
+
+    @Data
+    public static class Bwg {
+        private String apiKey;
+    }
+
+    @Data
+    public static class Openai {
+        private String apiKey;
+    }
+
+    @Data
+    public static class Path {
+        private String pdf;
+        private String voice;
+        private String newhouseOriginal;
+        private String newhouseCover;
+    }
+
+    @Data
+    public static class Common {
+        private String cxyNoticeText;
+        private String clashRssUrl;
+    }
 }

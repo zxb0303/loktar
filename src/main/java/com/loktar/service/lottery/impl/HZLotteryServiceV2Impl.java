@@ -21,9 +21,8 @@ import com.loktar.util.HZnotaryUtil;
 import com.loktar.util.PDFUtilForLotteryHouse;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -54,9 +53,6 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
     private final QywxApi qywxApi;
 
     private final LokTarConfig lokTarConfig;
-
-    @Value("${conf.pdf.path}")
-    private String pdfPath;
 
     public HZLotteryServiceV2Impl(LotteryHouseMapper lotteryHouseMapper, LotteryPeopleMapper lotteryPeopleMapper, LotteryOtherPeopleMapper lotteryOtherPeopleMapper, QywxApi qywxApi, LokTarConfig lokTarConfig) {
         this.lotteryHouseMapper = lotteryHouseMapper;
@@ -121,13 +117,13 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
         List<LotteryPeople> lotteryPeoples = new ArrayList<>();
         List<LotteryOtherPeople> lotteryOtherPeoples = new ArrayList<>();
         String pdfUrl = HZnotaryUtil.getPDFUrlByHouseNameAndType(lotteryHouse.getHouseName(), HZnotaryUtil.TYPE_REGIST);
-        List<HZLotteryPeopleDTOV2> hZLotteryPeopleDTOV2s = PDFUtilForLotteryHouse.getTableContentFromPDFUrl(pdfUrl, pdfPath);
+        List<HZLotteryPeopleDTOV2> hZLotteryPeopleDTOV2s = PDFUtilForLotteryHouse.getTableContentFromPDFUrl(pdfUrl, lokTarConfig.getPath().getPdf());
         if (hZLotteryPeopleDTOV2s.isEmpty()) {
-            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, lotteryHouse.getHouseName() + "(" + lotteryHouse.getHouseId() + ")数据需手动处理"));
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), lotteryHouse.getHouseName() + "(" + lotteryHouse.getHouseId() + ")数据需手动处理"));
             return;
         }
         String pdfUrl2 = HZnotaryUtil.getPDFUrlByHouseNameAndType(lotteryHouse.getHouseName(), HZnotaryUtil.TYPE_RESULT);
-        Map<String, Integer> rankMap = PDFUtilForLotteryHouse.getTextContentFromPDFUrl(pdfUrl2, pdfPath);
+        Map<String, Integer> rankMap = PDFUtilForLotteryHouse.getTextContentFromPDFUrl(pdfUrl2, lokTarConfig.getPath().getPdf());
         for (HZLotteryPeopleDTOV2 hZLotteryPeopleDTOV2 : hZLotteryPeopleDTOV2s) {
             LotteryPeople lotteryPeople = new LotteryPeople();
             lotteryPeople.setHouseId(lotteryHouse.getHouseId());

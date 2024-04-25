@@ -28,6 +28,6 @@ public class SynologyWebhookController {
                 text + System.lineSeparator() +
                 System.lineSeparator() +
                 DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
-        qywxApi.sendTextMsg(new AgentMsgText(touser, lokTarConfig.qywxAgent002Id, content));
+        qywxApi.sendTextMsg(new AgentMsgText(touser, lokTarConfig.getQywx().getAgent002Id(), content));
     }
 }

@@ -11,7 +11,6 @@ import com.loktar.util.*;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,14 +31,15 @@ public class ChatGPTController {
 
     private final LokTarConfig lokTarConfig;
 
-    @Value("${conf.voice.path}")
-    private String voicePath;
+    private final FFmpegUtil ffmpegUtil;
 
-    public ChatGPTController(QywxApi qywxApi, AzureVoiceUtil azureVoiceUtil, ChatGPTUtil chatGPTUtil, LokTarConfig lokTarConfig) {
+
+    public ChatGPTController(QywxApi qywxApi, AzureVoiceUtil azureVoiceUtil, ChatGPTUtil chatGPTUtil, LokTarConfig lokTarConfig, FFmpegUtil ffmpegUtil) {
         this.qywxApi = qywxApi;
         this.azureVoiceUtil = azureVoiceUtil;
         this.chatGPTUtil = chatGPTUtil;
         this.lokTarConfig = lokTarConfig;
+        this.ffmpegUtil = ffmpegUtil;
     }
 
     @GetMapping("/completions.do")
@@ -60,13 +60,13 @@ public class ChatGPTController {
     @GetMapping("/testVoiceAndSend.do")
     public void testVoiceAndSend() {
         String wavFileName = UUIDUtil.randomUUID() + LokTarConstant.VOICE_SUFFIX_WAV;
-        azureVoiceUtil.textToWav(voicePath, wavFileName, "你叫什么名字");
-        FFmpegUtil.convertWavToAmr(voicePath, wavFileName);
-        testFileExist(voicePath,wavFileName);
-        String filepath = voicePath + wavFileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR);
-        UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(filepath), lokTarConfig.qywxAgent003Id);
+        azureVoiceUtil.textToWav(lokTarConfig.getPath().getVoice(), wavFileName, "你叫什么名字");
+        ffmpegUtil.convertWavToAmr(lokTarConfig.getPath().getVoice(), wavFileName);
+        testFileExist(lokTarConfig.getPath().getVoice(),wavFileName);
+        String filepath = lokTarConfig.getPath().getVoice() + wavFileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR);
+        UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(filepath), lokTarConfig.getQywx().getAgent003Id());
         System.out.println(uploadMediaRsp.getMediaId());
-        qywxApi.sendVoiceMsg(new AgentMsgVoice(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent003Id, uploadMediaRsp.getMediaId()));
+        qywxApi.sendVoiceMsg(new AgentMsgVoice(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent003Id(), uploadMediaRsp.getMediaId()));
     }
 
     @SneakyThrows

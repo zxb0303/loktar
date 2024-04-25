@@ -135,7 +135,7 @@ public class TransmissionServiceImpl implements TransmissionService {
         List<TrResponseTorrent> needRemoveTorrents = needRemoveTrResponse.getArguments().getTorrents();
         List<Integer> trueRemoveIds = new ArrayList<>();
         for (TrResponseTorrent needRemoveTorrent : needRemoveTorrents) {
-            if (needRemoveTorrent.getDownloadDir().equals(lokTarConfig.transmissionTempDownloadDir) && tempNames.contains(needRemoveTorrent.getName())) {
+            if (needRemoveTorrent.getDownloadDir().equals(lokTarConfig.getTransmission().getTempDownloadDir()) && tempNames.contains(needRemoveTorrent.getName())) {
                 trueRemoveIds.add(Integer.valueOf(String.valueOf(needRemoveTorrent.getId())));
             }
         }

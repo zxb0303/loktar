@@ -64,9 +64,9 @@ public class QywxApi {
         this.redisUtil = redisUtil;
         this.qywxMenuMapper = qywxMenuMapper;
         this.lokTarConfig = lokTarConfig;
-        AGENTMAP.put(lokTarConfig.qywxAgent002Id, lokTarConfig.qywxAgent002Secert);
-        AGENTMAP.put(lokTarConfig.qywxAgent003Id, lokTarConfig.qywxAgent003Secert);
-        AGENTMAP.put(lokTarConfig.qywxAgent004Id, lokTarConfig.qywxAgent004Secert);
+        AGENTMAP.put(lokTarConfig.getQywx().getAgent002Id(), lokTarConfig.getQywx().getAgent002Secert());
+        AGENTMAP.put(lokTarConfig.getQywx().getAgent003Id(), lokTarConfig.getQywx().getAgent003Secert());
+        AGENTMAP.put(lokTarConfig.getQywx().getAgent004Id(), lokTarConfig.getQywx().getAgent004Secert());
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
@@ -89,7 +89,7 @@ public class QywxApi {
         String secret = AGENTMAP.get(agentId);
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(MessageFormat.format(ACCESSTOKEN_URL, lokTarConfig.qywxCorpId, secret)))
+                .uri(URI.create(MessageFormat.format(ACCESSTOKEN_URL, lokTarConfig.getQywx().getCorpid(), secret)))
                 .timeout(Duration.ofSeconds(10))
                 .GET()
                 .build();

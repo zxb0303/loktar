@@ -62,7 +62,7 @@ public class RssServiceImpl implements RssService {
             if (m.matches()) {
                 String downloadUrl = trRssTorrent.getDownloadUrl();
                 DelayUtil.delaySeconds(3, 5);
-                TrResponse trResponse = transmissionUtil.addTorrent(downloadUrl, lokTarConfig.transmissionTempDownloadDir, false);
+                TrResponse trResponse = transmissionUtil.addTorrent(downloadUrl, lokTarConfig.getTransmission().getTempDownloadDir(), false);
                 if (!ObjectUtils.isEmpty(trResponse) && trResponse.getResult().equals(TrResponse.RESULT_SUCCESS)) {
                     System.out.println("RSS自动添加-" + trRss.getHostCnName() + ":" + trRssTorrent.getTitle());
                     trRssTorrent.setStatus(1);

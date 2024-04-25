@@ -33,10 +33,10 @@ public class JellyfinUtil {
     public Session getSessionByDeviceId(String deviceId) {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(MessageFormat.format(lokTarConfig.jellyfinUrl, deviceId)))
+                .uri(URI.create(MessageFormat.format(lokTarConfig.getJellyfin().getUrl(), deviceId)))
                 .timeout(Duration.ofSeconds(10))
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
-                .header("x-emby-token", lokTarConfig.jellyfinToken)
+                .header("x-emby-token", lokTarConfig.getJellyfin().getToken())
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());

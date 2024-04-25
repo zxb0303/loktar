@@ -41,7 +41,7 @@ public class TransmissionController {
 
     @GetMapping("/testGetFreeSpaceByPath.do")
     public void testGetFreeSpaceByPath() {
-        System.out.println(transmissionUtil.getFreeSpaceByPath(lokTarConfig.transmissionTempDownloadDir).toString());
+        System.out.println(transmissionUtil.getFreeSpaceByPath(lokTarConfig.getTransmission().getTempDownloadDir()).toString());
     }
 
     @GetMapping("/altSpeedEnabled.do")

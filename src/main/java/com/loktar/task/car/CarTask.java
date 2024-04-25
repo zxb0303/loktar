@@ -9,6 +9,7 @@ import com.loktar.mapper.common.PropertyMapper;
 import com.loktar.util.CarUtil;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 
 @Component
 @EnableScheduling
+@Profile(LokTarConstant.ENV_PRO)
 public class CarTask {
 
     private final QywxApi qywxApi;
@@ -34,9 +36,6 @@ public class CarTask {
 
     @Scheduled(cron = "0 */10 * * * ?")
     private void notice() {
-        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
-            return;
-        }
         Property xc90AppVersionProperty = propertyMapper.selectByPrimaryKey("xc90_app_version");
         String lastVersion = CarUtil.getLastVersion();
         if (!lastVersion.equals(xc90AppVersionProperty.getValue())) {
@@ -47,7 +46,7 @@ public class CarTask {
                     DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             xc90AppVersionProperty.setValue(lastVersion);
             propertyMapper.updateByPrimaryKey(xc90AppVersionProperty);
-            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), content));
         }
     }
 

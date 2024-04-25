@@ -37,7 +37,7 @@ public class BandwagonhostUtil {
     public VPSInfo getVPSData(String veid) {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(MessageFormat.format(URL, veid, lokTarConfig.bwgApiKey)))
+                .uri(URI.create(MessageFormat.format(URL, veid, lokTarConfig.getBwg().getApiKey())))
                 .timeout(Duration.ofSeconds(10))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)

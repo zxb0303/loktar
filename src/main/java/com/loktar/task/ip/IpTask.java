@@ -10,6 +10,7 @@ import com.loktar.util.DateTimeUtil;
 import com.loktar.util.IPUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 
 @Component
 @EnableScheduling
+@Profile(LokTarConstant.ENV_PRO)
 public class IpTask {
 
     private final QywxApi qywxApi;
@@ -35,9 +37,6 @@ public class IpTask {
 
     @Scheduled(cron = "0 */10 * * * ?")
     private void notice() {
-        if (!lokTarConfig.env.equals(LokTarConstant.ENV_PRO)) {
-            return;
-        }
         System.out.println("IP检测定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         Property ipProperty = propertyMapper.selectByPrimaryKey("yht_ip");
         String ip = IPUtil.getip();
@@ -49,7 +48,7 @@ public class IpTask {
                     DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             ipProperty.setValue(ip);
             propertyMapper.updateByPrimaryKey(ipProperty);
-            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.qywxNoticeZxb, lokTarConfig.qywxAgent002Id, content));
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), content));
         }
     }
 }

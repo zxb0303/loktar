@@ -47,12 +47,12 @@ public class TransmissionUtil {
         //TODO 打印
         //System.out.println(requestStr);
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(lokTarConfig.transmissionUrl))
+                .uri(URI.create(lokTarConfig.getTransmission().getUrl()))
                 .timeout(Duration.ofSeconds(60))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
-                .header(AUTHORIZATION, lokTarConfig.transmissionAuthorization)
+                .header(AUTHORIZATION, lokTarConfig.getTransmission().getAuthorization())
                 .header(TRANSMISSION_SESSION_ID, sessionId)
                 .POST(HttpRequest.BodyPublishers.ofString(requestStr))
                 .build();
