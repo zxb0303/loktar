@@ -20,7 +20,7 @@ spring:
   security:
     user:
       name: user
-      password: t2vUT!FiA%2QA!
+      password: password
 conf:
   transmission:
     url: https://xxx/transmission/rpc

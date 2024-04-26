@@ -1,0 +1,33 @@
+- name: "{0}-VLESS"
+  type: vless
+  server: {1}
+  port: 443
+  uuid: {2}
+  network: tcp
+  tls: true
+  udp: true
+  flow: xtls-rprx-vision
+  client-fingerprint: chrome
+
+- name: "{3}-TROJAN"
+  type: trojan
+  server: {4}
+  port: 443
+  password: {5}
+  udp: true
+
+- name: "{6}-VLESS-WS-WARP"
+  type: vless
+  server: {7}
+  port: 443
+  uuid: {8}
+  alterId: 32
+  cipher: auto
+  tls: true
+  udp: true
+  network: ws
+  servername: {9}
+  ws-opts:
+    path: "{10}"
+    headers:
+      Host: {11}
