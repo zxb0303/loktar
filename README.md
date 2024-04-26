@@ -294,6 +294,8 @@ ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Shanghai", "/app.jar"]
 [RssTask.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Ftask%2Ftransmission%2FRssTask.java)
 ### 4.11 Transmission自动删除错误种子，自动根据硬盘大小删除保种数据
 [TransmissionTask.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Ftask%2Ftransmission%2FTransmissionTask.java)
+### 4.12 一键搭建xray
+[VPSInitMain.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fweb%2Ftest%2FVPSInitMain.java)
 ## 5.其他
 ### 5.1 Github单独删除某个文件的所有历史记录
 https://blog.csdn.net/q258523454/article/details/83899911</br>
