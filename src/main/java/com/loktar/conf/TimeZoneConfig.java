@@ -1,6 +1,6 @@
 package com.loktar.conf;
 
-import org.springframework.context.annotation.Bean;
+import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.TimeZone;
@@ -8,7 +8,7 @@ import java.util.TimeZone;
 @Configuration
 public class TimeZoneConfig {
 
-    @Bean
+    @PostConstruct
     public void initTimeZone() {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
     }
