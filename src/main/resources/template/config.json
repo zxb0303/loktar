@@ -1,0 +1,177 @@
+{
+    "log": {
+        "access": "/var/log/xray/access.log",
+        "error": "/var/log/xray/error.log",
+        "loglevel": "info"
+    },
+    "inbounds": [
+        {
+            "tag":"inbound-vless",
+            "listen": "0.0.0.0",
+            "port": 443,
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {
+                        "id":"id",
+                        "flow": "xtls-rprx-vision"
+                    }
+                ],
+                "decryption": "none",
+                "fallbacks": [
+                    {
+                        "dest": 1310,
+                        "xver": 1
+                    },
+                    {
+                        "path": "/path",
+                        "dest": 1234,
+                        "xver": 1
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "tls",
+                "tlsSettings": {
+                    "rejectUnknownSni": true,
+                    "alpn": ["http/1.1"],
+                    "minVersion": "1.2",
+                    "certificates": [
+                        {
+                            "ocspStapling": 3600,
+                            "certificateFile": "/fullchain.pem",
+                            "keyFile": "/privkey.pem"
+
+                        }
+                    ]
+                }
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            }
+        },
+        {
+            "tag":"inbound-trojan",
+            "port": 1310,
+            "listen": "127.0.0.1",
+            "protocol": "trojan",
+            "settings": {
+                "clients": [
+                    {
+                        "password": "password",
+                        "level": 0
+                    }
+                ],
+                "fallbacks": [
+                    {
+                        "dest": 8001,
+                        "xver": 1
+                    },
+                    {
+                        "alpn": "h2",
+                        "dest": 8002,
+                        "xver": 1
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "none",
+                "tcpSettings": {
+                    "acceptProxyProtocol": true
+                }
+            }
+        },
+        {
+            "tag":"inbound-vless-ws",
+            "port": 1234,
+            "listen": "127.0.0.1",
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "id",
+                        "level": 0,
+                        "email": "email"
+                    }
+                ],
+                "decryption": "none"
+            },
+            "streamSettings": {
+                "network": "ws",
+                "security": "none",
+                "wsSettings": {
+                    "acceptProxyProtocol": true,
+                    "path": "/path"
+                }
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "tag": "direct",
+            "protocol": "freedom"
+        },
+        {
+            "tag": "block",
+            "protocol": "blackhole"
+        },
+        {
+            "tag": "wireguard-warp",
+            "protocol": "wireguard",
+            "settings": {
+                "kernelMode": false,
+                "secretKey": "secretKey",
+                "address": ["address1", "address2"],
+                "peers": [
+                    {
+                        "publicKey": "publicKey",
+                        "endpoint": "endpoint"
+                    }
+                ],
+                "reserved":[0, 0, 0]
+            }
+        }
+    ],
+    "policy": {
+        "levels": {
+            "0": {
+                "handshake": 3,
+                "connIdle": 280
+            }
+        }
+    },
+    "routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "type": "field",
+                "inboundTag": ["inbound-vless-ws"],
+                "outboundTag": "wireguard-warp"
+            },
+            {
+                "type": "field",
+                "domain": [
+                    "geosite:geolocation-cn"
+                ],
+                "inboundTag": ["inbound-vless","inbound-trojan","inbound-vless-ws"],
+                "outboundTag": "block"
+            },
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:cn"
+                ],
+                "inboundTag": ["inbound-vless","inbound-trojan","inbound-vless-ws"],
+                "outboundTag": "block"
+            },
+            {
+                "type": "field",
+                "inboundTag": ["inbound-vless","inbound-trojan","inbound-vless-ws"],
+                "outboundTag": "direct"
+            }
+        ]
+    }
+}

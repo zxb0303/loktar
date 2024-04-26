@@ -30,6 +30,8 @@ public class JacksonTest {
         //objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         //过滤null属性
         //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        // 启用美化输出
+        //objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         // 详解
         // https://developer.aliyun.com/article/862151
 
