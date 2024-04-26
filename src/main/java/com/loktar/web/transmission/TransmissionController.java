@@ -28,18 +28,18 @@ public class TransmissionController {
         transmissionUtil.addTorrent(url,downloadDir,paused);
     }
 
-    @GetMapping("/testStart.do")
+    @GetMapping("/start.do")
     public void testStart() {
         Integer[] ids= new Integer[]{2919};
         transmissionUtil.startTorrents(ids);
     }
 
-    @GetMapping("/testRemoveTorrents.do")
+    @GetMapping("/removeTorrents.do")
     public void testRemoveTorrents() {
         transmissionUtil.removeTorrents(new Integer[]{2486},true);
     }
 
-    @GetMapping("/testGetFreeSpaceByPath.do")
+    @GetMapping("/getFreeSpaceByPath.do")
     public void testGetFreeSpaceByPath() {
         System.out.println(transmissionUtil.getFreeSpaceByPath(lokTarConfig.getTransmission().getTempDownloadDir()).toString());
     }

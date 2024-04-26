@@ -24,10 +24,10 @@ public class AzureController {
         System.out.println(azureVoiceUtil.wavToText("F:/voice/", "20240402134417.wav"));
     }
 
-    @GetMapping("/test.do")
+    @GetMapping("/analyze.do")
     public void test(){
         String jpgfilepath = "F:\\newhouse\\conversion\\acd7ec7e03e64da1a0427a5f97de5b55\\2019000073\\66146\\0013.jpg";
         AnalyzeResult analyzeLayoutResult = AzureDocIntelligenceUtil.getAnalyze(LokTarConstant.AZURE_DOCINTELLIGENCE_MODEL_ID,jpgfilepath);
-        System.out.println(1);
+        System.out.println(analyzeLayoutResult.toString());
     }
 }

@@ -1,13 +1,14 @@
 package com.loktar.web.test;
 
 import com.loktar.conf.LokTarConfig;
-import com.loktar.conf.LokTarConstant;
+import com.loktar.domain.github.GithubRepository;
+import com.loktar.mapper.github.GithubRepositoryMapper;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("test")
@@ -17,17 +18,18 @@ public class TestController {
 
     private final Environment environment;
 
-    public TestController(LokTarConfig lokTarConfig, Environment environment) {
+    private final GithubRepositoryMapper githubRepositoryMapper;
+
+    public TestController(LokTarConfig lokTarConfig, Environment environment, GithubRepositoryMapper githubRepositoryMapper) {
 
         this.lokTarConfig = lokTarConfig;
         this.environment = environment;
+        this.githubRepositoryMapper = githubRepositoryMapper;
     }
 
     @GetMapping("/test.do")
-    public void test() {
-        System.out.println(lokTarConfig.getTransmission().getUrl());
-        boolean ss = Arrays.asList(environment.getActiveProfiles()).contains(LokTarConstant.ENV_PRO);
-        System.out.println(ss);
+    public List<GithubRepository> test() {
+        return githubRepositoryMapper.selectAll();
     }
 
 }

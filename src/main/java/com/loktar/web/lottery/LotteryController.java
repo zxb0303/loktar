@@ -31,12 +31,6 @@ public class LotteryController {
         this.lokTarConfig = lokTarConfig;
     }
 
-//    private final YHLotteryService yHLotteryService;
-//
-//    @RequestMapping("/updateYHLotteryData.do")
-//    public void updateYHLotteryData() {
-//        yHLotteryService.updateYHLotteryData();
-//    }
 
     @GetMapping("/updateHZLotteryData.do")
     public void updateHZLotteryData() {
@@ -51,7 +45,7 @@ public class LotteryController {
         hZLotteryServiceV2.updateLotteryPeoples(lotteryHouses);
     }
 
-    @GetMapping("/test1.do")
+    @GetMapping("/testTablePdf.do")
     public void test1() {
         String pdfUrl = "http://down.hz-notary.com:10006/pdf/2022/1126/221126082946440_37750059084723307.pdf";
         List<HZLotteryPeopleDTOV2> hZLotteryPeopleDTOV2s = PDFUtilForLotteryHouse.getTableContentFromPDFUrl(pdfUrl, lokTarConfig.getPath().getPdf());
@@ -65,7 +59,7 @@ public class LotteryController {
         }
     }
 
-    @GetMapping("/test2.do")
+    @GetMapping("/testTextPdf.do")
     public void test2() {
         String pdfUrl = "http://down.hz-notary.com:10006/pdf/2022/1127/221127095410081_37841523207888202.pdf";
         Map<String, Integer> map = PDFUtilForLotteryHouse.getTextContentFromPDFUrl(pdfUrl, lokTarConfig.getPath().getPdf());
