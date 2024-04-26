@@ -86,7 +86,8 @@ table.tableName=tr_torrent_tracker
 ```
 * 1.4.4 执行maven->mybatis-generator生成
 * 1.4.5 在application.yml添加mybatis配置驼峰转大小写以及mapper位置
-* 1.4.6 Mapper上不添加@Mapper注解，在Springboot启动类上面添加@MapperScan("com.loktar.mapper”)
+* 1.4.6 Mapper上不添加单独每个Mapper添加@Mapper注解，直接创建config配置类</br>
+参考[MybatisConfig.java](src%2Fmain%2Fjava%2Fcom%2Floktar%2Fconf%2FMybatisConfig.java)
 * 1.4.7 使用@MapperScan时，在注入mapper的时候，idea会提示Could not autowire. No beans of ‘EmployeeMapper’ type found.需要在 Intellij Idea中设置一下：Settings - Editor - Inspections - Spring - Spring Core - Code – Incorrect autowiring in spring bean components
 ### 1.5 创建controller测试maven全流程，springboot启动
 * 1.5.1 mvn test不通过<br />
