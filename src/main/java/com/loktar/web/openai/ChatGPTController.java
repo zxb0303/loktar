@@ -57,7 +57,7 @@ public class ChatGPTController {
     }
 
     @SneakyThrows
-    @GetMapping("/testVoiceAndSend.do")
+    @GetMapping("/voiceAndSend.do")
     public void testVoiceAndSend() {
         String wavFileName = UUIDUtil.randomUUID() + LokTarConstant.VOICE_SUFFIX_WAV;
         azureVoiceUtil.textToWav(lokTarConfig.getPath().getVoice(), wavFileName, "你叫什么名字");
