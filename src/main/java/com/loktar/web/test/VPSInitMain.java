@@ -138,7 +138,7 @@ public class VPSInitMain {
                 HOST,
                 xrayConfig.getInbounds().get(2).getStreamSettings().getWsSettings().getPath(),
                 HOST
-                );
+        );
         System.out.println(clashStr);
     }
 
@@ -242,11 +242,15 @@ public class VPSInitMain {
         while (true) {
             while (in.available() > 0) {
                 int i = in.read(tmp, 0, 1024);
-                if (i < 0) break;
+                if (i < 0) {
+                    break;
+                }
                 outputBuffer.append(new String(tmp, 0, i));
             }
             if (channel.isClosed()) {
-                if (in.available() > 0) continue;
+                if (in.available() > 0) {
+                    continue;
+                }
                 break;
             }
             Thread.sleep(500);
@@ -314,11 +318,15 @@ public class VPSInitMain {
         while (true) {
             while (in.available() > 0) {
                 int i = in.read(tmp, 0, 1024);
-                if (i < 0) break;
+                if (i < 0) {
+                    break;
+                }
                 System.out.print(new String(tmp, 0, i));
             }
             if (channel.isClosed()) {
-                if (in.available() > 0) continue;
+                if (in.available() > 0) {
+                    continue;
+                }
                 break;
             }
             Thread.sleep(500);
