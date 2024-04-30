@@ -39,6 +39,7 @@ public class LokTarConstant {
     public final static String NOTICE_JELLYFIN = "Jellyfin常规通知";
     public final static String NOTICE_JELLYFIN_START = "Jellyfin开始播放通知";
     public final static String NOTICE_JELLYFIN_STOP = "Jellyfin停止播放通知";
+    public final static String NOTICE_PATENT_PROCESSIONG = "Patent数据处理通知";
 
     public final static String WX_RECEICE_MSGTYPE = "MsgType";
 
