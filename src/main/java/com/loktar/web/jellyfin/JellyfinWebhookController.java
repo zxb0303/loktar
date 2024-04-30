@@ -46,7 +46,7 @@ public class JellyfinWebhookController {
                 contentBuilder.append(LokTarConstant.NOTICE_JELLYFIN).append(System.lineSeparator())
                         .append(System.lineSeparator())
                         .append(notification.getMessage());
-                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), contentBuilder.toString()));
+                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent004Id(), contentBuilder.toString()));
                 break;
             case "PlaybackStart":
             case "PlaybackStop":
@@ -56,7 +56,7 @@ public class JellyfinWebhookController {
                         .append(System.lineSeparator())
                         .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                 if (!notification.getNotificationUsername().equals(LokTarConstant.JELLYFIN_NOT_NOTIFY)) {
-                    qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), contentBuilder.toString()));
+                    qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent004Id(), contentBuilder.toString()));
                 }
                 handleTransmissionSpeed(notification, session);
                 break;
@@ -119,7 +119,7 @@ public class JellyfinWebhookController {
                 return;
             }
             if (!notification.getNotificationUsername().equals(LokTarConstant.JELLYFIN_NOT_NOTIFY)) {
-                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), content));
+                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent004Id(), content));
             }
         }
     }
