@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.patent.PatentApplyDetailMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.patent.PatentApplyDetail">
+    <id column="apply_detail_id" jdbcType="VARCHAR" property="applyDetailId" />
+    <result column="patent_id" jdbcType="VARCHAR" property="patentId" />
+    <result column="apply_id" jdbcType="VARCHAR" property="applyId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from patent_apply_detail
+    where apply_detail_id = #{applyDetailId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.patent.PatentApplyDetail">
+    insert into patent_apply_detail (apply_detail_id, patent_id, apply_id, 
+      create_time, update_time)
+    values (#{applyDetailId,jdbcType=VARCHAR}, #{patentId,jdbcType=VARCHAR}, #{applyId,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.patent.PatentApplyDetail">
+    update patent_apply_detail
+    set patent_id = #{patentId,jdbcType=VARCHAR},
+      apply_id = #{applyId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where apply_detail_id = #{applyDetailId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select apply_detail_id, patent_id, apply_id, create_time, update_time
+    from patent_apply_detail
+    where apply_detail_id = #{applyDetailId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select apply_detail_id, patent_id, apply_id, create_time, update_time
+    from patent_apply_detail
+  </select>
+</mapper>

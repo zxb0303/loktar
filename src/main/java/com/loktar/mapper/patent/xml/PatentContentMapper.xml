@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.patent.PatentContentMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.patent.PatentContent">
+    <id column="patent_id" jdbcType="VARCHAR" property="patentId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from patent_content
+    where patent_id = #{patentId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.patent.PatentContent">
+    insert into patent_content (patent_id, `status`, create_time, 
+      update_time, content)
+    values (#{patentId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.patent.PatentContent">
+    update patent_content
+    set `status` = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where patent_id = #{patentId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select patent_id, `status`, create_time, update_time, content
+    from patent_content
+    where patent_id = #{patentId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select patent_id, `status`, create_time, update_time, content
+    from patent_content
+  </select>
+  <select id="selectByStatus" resultMap="BaseResultMap">
+    select patent_id, `status`, create_time, update_time, content
+    from patent_content where status = #{status,jdbcType=INTEGER}
+  </select>
+  <insert id="insertBatch">
+    insert into patent_content (patent_id, `status`, create_time,
+                                update_time, content)
+    values
+    <foreach collection="list" separator="," item="item">
+        (#{item.patentId,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=TIMESTAMP}, #{item.content,jdbcType=LONGVARCHAR})
+    </foreach>
+  </insert>
+
+
+</mapper>
