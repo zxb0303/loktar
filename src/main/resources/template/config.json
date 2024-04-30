@@ -148,6 +148,14 @@
         "rules": [
             {
                 "type": "field",
+                "inboundTag": ["inbound-trojan"],
+                "domain": [
+                    "qyapi.weixin.qq.com"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "type": "field",
                 "inboundTag": ["inbound-vless-ws"],
                 "outboundTag": "wireguard-warp"
             },
