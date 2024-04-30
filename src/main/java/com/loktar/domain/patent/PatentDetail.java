@@ -3,12 +3,8 @@ package com.loktar.domain.patent;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Patent implements Serializable {
+public class PatentDetail implements Serializable {
     private String patentId;
-
-    private Integer status;
-
-    private String content;
 
     private String name;
 
@@ -30,6 +26,8 @@ public class Patent implements Serializable {
 
     private String mainCategoryNum;
 
+    private Integer status;
+
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
@@ -42,22 +40,6 @@ public class Patent implements Serializable {
 
     public void setPatentId(String patentId) {
         this.patentId = patentId == null ? null : patentId.trim();
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content == null ? null : content.trim();
     }
 
     public String getName() {
@@ -140,6 +122,14 @@ public class Patent implements Serializable {
         this.mainCategoryNum = mainCategoryNum == null ? null : mainCategoryNum.trim();
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     public LocalDateTime getCreateTime() {
         return createTime;
     }
@@ -163,8 +153,6 @@ public class Patent implements Serializable {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", patentId=").append(patentId);
-        sb.append(", status=").append(status);
-        sb.append(", content=").append(content);
         sb.append(", name=").append(name);
         sb.append(", applyName=").append(applyName);
         sb.append(", type=").append(type);
@@ -175,6 +163,7 @@ public class Patent implements Serializable {
         sb.append(", caseStatus=").append(caseStatus);
         sb.append(", authNoticeDate=").append(authNoticeDate);
         sb.append(", mainCategoryNum=").append(mainCategoryNum);
+        sb.append(", status=").append(status);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
         sb.append(", serialVersionUID=").append(serialVersionUID);
