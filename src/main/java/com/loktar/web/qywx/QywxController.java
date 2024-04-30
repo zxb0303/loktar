@@ -4,7 +4,6 @@ import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.wx.UploadMediaRsp;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
-import com.loktar.dto.wx.agentmsg.AgentMsgVoice;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
@@ -33,10 +32,8 @@ public class QywxController {
         String content = LokTarConstant.NOTICE_TITLE_GITHUB + "\n\n"
                 + "试试"
                 + "\n\n" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATEMINUTE);
-        qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent003Id(), content));
-
-
-        qywxApi.sendVoiceMsg(new AgentMsgVoice(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent003Id(), "3zUEeZmUuc-Eno-3qO9bDgClOpEoEL2XvqTyGpPpOqmrTswb-zG3rzsUOK8IKC5by"));
+        qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent004Id(), content));
+//        qywxApi.sendVoiceMsg(new AgentMsgVoice(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent003Id(), "3zUEeZmUuc-Eno-3qO9bDgClOpEoEL2XvqTyGpPpOqmrTswb-zG3rzsUOK8IKC5by"));
     }
 
     @SneakyThrows

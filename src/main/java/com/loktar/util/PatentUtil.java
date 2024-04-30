@@ -1,26 +1,27 @@
 package com.loktar.util;
 
-import com.loktar.domain.patent.Patent;
+import com.loktar.domain.patent.PatentDetail;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PatentUtil {
 
-    public static Patent dealPatent(Patent patent) {
-        String text = patent.getContent();
-        //patent.setPatentId( getDetail("申请号/专利号：", text));
-        patent.setName(getDetail("发明名称：", text));
-        patent.setApplyName(getDetail("申请人：", text));
-        patent.setType(getDetail("专利类型：", text));
-        patent.setApplyDate(getDetail("申请日：", text));
-        patent.setPubNoticeNum(getDetail("发明专利申请公布号：", text));
-        patent.setAuthNoticeNum(getDetail("授权公告号：", text));
-        patent.setLegalStatus(getDetail("法律状态：", text));
-        patent.setCaseStatus(getDetail("案件状态：", text));
-        patent.setAuthNoticeDate(getDetail("授权公告日：", text));
-        patent.setMainCategoryNum(getDetail("主分类号：", text));
-        return patent;
+    public static PatentDetail dealPatentContent(String text) {
+        PatentDetail patentDetail = new PatentDetail();
+        //patentDetail.setPatentId( getDetail("申请号/专利号：", text));
+        patentDetail.setName(getDetail("发明名称：", text));
+        patentDetail.setApplyName(getDetail("申请人：", text));
+        patentDetail.setType(getDetail("专利类型：", text));
+        patentDetail.setApplyDate(getDetail("申请日：", text));
+        patentDetail.setPubNoticeNum(getDetail("发明专利申请公布号：", text));
+        patentDetail.setAuthNoticeNum(getDetail("授权公告号：", text));
+        patentDetail.setLegalStatus(getDetail("法律状态：", text));
+        patentDetail.setCaseStatus(getDetail("案件状态：", text));
+        patentDetail.setAuthNoticeDate(getDetail("授权公告日：", text));
+        patentDetail.setMainCategoryNum(getDetail("主分类号：", text));
+        patentDetail.setStatus(0);
+        return patentDetail;
     }
 
     private static String getDetail(String prefix, String text) {

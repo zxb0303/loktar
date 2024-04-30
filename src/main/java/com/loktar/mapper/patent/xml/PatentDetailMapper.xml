@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.patent.PatentDetailMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.patent.PatentDetail">
+    <id column="patent_id" jdbcType="VARCHAR" property="patentId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="apply_name" jdbcType="VARCHAR" property="applyName" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="apply_date" jdbcType="VARCHAR" property="applyDate" />
+    <result column="pub_notice_num" jdbcType="VARCHAR" property="pubNoticeNum" />
+    <result column="auth_notice_num" jdbcType="VARCHAR" property="authNoticeNum" />
+    <result column="legal_status" jdbcType="VARCHAR" property="legalStatus" />
+    <result column="case_status" jdbcType="VARCHAR" property="caseStatus" />
+    <result column="auth_notice_date" jdbcType="VARCHAR" property="authNoticeDate" />
+    <result column="main_category_num" jdbcType="VARCHAR" property="mainCategoryNum" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from patent_detail
+    where patent_id = #{patentId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.patent.PatentDetail">
+    insert into patent_detail (patent_id, `name`, apply_name, 
+      `type`, apply_date, pub_notice_num, 
+      auth_notice_num, legal_status, case_status, 
+      auth_notice_date, main_category_num, `status`, 
+      create_time, update_time)
+    values (#{patentId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{applyName,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{applyDate,jdbcType=VARCHAR}, #{pubNoticeNum,jdbcType=VARCHAR}, 
+      #{authNoticeNum,jdbcType=VARCHAR}, #{legalStatus,jdbcType=VARCHAR}, #{caseStatus,jdbcType=VARCHAR}, 
+      #{authNoticeDate,jdbcType=VARCHAR}, #{mainCategoryNum,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.patent.PatentDetail">
+    update patent_detail
+    set `name` = #{name,jdbcType=VARCHAR},
+      apply_name = #{applyName,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=VARCHAR},
+      apply_date = #{applyDate,jdbcType=VARCHAR},
+      pub_notice_num = #{pubNoticeNum,jdbcType=VARCHAR},
+      auth_notice_num = #{authNoticeNum,jdbcType=VARCHAR},
+      legal_status = #{legalStatus,jdbcType=VARCHAR},
+      case_status = #{caseStatus,jdbcType=VARCHAR},
+      auth_notice_date = #{authNoticeDate,jdbcType=VARCHAR},
+      main_category_num = #{mainCategoryNum,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where patent_id = #{patentId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select patent_id, `name`, apply_name, `type`, apply_date, pub_notice_num, auth_notice_num, 
+    legal_status, case_status, auth_notice_date, main_category_num, `status`, create_time, 
+    update_time
+    from patent_detail
+    where patent_id = #{patentId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select patent_id, `name`, apply_name, `type`, apply_date, pub_notice_num, auth_notice_num, 
+    legal_status, case_status, auth_notice_date, main_category_num, `status`, create_time, 
+    update_time
+    from patent_detail
+  </select>
+  <select id="selectByStatus" resultMap="BaseResultMap">
+    select patent_id, `name`, apply_name, `type`, apply_date, pub_notice_num, auth_notice_num,
+           legal_status, case_status, auth_notice_date, main_category_num, `status`, create_time,
+           update_time
+    from patent_detail
+    where status = #{status,jdbcType=INTEGER}
+  </select>
+</mapper>
