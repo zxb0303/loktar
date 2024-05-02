@@ -51,7 +51,7 @@ public class PatentTask {
                     + System.lineSeparator()
                     + "定时器时间太短处理不过来了" + System.lineSeparator()
                     + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
-            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent003Id(), content));
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), content));
             return;
         }
         isProcessing = true;
