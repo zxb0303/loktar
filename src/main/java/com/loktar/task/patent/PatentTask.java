@@ -67,7 +67,11 @@ public class PatentTask {
             patentDetail.setPatentId(patentContent.getPatentId());
             patentContent.setStatus(2);
             patentContentMapper.updateByPrimaryKey(patentContent);
-            patentDetailMapper.insert(patentDetail);
+            if(ObjectUtils.isEmpty(patentDetailMapper.selectByPrimaryKey(patentContent.getPatentId()))){
+                patentDetailMapper.insert(patentDetail);
+            }else{
+                patentDetailMapper.updateByPrimaryKey(patentDetail);
+            }
         }
     }
 
