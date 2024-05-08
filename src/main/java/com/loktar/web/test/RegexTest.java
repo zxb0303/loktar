@@ -15,11 +15,11 @@ public class RegexTest {
 //        } else {
 //            System.out.println("No match found");
 //        }
-        String str = "Perfect.Singer.2024.S01E03.WEB-DL.1080p.H264.AAC-CMCTV";
-        Pattern r = Pattern.compile("(?!.*\\[FROZEN])(?!.*720).*CMCT$|(?!.*\\[FROZEN])(?=.*(?:2023|2024)).*CMCTV$");
+        String str = "安徽鲁研种业有限公司 CN215774367U";
+        Pattern r = Pattern.compile(".*U$");
         Matcher m = r.matcher(str);
         if (m.matches()) {
-            System.out.println(1);
+            System.out.println(str);
         }else{
             System.out.println(0);
         }

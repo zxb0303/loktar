@@ -52,7 +52,7 @@ public class VPSInitMain {
     //TODO 修改后的登录端口
     private final static int PORT_CUSTOM = 28462;
     //TODO 保存凭证等信息的本地主路径
-    private final static String LOCAL_BASE_FOLD_PATH = "F:/vps";
+    private final static String LOCAL_BASE_FOLD_PATH = "F:/loktar/vps";
 
     private final static String LOCAL_SSHKEY_FILEPATH = LOCAL_BASE_FOLD_PATH + "/" + HOST + "/id_ed25519";
     private final static String NGINX_REDIRECT_DEFAULT_URL = "https://www.baidu.com";

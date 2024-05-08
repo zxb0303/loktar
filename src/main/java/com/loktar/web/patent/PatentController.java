@@ -20,13 +20,14 @@ public class PatentController {
     private final PatentApplyDetailMapper patentApplyDetailMapper;
     private final PatentContentMapper patentContentMapper;
 
-
     public PatentController(PatentDetailMapper patentDetailMapper, PatentApplyMapper patentApplyMapper, PatentApplyDetailMapper patentApplyDetailMapper, PatentContentMapper patentContentMapper) {
         this.patentDetailMapper = patentDetailMapper;
         this.patentApplyMapper = patentApplyMapper;
         this.patentApplyDetailMapper = patentApplyDetailMapper;
         this.patentContentMapper = patentContentMapper;
     }
+
+
 
     @GetMapping("/gen.do")
     public void gen(int year, int type, int start, int count) {
@@ -41,8 +42,6 @@ public class PatentController {
         }
         patentContentMapper.insertBatch(patentContents);
     }
-
-
 
     @GetMapping("/dealContent.do")
     public void dealContent() {
@@ -90,5 +89,6 @@ public class PatentController {
         }
         System.out.println("dealhistory");
     }
+
 
 }

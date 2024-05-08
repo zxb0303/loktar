@@ -21,6 +21,8 @@ public class SecurityConfig {
                                 "/qywx/callback/receive.do",
                                 "/synology/sendMsg.do",
                                 "/github/notifyMsg.do",
+                                "/patentpdf/get.do",
+                                "/patentpdf/set.do",
                                 "/test/**"
                         ).permitAll()
                         .anyRequest().authenticated())
