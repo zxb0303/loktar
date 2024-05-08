@@ -11,19 +11,19 @@ import com.loktar.mapper.patent.PatentApplyDetailMapper;
 import com.loktar.mapper.patent.PatentApplyMapper;
 import com.loktar.mapper.patent.PatentContentMapper;
 import com.loktar.mapper.patent.PatentDetailMapper;
-import com.loktar.util.*;
+import com.loktar.util.DateTimeUtil;
+import com.loktar.util.PatentUtil;
+import com.loktar.util.UUIDUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
-@EnableScheduling
+//@EnableScheduling
 @Profile(LokTarConstant.ENV_PRO)
 public class PatentTask {
     private final PatentDetailMapper patentDetailMapper;
@@ -44,7 +44,7 @@ public class PatentTask {
     }
 
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    //@Scheduled(cron = "0 */5 * * * ?")
     public void dealPatent() {
         if (isProcessing) {
             String content = LokTarConstant.NOTICE_PATENT_PROCESSIONG + System.lineSeparator()
