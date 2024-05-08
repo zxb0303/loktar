@@ -8,6 +8,8 @@ public class PatentApply implements Serializable {
 
     private String applyName;
 
+    private Integer patentCount;
+
     private Integer status;
 
     private LocalDateTime createTime;
@@ -30,6 +32,14 @@ public class PatentApply implements Serializable {
 
     public void setApplyName(String applyName) {
         this.applyName = applyName == null ? null : applyName.trim();
+    }
+
+    public Integer getPatentCount() {
+        return patentCount;
+    }
+
+    public void setPatentCount(Integer patentCount) {
+        this.patentCount = patentCount;
     }
 
     public Integer getStatus() {
@@ -64,6 +74,7 @@ public class PatentApply implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", applyId=").append(applyId);
         sb.append(", applyName=").append(applyName);
+        sb.append(", patentCount=").append(patentCount);
         sb.append(", status=").append(status);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
