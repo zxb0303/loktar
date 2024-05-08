@@ -26,7 +26,7 @@ public class PDFMain {
         //  -a
         //    --a1.jpg
         //    --a2.jpg
-        String pdfFolderPath = "F:/pdf/";
+        String pdfFolderPath = "F:/loktar/pdf/";
         picTopdf(pdfFolderPath);
 
         //pdf拆分成图片
@@ -34,7 +34,7 @@ public class PDFMain {
         //-pdf
         //  -a.pdf
         //  -b.pdf
-       //String pdfFilePath = "F:/pdf/";
+       //String pdfFilePath = "F:/loktar/pdf/";
        //pdfTojpg(pdfFilePath);
 
         //pdf合并
@@ -43,7 +43,7 @@ public class PDFMain {
         //  -a
         //    --a1.pdf
         //    --a2.pdf
-        //String  pdfFolderPath = "F:/pdf/";
+        //String  pdfFolderPath = "F:/loktar/pdf/";
         //mergepdfs(pdfFolderPath);
 
     }
