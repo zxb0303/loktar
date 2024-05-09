@@ -35,4 +35,9 @@
     select apply_detail_id, patent_id, apply_id, create_time, update_time
     from patent_apply_detail
   </select>
+    <select id="selectByPatentIdAndApplyId" resultMap="BaseResultMap">
+      select apply_detail_id, patent_id, apply_id, create_time, update_time
+      from patent_apply_detail
+      where patent_id = #{param1,jdbcType=VARCHAR} and apply_id = #{param2,jdbcType=VARCHAR}
+    </select>
 </mapper>
