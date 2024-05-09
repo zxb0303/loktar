@@ -1,14 +1,13 @@
 package com.loktar.web.patent;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.loktar.domain.patent.PatentDetail;
 import com.loktar.domain.patent.PatentPdf;
 import com.loktar.domain.patent.PatentPdfApply;
 import com.loktar.mapper.patent.PatentPdfApplyMapper;
 import com.loktar.mapper.patent.PatentPdfMapper;
+import com.loktar.service.patent.PatentService;
 import com.loktar.util.PatentPdfUtil;
 import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,11 +28,14 @@ public class PatentPdfController {
     private static String type = "实用新型";
     private final PatentPdfMapper patentPdfMapper;
     private final PatentPdfApplyMapper patentPdfApplyMapper;
+    private final PatentService patentService;
+
     private ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE).registerModule(new JavaTimeModule());
 
-    public PatentPdfController(PatentPdfMapper patentPdfMapper, PatentPdfApplyMapper patentPdfApplyMapper) {
+    public PatentPdfController(PatentPdfMapper patentPdfMapper, PatentPdfApplyMapper patentPdfApplyMapper, PatentService patentService) {
         this.patentPdfMapper = patentPdfMapper;
         this.patentPdfApplyMapper = patentPdfApplyMapper;
+        this.patentService = patentService;
         objectMapper.registerModule(new JavaTimeModule());
     }
 
@@ -53,28 +56,15 @@ public class PatentPdfController {
     public String get() {
         int status = 0;
         PatentPdfApply patentPdfApply = patentPdfApplyMapper.selectByStatus(status);
-        String str = objectMapper.writeValueAsString(patentPdfApply);
-        System.out.println(str);
-        return str;
+        return objectMapper.writeValueAsString(patentPdfApply);
     }
 
     @SneakyThrows
     @PostMapping("/set.do")
     public void set(String applyId, String detail) {
-        List<PatentDetail> patentDetails = objectMapper.readValue(detail, new TypeReference<>() {
-        });
-        System.out.println(detail);
-        System.out.println(applyId);
-        detail = detail.replace("申请人：", "")
-                .replace("专利类型：", "")
-                .replace("申请日：", "")
-                .replace("发明专利申请公布号：", "")
-                .replace("授权公告号：", "")
-                .replace("法律状态：", "")
-                .replace("案件状态：", "")
-                .replace("授权公告日：", "")
-                .replace("主分类号：", "");
-
+        System.out.println("start:"+ LocalDateTime.now());
+        patentService.deal(applyId,detail);
+        System.out.println("end:"+ LocalDateTime.now());
 
     }
 
