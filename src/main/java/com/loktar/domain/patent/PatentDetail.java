@@ -8,6 +8,8 @@ public class PatentDetail implements Serializable {
 
     private String name;
 
+    private String applyId;
+
     private String applyName;
 
     private String type;
@@ -48,6 +50,14 @@ public class PatentDetail implements Serializable {
 
     public void setName(String name) {
         this.name = name == null ? null : name.trim();
+    }
+
+    public String getApplyId() {
+        return applyId;
+    }
+
+    public void setApplyId(String applyId) {
+        this.applyId = applyId == null ? null : applyId.trim();
     }
 
     public String getApplyName() {
@@ -154,6 +164,7 @@ public class PatentDetail implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", patentId=").append(patentId);
         sb.append(", name=").append(name);
+        sb.append(", applyId=").append(applyId);
         sb.append(", applyName=").append(applyName);
         sb.append(", type=").append(type);
         sb.append(", applyDate=").append(applyDate);

@@ -61,10 +61,10 @@ public class PatentPdfController {
 
     @SneakyThrows
     @PostMapping("/set.do")
-    public void set(String applyId, String detail) {
-        System.out.println("start:"+ LocalDateTime.now());
-        patentService.deal(applyId,detail);
-        System.out.println("end:"+ LocalDateTime.now());
+    public void set(String applyId, String patentCount, String detail) {
+        System.out.println("start:" + LocalDateTime.now());
+        patentService.deal(applyId, Integer.parseInt(patentCount),detail);
+        System.out.println("end:" + LocalDateTime.now());
 
     }
 
