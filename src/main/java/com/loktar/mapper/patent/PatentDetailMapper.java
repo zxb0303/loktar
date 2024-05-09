@@ -17,4 +17,7 @@ public interface PatentDetailMapper {
 
     List<PatentDetail> selectByStatus(int status);
 
+    void deleteByApplyId(String applyId);
+
+    void insertBatch(List<PatentDetail> patentDetails);
 }
