@@ -13,4 +13,6 @@ public interface PatentApplyDetailMapper {
     List<PatentApplyDetail> selectAll();
 
     int updateByPrimaryKey(PatentApplyDetail row);
+
+    PatentApplyDetail selectByPatentIdAndApplyId(String patentId, String applyId);
 }
