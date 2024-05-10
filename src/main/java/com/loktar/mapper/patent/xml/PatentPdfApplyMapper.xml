@@ -39,7 +39,7 @@
     select apply_id, apply_name, patent_auth_count_2022, `status`, create_time, update_time
     from patent_pdf_apply
   </select>
-    <select id="selectByStatus" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-      select * from patent_pdf_apply where status = #{status,jdbcType=INTEGER} order by patent_auth_count_2022 desc limit 1;
+    <select id="selectByStatusAndLimit"  resultMap="BaseResultMap">
+      select * from patent_pdf_apply where status = #{param1,jdbcType=INTEGER} order by patent_auth_count_2022 desc limit #{param2,jdbcType=INTEGER};
     </select>
 </mapper>

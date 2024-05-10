@@ -53,17 +53,17 @@ public class PatentPdfController {
 
     @SneakyThrows
     @GetMapping("/get.do")
-    public String get() {
+    public String get(String limit) {
         int status = 0;
-        PatentPdfApply patentPdfApply = patentPdfApplyMapper.selectByStatus(status);
-        return objectMapper.writeValueAsString(patentPdfApply);
+        List<PatentPdfApply> patentPdfApplys = patentPdfApplyMapper.selectByStatusAndLimit(status, Integer.parseInt(limit));
+        return objectMapper.writeValueAsString(patentPdfApplys);
     }
 
     @SneakyThrows
     @PostMapping("/set.do")
     public void set(String applyId, String patentCount, String detail) {
         System.out.println("start:" + LocalDateTime.now());
-        patentService.deal(applyId, Integer.parseInt(patentCount),detail);
+        patentService.deal(applyId, Integer.parseInt(patentCount), detail);
         System.out.println("end:" + LocalDateTime.now());
 
     }
