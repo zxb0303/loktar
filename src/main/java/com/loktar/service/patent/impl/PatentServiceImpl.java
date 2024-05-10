@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -39,6 +40,7 @@ public class PatentServiceImpl implements PatentService {
         System.out.println("detail:" + detail);
         System.out.println("patentCount:" + patentCount);
         System.out.println("applyId:" + applyId);
+        List<PatentDetail> needRemove = new ArrayList<>();
         if (!StringUtils.isEmpty(detail)) {
             detail = detail.replace("申请人：", "")
                     .replace("专利类型：", "")
@@ -54,9 +56,13 @@ public class PatentServiceImpl implements PatentService {
             //处理patentDetail
             patentDetailMapper.deleteByApplyId(applyId);
             for (PatentDetail patentDetail : patentDetails) {
+                if (patentDetail.getApplyName().contains(",")) {
+                    needRemove.add(patentDetail);
+                }
                 patentDetail.setStatus(0);
                 patentDetail.setApplyId(applyId);
             }
+            patentDetails.removeAll(needRemove);
             patentDetailMapper.insertBatch(patentDetails);
         }
         //处理patentPdfApply
@@ -70,12 +76,12 @@ public class PatentServiceImpl implements PatentService {
         PatentApply patentApply = new PatentApply();
         patentApply.setApplyId(applyId);
         patentApply.setApplyName(patentPdfApply.getApplyName());
-        if(!StringUtils.isEmpty(detail)){
+        if (!StringUtils.isEmpty(detail)) {
             patentApply.setStatus(0);
-        }else{
+        } else {
             patentApply.setStatus(-1);
         }
-        patentApply.setPatentCount(patentCount);
+        patentApply.setPatentCount(patentCount - needRemove.size());
         patentApplyMapper.insert(patentApply);
     }
 }
