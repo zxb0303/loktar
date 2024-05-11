@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.patent.TechCompanyMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.patent.TechCompany">
+    <id column="company_id" jdbcType="VARCHAR" property="companyId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="year" jdbcType="INTEGER" property="year" />
+    <result column="index" jdbcType="INTEGER" property="index" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tech_company
+    where company_id = #{companyId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.patent.TechCompany">
+    insert into tech_company (company_id, `name`, `year`, 
+      `index`, create_time, update_time
+      )
+    values (#{companyId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{year,jdbcType=INTEGER}, 
+      #{index,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="com.loktar.domain.patent.TechCompany">
+    update tech_company
+    set `name` = #{name,jdbcType=VARCHAR},
+      `year` = #{year,jdbcType=INTEGER},
+      `index` = #{index,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where company_id = #{companyId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select company_id, `name`, `year`, `index`, create_time, update_time
+    from tech_company
+    where company_id = #{companyId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select company_id, `name`, `year`, `index`, create_time, update_time
+    from tech_company
+  </select>
+  <insert id="insertBatch">
+    insert into tech_company (company_id, `name`, `year`,
+                              `index`, create_time, update_time
+    )
+    values
+    <foreach collection="list" separator="," item="item">
+    (#{item.companyId,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR}, #{item.year,jdbcType=INTEGER},
+            #{item.index,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}
+           )
+    </foreach>
+  </insert>
+
+</mapper>
