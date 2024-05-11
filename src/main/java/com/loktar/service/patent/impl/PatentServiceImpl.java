@@ -12,6 +12,7 @@ import com.loktar.mapper.patent.PatentDetailMapper;
 import com.loktar.mapper.patent.PatentPdfApplyMapper;
 import com.loktar.service.patent.PatentService;
 import lombok.SneakyThrows;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +64,9 @@ public class PatentServiceImpl implements PatentService {
                 patentDetail.setApplyId(applyId);
             }
             patentDetails.removeAll(needRemove);
-            patentDetailMapper.insertBatch(patentDetails);
+            if(!CollectionUtils.isEmpty(patentDetails)){
+                patentDetailMapper.insertBatch(patentDetails);
+            }
         }
         //处理patentPdfApply
         PatentPdfApply patentPdfApply = patentPdfApplyMapper.selectByPrimaryKey(applyId);
