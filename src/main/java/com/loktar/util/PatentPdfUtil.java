@@ -59,7 +59,7 @@ public class PatentPdfUtil {
         PDFTextStripper pdfStripper = new PDFTextStripper();
         int numPages = document.getNumberOfPages();
         boolean end = false;
-        for (int i = 1; i < numPages; i++) {
+        for (int i = 1; i <= numPages; i++) {
             if (end) {
                 break;
             }
