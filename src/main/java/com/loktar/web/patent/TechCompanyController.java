@@ -30,7 +30,7 @@ public class TechCompanyController {
     @GetMapping("/gen.do")
     public void gen(String year) {
         List<TechCompany> techCompanys = new ArrayList<>();
-        String filePath = "F:/loktar/tech/" + year + ".pdf";
+        String filePath = "F:/loktar/tech/ningbo/" + year + ".pdf";
 
         File pdf = new File(filePath);
         PDDocument document = Loader.loadPDF(pdf);
@@ -59,6 +59,7 @@ public class TechCompanyController {
             }
         }
         techCompanyMapper.insertBatch(techCompanys);
+        System.out.println("完成");
     }
 
 
