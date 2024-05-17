@@ -10,7 +10,6 @@ import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -33,7 +32,7 @@ public class CertbotTask {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @Scheduled(cron = "0 30 10 * * MON-FRI")
+//    @Scheduled(cron = "0 30 10 * * MON-FRI")
     public void certbotNotice() {
         Property property = propertyMapper.selectByPrimaryKey("cert");
         String expireDateStr = property.getValue();

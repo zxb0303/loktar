@@ -8,7 +8,13 @@ public class PatentPdfApply implements Serializable {
 
     private String applyName;
 
+    private Integer patentAuthCount2021;
+
     private Integer patentAuthCount2022;
+
+    private Integer patentAuthCount2023;
+
+    private Integer patentAuthCount2024;
 
     private Integer status;
 
@@ -34,12 +40,36 @@ public class PatentPdfApply implements Serializable {
         this.applyName = applyName == null ? null : applyName.trim();
     }
 
+    public Integer getPatentAuthCount2021() {
+        return patentAuthCount2021;
+    }
+
+    public void setPatentAuthCount2021(Integer patentAuthCount2021) {
+        this.patentAuthCount2021 = patentAuthCount2021;
+    }
+
     public Integer getPatentAuthCount2022() {
         return patentAuthCount2022;
     }
 
     public void setPatentAuthCount2022(Integer patentAuthCount2022) {
         this.patentAuthCount2022 = patentAuthCount2022;
+    }
+
+    public Integer getPatentAuthCount2023() {
+        return patentAuthCount2023;
+    }
+
+    public void setPatentAuthCount2023(Integer patentAuthCount2023) {
+        this.patentAuthCount2023 = patentAuthCount2023;
+    }
+
+    public Integer getPatentAuthCount2024() {
+        return patentAuthCount2024;
+    }
+
+    public void setPatentAuthCount2024(Integer patentAuthCount2024) {
+        this.patentAuthCount2024 = patentAuthCount2024;
     }
 
     public Integer getStatus() {
@@ -74,7 +104,10 @@ public class PatentPdfApply implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", applyId=").append(applyId);
         sb.append(", applyName=").append(applyName);
+        sb.append(", patentAuthCount2021=").append(patentAuthCount2021);
         sb.append(", patentAuthCount2022=").append(patentAuthCount2022);
+        sb.append(", patentAuthCount2023=").append(patentAuthCount2023);
+        sb.append(", patentAuthCount2024=").append(patentAuthCount2024);
         sb.append(", status=").append(status);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);

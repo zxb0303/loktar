@@ -122,7 +122,7 @@ public class PDFMain {
                 String foldername = folder.getName();
                 System.out.println(foldername);
                 File[] imageFiles = folder.listFiles();
-                imageFiles = sortFiles(imageFiles);
+                //imageFiles = sortFiles(imageFiles);
                 PDDocument document = new PDDocument();
                 if (imageFiles != null) {
                     for (File imageFile : imageFiles) {

@@ -20,4 +20,8 @@ public interface PatentDetailMapper {
     void deleteByApplyId(String applyId);
 
     void insertBatch(List<PatentDetail> patentDetails);
+
+    List<PatentDetail> selectByApplyId(String applyId);
+
+    List<PatentDetail> selectForQuote(String applyId);
 }

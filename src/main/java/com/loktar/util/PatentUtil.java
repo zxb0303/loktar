@@ -1,11 +1,36 @@
 package com.loktar.util;
 
 import com.loktar.domain.patent.PatentDetail;
+import lombok.SneakyThrows;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 public class PatentUtil {
+
+    private static final String ALGORITHM = "AES/ECB/PKCS5Padding";
+    private static final String KEY = "ABCDEF0123456789";
+    @SneakyThrows
+    public static String encrypt(String data)  {
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        SecretKeySpec secretKey = new SecretKeySpec(KEY.getBytes("UTF-8"), "AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        byte[] encryptedBytes = cipher.doFinal(data.getBytes("UTF-8"));
+        return Base64.getEncoder().encodeToString(encryptedBytes);
+    }
+
+    @SneakyThrows
+    public static String decrypt(String encryptedData)  {
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        SecretKeySpec secretKey = new SecretKeySpec(KEY.getBytes("UTF-8"), "AES");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedData);
+        byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+        return new String(decryptedBytes, "UTF-8");
+    }
 
     public static PatentDetail dealPatentContent(String text) {
         PatentDetail patentDetail = new PatentDetail();
@@ -101,4 +126,7 @@ public class PatentUtil {
         }
         return patentNumbers;
     }
+
+
+
 }
