@@ -11,9 +11,10 @@ public enum EventCommandType {
     SHOW_DOWNLOAD_LIST("查看下载列表"),
     SHOW_CLASH_RSS("查看Clash订阅地址"),
     SHOW_TRANSMISSION_ALT_SPEED("查看TR限速状态"),
-    SHOW_BWG_fLOW("搬瓦工流量查询"),
+    SHOW_BWG_fLOW("查询搬瓦工流量"),
     UDATE_WX_MENU("更新菜单"),
-    ALT_TRANSMISSION_SPEED("TR限速开关");
+    ALT_TRANSMISSION_SPEED("TR限速开关"),
+    SHOW_PATENT_PROCESS("查询专利进度");
 
     private final String name;
 

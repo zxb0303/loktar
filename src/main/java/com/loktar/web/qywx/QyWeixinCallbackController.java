@@ -13,6 +13,7 @@ import com.loktar.dto.transmission.TrResponse;
 import com.loktar.dto.wx.BaseResult;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.dto.wx.receivemsg.*;
+import com.loktar.mapper.patent.PatentPdfApplyMapper;
 import com.loktar.mapper.transmission.TrTorrentMapper;
 import com.loktar.service.common.NoticeServer;
 import com.loktar.util.BandwagonhostUtil;
@@ -50,10 +51,12 @@ public class QyWeixinCallbackController {
 
     private final TrTorrentMapper trTorrentMapper;
 
+    private final PatentPdfApplyMapper patentPdfApplyMapper;
+
     private final static ObjectMapper xmlMapper = new XmlMapper();
 
 
-    public QyWeixinCallbackController(RedisUtil redisUtil, TransmissionUtil transmissionUtil, NoticeServer noticeServer, QywxApi qywxApi, BandwagonhostUtil bandwagonhostUtil, LokTarConfig lokTarConfig, TrTorrentMapper trTorrentMapper) {
+    public QyWeixinCallbackController(RedisUtil redisUtil, TransmissionUtil transmissionUtil, NoticeServer noticeServer, QywxApi qywxApi, BandwagonhostUtil bandwagonhostUtil, LokTarConfig lokTarConfig, TrTorrentMapper trTorrentMapper, PatentPdfApplyMapper patentPdfApplyMapper) {
         this.redisUtil = redisUtil;
         this.transmissionUtil = transmissionUtil;
         this.noticeServer = noticeServer;
@@ -61,6 +64,7 @@ public class QyWeixinCallbackController {
         this.bandwagonhostUtil = bandwagonhostUtil;
         this.lokTarConfig = lokTarConfig;
         this.trTorrentMapper = trTorrentMapper;
+        this.patentPdfApplyMapper = patentPdfApplyMapper;
         xmlMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
     }
 
@@ -165,6 +169,13 @@ public class QyWeixinCallbackController {
                             .append("Bandwidth：").append(vpsInfo.getDataCounter() / 1024 / 1024 / 1024).append("GB").append("/").append(vpsInfo.getPlanMonthlyData() / 1024 / 1024 / 1024).append("GB").append(System.lineSeparator())
                             .append("Reset：").append(DateTimeUtil.getDatetimeStr(LocalDateTime, DateTimeUtil.FORMATTER_DATE)).append(System.lineSeparator());
                 }
+                break;
+            case EventCommandType.SHOW_PATENT_PROCESS:
+                replymsg.append("当前专利进度如下：").append(System.lineSeparator());
+                int count = patentPdfApplyMapper.getCountByStatus(0);
+                replymsg.append(System.lineSeparator())
+                        .append("剩余：").append(count).append(System.lineSeparator())
+                        .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                 break;
             case EventCommandType.UDATE_WX_MENU:
                 BaseResult baseResult = qywxApi.createAgentMenu(receiveEventMsg.getAgentID());
