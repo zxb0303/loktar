@@ -52,4 +52,7 @@
   <select id="selectByStatusAndLimit" resultMap="BaseResultMap">
     select * from patent_pdf_apply where status = #{param1,jdbcType=INTEGER} order by patent_auth_count_2022 desc limit #{param2,jdbcType=INTEGER};
   </select>
+    <select id="getCountByStatus" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+      select count(apply_id) from patent_pdf_apply where status = #{status,jdbcType=INTEGER} ;
+    </select>
 </mapper>
