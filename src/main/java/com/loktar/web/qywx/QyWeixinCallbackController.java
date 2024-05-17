@@ -175,6 +175,7 @@ public class QyWeixinCallbackController {
                 int count = patentPdfApplyMapper.getCountByStatus(0);
                 replymsg.append(System.lineSeparator())
                         .append("剩余：").append(count).append(System.lineSeparator())
+                        .append(System.lineSeparator())
                         .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                 break;
             case EventCommandType.UDATE_WX_MENU:
