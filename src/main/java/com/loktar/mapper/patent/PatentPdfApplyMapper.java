@@ -15,4 +15,6 @@ public interface PatentPdfApplyMapper {
     int updateByPrimaryKey(PatentPdfApply row);
 
     List<PatentPdfApply> selectByStatusAndLimit(int status,int limit);
+
+    int getCountByStatus(int status);
 }
