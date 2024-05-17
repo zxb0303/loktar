@@ -38,8 +38,8 @@ public class PatentServiceImpl implements PatentService {
     @SneakyThrows
     @Transactional
     public void deal(String applyId, int patentCount, String detail) {
-        System.out.println("detail:" + detail);
-        System.out.println("patentCount:" + patentCount);
+        //System.out.println("detail:" + detail);
+        //System.out.println("patentCount:" + patentCount);
         System.out.println("applyId:" + applyId);
         List<PatentDetail> needRemove = new ArrayList<>();
         if (!StringUtils.isEmpty(detail)) {
