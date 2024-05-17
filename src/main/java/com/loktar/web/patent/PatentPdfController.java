@@ -25,7 +25,6 @@ import java.io.File;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,9 +87,7 @@ public class PatentPdfController {
     @SneakyThrows
     @PostMapping("/set.do")
     public void set(String applyId, String patentCount, String detail) {
-        System.out.println("start:" + LocalDateTime.now());
         patentService.deal(applyId, Integer.parseInt(patentCount), detail);
-        System.out.println("end:" + LocalDateTime.now());
 
     }
 
