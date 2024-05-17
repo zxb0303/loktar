@@ -23,6 +23,7 @@ public class SecurityConfig {
                                 "/github/notifyMsg.do",
                                 "/patentpdf/get.do",
                                 "/patentpdf/set.do",
+                                "/patentpdf/getEncodeDetails.do",
                                 "/test/**"
                         ).permitAll()
                         .anyRequest().authenticated())

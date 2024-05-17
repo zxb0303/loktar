@@ -74,7 +74,7 @@
     from patent_detail
     where status = #{status,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByApplyId" parameterType="java.lang.String">
+    <delete id="deleteByApplyId" parameterType="java.lang.String">
     delete from patent_detail
     where apply_id = #{applyId,jdbcType=VARCHAR}
   </delete>
@@ -95,6 +95,21 @@
            )
     </foreach>
   </insert>
+  <select id="selectByApplyId" resultMap="BaseResultMap">
+    select patent_id, `name`, apply_id, apply_name, `type`, apply_date, pub_notice_num, auth_notice_num,
+           legal_status, case_status, auth_notice_date, main_category_num, `status`, create_time,
+           update_time
+    from patent_detail
+    where apply_id = #{applyId,jdbcType=INTEGER}
+
+  </select>
+    <select id="selectForQuote" resultMap="BaseResultMap">
+      select patent_id, `name`, apply_id, apply_name, `type`, apply_date, pub_notice_num, auth_notice_num,
+             legal_status, case_status, auth_notice_date, main_category_num, `status`, create_time,
+             update_time
+      from patent_detail
+      where apply_id = #{applyId,jdbcType=INTEGER} and case_status in ('专利权维持','等年费滞纳金') and apply_date<![CDATA[>=]]>'2020-01-01'
+    </select>
 
 
 </mapper>
