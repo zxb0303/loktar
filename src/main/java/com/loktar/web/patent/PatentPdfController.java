@@ -102,18 +102,23 @@ public class PatentPdfController {
 //        PatentDetail patentDetail1 = patentDetailMapper.selectByPrimaryKey("2022220292799");
 //        //专利权维持 年费已缴
 //        PatentDetail patentDetail2 = patentDetailMapper.selectByPrimaryKey("2022215620558");
-//        //等年费滞纳金 只欠年费+滞纳金
+//        //等年费滞纳金 只欠年费+滞纳金 第1期
 //        PatentDetail patentDetail3 = patentDetailMapper.selectByPrimaryKey("2022207869427");
+//        //等年费滞纳金 只欠年费+滞纳金 第5期
+//        PatentDetail patentDetail4 = patentDetailMapper.selectByPrimaryKey("2021230211632");
+//        //等年费滞纳金 只欠年费+滞纳金 超过第5期
+//        PatentDetail patentDetail5 = patentDetailMapper.selectByPrimaryKey("2020224325275");
 //        //未做费减
-//        PatentDetail patentDetail4 = patentDetailMapper.selectByPrimaryKey("2020226489481");
+//        PatentDetail patentDetail6 = patentDetailMapper.selectByPrimaryKey("2020226489481");
 
 //        //其他状态：未缴年费专利权终止，等恢复；合议组审查；届满终止失效等 不需要出表格
-//        //PatentDetail patentDetail4 = patentDetailMapper.selectByPrimaryKey("2022219221561");
+        //PatentDetail patentDetail4 = patentDetailMapper.selectByPrimaryKey("2022219221561");
 //        patentDetails.add(patentDetail1);
 //        patentDetails.add(patentDetail2);
 //        patentDetails.add(patentDetail3);
 //        patentDetails.add(patentDetail4);
-
+//        patentDetails.add(patentDetail5);
+//        patentDetails.add(patentDetail6);
         List<PatentDetail> patentDetails = patentDetailMapper.selectForQuote(patentApply.getApplyId());
         for (PatentDetail patentDetail : patentDetails) {
             PatentDetailDTO patentDetailDTO = new PatentDetailDTO();

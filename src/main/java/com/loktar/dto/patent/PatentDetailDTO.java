@@ -10,5 +10,6 @@ public class PatentDetailDTO extends PatentDetail {
     private String payStatus;
     private String payDate;
     private String lateFeeAmount;
-    private String feeReduction;
+    private String price;
+    private String remark;
 }
