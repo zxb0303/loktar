@@ -8,6 +8,8 @@ public class PatentPdfApply implements Serializable {
 
     private String applyName;
 
+    private Integer patentAuthCount2020;
+
     private Integer patentAuthCount2021;
 
     private Integer patentAuthCount2022;
@@ -38,6 +40,14 @@ public class PatentPdfApply implements Serializable {
 
     public void setApplyName(String applyName) {
         this.applyName = applyName == null ? null : applyName.trim();
+    }
+
+    public Integer getPatentAuthCount2020() {
+        return patentAuthCount2020;
+    }
+
+    public void setPatentAuthCount2020(Integer patentAuthCount2020) {
+        this.patentAuthCount2020 = patentAuthCount2020;
     }
 
     public Integer getPatentAuthCount2021() {
@@ -104,6 +114,7 @@ public class PatentPdfApply implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", applyId=").append(applyId);
         sb.append(", applyName=").append(applyName);
+        sb.append(", patentAuthCount2020=").append(patentAuthCount2020);
         sb.append(", patentAuthCount2021=").append(patentAuthCount2021);
         sb.append(", patentAuthCount2022=").append(patentAuthCount2022);
         sb.append(", patentAuthCount2023=").append(patentAuthCount2023);

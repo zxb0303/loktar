@@ -31,7 +31,8 @@ import java.util.List;
 @RestController
 @RequestMapping("patentpdf")
 public class PatentPdfController {
-    private static String basepath = "F:/loktar/patent/2022/{0}.pdf";
+    private static String basepath = "F:/loktar/patent/2021/";
+    private static String fileName = "{0}.pdf";
     private static String URL_DETAIL = "https://cpquery.cponline.cnipa.gov.cn/detail/index?zhuanlisqh={0}&anjianbh";
 
     private static String type = "实用新型";
@@ -49,14 +50,13 @@ public class PatentPdfController {
         this.patentService = patentService;
         this.patentDetailMapper = patentDetailMapper;
         this.patentApplyMapper = patentApplyMapper;
-        objectMapper.registerModule(new JavaTimeModule());
     }
 
 
     @SneakyThrows
     @GetMapping("/deal.do")
     public void deal(String filename) {
-        String filepath = MessageFormat.format(basepath, filename);
+        String filepath = MessageFormat.format(basepath + fileName, filename);
         List<PatentPdf> patentPdfs = PatentPdfUtil.dealPatentPdf(filepath, type);
         List<List<PatentPdf>> splitLists = splitList(patentPdfs, 10000);
         for (List<PatentPdf> list : splitLists) {
@@ -66,8 +66,7 @@ public class PatentPdfController {
 
     @GetMapping("/dealAll.do")
     public void dealAll() {
-        String pdfFolderPath = "F:/loktar/patent/2022/";
-        File pdfFolder = new File(pdfFolderPath);
+        File pdfFolder = new File(basepath);
         File[] pdfFiles = pdfFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".pdf"));
         for (File pdfFile : pdfFiles) {
             String filename = pdfFile.getName().replace(".pdf", "");
