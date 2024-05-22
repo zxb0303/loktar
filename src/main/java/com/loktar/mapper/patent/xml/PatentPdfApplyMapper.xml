@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.loktar.domain.patent.PatentPdfApply">
     <id column="apply_id" jdbcType="VARCHAR" property="applyId" />
     <result column="apply_name" jdbcType="VARCHAR" property="applyName" />
+    <result column="patent_auth_count_2020" jdbcType="INTEGER" property="patentAuthCount2020" />
     <result column="patent_auth_count_2021" jdbcType="INTEGER" property="patentAuthCount2021" />
     <result column="patent_auth_count_2022" jdbcType="INTEGER" property="patentAuthCount2022" />
     <result column="patent_auth_count_2023" jdbcType="INTEGER" property="patentAuthCount2023" />
@@ -17,18 +18,21 @@
     where apply_id = #{applyId,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.loktar.domain.patent.PatentPdfApply">
-    insert into patent_pdf_apply (apply_id, apply_name, patent_auth_count_2021, 
-      patent_auth_count_2022, patent_auth_count_2023, 
-      patent_auth_count_2024, `status`, create_time, 
-      update_time)
-    values (#{applyId,jdbcType=VARCHAR}, #{applyName,jdbcType=VARCHAR}, #{patentAuthCount2021,jdbcType=INTEGER}, 
-      #{patentAuthCount2022,jdbcType=INTEGER}, #{patentAuthCount2023,jdbcType=INTEGER}, 
-      #{patentAuthCount2024,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP})
+    insert into patent_pdf_apply (apply_id, apply_name, patent_auth_count_2020, 
+      patent_auth_count_2021, patent_auth_count_2022, 
+      patent_auth_count_2023, patent_auth_count_2024, 
+      `status`, create_time, update_time
+      )
+    values (#{applyId,jdbcType=VARCHAR}, #{applyName,jdbcType=VARCHAR}, #{patentAuthCount2020,jdbcType=INTEGER}, 
+      #{patentAuthCount2021,jdbcType=INTEGER}, #{patentAuthCount2022,jdbcType=INTEGER}, 
+      #{patentAuthCount2023,jdbcType=INTEGER}, #{patentAuthCount2024,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.loktar.domain.patent.PatentPdfApply">
     update patent_pdf_apply
     set apply_name = #{applyName,jdbcType=VARCHAR},
+      patent_auth_count_2020 = #{patentAuthCount2020,jdbcType=INTEGER},
       patent_auth_count_2021 = #{patentAuthCount2021,jdbcType=INTEGER},
       patent_auth_count_2022 = #{patentAuthCount2022,jdbcType=INTEGER},
       patent_auth_count_2023 = #{patentAuthCount2023,jdbcType=INTEGER},
@@ -39,20 +43,20 @@
     where apply_id = #{applyId,jdbcType=VARCHAR}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select apply_id, apply_name, patent_auth_count_2021, patent_auth_count_2022, patent_auth_count_2023, 
-    patent_auth_count_2024, `status`, create_time, update_time
+    select apply_id, apply_name, patent_auth_count_2020, patent_auth_count_2021, patent_auth_count_2022, 
+    patent_auth_count_2023, patent_auth_count_2024, `status`, create_time, update_time
     from patent_pdf_apply
     where apply_id = #{applyId,jdbcType=VARCHAR}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select apply_id, apply_name, patent_auth_count_2021, patent_auth_count_2022, patent_auth_count_2023, 
-    patent_auth_count_2024, `status`, create_time, update_time
+    select apply_id, apply_name, patent_auth_count_2020, patent_auth_count_2021, patent_auth_count_2022, 
+    patent_auth_count_2023, patent_auth_count_2024, `status`, create_time, update_time
     from patent_pdf_apply
   </select>
   <select id="selectByStatusAndLimit" resultMap="BaseResultMap">
     select * from patent_pdf_apply where status = #{param1,jdbcType=INTEGER} order by patent_auth_count_2022 desc limit #{param2,jdbcType=INTEGER};
   </select>
-    <select id="getCountByStatus" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    <select id="getCountByStatus" parameterType="java.lang.Integer" resultType="java.lang.Integer">
       select count(apply_id) from patent_pdf_apply where status = #{status,jdbcType=INTEGER} ;
     </select>
 </mapper>
