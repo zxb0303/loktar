@@ -23,7 +23,7 @@ public class PatentPdfUtil {
 
     @SneakyThrows
     public static void main(String[] args) {
-        String filePath = "F:/loktar/patent/2022/实用新型专利公报（2022.07.12）.pdf";
+        String filePath = "F:/loktar/patent/2020/实用新型专利公报（2020.01.17）.pdf";
         String type = "实用新型";
         List<PatentPdf> patentPdfs = dealPatentPdf(filePath, type);
     }
@@ -135,6 +135,9 @@ public class PatentPdfUtil {
         //TODO 打印
         //System.out.println(newLine);
         if (newLine.equals("专利权人授权公告号专利权人授权公告号")) {
+            return j;
+        }
+        if (StringUtils.isEmpty(newLine)) {
             return j;
         }
         while (!newLine.endsWith("U")) {
