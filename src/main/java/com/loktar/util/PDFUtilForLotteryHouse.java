@@ -49,6 +49,7 @@ public class PDFUtilForLotteryHouse {
                 String[] strs = result.split(";");
                 //System.out.println(result);
                 if (k == 0) {
+//                    getTableCellsNum = 7;
                     getTableCellsNum = getTableCells(strs);
                     System.out.println("pdf表格列数num:" + getTableCellsNum);
                     if (getTableCellsNum == 0) {

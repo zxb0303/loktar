@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 @RequestMapping("tech")
 public class TechCompanyController {
     private final TechCompanyMapper techCompanyMapper;
+    private static String basepath = "F:/loktar/tech/";
 
     public TechCompanyController(TechCompanyMapper techCompanyMapper) {
         this.techCompanyMapper = techCompanyMapper;
@@ -28,12 +29,22 @@ public class TechCompanyController {
 
     @SneakyThrows
     @GetMapping("/gen.do")
-    public void gen(String year) {
-        List<TechCompany> techCompanys = new ArrayList<>();
-        String filePath = "F:/loktar/tech/ningbo/" + year + ".pdf";
+    public void gen(String province) {
+        File pdfFolder = new File(basepath + province + "/");
+        File[] pdfFiles = pdfFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".pdf"));
+        for (File pdfFile : pdfFiles) {
+            String fileName = pdfFile.getName();
+            System.out.println("开始处理：" + fileName);
+            String year = fileName.split("-")[0];
+            genFile(pdfFile, year);
+        }
+        System.out.println("全部完成");
+    }
 
-        File pdf = new File(filePath);
-        PDDocument document = Loader.loadPDF(pdf);
+    @SneakyThrows
+    public void genFile(File pdfFile, String year) {
+        List<TechCompany> techCompanys = new ArrayList<>();
+        PDDocument document = Loader.loadPDF(pdfFile);
         PDFTextStripper pdfStripper = new PDFTextStripper();
         int numPages = document.getNumberOfPages();
         for (int i = 1; i <= numPages; i++) {
@@ -47,7 +58,7 @@ public class TechCompanyController {
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.find()) {
                     String number = matcher.group(1);
-                    String companyName = matcher.group(2).replace("（","(").replace("）",")");
+                    String companyName = matcher.group(2).replace("（", "(").replace("）", ")");
                     System.out.println("序号: " + number + ", 公司名称: " + companyName);
                     TechCompany techCompany = new TechCompany();
                     techCompany.setCompanyId(UUIDUtil.randomUUID());
@@ -59,7 +70,7 @@ public class TechCompanyController {
             }
         }
         techCompanyMapper.insertBatch(techCompanys);
-        System.out.println("完成");
+        System.out.println("完成处理：" + pdfFile.getPath());
     }
 
 
