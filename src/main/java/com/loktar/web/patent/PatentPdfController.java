@@ -77,9 +77,9 @@ public class PatentPdfController {
 
     @SneakyThrows
     @GetMapping("/get.do")
-    public String get(String limit) {
+    public String get(String start, String end) {
         int status = 0;
-        List<PatentPdfApply> patentPdfApplys = patentPdfApplyMapper.selectByStatusAndLimit(status, Integer.parseInt(limit));
+        List<PatentPdfApply> patentPdfApplys = patentPdfApplyMapper.selectByStatusAndLimit(status, Integer.parseInt(start), Integer.parseInt(end));
         return objectMapper.writeValueAsString(patentPdfApplys);
     }
 

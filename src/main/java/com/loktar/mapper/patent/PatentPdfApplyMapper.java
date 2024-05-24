@@ -1,6 +1,7 @@
 package com.loktar.mapper.patent;
 
 import com.loktar.domain.patent.PatentPdfApply;
+
 import java.util.List;
 
 public interface PatentPdfApplyMapper {
@@ -14,7 +15,7 @@ public interface PatentPdfApplyMapper {
 
     int updateByPrimaryKey(PatentPdfApply row);
 
-    List<PatentPdfApply> selectByStatusAndLimit(int status,int limit);
+    List<PatentPdfApply> selectByStatusAndLimit(int status, int start, int end);
 
     int getCountByStatus(int status);
 }
