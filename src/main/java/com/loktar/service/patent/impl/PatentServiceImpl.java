@@ -57,7 +57,7 @@ public class PatentServiceImpl implements PatentService {
             //处理patentDetail
             patentDetailMapper.deleteByApplyId(applyId);
             for (PatentDetail patentDetail : patentDetails) {
-                if (patentDetail.getApplyName().contains(",")) {
+                if (patentDetail.getApplyName().contains(",")||patentDetail.getApplyName().contains("分公司")) {
                     needRemove.add(patentDetail);
                 }
                 patentDetail.setStatus(0);
