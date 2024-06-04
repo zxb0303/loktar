@@ -24,16 +24,16 @@ public class AttendanceMain {
     private final static Map<String, CellStyle> STYLE_MAP = new HashMap<>();
     // TODO 需要预处理daily表中是否都是正常班和正常晚班
     // TODO 需要预处理daily表中日期格式带不带-
-    private final static String MONTH = "202404";
-    private final static String MAX_DAY = "30";
+    private final static String MONTH = "202405";
+    private final static String MAX_DAY = "31";
 
     // TODO  30天的请假数据是从85列开始，31天的请假数据是从86列开始
-    private final static int columns = 85;
+    private final static int columns = 86;
 
     // TODO 法定补班日 eg:"2023-06-25"
-    private final static String[] SPECIALWORKDAYS = new String[]{"2024-04-07","2024-04-28"};
+    private final static String[] SPECIALWORKDAYS = new String[]{"2024-05-11"};
     // TODO 法定节假日（除周末） eg:"2023-06-22", "2023-06-23"
-    private final static String[] SPECIALWEEKDAYS = new String[]{"2024-04-04","2024-04-05"};
+    private final static String[] SPECIALWEEKDAYS = new String[]{"2024-05-01","2024-05-02","2024-05-03","2024-05-04","2024-05-05",};
 
     private final static String ATTENDANCE_PATH = "";
 
