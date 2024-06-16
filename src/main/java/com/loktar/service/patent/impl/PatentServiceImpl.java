@@ -7,12 +7,15 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.loktar.domain.patent.PatentApply;
 import com.loktar.domain.patent.PatentDetail;
 import com.loktar.domain.patent.PatentPdfApply;
+import com.loktar.domain.patent.PatentTrade;
 import com.loktar.mapper.patent.PatentApplyMapper;
 import com.loktar.mapper.patent.PatentDetailMapper;
 import com.loktar.mapper.patent.PatentPdfApplyMapper;
+import com.loktar.mapper.patent.PatentTradeMapper;
 import com.loktar.service.patent.PatentService;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +29,14 @@ public class PatentServiceImpl implements PatentService {
     private final PatentDetailMapper patentDetailMapper;
     private final PatentPdfApplyMapper patentPdfApplyMapper;
     private final PatentApplyMapper patentApplyMapper;
+    private final PatentTradeMapper patentTradeMapper;
     private ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE).registerModule(new JavaTimeModule());
 
-    public PatentServiceImpl(PatentDetailMapper patentDetailMapper, PatentPdfApplyMapper patentPdfApplyMapper, PatentApplyMapper patentApplyMapper) {
+    public PatentServiceImpl(PatentDetailMapper patentDetailMapper, PatentPdfApplyMapper patentPdfApplyMapper, PatentApplyMapper patentApplyMapper, PatentTradeMapper patentTradeMapper) {
         this.patentDetailMapper = patentDetailMapper;
         this.patentPdfApplyMapper = patentPdfApplyMapper;
         this.patentApplyMapper = patentApplyMapper;
+        this.patentTradeMapper = patentTradeMapper;
     }
 
     @Override
@@ -57,15 +62,34 @@ public class PatentServiceImpl implements PatentService {
             //处理patentDetail
             patentDetailMapper.deleteByApplyId(applyId);
             for (PatentDetail patentDetail : patentDetails) {
-                if (patentDetail.getApplyName().contains(",")||patentDetail.getApplyName().contains("分公司")) {
+                if (patentDetail.getApplyName().contains(",") || patentDetail.getApplyName().contains("分公司")) {
                     needRemove.add(patentDetail);
                 }
                 patentDetail.setStatus(0);
                 patentDetail.setApplyId(applyId);
             }
             patentDetails.removeAll(needRemove);
-            if(!CollectionUtils.isEmpty(patentDetails)){
-                patentDetailMapper.insertBatch(patentDetails);
+            if (!CollectionUtils.isEmpty(patentDetails)) {
+                try {
+                    patentDetailMapper.insertBatch(patentDetails);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    for (PatentDetail patentDetail : patentDetails) {
+                        PatentDetail exist = patentDetailMapper.selectByPrimaryKey(patentDetail.getPatentId());
+                        if (!ObjectUtils.isEmpty(exist)) {
+                            PatentTrade patentTrade = new PatentTrade();
+                            patentTrade.setPatentId(patentDetail.getPatentId());
+                            patentTrade.setFromApplyName(exist.getApplyName());
+                            patentTrade.setToApplyName(patentDetail.getApplyName());
+                            if(!patentTrade.getFromApplyName().equals(patentTrade.getToApplyName())){
+                                patentTradeMapper.insert(patentTrade);
+                            }
+                            patentDetailMapper.updateByPrimaryKey(patentDetail);
+                        } else {
+                            patentDetailMapper.insert(patentDetail);
+                        }
+                    }
+                }
             }
         }
         //处理patentPdfApply
