@@ -18,4 +18,6 @@ public interface PatentPdfApplyMapper {
     List<PatentPdfApply> selectByStatusAndLimit(int status, int start, int end);
 
     int getCountByStatus(int status);
+
+    void updatePatentPdfApply();
 }
