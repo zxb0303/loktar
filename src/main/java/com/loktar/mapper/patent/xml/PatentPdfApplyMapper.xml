@@ -42,7 +42,7 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where apply_id = #{applyId,jdbcType=VARCHAR}
   </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select apply_id, apply_name, patent_auth_count_2020, patent_auth_count_2021, patent_auth_count_2022, 
     patent_auth_count_2023, patent_auth_count_2024, `status`, create_time, update_time
     from patent_pdf_apply
@@ -59,4 +59,9 @@
     <select id="getCountByStatus" parameterType="java.lang.Integer" resultType="java.lang.Integer">
       select count(apply_id) from patent_pdf_apply where status = #{status,jdbcType=INTEGER} ;
     </select>
+
+  <select id="updatePatentPdfApply">
+    call updatePatentPdfApply();
+  </select>
+
 </mapper>
