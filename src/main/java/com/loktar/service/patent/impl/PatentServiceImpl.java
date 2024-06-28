@@ -46,6 +46,8 @@ public class PatentServiceImpl implements PatentService {
         //System.out.println("detail:" + detail);
         //System.out.println("patentCount:" + patentCount);
         System.out.println("applyId:" + applyId);
+        patentDetailMapper.deleteByApplyId(applyId);
+        patentApplyMapper.deleteByPrimaryKey(applyId);
         List<PatentDetail> needRemove = new ArrayList<>();
         if (!StringUtils.isEmpty(detail)) {
             detail = detail.replace("申请人：", "")
@@ -60,7 +62,6 @@ public class PatentServiceImpl implements PatentService {
             List<PatentDetail> patentDetails = objectMapper.readValue(detail, new TypeReference<>() {
             });
             //处理patentDetail
-            patentDetailMapper.deleteByApplyId(applyId);
             for (PatentDetail patentDetail : patentDetails) {
                 if (patentDetail.getApplyName().contains(",") || patentDetail.getApplyName().contains("分公司")) {
                     needRemove.add(patentDetail);
@@ -99,7 +100,6 @@ public class PatentServiceImpl implements PatentService {
         patentPdfApplyMapper.updateByPrimaryKey(patentPdfApply);
 
         //处理patentApply
-        patentApplyMapper.deleteByPrimaryKey(applyId);
         PatentApply patentApply = new PatentApply();
         patentApply.setApplyId(applyId);
         patentApply.setApplyName(patentPdfApply.getApplyName());
