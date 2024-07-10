@@ -156,7 +156,7 @@ public class QyWeixinCallbackChatGPTController {
         redisUtil.set(LokTarConstant.REDIS_KEY_PREFIX_OPENAI_REQUEST + receiveBaseMsg.getFromUserName(), openAiRequest, 3600);
 
         String replyContent = replyMsg.getContent();
-        replyContent = replyContent.replace("\n\n", "");
+        replyContent = replyContent.replace("\n\n", "").replace("*","");
         List<String> replyContents = splitTextBySentence(replyContent);
 
         for (String content : replyContents) {
