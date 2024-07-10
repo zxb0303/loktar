@@ -24,6 +24,7 @@ public class SecurityConfig {
                                 "/patentpdf/get.do",
                                 "/patentpdf/set.do",
                                 "/patentpdf/getEncodeDetails.do",
+                                "/patentpdf/getContractDTO.do",
                                 "/test/**"
                         ).permitAll()
                         .anyRequest().authenticated())
