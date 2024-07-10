@@ -7,12 +7,12 @@ import com.loktar.domain.patent.PatentApply;
 import com.loktar.domain.patent.PatentDetail;
 import com.loktar.domain.patent.PatentPdf;
 import com.loktar.domain.patent.PatentPdfApply;
+import com.loktar.dto.patent.PatentContractDTO;
 import com.loktar.dto.patent.PatentDetailDTO;
-import com.loktar.mapper.patent.PatentApplyMapper;
-import com.loktar.mapper.patent.PatentDetailMapper;
-import com.loktar.mapper.patent.PatentPdfApplyMapper;
-import com.loktar.mapper.patent.PatentPdfMapper;
+import com.loktar.mapper.patent.*;
 import com.loktar.service.patent.PatentService;
+import com.loktar.util.DateTimeUtil;
+import com.loktar.util.NumberToChineseUtil;
 import com.loktar.util.PatentPdfUtil;
 import com.loktar.util.PatentUtil;
 import lombok.SneakyThrows;
@@ -25,6 +25,7 @@ import java.io.File;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,17 +42,30 @@ public class PatentPdfController {
     private final PatentService patentService;
     private final PatentDetailMapper patentDetailMapper;
     private final PatentApplyMapper patentApplyMapper;
+    private final CompanyInfoCqqMapper companyInfoCqqMapper;
 
     private ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE).registerModule(new JavaTimeModule());
 
-    public PatentPdfController(PatentPdfMapper patentPdfMapper, PatentPdfApplyMapper patentPdfApplyMapper, PatentService patentService, PatentDetailMapper patentDetailMapper, PatentApplyMapper patentApplyMapper) {
+    public PatentPdfController(PatentPdfMapper patentPdfMapper, PatentPdfApplyMapper patentPdfApplyMapper, PatentService patentService, PatentDetailMapper patentDetailMapper, PatentApplyMapper patentApplyMapper, CompanyInfoCqqMapper companyInfoCqqMapper) {
         this.patentPdfMapper = patentPdfMapper;
         this.patentPdfApplyMapper = patentPdfApplyMapper;
         this.patentService = patentService;
         this.patentDetailMapper = patentDetailMapper;
         this.patentApplyMapper = patentApplyMapper;
+        this.companyInfoCqqMapper = companyInfoCqqMapper;
     }
-
+    @SneakyThrows
+    @PostMapping("/getContractDTO.do")
+    public String getContractDTO(String applyName,String price){
+        PatentContractDTO patentContractDTO = companyInfoCqqMapper.getPatentContractDTOByApplyName(applyName);
+        List<PatentDetail> patentDetails = patentDetailMapper.selectForQuote(patentContractDTO.getApplyId());
+        patentContractDTO.setPatentDetails(patentDetails);
+        patentContractDTO.setPrice(price);
+        patentContractDTO.setPriceChinese(NumberToChineseUtil.numberToChinese(Integer.parseInt(price)));
+        patentContractDTO.setDate(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE_CHINESE));
+//        System.out.println(patentContractDTO.toString());
+        return objectMapper.writeValueAsString(patentContractDTO);
+    }
 
     @SneakyThrows
     @GetMapping("/deal.do")

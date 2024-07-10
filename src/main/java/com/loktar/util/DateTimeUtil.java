@@ -15,6 +15,7 @@ public class DateTimeUtil {
     public final static DateTimeFormatter FORMATTER_FILENAME = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     public final static DateTimeFormatter FORMATTER_QYWX_RECEIVE = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
     public final static DateTimeFormatter FORMATTER_RSS_ITEM_PUB = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+    public final static DateTimeFormatter FORMATTER_DATE_CHINESE = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
 
 
     public static String getDatetimeStr(LocalDateTime datetime, DateTimeFormatter format) {

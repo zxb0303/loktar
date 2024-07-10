@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.patent.CompanyInfoCqqMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.dto.patent.PatentContractDTO">
+    <id column="apply_id" jdbcType="VARCHAR" property="applyId" />
+    <result column="apply_name" jdbcType="VARCHAR" property="applyName" />
+    <result column="company_no" jdbcType="VARCHAR" property="companyNo" />
+    <result column="legal_person" jdbcType="VARCHAR" property="legalPerson" />
+  </resultMap>
+    <select id="getPatentContractDTOByApplyName" resultMap="BaseResultMap">
+      select `企业名称` as apply_name,apply_id,`统一社会信用代码` as company_no,`法定代表人` as legal_person from company_info_cqq where  `企业名称` = #{applyName,jdbcType=VARCHAR}
+    </select>
+</mapper>
