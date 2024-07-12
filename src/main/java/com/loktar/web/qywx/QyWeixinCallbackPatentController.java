@@ -1,0 +1,154 @@
+package com.loktar.web.qywx;
+
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.loktar.conf.LokTarConfig;
+import com.loktar.conf.LokTarConstant;
+import com.loktar.domain.patent.PatentApply;
+import com.loktar.domain.qywx.QywxPatentMsg;
+import com.loktar.dto.wx.agentmsg.AgentMsgText;
+import com.loktar.dto.wx.receivemsg.ReceiceMsgType;
+import com.loktar.dto.wx.receivemsg.ReceiveTextMsg;
+import com.loktar.mapper.patent.PatentApplyMapper;
+import com.loktar.mapper.qywx.QywxPatentMsgMapper;
+import com.loktar.util.RedisUtil;
+import com.loktar.util.wx.aes.WXBizMsgCrypt;
+import com.loktar.util.wx.qywx.QywxApi;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.File;
+
+
+@RestController
+@RequestMapping("qywx/callback/patent")
+public class QyWeixinCallbackPatentController {
+
+    private final RedisUtil redisUtil;
+
+    private final QywxApi qywxApi;
+
+    private final LokTarConfig lokTarConfig;
+
+    private final QywxPatentMsgMapper qywxPatentMsgMapper;
+
+    private final PatentApplyMapper patentApplyMapper;
+
+    private final static ObjectMapper xmlMapper = new XmlMapper();
+
+
+    public QyWeixinCallbackPatentController(RedisUtil redisUtil, QywxApi qywxApi, LokTarConfig lokTarConfig, QywxPatentMsgMapper qywxPatentMsgMapper, PatentApplyMapper patentApplyMapper) {
+        this.redisUtil = redisUtil;
+        this.qywxApi = qywxApi;
+        this.lokTarConfig = lokTarConfig;
+        this.qywxPatentMsgMapper = qywxPatentMsgMapper;
+        this.patentApplyMapper = patentApplyMapper;
+        xmlMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
+    }
+
+    @PostMapping("receive.do")
+    public ResponseEntity<Void> receive(
+            @RequestParam("msg_signature") String msgSignature,
+            @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce, @RequestBody String xml) {
+        if (!redisUtil.setIfAbsent(msgSignature, timestamp, 30)) {
+            return ResponseEntity.noContent().build();
+        }
+        Thread.ofVirtual().start(() -> asyncDealMsg(msgSignature, timestamp, nonce, xml));
+        return ResponseEntity.noContent().build();
+    }
+
+    @SneakyThrows
+    private void asyncDealMsg(String msgSignature, String timestamp, String nonce, String xml) {
+        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.getQywx().getToken(), lokTarConfig.getQywx().getEncodingAeskey(), lokTarConfig.getQywx().getCorpid());
+        String xmlMsg = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, xml);
+        System.out.println("after decrypt msg: ");
+        System.out.println(xmlMsg);
+        Element rawRootElement = DocumentHelper.parseText(xmlMsg).getRootElement();
+        String msgType = rawRootElement.element(LokTarConstant.WX_RECEICE_MSGTYPE).getTextTrim();
+        ReceiceMsgType type = ReceiceMsgType.getByName(msgType);
+        switch (type) {
+            case ReceiceMsgType.TEXT:
+                ReceiveTextMsg receiveTextMsg = xmlMapper.readValue(xmlMsg, ReceiveTextMsg.class);
+                dealTextMsg(receiveTextMsg);
+                return;
+            default:
+        }
+    }
+
+    private void dealTextMsg(ReceiveTextMsg receiveTextMsg) {
+        String content = receiveTextMsg.getContent();
+        if (ObjectUtils.isEmpty(content)) {
+            System.out.println("content为空");
+            qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "请提供公司名称"));
+            return;
+        }
+        if (!content.contains("公司")) {
+            qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "请提供公司名称"));
+            return;
+        }
+        content = content.trim();
+        content = content.replaceAll("\\s+", " ").replace(" ", ",").replace("，", ",");
+        QywxPatentMsg qywxPatentMsg = new QywxPatentMsg();
+        qywxPatentMsg.setFromUserName(receiveTextMsg.getFromUserName());
+        qywxPatentMsg.setContent(receiveTextMsg.getContent());
+        qywxPatentMsg.setStatus("00");
+        if (!content.contains(",")) {
+            qywxPatentMsg.setType("01");
+            qywxPatentMsg.setApplyName(content);
+        } else {
+            qywxPatentMsg.setType("02");
+            String[] split = content.split(",");
+            qywxPatentMsg.setApplyName(split[0]);
+            qywxPatentMsg.setPrice(split[1]);
+            if(split.length >= 3){
+                qywxPatentMsg.setMobile(split[2]);
+            }
+        }
+        PatentApply patentApply = patentApplyMapper.selectByApplyName(qywxPatentMsg.getApplyName());
+        if(ObjectUtils.isEmpty(patentApply)){
+            qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "请提供公司名称"));
+            return ;
+        }
+        if(StringUtils.isEmpty(qywxPatentMsg.getPrice())){
+            qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "正在生成报价单，请稍等"));
+        }else{
+            qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "正在生成合同及协议，请稍等"));
+        }
+        if (qywxPatentMsg.getType().equals("01")) {
+            File file = new File(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");
+            file.delete();
+        }
+        if (qywxPatentMsg.getType().equals("02")) {
+            File file1 = new File(lokTarConfig.getPath().getPatent() + "contract/收购合同-" + qywxPatentMsg.getApplyName() + ".doc");
+            File file2 = new File(lokTarConfig.getPath().getPatent() + "contract/转让协议-" + qywxPatentMsg.getApplyName() + ".doc");
+            file1.delete();
+            file2.delete();
+        }
+        qywxPatentMsgMapper.insert(qywxPatentMsg);
+
+
+    }
+
+
+    @SneakyThrows
+    @GetMapping("receive.do")
+    public ResponseEntity<String> msgValid(
+            @RequestParam("msg_signature") String msgSignature,
+            @RequestParam("timestamp") String timestamp,
+            @RequestParam("nonce") String nonce, @RequestParam("echostr") String echostr) {
+        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.getQywx().getToken(), lokTarConfig.getQywx().getEncodingAeskey(), lokTarConfig.getQywx().getCorpid());
+        String sEchoStr = wxcpt.VerifyURL(msgSignature, timestamp,
+                nonce, echostr);
+        if (sEchoStr != null) {
+            return ResponseEntity.ok(sEchoStr);
+        }
+        return ResponseEntity.badRequest().build();
+    }
+}

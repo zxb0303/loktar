@@ -19,12 +19,10 @@ public class SecurityConfig {
                                 "/jellyfin/webhook.do",
                                 "/qywx/callback/chatgpt/receive.do",
                                 "/qywx/callback/receive.do",
+                                "/qywx/callback/patent/receive.do",
                                 "/synology/sendMsg.do",
                                 "/github/notifyMsg.do",
-                                "/patentpdf/get.do",
-                                "/patentpdf/set.do",
-                                "/patentpdf/getEncodeDetails.do",
-                                "/patentpdf/getContractDTO.do",
+                                "/patentpdf/**",
                                 "/test/**"
                         ).permitAll()
                         .anyRequest().authenticated())

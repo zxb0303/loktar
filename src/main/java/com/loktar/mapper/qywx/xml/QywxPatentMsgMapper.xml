@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.qywx.QywxPatentMsgMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.qywx.QywxPatentMsg">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="from_user_name" jdbcType="VARCHAR" property="fromUserName" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="apply_name" jdbcType="VARCHAR" property="applyName" />
+    <result column="price" jdbcType="VARCHAR" property="price" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from qywx_patent_msg
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.qywx.QywxPatentMsg">
+    insert into qywx_patent_msg (id, from_user_name, content,
+      `type`, apply_name, price, 
+      mobile, `status`, create_time, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{fromUserName,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
+      #{type,jdbcType=VARCHAR}, #{applyName,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.qywx.QywxPatentMsg">
+    update qywx_patent_msg
+    set from_user_name = #{fromUserName,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=VARCHAR},
+      apply_name = #{applyName,jdbcType=VARCHAR},
+      price = #{price,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, from_user_name, content, `type`, apply_name, price, mobile, `status`, 
+    create_time, update_time
+    from qywx_patent_msg
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, from_user_name, content, `type`, apply_name, price, mobile, `status`, 
+    create_time, update_time
+    from qywx_patent_msg
+  </select>
+  <select id="getQywxPatentMsgsByStatus" resultMap="BaseResultMap">
+    select id, from_user_name, content, `type`, apply_name, price, mobile, `status`,
+           create_time, update_time
+    from qywx_patent_msg
+    where `status` = #{status,jdbcType=INTEGER}
+  </select>
+  <update id="updateQywxPatentStatusById">
+    update qywx_patent_msg set `status` = #{param2,jdbcType=INTEGER} where id = #{param1,jdbcType=INTEGER}
+  </update>
+
+</mapper>
