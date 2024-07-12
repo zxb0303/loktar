@@ -123,13 +123,19 @@ public class QyWeixinCallbackPatentController {
         }
         if (qywxPatentMsg.getType().equals("01")) {
             File file = new File(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");
-            file.delete();
+            if(file.exists()){
+                file.delete();
+            }
         }
         if (qywxPatentMsg.getType().equals("02")) {
             File file1 = new File(lokTarConfig.getPath().getPatent() + "contract/收购合同-" + qywxPatentMsg.getApplyName() + ".doc");
             File file2 = new File(lokTarConfig.getPath().getPatent() + "contract/转让协议-" + qywxPatentMsg.getApplyName() + ".doc");
-            file1.delete();
-            file2.delete();
+            if(file1.exists()){
+                file1.delete();
+            }
+            if(file2.exists()){
+                file2.delete();
+            }
         }
         qywxPatentMsgMapper.insert(qywxPatentMsg);
 
