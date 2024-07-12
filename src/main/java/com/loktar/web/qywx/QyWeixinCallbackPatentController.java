@@ -107,19 +107,19 @@ public class QyWeixinCallbackPatentController {
             String[] split = content.split(",");
             qywxPatentMsg.setApplyName(split[0]);
             qywxPatentMsg.setPrice(split[1]);
-            if(split.length >= 3){
+            if (split.length >= 3) {
                 qywxPatentMsg.setMobile(split[2]);
             }
         }
         PatentApply patentApply = patentApplyMapper.selectByApplyName(qywxPatentMsg.getApplyName());
-        if(ObjectUtils.isEmpty(patentApply)){
+        if (ObjectUtils.isEmpty(patentApply)) {
             qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "请提供公司名称"));
-            return ;
+            return;
         }
-        if(StringUtils.isEmpty(qywxPatentMsg.getPrice())){
-            qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "正在生成报价单，请稍等"));
-        }else{
-            qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "正在生成合同及协议，请稍等"));
+        if (StringUtils.isEmpty(qywxPatentMsg.getPrice())) {
+            qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "正在生成《" + qywxPatentMsg.getApplyName() + "》报价单，请稍等"));
+        } else {
+            qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "正在生成《" + qywxPatentMsg.getApplyName() + "》合同及协议，请稍等"));
         }
         if (qywxPatentMsg.getType().equals("01")) {
             File file = new File(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");

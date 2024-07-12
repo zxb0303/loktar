@@ -34,13 +34,11 @@ public class PatentTask {
 
     @Scheduled(cron = "*/3 * * * * *")
     public void dealQywxPatentMsg() {
-        System.out.println("dealQywxPatentMsg");
         if (isProcessing) {
             return;
         }
         isProcessing = true;
         List<QywxPatentMsg> qywxPatentMsgs = qywxPatentMsgMapper.getQywxPatentMsgsByStatus("01");
-
         for (QywxPatentMsg qywxPatentMsg : qywxPatentMsgs) {
             List<File> files = new ArrayList<>();
             if (qywxPatentMsg.getType().equals("01")) {
@@ -57,7 +55,7 @@ public class PatentTask {
                 UploadMediaRsp uploadMediaRsp = qywxApi.uploadMediaForPatent(file, lokTarConfig.getQywx().getAgent006Id());
                 qywxApi.sendFileMsg(new AgentMsgFile(qywxPatentMsg.getFromUserName(), lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
             }
-            qywxPatentMsgMapper.updateQywxPatentStatusById(qywxPatentMsg.getId(),"02");
+            qywxPatentMsgMapper.updateQywxPatentStatusById(qywxPatentMsg.getId(), "02");
         }
         isProcessing = false;
     }
