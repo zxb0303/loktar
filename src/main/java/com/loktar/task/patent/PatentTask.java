@@ -5,6 +5,7 @@ import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.qywx.QywxPatentMsg;
 import com.loktar.dto.wx.UploadMediaRsp;
 import com.loktar.dto.wx.agentmsg.AgentMsgFile;
+import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.qywx.QywxPatentMsgMapper;
 import com.loktar.util.wx.qywx.QywxApi;
 import org.springframework.context.annotation.Profile;
@@ -56,6 +57,16 @@ public class PatentTask {
                 qywxApi.sendFileMsg(new AgentMsgFile(qywxPatentMsg.getFromUserName(), lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
             }
             qywxPatentMsgMapper.updateQywxPatentStatusById(qywxPatentMsg.getId(), "02");
+            if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeZxb())) {
+                String msg = "";
+                if (qywxPatentMsg.getType().equals("01")) {
+                    msg = "报价单";
+                }
+                if (qywxPatentMsg.getType().equals("02")) {
+                    msg = "合同协议";
+                }
+                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent006Id(), qywxPatentMsg.getFromUserName() + "生成了《" + qywxPatentMsg.getApplyName() + "》的" + msg));
+            }
         }
         isProcessing = false;
     }
