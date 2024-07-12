@@ -8,6 +8,7 @@ import com.loktar.dto.wx.agentmsg.AgentMsgFile;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.qywx.QywxPatentMsgMapper;
 import com.loktar.util.wx.qywx.QywxApi;
+import lombok.SneakyThrows;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -53,6 +54,7 @@ public class PatentTask {
                 files.add(file2);
             }
             for (File file : files) {
+                testFileExist(file);
                 UploadMediaRsp uploadMediaRsp = qywxApi.uploadMediaForPatent(file, lokTarConfig.getQywx().getAgent006Id());
                 qywxApi.sendFileMsg(new AgentMsgFile(qywxPatentMsg.getFromUserName(), lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
             }
@@ -71,4 +73,15 @@ public class PatentTask {
         isProcessing = false;
     }
 
+    @SneakyThrows
+    private void testFileExist(File file) {
+        int times = 20;
+        while (times > 0) {
+            if (file.exists()) {
+                break;
+            }
+            times--;
+            Thread.sleep(1000);
+        }
+    }
 }
