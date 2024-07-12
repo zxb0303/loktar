@@ -88,6 +88,7 @@ public class LokTarConfig {
         private String voice;
         private String newhouseOriginal;
         private String newhouseCover;
+        private String patent;
     }
 
     @Data

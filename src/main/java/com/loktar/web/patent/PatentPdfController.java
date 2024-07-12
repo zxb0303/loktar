@@ -7,9 +7,11 @@ import com.loktar.domain.patent.PatentApply;
 import com.loktar.domain.patent.PatentDetail;
 import com.loktar.domain.patent.PatentPdf;
 import com.loktar.domain.patent.PatentPdfApply;
+import com.loktar.domain.qywx.QywxPatentMsg;
 import com.loktar.dto.patent.PatentContractDTO;
 import com.loktar.dto.patent.PatentDetailDTO;
 import com.loktar.mapper.patent.*;
+import com.loktar.mapper.qywx.QywxPatentMsgMapper;
 import com.loktar.service.patent.PatentService;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.NumberToChineseUtil;
@@ -43,16 +45,18 @@ public class PatentPdfController {
     private final PatentDetailMapper patentDetailMapper;
     private final PatentApplyMapper patentApplyMapper;
     private final CompanyInfoCqqMapper companyInfoCqqMapper;
+    private final QywxPatentMsgMapper qywxPatentMsgMapper;
 
     private ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE).registerModule(new JavaTimeModule());
 
-    public PatentPdfController(PatentPdfMapper patentPdfMapper, PatentPdfApplyMapper patentPdfApplyMapper, PatentService patentService, PatentDetailMapper patentDetailMapper, PatentApplyMapper patentApplyMapper, CompanyInfoCqqMapper companyInfoCqqMapper) {
+    public PatentPdfController(PatentPdfMapper patentPdfMapper, PatentPdfApplyMapper patentPdfApplyMapper, PatentService patentService, PatentDetailMapper patentDetailMapper, PatentApplyMapper patentApplyMapper, CompanyInfoCqqMapper companyInfoCqqMapper, QywxPatentMsgMapper qywxPatentMsgMapper) {
         this.patentPdfMapper = patentPdfMapper;
         this.patentPdfApplyMapper = patentPdfApplyMapper;
         this.patentService = patentService;
         this.patentDetailMapper = patentDetailMapper;
         this.patentApplyMapper = patentApplyMapper;
         this.companyInfoCqqMapper = companyInfoCqqMapper;
+        this.qywxPatentMsgMapper = qywxPatentMsgMapper;
     }
     @SneakyThrows
     @PostMapping("/getContractDTO.do")
@@ -147,7 +151,18 @@ public class PatentPdfController {
         }
         return objectMapper.writeValueAsString(patentDetailDTOs);
     }
+    @SneakyThrows
+    @PostMapping("/getQywxPatentMsg.do")
+    public String getQywxPatentMsg(String status){
+        List<QywxPatentMsg> qywxPatentMsgs = qywxPatentMsgMapper.getQywxPatentMsgsByStatus(status);
+        return objectMapper.writeValueAsString(qywxPatentMsgs);
+    }
 
+    @SneakyThrows
+    @PostMapping("/updateQywxPatentStatus.do")
+    public void updateQywxPatentStatus(String id,String status){
+        qywxPatentMsgMapper.updateQywxPatentStatusById(Integer.parseInt(id),status);
+    }
 
     public static <T> List<List<T>> splitList(List<T> largeList, int chunkSize) {
         List<List<T>> lists = new ArrayList<>();

@@ -17,7 +17,14 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -56,14 +63,17 @@ public class QywxApi {
 
     private final LokTarConfig lokTarConfig;
 
+    private final RestTemplate restTemplate;
+
     private final static ObjectMapper objectMapper = new ObjectMapper();
     private final static Map<String, String> AGENTMAP = new HashMap<>();
 
 
-    public QywxApi(RedisUtil redisUtil, QywxMenuMapper qywxMenuMapper, LokTarConfig lokTarConfig) {
+    public QywxApi(RedisUtil redisUtil, QywxMenuMapper qywxMenuMapper, LokTarConfig lokTarConfig, RestTemplate restTemplate) {
         this.redisUtil = redisUtil;
         this.qywxMenuMapper = qywxMenuMapper;
         this.lokTarConfig = lokTarConfig;
+        this.restTemplate = restTemplate;
         AGENTMAP.put(lokTarConfig.getQywx().getAgent002Id(), lokTarConfig.getQywx().getAgent002Secert());
         AGENTMAP.put(lokTarConfig.getQywx().getAgent003Id(), lokTarConfig.getQywx().getAgent003Secert());
         AGENTMAP.put(lokTarConfig.getQywx().getAgent004Id(), lokTarConfig.getQywx().getAgent004Secert());
@@ -205,6 +215,22 @@ public class QywxApi {
         return HttpRequest.BodyPublishers.ofByteArray(baos.toByteArray());
     }
 
+    //上面的upload方法中文文件名乱码未解决
+    public UploadMediaRsp uploadMediaForPatent(File file ,String agentId)  {
+        HttpHeaders headers = new HttpHeaders();
+        MediaType type = MediaType.parseMediaType("multipart/form-data");
+        headers.setContentType(type);
+        FileSystemResource fileSystemResource = new FileSystemResource(file);
+        MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
+        form.add("file", fileSystemResource);
+        form.add("name", "media");
+        form.add("filename", file.getName());
+        form.add("Content-Type", "application/octet-stream");
+        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
+        String uploadMediaUrl = MessageFormat.format(UPLOAD_URL, accessToken(agentId).getAccessToken());
+        return restTemplate.postForObject(uploadMediaUrl, httpEntity, UploadMediaRsp.class);
+    }
+
     @SneakyThrows
     public String saveMedia(String filePath, String mediaId, String agentId) {
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -222,7 +248,7 @@ public class QywxApi {
         return filename;
     }
 
-//    private static String getFileName(HttpResponse<?> response) {
+    //    private static String getFileName(HttpResponse<?> response) {
 //        return response.headers().firstValue("Content-disposition")
 //                .map(header -> header.split(";"))
 //                .flatMap(parts -> {
