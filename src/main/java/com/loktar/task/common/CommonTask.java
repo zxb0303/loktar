@@ -4,7 +4,6 @@ import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.common.Notice;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
-import com.loktar.mapper.patent.PatentPdfApplyMapper;
 import com.loktar.service.common.CommonService;
 import com.loktar.service.common.NoticeServer;
 import com.loktar.util.DateTimeUtil;
@@ -29,26 +28,18 @@ public class CommonTask {
 
     private final NoticeServer noticeServer;
 
-    private final PatentPdfApplyMapper patentPdfApplyMapper;
-
     private final QywxApi qywxApi;
 
     private final LokTarConfig lokTarConfig;
 
 
-    public CommonTask(CommonService commonService, NoticeServer noticeServer, PatentPdfApplyMapper patentPdfApplyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig) {
+    public CommonTask(CommonService commonService, NoticeServer noticeServer, QywxApi qywxApi, LokTarConfig lokTarConfig) {
         this.commonService = commonService;
         this.noticeServer = noticeServer;
-        this.patentPdfApplyMapper = patentPdfApplyMapper;
         this.qywxApi = qywxApi;
         this.lokTarConfig = lokTarConfig;
     }
 
-    @Scheduled(cron = "0 0 */1 * * ?")
-    public void  updatePatentPdfApply(){
-        System.out.println("updatePatentPdfApply定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
-        patentPdfApplyMapper.updatePatentPdfApply();
-    }
 
     /**
      * @description: 根据notice表中配置的信息进行提醒
