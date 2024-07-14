@@ -116,24 +116,32 @@ public class QyWeixinCallbackPatentController {
             qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "请提供公司名称"));
             return;
         }
+        String sendMsg = "";
         if (StringUtils.isEmpty(qywxPatentMsg.getPrice())) {
-            qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "正在生成《" + qywxPatentMsg.getApplyName() + "》报价单，请稍等"));
+            sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》报价单，请稍等...";
         } else {
-            qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "正在生成《" + qywxPatentMsg.getApplyName() + "》合同及协议，请稍等"));
+            sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》合同及协议，请稍等...";
         }
+        qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), sendMsg));
+
+        if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeZxb())) {
+            sendMsg = qywxPatentMsg.getFromUserName() + " " + sendMsg;
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), receiveTextMsg.getAgentID(), sendMsg));
+        }
+
         if (qywxPatentMsg.getType().equals("01")) {
             File file = new File(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");
-            if(file.exists()){
+            if (file.exists()) {
                 file.delete();
             }
         }
         if (qywxPatentMsg.getType().equals("02")) {
             File file1 = new File(lokTarConfig.getPath().getPatent() + "contract/收购合同-" + qywxPatentMsg.getApplyName() + ".doc");
             File file2 = new File(lokTarConfig.getPath().getPatent() + "contract/转让协议-" + qywxPatentMsg.getApplyName() + ".doc");
-            if(file1.exists()){
+            if (file1.exists()) {
                 file1.delete();
             }
-            if(file2.exists()){
+            if (file2.exists()) {
                 file2.delete();
             }
         }
