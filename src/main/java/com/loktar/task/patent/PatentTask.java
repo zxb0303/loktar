@@ -5,8 +5,9 @@ import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.qywx.QywxPatentMsg;
 import com.loktar.dto.wx.UploadMediaRsp;
 import com.loktar.dto.wx.agentmsg.AgentMsgFile;
-import com.loktar.dto.wx.agentmsg.AgentMsgText;
+import com.loktar.mapper.patent.PatentPdfApplyMapper;
 import com.loktar.mapper.qywx.QywxPatentMsgMapper;
+import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Profile;
@@ -15,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,14 +25,22 @@ import java.util.List;
 @Profile(LokTarConstant.ENV_PRO)
 public class PatentTask {
     private final QywxPatentMsgMapper qywxPatentMsgMapper;
+    private final PatentPdfApplyMapper patentPdfApplyMapper;
     private final QywxApi qywxApi;
     private final LokTarConfig lokTarConfig;
     private boolean isProcessing = false;
 
-    public PatentTask(QywxPatentMsgMapper qywxPatentMsgMapper, QywxApi qywxApi, LokTarConfig lokTarConfig) {
+    public PatentTask(QywxPatentMsgMapper qywxPatentMsgMapper, PatentPdfApplyMapper patentPdfApplyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig) {
         this.qywxPatentMsgMapper = qywxPatentMsgMapper;
+        this.patentPdfApplyMapper = patentPdfApplyMapper;
         this.qywxApi = qywxApi;
         this.lokTarConfig = lokTarConfig;
+    }
+
+    @Scheduled(cron = "0 0 1,19 * * *")
+    public void updatePatentPdfApply() {
+        System.out.println("updatePatentPdfApply定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
+        patentPdfApplyMapper.updatePatentPdfApply();
     }
 
 
@@ -53,22 +63,16 @@ public class PatentTask {
                 files.add(file1);
                 files.add(file2);
             }
+            String sendUsers = qywxPatentMsg.getFromUserName();
+            if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeZxb())) {
+                sendUsers = sendUsers + "|" + lokTarConfig.getQywx().getNoticeZxb();
+            }
             for (File file : files) {
                 testFileExist(file);
                 UploadMediaRsp uploadMediaRsp = qywxApi.uploadMediaForPatent(file, lokTarConfig.getQywx().getAgent006Id());
-                qywxApi.sendFileMsg(new AgentMsgFile(qywxPatentMsg.getFromUserName(), lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
+                qywxApi.sendFileMsg(new AgentMsgFile(sendUsers, lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
             }
             qywxPatentMsgMapper.updateQywxPatentStatusById(qywxPatentMsg.getId(), "02");
-            if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeZxb())) {
-                String msg = "";
-                if (qywxPatentMsg.getType().equals("01")) {
-                    msg = "报价单";
-                }
-                if (qywxPatentMsg.getType().equals("02")) {
-                    msg = "合同协议";
-                }
-                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent006Id(), qywxPatentMsg.getFromUserName() + "生成了《" + qywxPatentMsg.getApplyName() + "》的" + msg));
-            }
         }
         isProcessing = false;
     }
