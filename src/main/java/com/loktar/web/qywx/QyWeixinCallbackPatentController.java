@@ -18,7 +18,6 @@ import com.loktar.util.wx.aes.WXBizMsgCrypt;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.http.ResponseEntity;
@@ -126,7 +125,7 @@ public class QyWeixinCallbackPatentController {
             return;
         }
         String sendMsg = "";
-        if (StringUtils.isEmpty(qywxPatentMsg.getPrice())) {
+        if (qywxPatentMsg.getType().equals("01")) {
             sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》报价单，单价："+qywxPatentMsg.getPrice()+"，请稍等...";
         } else {
             sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》合同及协议，总价："+qywxPatentMsg.getPrice()+"，请稍等...";
