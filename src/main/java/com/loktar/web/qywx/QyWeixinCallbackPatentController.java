@@ -102,15 +102,24 @@ public class QyWeixinCallbackPatentController {
         if (!content.contains(",")) {
             qywxPatentMsg.setType("01");
             qywxPatentMsg.setApplyName(content);
-        } else {
-            qywxPatentMsg.setType("02");
+            qywxPatentMsg.setPrice("700");
+        }
+        if (content.contains(",")) {
             String[] split = content.split(",");
-            qywxPatentMsg.setApplyName(split[0]);
-            qywxPatentMsg.setPrice(split[1]);
-            if (split.length >= 3) {
-                qywxPatentMsg.setMobile(split[2]);
+            if (isInteger(split[0])) {
+                qywxPatentMsg.setType("01");
+                qywxPatentMsg.setApplyName(split[1]);
+                qywxPatentMsg.setPrice(split[0]);
+            } else {
+                qywxPatentMsg.setType("02");
+                qywxPatentMsg.setApplyName(split[0]);
+                qywxPatentMsg.setPrice(split[1]);
+                if (split.length >= 3) {
+                    qywxPatentMsg.setMobile(split[2]);
+                }
             }
         }
+
         PatentApply patentApply = patentApplyMapper.selectByApplyName(qywxPatentMsg.getApplyName());
         if (ObjectUtils.isEmpty(patentApply)) {
             qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "请提供公司名称"));
@@ -118,9 +127,9 @@ public class QyWeixinCallbackPatentController {
         }
         String sendMsg = "";
         if (StringUtils.isEmpty(qywxPatentMsg.getPrice())) {
-            sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》报价单，请稍等...";
+            sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》报价单，单价："+qywxPatentMsg.getPrice()+"，请稍等...";
         } else {
-            sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》合同及协议，请稍等...";
+            sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》合同及协议，总价："+qywxPatentMsg.getPrice()+"，请稍等...";
         }
         qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), sendMsg));
 
@@ -150,6 +159,14 @@ public class QyWeixinCallbackPatentController {
 
     }
 
+    private static boolean isInteger(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
     @SneakyThrows
     @GetMapping("receive.do")
