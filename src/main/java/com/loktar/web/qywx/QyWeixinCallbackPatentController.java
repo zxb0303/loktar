@@ -136,20 +136,26 @@ public class QyWeixinCallbackPatentController {
             sendMsg = qywxPatentMsg.getFromUserName() + " " + sendMsg;
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), receiveTextMsg.getAgentID(), sendMsg));
         }
-
+        //这里的删除代码好像不对
         if (qywxPatentMsg.getType().equals("01")) {
             File file = new File(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");
+            System.out.println(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");
             if (file.exists()) {
+                System.out.println("exist1");
                 file.delete();
             }
         }
         if (qywxPatentMsg.getType().equals("02")) {
             File file1 = new File(lokTarConfig.getPath().getPatent() + "contract/收购合同-" + qywxPatentMsg.getApplyName() + ".doc");
             File file2 = new File(lokTarConfig.getPath().getPatent() + "contract/转让协议-" + qywxPatentMsg.getApplyName() + ".doc");
+            System.out.println(lokTarConfig.getPath().getPatent() + "contract/收购合同-" + qywxPatentMsg.getApplyName() + ".doc");
+            System.out.println(lokTarConfig.getPath().getPatent() + "contract/转让协议-" + qywxPatentMsg.getApplyName() + ".doc");
             if (file1.exists()) {
+                System.out.println("exist2");
                 file1.delete();
             }
             if (file2.exists()) {
+                System.out.println("exist3");
                 file2.delete();
             }
         }
