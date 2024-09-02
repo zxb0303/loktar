@@ -3,6 +3,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 src/main/java/com/loktar/web/icbc/ICBCRefund.java
+src/main/java/com/loktar/web/dbs/DBSMain.java
 src/main/resources/application-dev.yml
 src/main/resources/mybatis-generator.properties
 ### STS ###
