@@ -126,42 +126,36 @@ public class QyWeixinCallbackPatentController {
         }
         String sendMsg = "";
         if (qywxPatentMsg.getType().equals("01")) {
-            sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》报价单，单价："+qywxPatentMsg.getPrice()+"，请稍等...";
+            sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》报价单，单价：" + qywxPatentMsg.getPrice() + "，请稍等...";
         } else {
-            sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》合同及协议，总价："+qywxPatentMsg.getPrice()+"，请稍等...";
+            sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》合同及协议，总价：" + qywxPatentMsg.getPrice() + "，请稍等...";
         }
         qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), sendMsg));
-
+        sendMsg = qywxPatentMsg.getFromUserName() + " " + sendMsg;
         if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeZxb())) {
-            sendMsg = qywxPatentMsg.getFromUserName() + " " + sendMsg;
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), receiveTextMsg.getAgentID(), sendMsg));
         }
-        //这里的删除代码好像不对
+        if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeCxy())) {
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeCxy(), receiveTextMsg.getAgentID(), sendMsg));
+        }
+        //这里的删除代码好像不对 已改权限再测一下
         if (qywxPatentMsg.getType().equals("01")) {
             File file = new File(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");
-            System.out.println(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");
             if (file.exists()) {
-                System.out.println("exist1");
                 file.delete();
             }
         }
         if (qywxPatentMsg.getType().equals("02")) {
             File file1 = new File(lokTarConfig.getPath().getPatent() + "contract/收购合同-" + qywxPatentMsg.getApplyName() + ".doc");
             File file2 = new File(lokTarConfig.getPath().getPatent() + "contract/转让协议-" + qywxPatentMsg.getApplyName() + ".doc");
-            System.out.println(lokTarConfig.getPath().getPatent() + "contract/收购合同-" + qywxPatentMsg.getApplyName() + ".doc");
-            System.out.println(lokTarConfig.getPath().getPatent() + "contract/转让协议-" + qywxPatentMsg.getApplyName() + ".doc");
             if (file1.exists()) {
-                System.out.println("exist2");
                 file1.delete();
             }
             if (file2.exists()) {
-                System.out.println("exist3");
                 file2.delete();
             }
         }
         qywxPatentMsgMapper.insert(qywxPatentMsg);
-
-
     }
 
     private static boolean isInteger(String str) {
