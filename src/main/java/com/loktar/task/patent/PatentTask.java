@@ -50,31 +50,36 @@ public class PatentTask {
             return;
         }
         isProcessing = true;
-        List<QywxPatentMsg> qywxPatentMsgs = qywxPatentMsgMapper.getQywxPatentMsgsByStatus("01");
-        for (QywxPatentMsg qywxPatentMsg : qywxPatentMsgs) {
-            List<File> files = new ArrayList<>();
-            if (qywxPatentMsg.getType().equals("01")) {
-                File file = new File(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");
-                files.add(file);
+        try {
+            List<QywxPatentMsg> qywxPatentMsgs = qywxPatentMsgMapper.getQywxPatentMsgsByStatus("01");
+            for (QywxPatentMsg qywxPatentMsg : qywxPatentMsgs) {
+                List<File> files = new ArrayList<>();
+                if (qywxPatentMsg.getType().equals("01")) {
+                    File file = new File(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");
+                    files.add(file);
+                }
+                if (qywxPatentMsg.getType().equals("02")) {
+                    File file1 = new File(lokTarConfig.getPath().getPatent() + "contract/收购合同-" + qywxPatentMsg.getApplyName() + ".doc");
+                    File file2 = new File(lokTarConfig.getPath().getPatent() + "contract/转让协议-" + qywxPatentMsg.getApplyName() + ".doc");
+                    files.add(file1);
+                    files.add(file2);
+                }
+                String sendUsers = qywxPatentMsg.getFromUserName();
+                if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeZxb())) {
+                    sendUsers = sendUsers + "|" + lokTarConfig.getQywx().getNoticeZxb();
+                }
+                for (File file : files) {
+                    testFileExist(file);
+                    UploadMediaRsp uploadMediaRsp = qywxApi.uploadMediaForPatent(file, lokTarConfig.getQywx().getAgent006Id());
+                    qywxApi.sendFileMsg(new AgentMsgFile(sendUsers, lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
+                }
+                qywxPatentMsgMapper.updateQywxPatentStatusById(qywxPatentMsg.getId(), "02");
             }
-            if (qywxPatentMsg.getType().equals("02")) {
-                File file1 = new File(lokTarConfig.getPath().getPatent() + "contract/收购合同-" + qywxPatentMsg.getApplyName() + ".doc");
-                File file2 = new File(lokTarConfig.getPath().getPatent() + "contract/转让协议-" + qywxPatentMsg.getApplyName() + ".doc");
-                files.add(file1);
-                files.add(file2);
-            }
-            String sendUsers = qywxPatentMsg.getFromUserName();
-            if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeZxb())) {
-                sendUsers = sendUsers + "|" + lokTarConfig.getQywx().getNoticeZxb();
-            }
-            for (File file : files) {
-                testFileExist(file);
-                UploadMediaRsp uploadMediaRsp = qywxApi.uploadMediaForPatent(file, lokTarConfig.getQywx().getAgent006Id());
-                qywxApi.sendFileMsg(new AgentMsgFile(sendUsers, lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
-            }
-            qywxPatentMsgMapper.updateQywxPatentStatusById(qywxPatentMsg.getId(), "02");
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally {
+            isProcessing = false;
         }
-        isProcessing = false;
     }
 
     @SneakyThrows
