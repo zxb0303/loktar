@@ -1,13 +1,15 @@
 package com.loktar.web.patent;
 
 import com.loktar.dto.patent.PatentCertDTO;
-import com.loktar.util.PDFPdfCertUtil;
+import com.loktar.util.PDFPdfCertUtil1;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PatentCertMain {
@@ -15,11 +17,35 @@ public class PatentCertMain {
 
     //public static String DETAIL_URL = "http://epub.cnipa.gov.cn/cred/{0}";
 
+    @SneakyThrows
     public static void main(String[] args) {
         //1.读取excel 获取数据
         List<PatentCertDTO> patentCertDTOs = readExcel(NEED_CREATE_CERT_EXCEL_PATH);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
         for (PatentCertDTO patentCertDTO : patentCertDTOs){
-            PDFPdfCertUtil.generatePDF(patentCertDTO);
+            System.out.println(patentCertDTO.getAuthNoticeDate());
+
+            Date authNoticeDate = sdf.parse(patentCertDTO.getAuthNoticeDate());
+
+            if(authNoticeDate.before(sdf.parse("2022.06.15"))){
+                //2018-11-20~2022-06-14 pdf图片+印花税标志
+                System.out.println("template1");
+                PDFPdfCertUtil1.generatePDF(patentCertDTO);
+                continue;
+            }
+            if(authNoticeDate.after(sdf.parse("2022.06.16"))&&authNoticeDate.before(sdf.parse("2023.01.31"))){
+                //2022-06-17~2023-01-31 pdf图片
+                System.out.println("template2");
+            }
+            if(authNoticeDate.after(sdf.parse("2023.04.07"))&&authNoticeDate.before(sdf.parse("2024.05.31"))){
+                System.out.println("template3");
+                //2022-06-17~2024-05-31 pdf文字版
+                //PDFPdfCertUtil.generatePDF(patentCertDTO);
+            }
+            if(authNoticeDate.after(sdf.parse("2024.06.01"))){
+                System.out.println("template4");
+                //2022-06-17~2024-05-31 pdf文字版
+            }
         }
     }
 

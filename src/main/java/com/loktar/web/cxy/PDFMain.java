@@ -27,15 +27,15 @@ public class PDFMain {
         //    --a1.jpg
         //    --a2.jpg
         String pdfFolderPath = "F:/loktar/pdf/";
-        picTopdf(pdfFolderPath);
+        picToPdf(pdfFolderPath, 300);
 
         //pdf拆分成图片
         //pdfFilePath是主文件夹目录，会将主文件目录下的pdf文件拆分为jpg图片并保存在同文件名的文件夹下
         //-pdf
         //  -a.pdf
         //  -b.pdf
-       //String pdfFilePath = "F:/loktar/pdf/";
-       //pdfTojpg(pdfFilePath);
+//       String pdfFilePath = "F:/loktar/pdf/";
+//       pdfTojpg(pdfFilePath);
 
         //pdf合并
         //pdfFilePath是主文件夹目录，会将主文件目录下的子文件夹中的pdf合并为子文件夹名.pdf保存在主文件下
@@ -43,8 +43,8 @@ public class PDFMain {
         //  -a
         //    --a1.pdf
         //    --a2.pdf
-        //String  pdfFolderPath = "F:/loktar/pdf/";
-        //mergepdfs(pdfFolderPath);
+//        String  pdfFolderPath = "F:/loktar/pdf/";
+//        mergepdfs(pdfFolderPath);
 
     }
     public static void mergepdfs(String pdfFolderPath) {
@@ -114,7 +114,7 @@ public class PDFMain {
     }
 
     @SneakyThrows
-    public static void picTopdf(String pdfFolderPath){
+    public static void picToPdf(String pdfFolderPath, int dpi)  {
         File mainFolder = new File(pdfFolderPath);
         File[] folders = mainFolder.listFiles();
         for (File folder : folders) {
@@ -122,17 +122,22 @@ public class PDFMain {
                 String foldername = folder.getName();
                 System.out.println(foldername);
                 File[] imageFiles = folder.listFiles();
-                //imageFiles = sortFiles(imageFiles);
                 PDDocument document = new PDDocument();
                 if (imageFiles != null) {
                     for (File imageFile : imageFiles) {
                         if (imageFile.isFile()) {
                             System.out.println(imageFile.getName());
-                            PDPage page = new PDPage(PDRectangle.A4);
+
+                            // Calculate the page size based on the DPI
+                            float width = 8.27f * dpi;  // A4 width in inches * DPI
+                            float height = 11.69f * dpi; // A4 height in inches * DPI
+                            PDRectangle pageSize = new PDRectangle(width, height);
+
+                            PDPage page = new PDPage(pageSize);
                             document.addPage(page);
                             PDImageXObject image = PDImageXObject.createFromFileByExtension(imageFile, document);
                             PDPageContentStream contentStream = new PDPageContentStream(document, page);
-                            contentStream.drawImage(image, 0, 0, PDRectangle.A4.getWidth(), PDRectangle.A4.getHeight());
+                            contentStream.drawImage(image, 0, 0, width, height);
                             contentStream.close();
                         }
                     }
