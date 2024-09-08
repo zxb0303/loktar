@@ -68,6 +68,9 @@ public class PatentTask {
                 if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeZxb())) {
                     sendUsers = sendUsers + "|" + lokTarConfig.getQywx().getNoticeZxb();
                 }
+                if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeCxy())) {
+                    sendUsers = sendUsers + "|" + lokTarConfig.getQywx().getNoticeCxy();
+                }
                 for (File file : files) {
                     testFileExist(file);
                     UploadMediaRsp uploadMediaRsp = qywxApi.uploadMediaForPatent(file, lokTarConfig.getQywx().getAgent006Id());
