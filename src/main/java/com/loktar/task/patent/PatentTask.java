@@ -110,6 +110,9 @@ public class PatentTask {
         if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeZxb())) {
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), qywxPatentMsg.getAgentId(), msg));
         }
+        if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeCxy())) {
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeCxy(), qywxPatentMsg.getAgentId(), msg));
+        }
     }
 
     @SneakyThrows
