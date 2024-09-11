@@ -77,7 +77,7 @@ public class PatentTask {
                         qywxApi.sendFileMsg(new AgentMsgFile(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
                     }
                     if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeCxy())) {
-                        qywxApi.sendFileMsg(new AgentMsgFile(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
+                        qywxApi.sendFileMsg(new AgentMsgFile(lokTarConfig.getQywx().getNoticeCxy(), lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
                     }
                 }
                 qywxPatentMsgMapper.updateQywxPatentStatusById(qywxPatentMsg.getId(), "02");
