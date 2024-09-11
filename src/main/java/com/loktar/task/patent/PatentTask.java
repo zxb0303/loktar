@@ -74,10 +74,10 @@ public class PatentTask {
                     UploadMediaRsp uploadMediaRsp = qywxApi.uploadMediaForPatent(file, qywxPatentMsg.getAgentId());
                     qywxApi.sendFileMsg(new AgentMsgFile(qywxPatentMsg.getFromUserName(), qywxPatentMsg.getAgentId(), uploadMediaRsp.getMediaId()));
                     if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeZxb())) {
-                        qywxApi.sendFileMsg(new AgentMsgFile(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
+                        qywxApi.sendFileMsg(new AgentMsgFile(lokTarConfig.getQywx().getNoticeZxb(), qywxPatentMsg.getAgentId(), uploadMediaRsp.getMediaId()));
                     }
                     if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeCxy())) {
-                        qywxApi.sendFileMsg(new AgentMsgFile(lokTarConfig.getQywx().getNoticeCxy(), lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
+                        qywxApi.sendFileMsg(new AgentMsgFile(lokTarConfig.getQywx().getNoticeCxy(), qywxPatentMsg.getAgentId(), uploadMediaRsp.getMediaId()));
                     }
                 }
                 qywxPatentMsgMapper.updateQywxPatentStatusById(qywxPatentMsg.getId(), "02");
