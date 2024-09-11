@@ -78,6 +78,7 @@ public class QywxApi {
         AGENTMAP.put(lokTarConfig.getQywx().getAgent003Id(), lokTarConfig.getQywx().getAgent003Secert());
         AGENTMAP.put(lokTarConfig.getQywx().getAgent004Id(), lokTarConfig.getQywx().getAgent004Secert());
         AGENTMAP.put(lokTarConfig.getQywx().getAgent006Id(), lokTarConfig.getQywx().getAgent006Secert());
+        AGENTMAP.put(lokTarConfig.getQywx().getAgent007Id(), lokTarConfig.getQywx().getAgent007Secert());
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
