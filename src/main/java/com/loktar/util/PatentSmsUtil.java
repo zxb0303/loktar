@@ -1,5 +1,6 @@
 package com.loktar.util;
 
+import com.loktar.domain.qywx.QywxPatentMsg;
 import com.loktar.dto.patent.PatentQuotationDTO;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +15,7 @@ import java.util.List;
 
 public class PatentSmsUtil {
 
-    public static String getSmsMsg(String mobiles,String applyName, File file) {
+    public static String getSmsMsgForCj(String mobiles, QywxPatentMsg qywxPatentMsg, File file) {
         List<PatentQuotationDTO> patentQuotationDTOs = readExcelFile(file);
         int amountCount = 0;
         int sellCount = 0;
@@ -28,7 +29,25 @@ public class PatentSmsUtil {
                 price = price + patentQuotationDTO.getPrice();
             }
         }
-        String str = mobiles+"\n您【" + applyName + "】的专利，有" + amountCount + "个欠费快失效了。如果不想继续持有，可以考虑出售。目前" + sellCount + "个可出售专利的报价共计是" + price + "元。考虑的话建议尽快，否则滞纳金每个月都会增加，直到欠费6个月失效。您回复后，我将和您联系！";
+        String str = mobiles + "\n您【" + qywxPatentMsg.getApplyName() + "】的专利，有" + amountCount + "个欠费快失效了。如果不想继续持有，可以考虑出售。目前" + sellCount + "个可出售专利的报价共计是" + price + "元。考虑的话建议尽快，否则滞纳金每个月都会增加，直到欠费6个月失效。您回复后，我将和您联系！";
+        return str;
+    }
+
+    public static String getSmsMsgForCc(QywxPatentMsg qywxPatentMsg, File file) {
+        List<PatentQuotationDTO> patentQuotationDTOs = readExcelFile(file);
+        int amountCount = 0;
+        int sellCount = 0;
+        int price = 0;
+        for (PatentQuotationDTO patentQuotationDTO : patentQuotationDTOs) {
+            if (patentQuotationDTO.getAmount() != 0) {
+                amountCount++;
+            }
+            if (StringUtils.isEmpty(patentQuotationDTO.getRemark())) {
+                sellCount++;
+                price = price + patentQuotationDTO.getPrice();
+            }
+        }
+        String str = "您好，我们是收购专利的代理公司，您【" + qywxPatentMsg.getApplyName() + "】有" + sellCount + "个专利，有" + amountCount + "个快要到期失效了，您看您要是不要的话考虑出售吗？我们公司每个正常状态的专利收购单价是" + qywxPatentMsg.getPrice() + "元。如果您考虑的话麻烦回复一下，我会跟您取得联系！谢谢";
         return str;
     }
 
