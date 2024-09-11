@@ -70,16 +70,15 @@ public class PatentTask {
                     files.add(file1);
                     files.add(file2);
                 }
-                String sendUsers = qywxPatentMsg.getFromUserName();
-                if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeZxb())) {
-                    sendUsers = sendUsers + "|" + lokTarConfig.getQywx().getNoticeZxb();
-                }
-                if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeCxy())) {
-                    sendUsers = sendUsers + "|" + lokTarConfig.getQywx().getNoticeCxy();
-                }
                 for (File file : files) {
-                    UploadMediaRsp uploadMediaRsp = qywxApi.uploadMediaForPatent(file, lokTarConfig.getQywx().getAgent006Id());
-                    qywxApi.sendFileMsg(new AgentMsgFile(sendUsers, lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
+                    UploadMediaRsp uploadMediaRsp = qywxApi.uploadMediaForPatent(file, qywxPatentMsg.getAgentId());
+                    qywxApi.sendFileMsg(new AgentMsgFile(qywxPatentMsg.getFromUserName(), qywxPatentMsg.getAgentId(), uploadMediaRsp.getMediaId()));
+                    if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeZxb())) {
+                        qywxApi.sendFileMsg(new AgentMsgFile(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
+                    }
+                    if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeCxy())) {
+                        qywxApi.sendFileMsg(new AgentMsgFile(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
+                    }
                 }
                 qywxPatentMsgMapper.updateQywxPatentStatusById(qywxPatentMsg.getId(), "02");
             }
@@ -91,11 +90,14 @@ public class PatentTask {
     }
 
     private void sendSmsMsg(QywxPatentMsg qywxPatentMsg, File file) {
+        if(!qywxPatentMsg.getAgentId().equals(lokTarConfig.getQywx().getAgent007Id())){
+            return ;
+        }
         String mobiles = qywxPatentMsgMapper.getMobileStrByApplyName(qywxPatentMsg.getApplyName());
         mobiles = mobiles.replace(";", ",");
         mobiles = mobiles.replace(",-", "");
         String str = PatentSmsUtil.getSmsMsg(mobiles, qywxPatentMsg.getApplyName(), file);
-        qywxApi.sendTextMsg(new AgentMsgText(qywxPatentMsg.getFromUserName(), lokTarConfig.getQywx().getAgent007Id(), str));
+        qywxApi.sendTextMsg(new AgentMsgText(qywxPatentMsg.getFromUserName(), qywxPatentMsg.getAgentId(), str));
     }
 
     @SneakyThrows
