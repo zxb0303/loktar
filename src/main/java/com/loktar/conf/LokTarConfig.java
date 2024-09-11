@@ -49,6 +49,8 @@ public class LokTarConfig {
         private String encodingAeskey;
         private String noticeZxb;
         private String noticeCxy;
+        private String noticeCj;
+        private String noticeCc;
         private String agent002Id;
         private String agent002Secert;
         private String agent003Id;
