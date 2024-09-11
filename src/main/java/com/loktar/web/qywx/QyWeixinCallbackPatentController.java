@@ -23,8 +23,6 @@ import org.dom4j.Element;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-
 
 @RestController
 @RequestMapping("qywx/callback/patent")
@@ -139,22 +137,22 @@ public class QyWeixinCallbackPatentController {
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeCxy(), receiveTextMsg.getAgentID(), sendMsg));
         }
         //这里的删除代码好像不对 已改权限再测一下
-        if (qywxPatentMsg.getType().equals("01")) {
-            File file = new File(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");
-            if (file.exists()) {
-                file.delete();
-            }
-        }
-        if (qywxPatentMsg.getType().equals("02")) {
-            File file1 = new File(lokTarConfig.getPath().getPatent() + "contract/收购合同-" + qywxPatentMsg.getApplyName() + ".doc");
-            File file2 = new File(lokTarConfig.getPath().getPatent() + "contract/转让协议-" + qywxPatentMsg.getApplyName() + ".doc");
-            if (file1.exists()) {
-                file1.delete();
-            }
-            if (file2.exists()) {
-                file2.delete();
-            }
-        }
+//        if (qywxPatentMsg.getType().equals("01")) {
+//            File file = new File(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");
+//            if (file.exists()) {
+//                file.delete();
+//            }
+//        }
+//        if (qywxPatentMsg.getType().equals("02")) {
+//            File file1 = new File(lokTarConfig.getPath().getPatent() + "contract/收购合同-" + qywxPatentMsg.getApplyName() + ".doc");
+//            File file2 = new File(lokTarConfig.getPath().getPatent() + "contract/转让协议-" + qywxPatentMsg.getApplyName() + ".doc");
+//            if (file1.exists()) {
+//                file1.delete();
+//            }
+//            if (file2.exists()) {
+//                file2.delete();
+//            }
+//        }
         qywxPatentMsgMapper.insert(qywxPatentMsg);
     }
 

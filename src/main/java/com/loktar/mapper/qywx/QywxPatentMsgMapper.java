@@ -18,4 +18,6 @@ public interface QywxPatentMsgMapper {
     List<QywxPatentMsg> getQywxPatentMsgsByStatus(String status);
 
     int updateQywxPatentStatusById(Integer id, String status);
+
+    String getMobileStrByApplyName(String applyName);
 }
