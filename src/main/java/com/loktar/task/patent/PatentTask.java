@@ -12,6 +12,7 @@ import com.loktar.util.DateTimeUtil;
 import com.loktar.util.PatentSmsUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -94,6 +95,9 @@ public class PatentTask {
             return ;
         }
         String mobiles = qywxPatentMsgMapper.getMobileStrByApplyName(qywxPatentMsg.getApplyName());
+        if(StringUtils.isEmpty(mobiles)){
+            mobiles = "暂无号码";
+        }
         mobiles = mobiles.replace(";", ",");
         mobiles = mobiles.replace(",-", "");
         String str = PatentSmsUtil.getSmsMsg(mobiles, qywxPatentMsg.getApplyName(), file);
