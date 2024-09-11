@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 public class QywxPatentMsg implements Serializable {
     private Integer id;
 
+    private String agentId;
+
     private String fromUserName;
 
     private String content;
@@ -32,6 +34,14 @@ public class QywxPatentMsg implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getAgentId() {
+        return agentId;
+    }
+
+    public void setAgentId(String agentId) {
+        this.agentId = agentId;
     }
 
     public String getFromUserName() {

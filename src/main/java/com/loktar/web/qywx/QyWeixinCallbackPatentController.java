@@ -93,6 +93,7 @@ public class QyWeixinCallbackPatentController {
         content = content.trim();
         content = content.replaceAll("\\s+", " ").replace(" ", ",").replace("，", ",");
         QywxPatentMsg qywxPatentMsg = new QywxPatentMsg();
+        qywxPatentMsg.setAgentId(receiveTextMsg.getAgentID());
         qywxPatentMsg.setFromUserName(receiveTextMsg.getFromUserName());
         qywxPatentMsg.setContent(receiveTextMsg.getContent());
         qywxPatentMsg.setStatus("00");

@@ -10,19 +10,12 @@
     </parent>
     <groupId>com</groupId>
     <artifactId>loktar</artifactId>
-    <version>4.9.5</version>
+    <version>4.9.6</version>
     <name>loktar</name>
     <description>loktar</description>
     <properties>
         <java.version>21</java.version>
     </properties>
-    <repositories>
-        <repository>
-            <id>e-iceblue</id>
-            <name>e-iceblue</name>
-            <url>https://repo.e-iceblue.com/repository/maven-public/</url>
-        </repository>
-    </repositories>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -80,12 +73,6 @@
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.17.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>e-iceblue</groupId>
-            <artifactId>spire.pdf</artifactId>
-            <version>9.1.4</version>
         </dependency>
 
         <dependency>
