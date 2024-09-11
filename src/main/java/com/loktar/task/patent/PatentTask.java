@@ -91,17 +91,25 @@ public class PatentTask {
     }
 
     private void sendSmsMsg(QywxPatentMsg qywxPatentMsg, File file) {
-        if(!qywxPatentMsg.getAgentId().equals(lokTarConfig.getQywx().getAgent007Id())){
-            return ;
+        if (!qywxPatentMsg.getAgentId().equals(lokTarConfig.getQywx().getAgent007Id())) {
+            return;
         }
-        String mobiles = qywxPatentMsgMapper.getMobileStrByApplyName(qywxPatentMsg.getApplyName());
-        if(StringUtils.isEmpty(mobiles)){
-            mobiles = "暂无号码";
+        String msg = "";
+        if (qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeCc())) {
+            msg = PatentSmsUtil.getSmsMsgForCc(qywxPatentMsg, file);
+        } else {
+            String mobiles = qywxPatentMsgMapper.getMobileStrByApplyName(qywxPatentMsg.getApplyName());
+            if (StringUtils.isEmpty(mobiles)) {
+                mobiles = "暂无号码";
+            }
+            mobiles = mobiles.replace(";", ",");
+            mobiles = mobiles.replace(",-", "");
+            msg = PatentSmsUtil.getSmsMsgForCj(mobiles, qywxPatentMsg, file);
         }
-        mobiles = mobiles.replace(";", ",");
-        mobiles = mobiles.replace(",-", "");
-        String str = PatentSmsUtil.getSmsMsg(mobiles, qywxPatentMsg.getApplyName(), file);
-        qywxApi.sendTextMsg(new AgentMsgText(qywxPatentMsg.getFromUserName(), qywxPatentMsg.getAgentId(), str));
+        qywxApi.sendTextMsg(new AgentMsgText(qywxPatentMsg.getFromUserName(), qywxPatentMsg.getAgentId(), msg));
+        if (!qywxPatentMsg.getFromUserName().equals(lokTarConfig.getQywx().getNoticeZxb())) {
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), qywxPatentMsg.getAgentId(), msg));
+        }
     }
 
     @SneakyThrows
