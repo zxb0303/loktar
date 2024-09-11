@@ -60,5 +60,9 @@
   <update id="updateQywxPatentStatusById">
     update qywx_patent_msg set `status` = #{param2,jdbcType=INTEGER} where id = #{param1,jdbcType=INTEGER}
   </update>
+  <select id="getMobileStrByApplyName" resultType="java.lang.String">
+    select concat(`电话`,";",`更多电话`) from company_info_cqq where `企业名称` = #{applyName,jdbcType=INTEGER}
+  </select>
+
 
 </mapper>

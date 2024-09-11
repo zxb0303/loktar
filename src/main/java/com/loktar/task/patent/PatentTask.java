@@ -5,9 +5,11 @@ import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.qywx.QywxPatentMsg;
 import com.loktar.dto.wx.UploadMediaRsp;
 import com.loktar.dto.wx.agentmsg.AgentMsgFile;
+import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.patent.PatentPdfApplyMapper;
 import com.loktar.mapper.qywx.QywxPatentMsgMapper;
 import com.loktar.util.DateTimeUtil;
+import com.loktar.util.PatentSmsUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Profile;
@@ -56,11 +58,15 @@ public class PatentTask {
                 List<File> files = new ArrayList<>();
                 if (qywxPatentMsg.getType().equals("01")) {
                     File file = new File(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");
+                    testFileExist(file);
                     files.add(file);
+                    sendSmsMsg(qywxPatentMsg, file);
                 }
                 if (qywxPatentMsg.getType().equals("02")) {
                     File file1 = new File(lokTarConfig.getPath().getPatent() + "contract/收购合同-" + qywxPatentMsg.getApplyName() + ".doc");
                     File file2 = new File(lokTarConfig.getPath().getPatent() + "contract/转让协议-" + qywxPatentMsg.getApplyName() + ".doc");
+                    testFileExist(file1);
+                    testFileExist(file2);
                     files.add(file1);
                     files.add(file2);
                 }
@@ -72,17 +78,24 @@ public class PatentTask {
                     sendUsers = sendUsers + "|" + lokTarConfig.getQywx().getNoticeCxy();
                 }
                 for (File file : files) {
-                    testFileExist(file);
                     UploadMediaRsp uploadMediaRsp = qywxApi.uploadMediaForPatent(file, lokTarConfig.getQywx().getAgent006Id());
                     qywxApi.sendFileMsg(new AgentMsgFile(sendUsers, lokTarConfig.getQywx().getAgent006Id(), uploadMediaRsp.getMediaId()));
                 }
                 qywxPatentMsgMapper.updateQywxPatentStatusById(qywxPatentMsg.getId(), "02");
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             isProcessing = false;
         }
+    }
+
+    private void sendSmsMsg(QywxPatentMsg qywxPatentMsg, File file) {
+        String mobiles = qywxPatentMsgMapper.getMobileStrByApplyName(qywxPatentMsg.getApplyName());
+        mobiles = mobiles.replace(";", ",");
+        mobiles = mobiles.replace(",-", "");
+        String str = PatentSmsUtil.getSmsMsg(mobiles, qywxPatentMsg.getApplyName(), file);
+        qywxApi.sendTextMsg(new AgentMsgText(qywxPatentMsg.getFromUserName(), lokTarConfig.getQywx().getAgent007Id(), str));
     }
 
     @SneakyThrows
