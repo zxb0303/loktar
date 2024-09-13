@@ -10,6 +10,7 @@ import com.loktar.mapper.patent.PatentPdfApplyMapper;
 import com.loktar.mapper.qywx.QywxPatentMsgMapper;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.PatentSmsUtil;
+import com.loktar.util.RedisUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +20,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +33,14 @@ public class PatentTask {
     private final PatentPdfApplyMapper patentPdfApplyMapper;
     private final QywxApi qywxApi;
     private final LokTarConfig lokTarConfig;
-    private boolean isProcessing = false;
+    private final RedisUtil redisUtil;
 
-    public PatentTask(QywxPatentMsgMapper qywxPatentMsgMapper, PatentPdfApplyMapper patentPdfApplyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig) {
+    public PatentTask(QywxPatentMsgMapper qywxPatentMsgMapper, PatentPdfApplyMapper patentPdfApplyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig, RedisUtil redisUtil) {
         this.qywxPatentMsgMapper = qywxPatentMsgMapper;
         this.patentPdfApplyMapper = patentPdfApplyMapper;
         this.qywxApi = qywxApi;
         this.lokTarConfig = lokTarConfig;
+        this.redisUtil = redisUtil;
     }
 
     @Scheduled(cron = "0 0 1,19 * * *")
@@ -49,23 +52,23 @@ public class PatentTask {
 
     @Scheduled(cron = "*/3 * * * * *")
     public void dealQywxPatentMsg() {
-        if (isProcessing) {
+        boolean lock = redisUtil.setIfAbsent(LokTarConstant.REDIS_KEY_QYWX_PATENT_MSG_TASK_LOCK, "1", 10);
+        if (lock) {
             return;
         }
-        isProcessing = true;
         try {
-            List<QywxPatentMsg> qywxPatentMsgs = qywxPatentMsgMapper.getQywxPatentMsgsByStatus("01");
+            List<QywxPatentMsg> qywxPatentMsgs = qywxPatentMsgMapper.getQywxPatentMsgsByStatus(LokTarConstant.QYWX_PATENT_MSG_STATUS_CREATED);
             for (QywxPatentMsg qywxPatentMsg : qywxPatentMsgs) {
                 List<File> files = new ArrayList<>();
-                if (qywxPatentMsg.getType().equals("01")) {
-                    File file = new File(lokTarConfig.getPath().getPatent() + "quotation/" + qywxPatentMsg.getApplyName() + ".xlsx");
+                if (qywxPatentMsg.getType().equals(LokTarConstant.QYWX_PATENT_MSG_TYPE_QUOTATION)) {
+                    File file = new File(lokTarConfig.getPath().getPatent() + MessageFormat.format(LokTarConstant.PATENT_QUOTATION_FILE_PATH, qywxPatentMsg.getApplyName()));
                     testFileExist(file);
                     files.add(file);
                     sendSmsMsg(qywxPatentMsg, file);
                 }
-                if (qywxPatentMsg.getType().equals("02")) {
-                    File file1 = new File(lokTarConfig.getPath().getPatent() + "contract/收购合同-" + qywxPatentMsg.getApplyName() + ".doc");
-                    File file2 = new File(lokTarConfig.getPath().getPatent() + "contract/转让协议-" + qywxPatentMsg.getApplyName() + ".doc");
+                if (qywxPatentMsg.getType().equals(LokTarConstant.QYWX_PATENT_MSG_TYPE_CONTRACT)) {
+                    File file1 = new File(lokTarConfig.getPath().getPatent() + MessageFormat.format(LokTarConstant.PATENT_CONTRACT_FILE_PATH, qywxPatentMsg.getApplyName()));
+                    File file2 = new File(lokTarConfig.getPath().getPatent() + MessageFormat.format(LokTarConstant.PATENT_AGREEMENT_FILE_PATH, qywxPatentMsg.getApplyName()));
                     testFileExist(file1);
                     testFileExist(file2);
                     files.add(file1);
@@ -81,12 +84,12 @@ public class PatentTask {
                         qywxApi.sendFileMsg(new AgentMsgFile(lokTarConfig.getQywx().getNoticeCxy(), qywxPatentMsg.getAgentId(), uploadMediaRsp.getMediaId()));
                     }
                 }
-                qywxPatentMsgMapper.updateQywxPatentStatusById(qywxPatentMsg.getId(), "02");
+                qywxPatentMsgMapper.updateQywxPatentStatusById(qywxPatentMsg.getId(), LokTarConstant.QYWX_PATENT_MSG_STATUS_SENDED);
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            isProcessing = false;
+            redisUtil.del(LokTarConstant.REDIS_KEY_QYWX_PATENT_MSG_TASK_LOCK);
         }
     }
 
