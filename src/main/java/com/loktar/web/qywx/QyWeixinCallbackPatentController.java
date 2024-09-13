@@ -23,6 +23,8 @@ import org.dom4j.Element;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.MessageFormat;
+
 
 @RestController
 @RequestMapping("qywx/callback/patent")
@@ -81,12 +83,8 @@ public class QyWeixinCallbackPatentController {
 
     private void dealTextMsg(ReceiveTextMsg receiveTextMsg) {
         String content = receiveTextMsg.getContent();
-        if (ObjectUtils.isEmpty(content)) {
+        if (ObjectUtils.isEmpty(content) || !content.contains("公司")) {
             System.out.println("content为空");
-            qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "请提供公司名称"));
-            return;
-        }
-        if (!content.contains("公司")) {
             qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "请提供公司名称"));
             return;
         }
@@ -96,20 +94,20 @@ public class QyWeixinCallbackPatentController {
         qywxPatentMsg.setAgentId(receiveTextMsg.getAgentID());
         qywxPatentMsg.setFromUserName(receiveTextMsg.getFromUserName());
         qywxPatentMsg.setContent(receiveTextMsg.getContent());
-        qywxPatentMsg.setStatus("00");
+        qywxPatentMsg.setStatus(LokTarConstant.QYWX_PATENT_MSG_STATUS_RECEIVED);
         if (!content.contains(",")) {
-            qywxPatentMsg.setType("01");
+            qywxPatentMsg.setType(LokTarConstant.QYWX_PATENT_MSG_TYPE_QUOTATION);
             qywxPatentMsg.setApplyName(content);
-            qywxPatentMsg.setPrice("700");
+            qywxPatentMsg.setPrice(LokTarConstant.PATENT_DEFAULT_PRICE);
         }
         if (content.contains(",")) {
             String[] split = content.split(",");
             if (isInteger(split[0])) {
-                qywxPatentMsg.setType("01");
+                qywxPatentMsg.setType(LokTarConstant.QYWX_PATENT_MSG_TYPE_QUOTATION);
                 qywxPatentMsg.setApplyName(split[1]);
                 qywxPatentMsg.setPrice(split[0]);
             } else {
-                qywxPatentMsg.setType("02");
+                qywxPatentMsg.setType(LokTarConstant.QYWX_PATENT_MSG_TYPE_CONTRACT);
                 qywxPatentMsg.setApplyName(split[0]);
                 qywxPatentMsg.setPrice(split[1]);
                 if (split.length >= 3) {
@@ -124,10 +122,10 @@ public class QyWeixinCallbackPatentController {
             return;
         }
         String sendMsg = "";
-        if (qywxPatentMsg.getType().equals("01")) {
-            sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》报价单，单价：" + qywxPatentMsg.getPrice() + "，请稍等...";
+        if (qywxPatentMsg.getType().equals(LokTarConstant.QYWX_PATENT_MSG_TYPE_QUOTATION)) {
+            sendMsg = MessageFormat.format(LokTarConstant.PATENT_NOTICE_MSG_QUOTATION, qywxPatentMsg.getApplyName(), qywxPatentMsg.getPrice());
         } else {
-            sendMsg = "正在生成《" + qywxPatentMsg.getApplyName() + "》合同及协议，总价：" + qywxPatentMsg.getPrice() + "，请稍等...";
+            sendMsg = MessageFormat.format(LokTarConstant.PATENT_NOTICE_MSG_CONTRACT, qywxPatentMsg.getApplyName(), qywxPatentMsg.getPrice());
         }
         qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), sendMsg));
         sendMsg = qywxPatentMsg.getFromUserName() + " " + sendMsg;

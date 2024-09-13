@@ -26,6 +26,7 @@ public class LokTarConstant {
     public static final String REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET = "jellyfin_remote_playing_set";
     public static final String REDIS_KEY_NEWHOUSE_COOKIE = "newhouse_cookie";
     public static final String REDIS_KEY_TRANSMISSION_SESSIONID = "transmission_sessionid";
+    public static final String REDIS_KEY_QYWX_PATENT_MSG_TASK_LOCK = "qywx_patent_msg_task";
 
 
     public final static String NOTICE_TITLE_GITHUB = "GitHub项目更新通知";
@@ -39,7 +40,6 @@ public class LokTarConstant {
     public final static String NOTICE_JELLYFIN = "Jellyfin常规通知";
     public final static String NOTICE_JELLYFIN_START = "Jellyfin开始播放通知";
     public final static String NOTICE_JELLYFIN_STOP = "Jellyfin停止播放通知";
-    public final static String NOTICE_PATENT_PROCESSIONG = "Patent数据处理通知";
 
     public final static String WX_RECEICE_MSGTYPE = "MsgType";
 
@@ -55,6 +55,22 @@ public class LokTarConstant {
     public final static String AZURE_DOCINTELLIGENCE_MODEL_ID = "newhouse";
 
     public final static String ENV_PRO = "pro";
+
+    public final static String QYWX_PATENT_MSG_STATUS_RECEIVED = "00";
+    public final static String QYWX_PATENT_MSG_STATUS_CREATED = "01";
+    public final static String QYWX_PATENT_MSG_STATUS_SENDED = "02";
+
+    public final static String QYWX_PATENT_MSG_TYPE_QUOTATION = "01";
+    public final static String QYWX_PATENT_MSG_TYPE_CONTRACT = "02";
+
+    public final static String PATENT_DEFAULT_PRICE = "700";
+    public final static String PATENT_NOTICE_MSG_QUOTATION = "正在生成【{0}】报价单，单价：{1}，请稍等...";
+    public final static String PATENT_NOTICE_MSG_CONTRACT = "正在生成【{0}】合同及协议，总价：{1}，请稍等...";
+
+    public final static String PATENT_QUOTATION_FILE_PATH = "quotation/{0}.xlsx";
+
+    public final static String PATENT_CONTRACT_FILE_PATH = "contract/收购合同-{0}.doc";
+    public final static String PATENT_AGREEMENT_FILE_PATH = "contract/转让协议-{0}.doc";
 
 
 }
