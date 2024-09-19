@@ -63,7 +63,7 @@ public class LokTarConstant {
     public final static String QYWX_PATENT_MSG_TYPE_QUOTATION = "01";
     public final static String QYWX_PATENT_MSG_TYPE_CONTRACT = "02";
 
-    public final static String PATENT_DEFAULT_PRICE = "700";
+    public final static String PATENT_DEFAULT_PRICE = "650";
     public final static String PATENT_NOTICE_MSG_QUOTATION = "正在生成【{0}】报价单，单价：{1}，请稍等...";
     public final static String PATENT_NOTICE_MSG_CONTRACT = "正在生成【{0}】合同及协议，总价：{1}，请稍等...";
 
