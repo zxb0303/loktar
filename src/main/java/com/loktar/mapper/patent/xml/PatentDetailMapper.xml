@@ -100,7 +100,7 @@
            legal_status, case_status, auth_notice_date, main_category_num, `status`, create_time,
            update_time
     from patent_detail
-    where apply_id = #{applyId,jdbcType=INTEGER}
+    where apply_id = #{applyId,jdbcType=VARCHAR}
 
   </select>
     <select id="selectForQuote" resultMap="BaseResultMap">
@@ -108,7 +108,7 @@
              legal_status, case_status, auth_notice_date, main_category_num, `status`, create_time,
              update_time
       from patent_detail
-      where apply_id = #{applyId,jdbcType=INTEGER} and case_status in ('专利权维持','等年费滞纳金') and apply_date<![CDATA[>=]]>'2020-01-01'
+      where apply_id = #{param1,jdbcType=VARCHAR} and `type` = #{param2,jdbcType=VARCHAR} and case_status in ('专利权维持','等年费滞纳金') and apply_date<![CDATA[>=]]>'2020-01-01'
     </select>
 
 

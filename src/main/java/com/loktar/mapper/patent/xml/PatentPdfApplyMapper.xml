@@ -56,10 +56,9 @@
   <select id="selectByStatusAndLimit" resultMap="BaseResultMap">
     select * from patent_pdf_apply where status = #{param1,jdbcType=INTEGER} limit #{param2,jdbcType=INTEGER} , #{param3,jdbcType=INTEGER};
   </select>
-    <select id="getCountByStatus" parameterType="java.lang.Integer" resultType="java.lang.Integer">
-      select count(apply_id) from patent_pdf_apply where status = #{status,jdbcType=INTEGER} ;
-    </select>
-
+  <select id="getCountByStatus" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    select count(apply_id) from patent_pdf_apply where status = #{status,jdbcType=INTEGER} ;
+  </select>
   <select id="updatePatentPdfApply">
     call updatePatentPdfApply();
   </select>
