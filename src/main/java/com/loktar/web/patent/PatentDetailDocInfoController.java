@@ -9,6 +9,7 @@ import com.loktar.domain.patent.PatentDetailDocInfo;
 import com.loktar.dto.patent.PatentDetailDTO;
 import com.loktar.mapper.patent.PatentDetailDocInfoMapper;
 import com.loktar.mapper.patent.PatentDetailMapper;
+import com.loktar.util.DateTimeUtil;
 import com.loktar.util.PatentUtil;
 import com.loktar.util.UUIDUtil;
 import lombok.SneakyThrows;
@@ -27,7 +28,6 @@ import java.util.List;
 public class PatentDetailDocInfoController {
     private static String URL_DETAIL = "https://cpquery.cponline.cnipa.gov.cn/detail/index?zhuanlisqh={0}&anjianbh";
     private static String TYPE = "发明专利";
-    private static String CASE_STATUS = "驳回失效";
     private final PatentDetailMapper patentDetailMapper;
     private final PatentDetailDocInfoMapper patentDetailDocInfoMapper;
     private ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE).registerModule(new JavaTimeModule());
@@ -40,9 +40,9 @@ public class PatentDetailDocInfoController {
 
     @SneakyThrows
     @PostMapping("/getEncodeDetails.do")
-    public String getEncodeDetails(String start, String end) {
+    public String getEncodeDetails(String caseStatus,String start, String end) {
         List<PatentDetailDTO> patentDetailDTOs = new ArrayList<>();
-        List<PatentDetail> patentDetails = patentDetailMapper.selectByTypeAndCaseStatus(TYPE, CASE_STATUS, Integer.parseInt(start), Integer.parseInt(end));
+        List<PatentDetail> patentDetails = patentDetailMapper.selectByTypeAndCaseStatus(TYPE, caseStatus, Integer.parseInt(start), Integer.parseInt(end));
         for (PatentDetail patentDetail : patentDetails) {
             PatentDetailDTO patentDetailDTO = new PatentDetailDTO();
             patentDetailDTO.setPatentId(patentDetail.getPatentId());
@@ -66,6 +66,8 @@ public class PatentDetailDocInfoController {
         for (int i = 0; i < patentDetailDocInfos.size(); i++) {
             patentDetailDocInfos.get(i).setDocInfoId(UUIDUtil.randomUUID());
             patentDetailDocInfos.get(i).setIndex(i + 1);
+            String formattedDate = DateTimeUtil.getDatetimeStr(DateTimeUtil.parseLocalDate(patentDetailDocInfos.get(i).getDocDate(), DateTimeUtil.FORMATTER_DATE2), DateTimeUtil.FORMATTER_DATE);
+            patentDetailDocInfos.get(i).setDocDate(formattedDate);
             patentDetailDocInfos.get(i).setPatentId(patentId);
         }
         patentDetailDocInfoMapper.insertBatch(patentDetailDocInfos);

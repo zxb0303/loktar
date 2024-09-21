@@ -11,6 +11,7 @@ public class DateTimeUtil {
     public final static DateTimeFormatter FORMATTER_DATESECOND = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public final static DateTimeFormatter FORMATTER_DATEMINUTE = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     public final static DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public final static DateTimeFormatter FORMATTER_DATE2   = DateTimeFormatter.ofPattern("yyyyMMdd");
     public final static DateTimeFormatter FORMATTER_YEAR = DateTimeFormatter.ofPattern("yyyy");
     public final static DateTimeFormatter FORMATTER_FILENAME = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     public final static DateTimeFormatter FORMATTER_QYWX_RECEIVE = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
