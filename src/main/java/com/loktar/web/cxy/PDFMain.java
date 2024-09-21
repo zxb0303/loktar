@@ -3,6 +3,7 @@ package com.loktar.web.cxy;
 import lombok.SneakyThrows;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
+import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -16,16 +17,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 public class PDFMain {
 
     public static void main(String[] args) {
-        //图片合并成pdf
-        //pdfFolderPath是主文件夹目录，会将主文件目录下的子文件夹中的图片合并为子文件夹名.pdf保存在主文件下
-        //-pdf
-        //  -a
-        //    --a1.jpg
-        //    --a2.jpg
+//        图片合并成pdf
+//        pdfFolderPath是主文件夹目录，会将主文件目录下的子文件夹中的图片合并为子文件夹名.pdf保存在主文件下
+//        -pdf
+//          -a
+//            --a1.jpg
+//            --a2.jpg
         String pdfFolderPath = "F:/loktar/pdf/";
         picToPdf(pdfFolderPath, 300);
 
@@ -46,6 +48,10 @@ public class PDFMain {
 //        String  pdfFolderPath = "F:/loktar/pdf/";
 //        mergepdfs(pdfFolderPath);
 
+        //pdf拆分
+//        String pdfFilePath = "F:/loktar/pdf/1.pdf";
+//        int pagesPerSplit = 2; // 每个拆分文件的页数
+//        splitPdfByPages(pdfFilePath, pagesPerSplit);
     }
     public static void mergepdfs(String pdfFolderPath) {
         File mainFolder = new File(pdfFolderPath);
@@ -149,7 +155,35 @@ public class PDFMain {
         }
     }
 
+    public static void splitPdfByPages(String pdfFilePath, int pagesPerSplit) {
+        File pdfFile = new File(pdfFilePath);
+        if (!pdfFile.exists() || !pdfFile.isFile()) {
+            System.out.println("PDF file not found.");
+            return;
+        }
 
+        try {
+            PDDocument document = Loader.loadPDF(pdfFile);
+            Splitter splitter = new Splitter();
+            splitter.setSplitAtPage(pagesPerSplit);
+
+            List<PDDocument> splitDocuments = splitter.split(document);
+            String baseName = pdfFile.getName().replaceFirst("[.][^.]+$", "");
+
+            int partNumber = 1;
+            for (PDDocument splitDoc : splitDocuments) {
+                String outputFileName = pdfFile.getParent() + File.separator + baseName + "_part" + partNumber + ".pdf";
+                splitDoc.save(outputFileName);
+                splitDoc.close();
+                partNumber++;
+            }
+
+            document.close();
+            System.out.println("PDF split completed.");
+        } catch (IOException e) {
+            System.err.println("Error splitting PDF: " + e.getMessage());
+        }
+    }
 
 
 

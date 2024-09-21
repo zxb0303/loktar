@@ -110,6 +110,10 @@
       from patent_detail
       where apply_id = #{param1,jdbcType=VARCHAR} and `type` = #{param2,jdbcType=VARCHAR} and case_status in ('专利权维持','等年费滞纳金') and apply_date<![CDATA[>=]]>'2020-01-01'
     </select>
+    <select id="selectByTypeAndCaseStatus" resultMap="BaseResultMap">
+      select pd.* from patent_detail pd left join patent_detail_doc_info pddi on pd.patent_id =pddi.patent_id
+                  where pd.type=#{param1,jdbcType=VARCHAR} and pd.case_status=#{param2,jdbcType=VARCHAR} and pd.apply_date<![CDATA[>=]]>'2020-01-01' and pddi.doc_info_id is null limit #{param3,jdbcType=INTEGER} , #{param4,jdbcType=INTEGER};
+    </select>
 
 
 </mapper>

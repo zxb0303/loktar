@@ -23,6 +23,7 @@ public class SecurityConfig {
                                 "/synology/sendMsg.do",
                                 "/github/notifyMsg.do",
                                 "/patentpdf/**",
+                                "/patentdoc/**",
                                 "/test/**"
                         ).permitAll()
                         .anyRequest().authenticated())

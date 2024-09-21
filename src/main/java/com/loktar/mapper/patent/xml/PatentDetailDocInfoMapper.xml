@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.patent.PatentDetailDocInfoMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.patent.PatentDetailDocInfo">
+    <id column="doc_info_id" jdbcType="VARCHAR" property="docInfoId" />
+    <result column="patent_id" jdbcType="VARCHAR" property="patentId" />
+    <result column="doc_name" jdbcType="VARCHAR" property="docName" />
+    <result column="doc_date" jdbcType="VARCHAR" property="docDate" />
+    <result column="recipient" jdbcType="VARCHAR" property="recipient" />
+    <result column="postal_code" jdbcType="VARCHAR" property="postalCode" />
+    <result column="download_date" jdbcType="VARCHAR" property="downloadDate" />
+    <result column="download_ip" jdbcType="VARCHAR" property="downloadIp" />
+    <result column="doc_type" jdbcType="VARCHAR" property="docType" />
+    <result column="index" jdbcType="INTEGER" property="index" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from patent_detail_doc_info
+    where doc_info_id = #{docInfoId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.patent.PatentDetailDocInfo">
+    insert into patent_detail_doc_info (doc_info_id, patent_id, doc_name, 
+      doc_date, recipient, postal_code, 
+      download_date, download_ip, doc_type, 
+      `index`, create_time, update_time
+      )
+    values (#{docInfoId,jdbcType=VARCHAR}, #{patentId,jdbcType=VARCHAR}, #{docName,jdbcType=VARCHAR}, 
+      #{docDate,jdbcType=VARCHAR}, #{recipient,jdbcType=VARCHAR}, #{postalCode,jdbcType=VARCHAR}, 
+      #{downloadDate,jdbcType=VARCHAR}, #{downloadIp,jdbcType=VARCHAR}, #{docType,jdbcType=VARCHAR}, 
+      #{index,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+    <insert id="insertBatch">
+        insert into patent_detail_doc_info (doc_info_id, patent_id, doc_name,
+      doc_date, recipient, postal_code,
+      download_date, download_ip, doc_type,
+      `index`, create_time, update_time
+      )
+    values
+    <foreach collection="list" item="item" separator=",">
+        (#{item.docInfoId,jdbcType=VARCHAR}, #{item.patentId,jdbcType=VARCHAR}, #{item.docName,jdbcType=VARCHAR},
+        #{item.docDate,jdbcType=VARCHAR}, #{item.recipient,jdbcType=VARCHAR}, #{item.postalCode,jdbcType=VARCHAR},
+        #{item.downloadDate,jdbcType=VARCHAR}, #{item.downloadIp,jdbcType=VARCHAR}, #{item.docType,jdbcType=VARCHAR},
+        #{item.index,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}
+        )
+    </foreach>
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.loktar.domain.patent.PatentDetailDocInfo">
+    update patent_detail_doc_info
+    set patent_id = #{patentId,jdbcType=VARCHAR},
+      doc_name = #{docName,jdbcType=VARCHAR},
+      doc_date = #{docDate,jdbcType=VARCHAR},
+      recipient = #{recipient,jdbcType=VARCHAR},
+      postal_code = #{postalCode,jdbcType=VARCHAR},
+      download_date = #{downloadDate,jdbcType=VARCHAR},
+      download_ip = #{downloadIp,jdbcType=VARCHAR},
+      doc_type = #{docType,jdbcType=VARCHAR},
+      `index` = #{index,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where doc_info_id = #{docInfoId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select doc_info_id, patent_id, doc_name, doc_date, recipient, postal_code, download_date, 
+    download_ip, doc_type, `index`, create_time, update_time
+    from patent_detail_doc_info
+    where doc_info_id = #{docInfoId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select doc_info_id, patent_id, doc_name, doc_date, recipient, postal_code, download_date, 
+    download_ip, doc_type, `index`, create_time, update_time
+    from patent_detail_doc_info
+  </select>
+</mapper>

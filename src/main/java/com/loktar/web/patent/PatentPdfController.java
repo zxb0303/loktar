@@ -34,11 +34,10 @@ import java.util.List;
 @RestController
 @RequestMapping("patentpdf")
 public class PatentPdfController {
-    private static String basepath = "F:/loktar/patent/2020/";
-    private static String fileName = "{0}.pdf";
+    private static String BASEPATH = "F:/loktar/patent/2020/";
+    private static String FILENAME = "{0}.pdf";
     private static String URL_DETAIL = "https://cpquery.cponline.cnipa.gov.cn/detail/index?zhuanlisqh={0}&anjianbh";
-
-    private static String type = "实用新型";
+    private static String TYPE = "实用新型";
     private final PatentPdfMapper patentPdfMapper;
     private final PatentPdfApplyMapper patentPdfApplyMapper;
     private final PatentService patentService;
@@ -62,9 +61,9 @@ public class PatentPdfController {
     // Uipath 生成合同协议使用
     @SneakyThrows
     @PostMapping("/getContractDTO.do")
-    public String getContractDTO(String applyName,String price){
+    public String getContractDTO(String applyName, String price) {
         PatentContractDTO patentContractDTO = companyInfoCqqMapper.getPatentContractDTOByApplyName(applyName);
-        List<PatentDetail> patentDetails = patentDetailMapper.selectForQuote(patentContractDTO.getApplyId(),type);
+        List<PatentDetail> patentDetails = patentDetailMapper.selectForQuote(patentContractDTO.getApplyId(), TYPE);
         patentContractDTO.setPatentDetails(patentDetails);
         patentContractDTO.setPrice(price);
         patentContractDTO.setPriceChinese(NumberToChineseUtil.numberToChinese(Integer.parseInt(price)));
@@ -77,8 +76,8 @@ public class PatentPdfController {
     @SneakyThrows
     @GetMapping("/deal.do")
     public void deal(String filename) {
-        String filepath = MessageFormat.format(basepath + fileName, filename);
-        List<PatentPdf> patentPdfs = PatentPdfUtil.dealPatentPdf(filepath, type);
+        String filepath = MessageFormat.format(BASEPATH + FILENAME, filename);
+        List<PatentPdf> patentPdfs = PatentPdfUtil.dealPatentPdf(filepath, TYPE);
         List<List<PatentPdf>> splitLists = splitList(patentPdfs, 10000);
         for (List<PatentPdf> list : splitLists) {
             patentPdfMapper.insertBatch(list);
@@ -88,7 +87,7 @@ public class PatentPdfController {
     //处理专利公告文件使用
     @GetMapping("/dealAll.do")
     public void dealAll() {
-        File pdfFolder = new File(basepath);
+        File pdfFolder = new File(BASEPATH);
         File[] pdfFiles = pdfFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".pdf"));
         for (File pdfFile : pdfFiles) {
             String filename = pdfFile.getName().replace(".pdf", "");
@@ -100,7 +99,7 @@ public class PatentPdfController {
     //Uipath 专利获取使用
     @SneakyThrows
     @GetMapping("/get.do")
-    public String get(String status ,String start, String end) {
+    public String get(String status, String start, String end) {
         int statusInt = Integer.parseInt(status);
         List<PatentPdfApply> patentPdfApplys = patentPdfApplyMapper.selectByStatusAndLimit(statusInt, Integer.parseInt(start), Integer.parseInt(end));
         return objectMapper.writeValueAsString(patentPdfApplys);
@@ -143,7 +142,7 @@ public class PatentPdfController {
 //        patentDetails.add(patentDetail4);
 //        patentDetails.add(patentDetail5);
 //        patentDetails.add(patentDetail6);
-        List<PatentDetail> patentDetails = patentDetailMapper.selectForQuote(patentApply.getApplyId(),type);
+        List<PatentDetail> patentDetails = patentDetailMapper.selectForQuote(patentApply.getApplyId(), TYPE);
         for (PatentDetail patentDetail : patentDetails) {
             PatentDetailDTO patentDetailDTO = new PatentDetailDTO();
             patentDetailDTO.setPatentId(patentDetail.getPatentId());
@@ -162,7 +161,7 @@ public class PatentPdfController {
     //Uipath 自动生成报价单及合同协议使用
     @SneakyThrows
     @PostMapping("/getQywxPatentMsg.do")
-    public String getQywxPatentMsg(String status){
+    public String getQywxPatentMsg(String status) {
         List<QywxPatentMsg> qywxPatentMsgs = qywxPatentMsgMapper.getQywxPatentMsgsByStatus(status);
         return objectMapper.writeValueAsString(qywxPatentMsgs);
     }
@@ -170,8 +169,8 @@ public class PatentPdfController {
     //Uipath 自动生成报价单及合同协议使用
     @SneakyThrows
     @PostMapping("/updateQywxPatentStatus.do")
-    public void updateQywxPatentStatus(String id,String status){
-        qywxPatentMsgMapper.updateQywxPatentStatusById(Integer.parseInt(id),status);
+    public void updateQywxPatentStatus(String id, String status) {
+        qywxPatentMsgMapper.updateQywxPatentStatusById(Integer.parseInt(id), status);
     }
 
     public static <T> List<List<T>> splitList(List<T> largeList, int chunkSize) {
