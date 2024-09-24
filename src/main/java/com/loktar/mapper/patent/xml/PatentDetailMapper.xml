@@ -114,5 +114,8 @@
       select * from patent_detail
       where `type`=#{param1,jdbcType=VARCHAR} and case_status=#{param2,jdbcType=VARCHAR} and `apply_date`<![CDATA[>=]]>'2020-01-01' and `status` = 0 limit #{param3,jdbcType=INTEGER} , #{param4,jdbcType=INTEGER};
     </select>
+  <update id="updateStatusByPatentId">
+    update patent_detail set `status` = #{status,jdbcType=INTEGER}  where patent_id = #{patentId,jdbcType=VARCHAR}
+  </update>
 
 </mapper>

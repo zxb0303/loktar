@@ -71,9 +71,7 @@ public class PatentDetailDocInfoController {
             patentDetailDocInfos.get(i).setPatentId(patentId);
         }
         patentDetailDocInfoMapper.deleteByPatentId(patentId);
-        PatentDetail patentDetail = patentDetailMapper.selectByPrimaryKey(patentId);
-        patentDetail.setStatus(1);
-        patentDetailMapper.updateByPrimaryKey(patentDetail);
+        patentDetailMapper.updateStatusByPatentId(patentId,1);
         patentDetailDocInfoMapper.insertBatch(patentDetailDocInfos);
     }
 }

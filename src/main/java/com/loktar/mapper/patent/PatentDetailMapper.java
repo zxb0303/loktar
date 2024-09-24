@@ -26,4 +26,6 @@ public interface PatentDetailMapper {
     List<PatentDetail> selectForQuote(String applyId, String type);
 
     List<PatentDetail> selectByTypeAndCaseStatus(String type, String caseStatus, int start, int end);
+
+    int updateStatusByPatentId(String patentId, int status);
 }
