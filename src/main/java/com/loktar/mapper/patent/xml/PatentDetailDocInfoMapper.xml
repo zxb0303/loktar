@@ -19,7 +19,7 @@
     delete from patent_detail_doc_info
     where doc_info_id = #{docInfoId,jdbcType=VARCHAR}
   </delete>
-  <insert id="insert" parameterType="com.loktar.domain.patent.PatentDetailDocInfo">
+    <insert id="insert" parameterType="com.loktar.domain.patent.PatentDetailDocInfo">
     insert into patent_detail_doc_info (doc_info_id, patent_id, doc_name, 
       doc_date, recipient, postal_code, 
       download_date, download_ip, doc_type, 
@@ -72,4 +72,9 @@
     download_ip, doc_type, `index`, create_time, update_time
     from patent_detail_doc_info
   </select>
+  <delete id="deleteByPatentId">
+    delete from patent_detail_doc_info
+    where patent_id = #{patentId,jdbcType=VARCHAR}
+  </delete>
+
 </mapper>
