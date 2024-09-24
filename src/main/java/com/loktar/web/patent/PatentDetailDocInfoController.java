@@ -70,6 +70,10 @@ public class PatentDetailDocInfoController {
             patentDetailDocInfos.get(i).setDocDate(formattedDate);
             patentDetailDocInfos.get(i).setPatentId(patentId);
         }
+        patentDetailDocInfoMapper.deleteByPatentId(patentId);
+        PatentDetail patentDetail = patentDetailMapper.selectByPrimaryKey(patentId);
+        patentDetail.setStatus(1);
+        patentDetailMapper.updateByPrimaryKey(patentDetail);
         patentDetailDocInfoMapper.insertBatch(patentDetailDocInfos);
     }
 }

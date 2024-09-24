@@ -1,4 +1,4 @@
-package com.loktar.web.test;
+package com.loktar.web.patent;
 
 
 import com.itextpdf.text.pdf.PdfReader;
@@ -7,19 +7,25 @@ import lombok.SneakyThrows;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 
-public class MainTest {
+public class PatentDocMain {
 
 
     public static LinkedHashMap<String, String[]> reasonMap = new LinkedHashMap<>();
+    public static Map<String,String> statusMap = new HashMap<>();
+    public static String INSERT_SQL = "INSERT INTO `patent_detail_yitong`(`patent_id`, `type`, `status`, `doc_name`) VALUES ('%s', '%s', '%s', '%s');";
 
     static {
         reasonMap.put("等待答复", new String[]{"答复期内", "答复期限内", "文本尚存在缺陷", "目前的文本不能被授权"});
         reasonMap.put("不具备授权前景，不能被授予专利权", new String[]{"不具备授权前景", "不具备被授予专利权的前景", "不能被授予专利权"});
         reasonMap.put("没有实质性内容，将被驳回", new String[]{"没有可授予专利权的实质性内容", "没有可以被授予专利权的实质性内容", "本申请将被驳回"});
+        statusMap.put("等待答复","00");
+        statusMap.put("不具备授权前景，不能被授予专利权","01");
+        statusMap.put("没有实质性内容，将被驳回","02");
     }
 
 
@@ -30,7 +36,6 @@ public class MainTest {
         for (File pdfFile : pdfFiles) {
             readPdf(pdfFile);
         }
-//        itextpdf2();
     }
 
     @SneakyThrows
@@ -65,8 +70,9 @@ public class MainTest {
                 }
             }
         }
-        System.out.println(fileName + ";" + patentId + ";" + docMsg);
-
+//        System.out.println(fileName + ";" + patentId + ";" + docMsg);
+        String sql = String.format(INSERT_SQL, patentId, statusMap.get(docMsg), "0", fileName);
+        System.out.println(sql);
     }
 
     @SneakyThrows

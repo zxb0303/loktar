@@ -15,4 +15,6 @@ public interface PatentDetailDocInfoMapper {
     int updateByPrimaryKey(PatentDetailDocInfo row);
 
     void insertBatch(List<PatentDetailDocInfo> patentDetailDocInfos);
+
+    void deleteByPatentId(String patentId);
 }
