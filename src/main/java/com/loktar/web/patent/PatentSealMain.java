@@ -11,17 +11,17 @@ import java.util.Random;
 
 public class PatentSealMain {
     public static String BASE_FOLD_PATH = "F:/OneDrive/Patent/seal/";
-    public static String CONTRACT_FILE_NAME = "收购合同-贺兰县双马农业科技有限责任公司";
-    public static String AGREEMENT_FILE_NAME = "转让协议-贺兰县双马农业科技有限责任公司";
+    public static String CONTRACT_FILE_NAME = "合同";
+    public static String AGREEMENT_FILE_NAME = "协议";
     public static String PDF_FILE_SUFFIX = ".pdf";
     public static String NEW_FILE_SUFFX = "-盖章.pdf";
     public static String IMAGE_0_PATH = BASE_FOLD_PATH + "seal.png";
     public static String[] IMAGES3_PATHS = new String[]{BASE_FOLD_PATH + "seal3_01.png", BASE_FOLD_PATH + "seal3_02.png", BASE_FOLD_PATH + "seal3_03.png"};
     public static String[] IMAGES4_PATHS = new String[]{BASE_FOLD_PATH + "seal4_01.png", BASE_FOLD_PATH + "seal4_02.png", BASE_FOLD_PATH + "seal4_03.png", BASE_FOLD_PATH + "seal4_04.png"};
 
-    public static float SEAL_SIZE = 112f;
+    public static float SEAL_SIZE = 120f;
     //骑缝位置
-    public static float CONTRACT123_HEIGHT = 400f;
+    public static float CONTRACT123_HEIGHT = 100f;
     //合同最后一页位置
     public static float CONTRACT3_WEIGHT = 100f;
     public static float CONTRACT3_HEIGHT = 300f;
