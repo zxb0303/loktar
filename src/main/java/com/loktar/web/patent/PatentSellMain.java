@@ -27,8 +27,8 @@ public class PatentSellMain {
     public static String BG_FILE_NAME = "变更协议.docx";
     public static String DL_FILE_NAME = "专利代理委托书.docx";
     public static String SEAL_FILE_NAME = "公章.png";
-    //TODO
-    public static String COMPANT_NAME = "成都友悦贸易有限公司";
+    //TODO 公司名称和营业执照格式 每个公司需要确认后修改
+    public static String COMPANT_NAME = "佛山市壳彩科技有限公司";
     public static String BUSINESS_LICENSE_NAME = "营业执照.jpg";
 
     public static String TEMPLATE_FOLD_PATH = BASE_FOLD_PATH + "/模版/";
@@ -47,11 +47,11 @@ public class PatentSellMain {
         //创建出售文件夹
         createFolder(COMPANT_FOLD_PATH, SELL_FOLD_NAME);
         //复制模版中的解聘书、专利代理委托书、变更协议,并添加公章
-        copyFiles(JP_TEMPLATE_FILE_PATH, SELL_FOLD_PATH);
+        copyFile(JP_TEMPLATE_FILE_PATH, SELL_FOLD_PATH);
         addPicToFile(JP_FILE_NAME, 9);
-        copyFiles(BG_TEMPLATE_FILE_PATH, SELL_FOLD_PATH);
+        copyFile(BG_TEMPLATE_FILE_PATH, SELL_FOLD_PATH);
         addPicToFile(BG_FILE_NAME, 9);
-        copyFiles(DL_TEMPLATE_PATH, SELL_FOLD_PATH);
+        copyFile(DL_TEMPLATE_PATH, SELL_FOLD_PATH);
         addPicToFileHasTable(DL_FILE_NAME, 23);
 
         //读取报价单
@@ -60,21 +60,28 @@ public class PatentSellMain {
             //创建单个专利文件夹
             String sellpatentPath = createFolder(SELL_FOLD_PATH, patentQuotationDTO.getPatentId() + patentQuotationDTO.getName());
             //复制证书
-            copyFiles(COMPANT_FOLD_PATH + "/" + patentQuotationDTO.getPatentId() + ".pdf", sellpatentPath);
+            copyFile(COMPANT_FOLD_PATH + "/" + patentQuotationDTO.getPatentId() + ".pdf", sellpatentPath);
             //复制公章
-            copyFiles(SEAL_PATH, sellpatentPath);
+            copyFile(SEAL_PATH, sellpatentPath);
             //复制营业执照
-            copyFiles(BUSINESS_LICENSE_PATH, sellpatentPath);
+            copyFile(BUSINESS_LICENSE_PATH, sellpatentPath);
             //复制解聘书、专利代理委托书、变更协议
-            copyFiles(SELL_FOLD_PATH + "/" + JP_FILE_NAME, sellpatentPath);
-            copyFiles(SELL_FOLD_PATH + "/" + BG_FILE_NAME, sellpatentPath);
-            copyFiles(SELL_FOLD_PATH + "/" + DL_FILE_NAME, sellpatentPath);
+            copyFile(SELL_FOLD_PATH + "/" + JP_FILE_NAME, sellpatentPath);
+            copyFile(SELL_FOLD_PATH + "/" + BG_FILE_NAME, sellpatentPath);
+            copyFile(SELL_FOLD_PATH + "/" + DL_FILE_NAME, sellpatentPath);
         }
-        removeFile(SELL_FOLD_PATH + "/" + JP_FILE_NAME);
-        removeFile(SELL_FOLD_PATH + "/" + BG_FILE_NAME);
-        removeFile(SELL_FOLD_PATH + "/" + DL_FILE_NAME);
+        //复制报价单
+        copyFile(QUOTATION_FILE_PATH, SELL_FOLD_PATH);
+        deleteFile(SELL_FOLD_PATH + "/" + JP_FILE_NAME);
+        deleteFile(SELL_FOLD_PATH + "/" + BG_FILE_NAME);
+        deleteFile(SELL_FOLD_PATH + "/" + DL_FILE_NAME);
+//        Thread.sleep(500);
         //打包文件
         zipSellFold(SELL_FOLD_PATH, SELL_FOLD_PATH + ".zip");
+        //删除文件夹
+        deleteFolder(COMPANT_FOLD_PATH, SELL_FOLD_NAME);
+        System.out.println("["+COMPANT_NAME+"]打包完成");
+
     }
 
     @SneakyThrows
@@ -84,23 +91,24 @@ public class PatentSellMain {
         if (Files.exists(zipPath)) {
             Files.delete(zipPath);
         }
-        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFilePath));
-        Files.walk(sourceDir)
-                .filter(path -> !Files.isDirectory(path))
-                .forEach(path -> {
-                    String zipEntryName = sourceDir.relativize(path).toString();
-                    try {
-                        zos.putNextEntry(new ZipEntry(zipEntryName));
-                        Files.copy(path, zos);
-                        zos.closeEntry();
-                    } catch (Exception e) {
-                        System.err.println("Error while zipping file: " + path + " - " + e.getMessage());
-                    }
-                });
+        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFilePath))) {
+            Files.walk(sourceDir)
+                    .filter(path -> !Files.isDirectory(path))
+                    .forEach(path -> {
+                        String zipEntryName = sourceDir.relativize(path).toString();
+                        try {
+                            zos.putNextEntry(new ZipEntry(zipEntryName));
+                            Files.copy(path, zos);
+                            zos.closeEntry();
+                        } catch (Exception e) {
+                            System.err.println("Error while zipping file: " + path + " - " + e.getMessage());
+                        }
+                    });
+        }
     }
 
     @SneakyThrows
-    private static void removeFile(String filepath) {
+    private static void deleteFile(String filepath) {
         Path path = Paths.get(filepath);
         Files.delete(path);
     }
@@ -254,7 +262,7 @@ public class PatentSellMain {
 
 
     @SneakyThrows
-    private static void copyFiles(String filepath, String directFoldPath) {
+    private static void copyFile(String filepath, String directFoldPath) {
         Path sourcePath = Paths.get(filepath);
         Path destinationPath = Paths.get(directFoldPath, sourcePath.getFileName().toString());
         if (!Files.exists(sourcePath)) {
@@ -272,13 +280,21 @@ public class PatentSellMain {
     private static String createFolder(String path, String folderName) {
         String folderPath = path + "/" + folderName;
         File directory = new File(folderPath);
-        if (directory.exists()) {
-            FileUtils.deleteDirectory(directory);
-        }
-        // 创建目录
+        deleteFolder(path, folderName);
         directory.mkdirs();
         return folderPath;
     }
+
+    @SneakyThrows
+    private static String deleteFolder(String path, String folderName) {
+        String folderPath = path + "/" + folderName;
+        File directory = new File(folderPath);
+        if (directory.exists()) {
+            FileUtils.deleteDirectory(directory);
+        }
+        return folderPath;
+    }
+
 
     @SneakyThrows
     private static List<PatentQuotationDTO> readQuotationExcel(String quotationFilePath) {
