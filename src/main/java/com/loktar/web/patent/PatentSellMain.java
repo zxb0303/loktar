@@ -75,10 +75,11 @@ public class PatentSellMain {
         deleteFile(SELL_FOLD_PATH + "/" + BG_FILE_NAME);
         deleteFile(SELL_FOLD_PATH + "/" + DL_FILE_NAME);
         //打包文件
+//        zipSellFold(SELL_FOLD_PATH, BASE_FOLD_PATH + SELL_FOLD_NAME + ".zip");
         zipSellFold(SELL_FOLD_PATH, SELL_FOLD_PATH + ".zip");
         //删除文件夹
         deleteFolder(COMPANT_FOLD_PATH, SELL_FOLD_NAME);
-        System.out.println("["+COMPANT_NAME+"]打包完成");
+        System.out.println("[" + COMPANT_NAME + "]打包完成");
     }
 
     @SneakyThrows
