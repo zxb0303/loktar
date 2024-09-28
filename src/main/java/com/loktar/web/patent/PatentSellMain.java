@@ -22,15 +22,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class PatentSellMain {
+    //TODO start 公司名称和营业执照格式 每个公司需要确认后修改
+    public static String COMPANT_NAME = "佛山市壳彩科技有限公司";
+    public static String BUSINESS_LICENSE_NAME = "营业执照.jpg";
+    //TODO end
     public static String BASE_FOLD_PATH = "F:/OneDrive/Patent/成交资料/";
     public static String JP_FILE_NAME = "解聘书.docx";
     public static String BG_FILE_NAME = "变更协议.docx";
     public static String DL_FILE_NAME = "专利代理委托书.docx";
     public static String SEAL_FILE_NAME = "公章.png";
-    //TODO 公司名称和营业执照格式 每个公司需要确认后修改
-    public static String COMPANT_NAME = "佛山市壳彩科技有限公司";
-    public static String BUSINESS_LICENSE_NAME = "营业执照.jpg";
-
     public static String TEMPLATE_FOLD_PATH = BASE_FOLD_PATH + "/模版/";
     public static String JP_TEMPLATE_FILE_PATH = TEMPLATE_FOLD_PATH + JP_FILE_NAME;
     public static String BG_TEMPLATE_FILE_PATH = TEMPLATE_FOLD_PATH + BG_FILE_NAME;
@@ -53,7 +53,6 @@ public class PatentSellMain {
         addPicToFile(BG_FILE_NAME, 9);
         copyFile(DL_TEMPLATE_PATH, SELL_FOLD_PATH);
         addPicToFileHasTable(DL_FILE_NAME, 23);
-
         //读取报价单
         List<PatentQuotationDTO> patentQuotationDTOs = readQuotationExcel(QUOTATION_FILE_PATH);
         for (PatentQuotationDTO patentQuotationDTO : patentQuotationDTOs) {
@@ -75,13 +74,11 @@ public class PatentSellMain {
         deleteFile(SELL_FOLD_PATH + "/" + JP_FILE_NAME);
         deleteFile(SELL_FOLD_PATH + "/" + BG_FILE_NAME);
         deleteFile(SELL_FOLD_PATH + "/" + DL_FILE_NAME);
-//        Thread.sleep(500);
         //打包文件
         zipSellFold(SELL_FOLD_PATH, SELL_FOLD_PATH + ".zip");
         //删除文件夹
         deleteFolder(COMPANT_FOLD_PATH, SELL_FOLD_NAME);
         System.out.println("["+COMPANT_NAME+"]打包完成");
-
     }
 
     @SneakyThrows
@@ -101,7 +98,7 @@ public class PatentSellMain {
                             Files.copy(path, zos);
                             zos.closeEntry();
                         } catch (Exception e) {
-                            System.err.println("Error while zipping file: " + path + " - " + e.getMessage());
+                            System.err.println("压缩文件失败: " + path + " - " + e.getMessage());
                         }
                     });
         }
@@ -216,10 +213,8 @@ public class PatentSellMain {
         XWPFDocument document = new XWPFDocument(new FileInputStream(docPath));
         FileOutputStream out = new FileOutputStream(docPath);
         FileInputStream is = new FileInputStream(sealFile);
-
         int currentLine = 0;
         boolean pictureInserted = false;
-
         // 只处理第一个表格
         if (!document.getTables().isEmpty()) {
             XWPFTable table = document.getTables().get(0);
@@ -249,17 +244,14 @@ public class PatentSellMain {
                 }
             }
         }
-
         if (!pictureInserted) {
             System.out.println("文档中的行数不足 " + (lineIndex + 1) + " 行。");
         }
-
         document.write(out);
         out.close();
         is.close();
         document.close();
     }
-
 
     @SneakyThrows
     private static void copyFile(String filepath, String directFoldPath) {
