@@ -14,7 +14,6 @@ import java.util.Map;
 
 public class PatentDocMain {
 
-
     public static LinkedHashMap<String, String[]> reasonMap = new LinkedHashMap<>();
     public static Map<String,String> statusMap = new HashMap<>();
     public static String INSERT_SQL = "INSERT INTO `patent_detail_yitong`(`patent_id`, `type`, `status`, `doc_name`) VALUES ('%s', '%s', '%s', '%s');";
@@ -28,7 +27,6 @@ public class PatentDocMain {
         statusMap.put("不具备授权前景，不能被授予专利权","01");
         statusMap.put("没有实质性内容，将被驳回","02");
     }
-
 
     public static void main(String[] args) {
         String pdfFolderPath = "F:/doc/";
@@ -103,8 +101,6 @@ public class PatentDocMain {
                         || line.contains("不能被授予专利权")) {
                     start = true;
                 }
-
-
                 if (start) {
                     if (line.trim().matches("^\\d{6}.*")) {
                         start = false;
@@ -117,7 +113,6 @@ public class PatentDocMain {
         reader.close();
         System.out.println(extractedText.toString().trim());
     }
-
 
     private static void itextpdf1() {
         String filePath = "F:/doc/00d619634759c1b7ad2830c57350a314.pdf";
@@ -170,7 +165,5 @@ public class PatentDocMain {
             e.printStackTrace();
         }
     }
-
-
 }
 
