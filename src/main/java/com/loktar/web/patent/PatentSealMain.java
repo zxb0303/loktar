@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class PatentSealMain {
     public static String BASE_FOLD_PATH = "F:/OneDrive/Patent/seal/";
-    public static String CONTRACT_FILE_NAME = "合同";
+    public static String CONTRACT_FILE_NAME = "扫描全能王 2024-09-30 09.56";
     public static String AGREEMENT_FILE_NAME = "协议";
     public static String PDF_FILE_SUFFIX = ".pdf";
     public static String NEW_FILE_SUFFX = "-盖章.pdf";
@@ -59,7 +59,6 @@ public class PatentSealMain {
         } else if (numberOfPages == 4) {
             images = IMAGES4_PATHS;
         }
-        
 
         for (int pageNumber = 1; pageNumber <= numberOfPages; pageNumber++) {
             PdfContentByte canvas = stamper.getOverContent(pageNumber);
@@ -67,6 +66,12 @@ public class PatentSealMain {
             if (pageNumber == numberOfPages) {
                 writeImageSeal0(canvas, CONTRACT3_WEIGHT, CONTRACT3_HEIGHT);
             }
+//            if (pageNumber == 3) {
+//                writeImageSeal0(canvas, CONTRACT3_WEIGHT, CONTRACT3_HEIGHT);
+//            }
+//            if (pageNumber == 4) {
+//                writeImageSeal0(canvas, CONTRACT3_WEIGHT, CONTRACT3_HEIGHT);
+//            }
         }
         stamper.close();
         reader.close();
