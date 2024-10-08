@@ -41,6 +41,7 @@ public class PatentDetailDocInfoController {
     @SneakyThrows
     @PostMapping("/getEncodeDetails.do")
     public String getEncodeDetails(String caseStatus,String start, String end) {
+        //TODO 先更新下状态 update patent_detail_doc_info pddi left join patent_detail pd on pddi.patent_id=pd.patent_id set pd.status = 1  where pddi.`index`= 1 and pd.status = 0;
         List<PatentDetailDTO> patentDetailDTOs = new ArrayList<>();
         List<PatentDetail> patentDetails = patentDetailMapper.selectByTypeAndCaseStatus(TYPE, caseStatus, Integer.parseInt(start), Integer.parseInt(end));
         for (PatentDetail patentDetail : patentDetails) {
