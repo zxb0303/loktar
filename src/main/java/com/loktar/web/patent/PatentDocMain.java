@@ -16,11 +16,11 @@ public class PatentDocMain {
 
     public static LinkedHashMap<String, String[]> reasonMap = new LinkedHashMap<>();
     public static Map<String,String> statusMap = new HashMap<>();
-    public static String INSERT_SQL = "INSERT INTO `patent_detail_yitong`(`patent_id`, `type`, `status`, `doc_name`) VALUES ('%s', '%s', '%s', '%s');";
+    public static String INSERT_OR_UPDATE_SQL = "INSERT INTO `patent_detail_yitong`(`patent_id`, `type`, `status`, `doc_name`) VALUES ('%s', '%s', '%s', '%s') ON DUPLICATE KEY UPDATE `type`=VALUES(`type`), `status`=VALUES(`status`), `doc_name`=VALUES(`doc_name`);";
 
     static {
         reasonMap.put("等待答复", new String[]{"答复期内", "答复期限内", "文本尚存在缺陷", "目前的文本不能被授权"});
-        reasonMap.put("不具备授权前景，不能被授予专利权", new String[]{"不具备授权前景", "不具备被授予专利权的前景", "不能被授予专利权"});
+        reasonMap.put("不具备授权前景，不能被授予专利权", new String[]{"不具备授权前景", "不具有授权前景","不具备授予专利权的前景","不具备被授予专利权的前景", "不能被授予专利权"});
         reasonMap.put("没有实质性内容，将被驳回", new String[]{"没有可授予专利权的实质性内容", "没有可以被授予专利权的实质性内容", "本申请将被驳回","不具备创造性"});
 
         statusMap.put("等待答复","00");
@@ -70,7 +70,7 @@ public class PatentDocMain {
             }
         }
 //        System.out.println(fileName + ";" + patentId + ";" + docMsg);
-        String sql = String.format(INSERT_SQL, patentId, statusMap.get(docMsg), "0", fileName);
+        String sql = String.format(INSERT_OR_UPDATE_SQL, patentId, statusMap.get(docMsg), "0", fileName);
         System.out.println(sql);
     }
 
