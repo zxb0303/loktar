@@ -147,7 +147,7 @@ public class QyWeixinCallbackController {
                 replymsg.append(System.lineSeparator())
                         .append(state).append(System.lineSeparator());
                 break;
-            case EventCommandType.ALT_TRANSMISSION_SPEED:
+            case EventCommandType.TRANSMISSION_SPEED_SWTICH:
                 TrResponse trResponseSession = transmissionUtil.getSession();
                 if (!trResponseSession.getArguments().getAltSpeedEnabled()) {
                     transmissionUtil.altSpeedEnabled(true);
@@ -170,14 +170,6 @@ public class QyWeixinCallbackController {
                             .append("Reset：").append(DateTimeUtil.getDatetimeStr(LocalDateTime, DateTimeUtil.FORMATTER_DATE)).append(System.lineSeparator());
                 }
                 break;
-            case EventCommandType.SHOW_PATENT_PROCESS:
-                replymsg.append("当前专利进度如下：").append(System.lineSeparator());
-                int count = patentPdfApplyMapper.getCountByStatus(0);
-                replymsg.append(System.lineSeparator())
-                        .append("剩余：").append(count).append(System.lineSeparator())
-                        .append(System.lineSeparator())
-                        .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
-                break;
             case EventCommandType.UDATE_WX_MENU:
                 BaseResult baseResult = qywxApi.createAgentMenu(receiveEventMsg.getAgentID());
                 if (baseResult.getErrcode() == 0) {
@@ -185,6 +177,30 @@ public class QyWeixinCallbackController {
                 } else {
                     replymsg.append("菜单更新失败").append(System.lineSeparator());
                 }
+                break;
+            case EventCommandType.PATENT_SEARCH_PROCESS:
+                replymsg.append("当前专利进度如下：").append(System.lineSeparator());
+                int count1 = patentPdfApplyMapper.getCountByStatus(0);
+                int count2 = patentPdfApplyMapper.getCountByStatus(-5);
+                replymsg.append(System.lineSeparator())
+                        .append("状态0剩余：").append(count1).append(System.lineSeparator())
+                        .append(System.lineSeparator())
+                        .append("状态-5剩余：").append(count2).append(System.lineSeparator())
+                        .append(System.lineSeparator())
+                        .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
+                break;
+            case EventCommandType.PATENT_MONITOR_SWITCH:
+                String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
+                replymsg.append(System.lineSeparator());
+                if ("on".equals(status)) {
+                    redisUtil.del(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
+                    replymsg.append("已关闭专利监控").append(System.lineSeparator());
+                } else {
+                    redisUtil.set(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH, "on", -1);
+                    replymsg.append("已开启专利监控").append(System.lineSeparator());
+                }
+                replymsg.append(System.lineSeparator())
+                        .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                 break;
             default:
                 replymsg.append("不支持该命令").append(System.lineSeparator());
