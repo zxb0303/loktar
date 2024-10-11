@@ -43,6 +43,30 @@ public class PatentTask {
         this.redisUtil = redisUtil;
     }
 
+    @Scheduled(cron = "0 */3 7-22 * * *")
+    public void patentMonitor() {
+        StringBuilder replymsg = new StringBuilder();
+        String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
+        if (StringUtils.isEmpty(status)) {
+            return;
+        }
+        Integer redisCount = (Integer) redisUtil.get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_COUNT);
+        int dbCount = patentPdfApplyMapper.getCountByStatus(0);
+        if (dbCount == 0) {
+            replymsg.append("专利查询已完成").append(System.lineSeparator());
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), replymsg.toString()));
+            redisUtil.del(LokTarConstant.REDIS_KEY_PATENT_MONITOR_COUNT);
+            return;
+        }
+        if (redisCount == null || redisCount.intValue() != dbCount) {
+            redisUtil.set(LokTarConstant.REDIS_KEY_PATENT_MONITOR_COUNT, dbCount, -1);
+            return;
+        }
+        replymsg.append("专利查询异常").append(System.lineSeparator());
+        qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), replymsg.toString()));
+
+    }
+
     @Scheduled(cron = "0 0 1,19 * * *")
     public void updatePatentPdfApply() {
         System.out.println("updatePatentPdfApply定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));

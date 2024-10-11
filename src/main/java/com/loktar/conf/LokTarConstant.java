@@ -27,6 +27,8 @@ public class LokTarConstant {
     public static final String REDIS_KEY_NEWHOUSE_COOKIE = "newhouse_cookie";
     public static final String REDIS_KEY_TRANSMISSION_SESSIONID = "transmission_sessionid";
     public static final String REDIS_KEY_QYWX_PATENT_MSG_TASK_LOCK = "qywx_patent_msg_task";
+    public static final String REDIS_KEY_PATENT_MONITOR_SWITCH = "qywx_patent_monitor_switch";
+    public static final String REDIS_KEY_PATENT_MONITOR_COUNT = "qywx_patent_monitor_count";
 
 
     public final static String NOTICE_TITLE_GITHUB = "GitHub项目更新通知";

@@ -13,8 +13,9 @@ public enum EventCommandType {
     SHOW_TRANSMISSION_ALT_SPEED("查看TR限速状态"),
     SHOW_BWG_fLOW("查询搬瓦工流量"),
     UDATE_WX_MENU("更新菜单"),
-    ALT_TRANSMISSION_SPEED("TR限速开关"),
-    SHOW_PATENT_PROCESS("查询专利进度");
+    TRANSMISSION_SPEED_SWTICH("TR限速开关"),
+    PATENT_SEARCH_PROCESS("专利查询进度"),
+    PATENT_MONITOR_SWITCH("专利查询监控");
 
     private final String name;
 
