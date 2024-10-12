@@ -191,7 +191,6 @@ public class QyWeixinCallbackController {
                 break;
             case EventCommandType.PATENT_MONITOR_SWITCH:
                 String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
-                replymsg.append(System.lineSeparator());
                 if ("on".equals(status)) {
                     redisUtil.del(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
                     replymsg.append("已关闭专利监控").append(System.lineSeparator());
