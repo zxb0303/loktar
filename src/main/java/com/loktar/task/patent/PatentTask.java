@@ -55,7 +55,7 @@ public class PatentTask {
         int dbCount2 = patentPdfApplyMapper.getCountByStatus(-5);
         int dbCount = dbCount1 + dbCount2;
         if (dbCount == 0) {
-            replymsg.append("专利查询已完成").append(System.lineSeparator());
+            replymsg.append("专利查询已完成");
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), replymsg.toString()));
             redisUtil.del(LokTarConstant.REDIS_KEY_PATENT_MONITOR_COUNT);
             return;
