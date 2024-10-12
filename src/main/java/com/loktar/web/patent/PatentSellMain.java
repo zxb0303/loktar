@@ -23,7 +23,7 @@ import java.util.zip.ZipOutputStream;
 
 public class PatentSellMain {
     //TODO start 公司名称和营业执照格式 每个公司需要确认后修改
-    public static String COMPANT_NAME = "郑州集贤科技有限公司";
+    public static String COMPANT_NAME = "郑州金东远科技有限公司";
     public static String BUSINESS_LICENSE_NAME = "营业执照.jpg";
     //TODO end
     public static String BASE_FOLD_PATH = "F:/OneDrive/Patent/成交资料/";
