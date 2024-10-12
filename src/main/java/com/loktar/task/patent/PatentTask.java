@@ -43,7 +43,7 @@ public class PatentTask {
         this.redisUtil = redisUtil;
     }
 
-    @Scheduled(cron = "0 */3 7-22 * * *")
+    @Scheduled(cron = "0 */3 * * * *")
     public void patentMonitor() {
         StringBuilder replymsg = new StringBuilder();
         String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
@@ -51,7 +51,9 @@ public class PatentTask {
             return;
         }
         Integer redisCount = (Integer) redisUtil.get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_COUNT);
-        int dbCount = patentPdfApplyMapper.getCountByStatus(0);
+        int dbCount1 = patentPdfApplyMapper.getCountByStatus(0);
+        int dbCount2 = patentPdfApplyMapper.getCountByStatus(-5);
+        int dbCount = dbCount1 + dbCount2;
         if (dbCount == 0) {
             replymsg.append("专利查询已完成").append(System.lineSeparator());
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), replymsg.toString()));
@@ -62,7 +64,14 @@ public class PatentTask {
             redisUtil.set(LokTarConstant.REDIS_KEY_PATENT_MONITOR_COUNT, dbCount, -1);
             return;
         }
-        replymsg.append("专利查询异常").append(System.lineSeparator());
+        replymsg.append("专利查询异常，已关闭监控：").append(System.lineSeparator());
+        replymsg.append(System.lineSeparator())
+                .append("状态0剩余：").append(dbCount1).append(System.lineSeparator())
+                .append(System.lineSeparator())
+                .append("状态-5剩余：").append(dbCount2).append(System.lineSeparator())
+                .append(System.lineSeparator())
+                .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
+        redisUtil.del(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
         qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), replymsg.toString()));
 
     }
