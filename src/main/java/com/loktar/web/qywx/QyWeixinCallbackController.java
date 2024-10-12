@@ -173,9 +173,9 @@ public class QyWeixinCallbackController {
             case EventCommandType.UDATE_WX_MENU:
                 BaseResult baseResult = qywxApi.createAgentMenu(receiveEventMsg.getAgentID());
                 if (baseResult.getErrcode() == 0) {
-                    replymsg.append("菜单更新成功").append(System.lineSeparator());
+                    replymsg.append("菜单更新成功");
                 } else {
-                    replymsg.append("菜单更新失败").append(System.lineSeparator());
+                    replymsg.append("菜单更新失败");
                 }
                 break;
             case EventCommandType.PATENT_SEARCH_PROCESS:
@@ -193,16 +193,16 @@ public class QyWeixinCallbackController {
                 String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
                 if ("on".equals(status)) {
                     redisUtil.del(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
-                    replymsg.append("已关闭专利监控").append(System.lineSeparator());
+                    replymsg.append("已关闭专利监控");
                 } else {
                     redisUtil.set(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH, "on", -1);
-                    replymsg.append("已开启专利监控").append(System.lineSeparator());
+                    replymsg.append("已开启专利监控");
                 }
                 replymsg.append(System.lineSeparator())
                         .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                 break;
             default:
-                replymsg.append("不支持该命令").append(System.lineSeparator());
+                replymsg.append("不支持该命令");
                 break;
         }
         qywxApi.sendTextMsg(new AgentMsgText(receiveEventMsg.getFromUserName(), receiveEventMsg.getAgentID(), replymsg.toString()));
