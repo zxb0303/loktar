@@ -10,7 +10,7 @@
     </parent>
     <groupId>com</groupId>
     <artifactId>loktar</artifactId>
-    <version>5.1.1</version>
+    <version>5.1.2</version>
     <name>loktar</name>
     <description>loktar</description>
     <properties>
