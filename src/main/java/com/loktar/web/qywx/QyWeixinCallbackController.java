@@ -193,10 +193,10 @@ public class QyWeixinCallbackController {
                 String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
                 if ("on".equals(status)) {
                     redisUtil.del(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
-                    replymsg.append("已关闭专利监控");
+                    replymsg.append("已关闭专利监控").append(System.lineSeparator());
                 } else {
                     redisUtil.set(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH, "on", -1);
-                    replymsg.append("已开启专利监控");
+                    replymsg.append("已开启专利监控").append(System.lineSeparator());
                 }
                 replymsg.append(System.lineSeparator())
                         .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));

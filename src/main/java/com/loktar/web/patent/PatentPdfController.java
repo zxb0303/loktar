@@ -34,7 +34,7 @@ import java.util.List;
 @RestController
 @RequestMapping("patentpdf")
 public class PatentPdfController {
-    private static String BASEPATH = "F:/loktar/patent/2020/";
+    private static String BASEPATH = "F:/loktar/patent/";
     private static String FILENAME = "{0}.pdf";
     private static String URL_DETAIL = "https://cpquery.cponline.cnipa.gov.cn/detail/index?zhuanlisqh={0}&anjianbh";
     private static String TYPE = "实用新型";

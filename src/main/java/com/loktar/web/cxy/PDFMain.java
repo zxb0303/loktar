@@ -31,13 +31,13 @@ public class PDFMain {
 //        String pdfFolderPath = "F:/loktar/pdf/";
 //        picToPdf(pdfFolderPath, 300);
 
-        //pdf拆分成图片
-        //pdfFilePath是主文件夹目录，会将主文件目录下的pdf文件拆分为jpg图片并保存在同文件名的文件夹下
-        //-pdf
-        //  -a.pdf
-        //  -b.pdf
-//       String pdfFilePath = "F:/loktar/pdf/";
-//       pdfTojpg(pdfFilePath);
+//        pdf拆分成图片
+//        pdfFilePath是主文件夹目录，会将主文件目录下的pdf文件拆分为jpg图片并保存在同文件名的文件夹下
+//        -pdf
+//          -a.pdf
+//          -b.pdf
+       String pdfFilePath = "F:/loktar/pdf/";
+       pdfTojpg(pdfFilePath);
 
 //        pdf合并
 //        pdfFilePath是主文件夹目录，会将主文件目录下的子文件夹中的pdf合并为子文件夹名.pdf保存在主文件下
@@ -45,8 +45,8 @@ public class PDFMain {
 //          -a
 //            --a1.pdf
 //            --a2.pdf
-        String  pdfFolderPath = "F:/loktar/pdf/";
-        mergepdfs(pdfFolderPath);
+//        String  pdfFolderPath = "F:/loktar/pdf/";
+//        mergepdfs(pdfFolderPath);
 
         //pdf拆分
 //        String pdfFilePath = "F:/loktar/pdf/1.pdf";
