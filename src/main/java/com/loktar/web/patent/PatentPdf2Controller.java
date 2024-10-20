@@ -67,6 +67,7 @@ public class PatentPdf2Controller {
             PatentDetailDTO patentDetailDTO = new PatentDetailDTO();
             patentDetailDTO.setPatentId(patentDetail.getPatentId());
             patentDetailDTO.setApplyId(patentDetail.getApplyId());
+            patentDetailDTO.setType(patentDetail.getType());
             patentDetailDTO.setName(patentDetail.getName());
             patentDetailDTO.setApplyName(patentDetail.getApplyName());
             patentDetailDTO.setCaseStatus(patentDetail.getCaseStatus());
