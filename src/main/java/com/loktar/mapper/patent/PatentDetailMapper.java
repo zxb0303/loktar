@@ -30,4 +30,8 @@ public interface PatentDetailMapper {
     List<PatentDetail> selectByTypeAndCaseStatus(String type, String caseStatus, int start, int end);
 
     int updateStatusByPatentId(String patentId, int status);
+
+    int updateCaseStatusByPatentId(String patentId, String caseStatus);
+
+    List<PatentDetail> getNeedAnalyzeDocPatent();
 }

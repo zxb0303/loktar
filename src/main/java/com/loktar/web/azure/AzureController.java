@@ -1,12 +1,14 @@
 package com.loktar.web.azure;
 
 import com.azure.ai.documentintelligence.models.AnalyzeResult;
-import com.loktar.conf.LokTarConstant;
+import com.azure.ai.documentintelligence.models.DocumentParagraph;
 import com.loktar.util.AzureDocIntelligenceUtil;
 import com.loktar.util.AzureVoiceUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("azure")
@@ -26,8 +28,18 @@ public class AzureController {
 
     @GetMapping("/analyze.do")
     public void test(){
-        String jpgfilepath = "F:\\newhouse\\conversion\\acd7ec7e03e64da1a0427a5f97de5b55\\2019000073\\66146\\0013.jpg";
-        AnalyzeResult analyzeLayoutResult = AzureDocIntelligenceUtil.getAnalyze(LokTarConstant.AZURE_DOCINTELLIGENCE_MODEL_ID,jpgfilepath);
+        String jpgfilepath = "F:/doc/0a8454a7f004be1668df8291aa0a0c2d.pdf";
+        AnalyzeResult analyzeLayoutResult = AzureDocIntelligenceUtil.getAnalyze("prebuilt-layout",jpgfilepath,"2");
         System.out.println(analyzeLayoutResult.toString());
+        List<DocumentParagraph> documentParagraphs = analyzeLayoutResult.getParagraphs();
+        for (DocumentParagraph documentParagraph : documentParagraphs){
+            if(documentParagraph.getContent().contains("7.基于上述结论性意见,审查员认为")){
+                System.out.println(documentParagraph.getContent());
+            }
+        }
+
+
     }
+
+
 }
