@@ -13,7 +13,6 @@ springdoc:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapperLocations: classpath:com/loktar/mapper/**/xml/*.xml
 logging:
   level:
