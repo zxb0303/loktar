@@ -1,62 +1,21 @@
 package com.loktar.web.test;
 
-
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
-
 public class MainTest {
+
+
+
     public static void main(String[] args) {
-        String directoryPath = "F:\\OneDrive\\Patent\\quotation"; // 替换为你的文件夹路径
-        File folder = new File(directoryPath);
-        File[] listOfFiles = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".xlsx"));
-
-        if (listOfFiles != null) {
-            for (File file : listOfFiles) {
-                if (file.isFile()) {
-                    try (FileInputStream fis = new FileInputStream(file);
-                         Workbook workbook = new XSSFWorkbook(fis)) {
-
-                        Sheet sheet = workbook.getSheetAt(0); // 获取第一个工作表
-                        int count = 0;
-                        boolean found = false;
-
-                        for (int rowIndex = 0; rowIndex < Math.min(10, sheet.getPhysicalNumberOfRows()); rowIndex++) {
-                            Row row = sheet.getRow(rowIndex);
-                            if (row != null) {
-                                for (int colIndex = 0; colIndex < Math.min(15, row.getPhysicalNumberOfCells()); colIndex++) {
-                                    Cell cell = row.getCell(colIndex);
-                                    if (cell != null && cell.getCellType() == CellType.STRING) {
-                                        String cellValue = cell.getStringCellValue();
-                                        if (cellValue.contains("费减")) {
-                                            count++;
-                                            if (count >= 3) {
-                                                System.out.println(file.getName().replace(".xlsx",""));
-                                                found = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (found) break;
-                        }
-
-                    } catch (IOException e) {
-                        System.err.println("Error reading file: " + file.getName());
-                        e.printStackTrace();
-                    }
-                }
+        String str = "7.基于上述结论性意见,审查员认为: :unselected: 申请人应当按照通知书正文部分提出的要求,对申请文件进行修改。 :selected: X 申请人应当在意见陈述书中论述其专利申请可以被授予专利权的理由,并对通知书正文部分中指出的不符 合规定之处进行修改,否则将不能授予专利权。 :unselected: 专利申请中没有可以被授予专利权的实质性内容,如果申请人没有陈述理由或者陈述理由不充分,其申请 将被驳回。 :unselected:";
+        String result = str.replaceAll(":unselected:", "0")
+                .replaceAll(":selected:", "1");
+        StringBuilder output = new StringBuilder();
+        for (char c : result.toCharArray()) {
+            if (c == '0' || c == '1') {
+                output.append(c);
             }
-        } else {
-            System.out.println("No files found in the directory.");
         }
+        System.out.println(output.toString());
     }
-
 
 }
 
