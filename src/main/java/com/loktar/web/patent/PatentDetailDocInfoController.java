@@ -104,7 +104,6 @@ public class PatentDetailDocInfoController {
             File docFile = new File(pdfdocPath);
             if (docFile.exists()) {
                 AnalyzeResult analyzeLayoutResult = AzureDocIntelligenceUtil.getAnalyze("prebuilt-layout", pdfdocPath, "2");
-                System.out.println(analyzeLayoutResult.toString());
                 List<DocumentParagraph> documentParagraphs = analyzeLayoutResult.getParagraphs();
                 for (DocumentParagraph documentParagraph : documentParagraphs) {
                     if (documentParagraph.getContent().contains("7.基于上述结论性意见,审查员认为")) {
@@ -113,10 +112,12 @@ public class PatentDetailDocInfoController {
                         patentDetailYitong.setPatentId(patentDetail.getPatentId());
                         patentDetailYitong.setType(result);
                         patentDetailYitongMapper.insert(patentDetailYitong);
+                        System.out.println(patentDetail.getPatentId() + "已处理");
                     }
                 }
-            }else{
-                System.out.println("文件不存在");
+            } else {
+                System.out.println(patentDetail.getPatentId() + "文件不存在,已删除发文数据，重新爬虫即可");
+                patentDetailDocInfoMapper.deleteByPatentId(patentDetail.getPatentId());
             }
         }
         System.out.println("done");

@@ -28,16 +28,16 @@ public class PDFMain {
 //          -a
 //            --a1.jpg
 //            --a2.jpg
-//        String pdfFolderPath = "F:/loktar/pdf/";
-//        picToPdf(pdfFolderPath, 300);
+        String pdfFolderPath = "F:/loktar/pdf/";
+        picToPdf(pdfFolderPath, 300);
 
 //        pdf拆分成图片
 //        pdfFilePath是主文件夹目录，会将主文件目录下的pdf文件拆分为jpg图片并保存在同文件名的文件夹下
 //        -pdf
 //          -a.pdf
 //          -b.pdf
-       String pdfFilePath = "F:/loktar/pdf/";
-       pdfTojpg(pdfFilePath);
+//       String pdfFilePath = "F:/loktar/pdf/";
+//       pdfTojpg(pdfFilePath);
 
 //        pdf合并
 //        pdfFilePath是主文件夹目录，会将主文件目录下的子文件夹中的pdf合并为子文件夹名.pdf保存在主文件下
@@ -53,6 +53,7 @@ public class PDFMain {
 //        int pagesPerSplit = 2; // 每个拆分文件的页数
 //        splitPdfByPages(pdfFilePath, pagesPerSplit);
     }
+
     public static void mergepdfs(String pdfFolderPath) {
         File mainFolder = new File(pdfFolderPath);
         File[] folders = mainFolder.listFiles();
@@ -69,7 +70,7 @@ public class PDFMain {
                 Arrays.sort(pdfFiles, Comparator.comparing(File::getName));
 
                 PDFMergerUtility mergerUtility = new PDFMergerUtility();
-                String outputFilePath = pdfFolderPath + File.separator +folder.getName()+ ".pdf";
+                String outputFilePath = pdfFolderPath + File.separator + folder.getName() + ".pdf";
                 mergerUtility.setDestinationFileName(outputFilePath);
 
                 for (File pdfFile : pdfFiles) {
@@ -93,6 +94,7 @@ public class PDFMain {
         }
 
     }
+
     @SneakyThrows
     public static void pdfTojpg(String pdfFolderPath) {
         File pdfFolder = new File(pdfFolderPath);
@@ -120,7 +122,7 @@ public class PDFMain {
     }
 
     @SneakyThrows
-    public static void picToPdf(String pdfFolderPath, int dpi)  {
+    public static void picToPdf(String pdfFolderPath, int dpi) {
         File mainFolder = new File(pdfFolderPath);
         File[] folders = mainFolder.listFiles();
         for (File folder : folders) {
@@ -134,26 +136,35 @@ public class PDFMain {
                         if (imageFile.isFile()) {
                             System.out.println(imageFile.getName());
 
-                            // Calculate the page size based on the DPI
-                            float width = 8.27f * dpi;  // A4 width in inches * DPI
-                            float height = 11.69f * dpi; // A4 height in inches * DPI
-                            PDRectangle pageSize = new PDRectangle(width, height);
-
+                            // Define A4 page size
+                            PDRectangle pageSize = PDRectangle.A4;
                             PDPage page = new PDPage(pageSize);
                             document.addPage(page);
+
                             PDImageXObject image = PDImageXObject.createFromFileByExtension(imageFile, document);
                             PDPageContentStream contentStream = new PDPageContentStream(document, page);
-                            contentStream.drawImage(image, 0, 0, width, height);
+
+                            // Calculate the scaling to fit the image within A4 dimensions
+                            float imageWidth = image.getWidth();
+                            float imageHeight = image.getHeight();
+                            float scale = Math.min(pageSize.getWidth() / imageWidth, pageSize.getHeight() / imageHeight);
+
+                            // Calculate the position to center the image
+                            float x = (pageSize.getWidth() - imageWidth * scale) / 2;
+                            float y = (pageSize.getHeight() - imageHeight * scale) / 2;
+
+                            contentStream.drawImage(image, x, y, imageWidth * scale, imageHeight * scale);
                             contentStream.close();
                         }
                     }
                 }
-                String filename = pdfFolderPath + foldername + ".pdf";
+                String filename = pdfFolderPath + File.separator + foldername + ".pdf";
                 document.save(filename);
                 document.close();
             }
         }
     }
+
 
     public static void splitPdfByPages(String pdfFilePath, int pagesPerSplit) {
         File pdfFile = new File(pdfFilePath);
@@ -184,7 +195,6 @@ public class PDFMain {
             System.err.println("Error splitting PDF: " + e.getMessage());
         }
     }
-
 
 
     public static File[] sortFiles(File[] files) {
