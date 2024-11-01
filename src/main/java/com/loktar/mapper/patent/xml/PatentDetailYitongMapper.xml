@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.patent.PatentDetailYitongMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.patent.PatentDetailYitong">
+    <id column="patent_id" jdbcType="VARCHAR" property="patentId" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="user" jdbcType="VARCHAR" property="user" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from patent_detail_yitong
+    where patent_id = #{patentId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.patent.PatentDetailYitong">
+    insert into patent_detail_yitong (patent_id, `type`, `user`, 
+      create_time, update_time)
+    values (#{patentId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{user,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.patent.PatentDetailYitong">
+    update patent_detail_yitong
+    set `type` = #{type,jdbcType=VARCHAR},
+      `user` = #{user,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where patent_id = #{patentId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select patent_id, `type`, `user`, create_time, update_time
+    from patent_detail_yitong
+    where patent_id = #{patentId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select patent_id, `type`, `user`, create_time, update_time
+    from patent_detail_yitong
+  </select>
+</mapper>

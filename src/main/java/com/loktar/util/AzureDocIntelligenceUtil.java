@@ -26,10 +26,10 @@ public class AzureDocIntelligenceUtil {
     }
 
     @SneakyThrows
-    public static AnalyzeResult getAnalyze(String modelId,String filepath) {
+    public static AnalyzeResult getAnalyze(String modelId,String filepath,String pages) {
         File selectionMarkDocument = new File(filepath);
         SyncPoller<AnalyzeResultOperation, AnalyzeResultOperation> analyzeLayoutResultPoller =
-                client.beginAnalyzeDocument(modelId, null,
+                client.beginAnalyzeDocument(modelId, pages,
                         null,
                         null,
                         null,

@@ -120,11 +120,23 @@
     </select>
 
   <select id="selectByTypeAndCaseStatus" resultMap="BaseResultMap">
-      select * from patent_detail
-      where `type`=#{param1,jdbcType=VARCHAR} and case_status=#{param2,jdbcType=VARCHAR} and `apply_date`<![CDATA[>=]]>'2020-01-01' and `status` = 0 limit #{param3,jdbcType=INTEGER} , #{param4,jdbcType=INTEGER};
-    </select>
-  <update id="updateStatusByPatentId">
+      select pd.* from patent_detail pd left join patent_detail_doc_info pddi on pd.patent_id=pddi.patent_id
+      where pd.`type`=#{type,jdbcType=VARCHAR} and pd.case_status=#{caseStatus,jdbcType=VARCHAR} and pd.`apply_date`<![CDATA[>=]]>'2020-01-01' and pddi.patent_id is null limit #{start,jdbcType=INTEGER} , #{end,jdbcType=INTEGER};
+</select>
+    <update id="updateStatusByPatentId">
     update patent_detail set `status` = #{status,jdbcType=INTEGER}  where patent_id = #{patentId,jdbcType=VARCHAR}
   </update>
+  <update id="updateCaseStatusByPatentId">
+    update patent_detail set `case_status` = #{caseStatus,jdbcType=INTEGER}  where patent_id = #{patentId,jdbcType=VARCHAR}
+  </update>
+  <select id="getNeedAnalyzeDocPatent" resultMap="BaseResultMap">
+    select pd.* from patent_detail pd left join patent_detail_doc_info pddi on pd.patent_id = pddi.patent_id
+    left join patent_detail_yitong pdy on pd.patent_id=pdy.patent_id
+    where pd.type='发明专利' and pd.case_status='一通出案待答复' and pd.apply_date<![CDATA[>=]]>'2020-01-01'
+      and pddi.doc_name = '第一次审查意见通知书' and pddi.doc_type='电子发文' and pddi.index=1 and pddi.doc_date <![CDATA[>]]> CURDATE() - INTERVAL 4 MONTH
+      and pdy.patent_id is null
+    order by pddi.doc_date desc;
+  </select>
+
 
 </mapper>
