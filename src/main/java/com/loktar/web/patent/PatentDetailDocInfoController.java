@@ -106,7 +106,7 @@ public class PatentDetailDocInfoController {
                 AnalyzeResult analyzeLayoutResult = AzureDocIntelligenceUtil.getAnalyze("prebuilt-layout", pdfdocPath, "2");
                 List<DocumentParagraph> documentParagraphs = analyzeLayoutResult.getParagraphs();
                 for (DocumentParagraph documentParagraph : documentParagraphs) {
-                    if (documentParagraph.getContent().contains("7.基于上述结论性意见,审查员认为")) {
+                    if (documentParagraph.getContent().contains("基于上述结论性意见")) {//7. 基于上述结论性意见,审查员认为  7.基于上述结论性意见,审查员认为
                         String result = getAnalyzeResult(documentParagraph.getContent());
                         PatentDetailYitong patentDetailYitong = new PatentDetailYitong();
                         patentDetailYitong.setPatentId(patentDetail.getPatentId());
@@ -137,6 +137,7 @@ public class PatentDetailDocInfoController {
 
     public static void main(String[] args) {
         renamePdfDoc();
+        System.out.println("done");
     }
 
     private static void renamePdfDoc() {
