@@ -66,7 +66,16 @@ public class PatentServiceImpl implements PatentService {
                 if (patentDetail.getApplyName().contains(",") || patentDetail.getApplyName().contains("分公司")) {
                     needRemove.add(patentDetail);
                 }
-                patentDetail.setStatus(0);
+                String name = patentDetail.getName();
+                int status;
+                if (name.contains("水利")) {
+                    status = 1;
+                } else if (name.matches(".*(建筑|混凝土|电气|桥梁|自动化|土木|计算机).*")) {
+                    status = 2;
+                } else {
+                    status = 0;
+                }
+                patentDetail.setStatus(status);
                 patentDetail.setApplyId(applyId);
             }
             patentDetails.removeAll(needRemove);
@@ -82,7 +91,7 @@ public class PatentServiceImpl implements PatentService {
                             patentTrade.setPatentId(patentDetail.getPatentId());
                             patentTrade.setFromApplyName(exist.getApplyName());
                             patentTrade.setToApplyName(patentDetail.getApplyName());
-                            if(!patentTrade.getFromApplyName().equals(patentTrade.getToApplyName())){
+                            if (!patentTrade.getFromApplyName().equals(patentTrade.getToApplyName())) {
                                 patentTradeMapper.insert(patentTrade);
                             }
                             patentDetailMapper.updateByPrimaryKey(patentDetail);
