@@ -71,6 +71,7 @@ public class PatentPdf2Controller {
             patentDetailDTO.setName(patentDetail.getName());
             patentDetailDTO.setApplyName(patentDetail.getApplyName());
             patentDetailDTO.setCaseStatus(patentDetail.getCaseStatus());
+            patentDetailDTO.setStatus(patentDetail.getStatus());
             String urlEncodedUrl = URLEncoder.encode(PatentUtil.encrypt(patentDetail.getPatentId()), StandardCharsets.UTF_8.toString());
             String doubleUrlEncodedUrl = URLEncoder.encode(urlEncodedUrl, StandardCharsets.UTF_8.toString());
             patentDetailDTO.setEncodeUrl(MessageFormat.format(URL_DETAIL, doubleUrlEncodedUrl));
