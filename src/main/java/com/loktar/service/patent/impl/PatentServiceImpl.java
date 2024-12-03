@@ -70,7 +70,7 @@ public class PatentServiceImpl implements PatentService {
                 int status;
                 if (name.contains("水利")) {
                     status = 1;
-                } else if (name.matches(".*(建筑|混凝土|电气|桥梁|自动化|土木|计算机).*")) {
+                } else if (name.matches(".*(建筑|电力|无人机|电脑|电缆|配电|控制柜|开关柜|污水|废水|废气|食品|混凝土|电气|桥梁|自动化|大数据|土木|计算机).*")) {
                     status = 2;
                 } else {
                     status = 0;
