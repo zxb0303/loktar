@@ -31,7 +31,7 @@ public class PatentSealMain {
 
     public static void main(String[] args) {
         createContract();
-        createAgreement();
+        //createAgreement();
     }
 
     @SneakyThrows
