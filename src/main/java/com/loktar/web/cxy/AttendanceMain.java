@@ -24,18 +24,18 @@ public class AttendanceMain {
     private final static Map<String, CellStyle> STYLE_MAP = new HashMap<>();
     // TODO 需要预处理daily表中是否都是正常班和正常晚班
     // TODO 需要预处理daily表中日期格式带不带-
-    private final static String MONTH = "202409";
+    private final static String MONTH = "202411";
     private final static String MAX_DAY = "30";
 
     // TODO  30天的请假数据是从85列开始，31天的请假数据是从86列开始
     private final static int columns = 85;
 
     // TODO 法定补班日 eg:"2023-06-25"
-    private final static String[] SPECIALWORKDAYS = new String[]{"2024-09-14","2024-09-29"};
+    private final static String[] SPECIALWORKDAYS = new String[]{};
     // TODO 法定节假日（除周末） eg:"2023-06-22", "2023-06-23"
-    private final static String[] SPECIALWEEKDAYS = new String[]{"2024-09-14","2024-09-15","2024-09-16"};
+    private final static String[] SPECIALWEEKDAYS = new String[]{};
 
-    private final static String ATTENDANCE_PATH = "F:/OneDrive/赵晓滨/13 桌面临时文件/小陈考勤/2023版/";
+    private final static String ATTENDANCE_PATH = "";
 
     private final static String DAILY_FILE_PATH = ATTENDANCE_PATH + MONTH + "/每日统计_" + MONTH + "01_" + MONTH + MAX_DAY + ".xlsx";
     private final static String MONTH_FILE_PATH = ATTENDANCE_PATH + MONTH + "/月度汇总_" + MONTH + "01_" + MONTH + MAX_DAY + ".xlsx";
