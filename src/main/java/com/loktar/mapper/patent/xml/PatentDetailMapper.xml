@@ -108,7 +108,7 @@
              legal_status, case_status, auth_notice_date, main_category_num, `status`, create_time,
              update_time
       from patent_detail
-      where apply_id = #{param1,jdbcType=VARCHAR} and `type` = #{param2,jdbcType=VARCHAR} and case_status in ('专利权维持','等年费滞纳金') and apply_date<![CDATA[>=]]>'2020-01-01'
+      where apply_id = #{param1,jdbcType=VARCHAR} and `type` = #{param2,jdbcType=VARCHAR} and case_status in ('专利权维持','等年费滞纳金') and apply_date<![CDATA[>=]]>'2021-01-01'
     </select>
 
     <select id="selectForQuoteV2" resultMap="BaseResultMap">
@@ -116,12 +116,12 @@
              legal_status, case_status, auth_notice_date, main_category_num, `status`, create_time,
              update_time
       from patent_detail
-      where apply_id = #{applyId,jdbcType=VARCHAR} and case_status in ('专利权维持','等年费滞纳金') and ((`type` ='实用新型' and apply_date<![CDATA[>=]]>'2020-01-01') or (`type` ='发明专利' and apply_date<![CDATA[>=]]>'2019-01-01'))
+      where apply_id = #{applyId,jdbcType=VARCHAR} and case_status in ('专利权维持','等年费滞纳金') and ((`type` ='实用新型' and apply_date<![CDATA[>=]]>'2021-01-01') or (`type` ='发明专利' and apply_date<![CDATA[>=]]>'2019-01-01'))
     </select>
 
   <select id="selectByTypeAndCaseStatus" resultMap="BaseResultMap">
       select pd.* from patent_detail pd left join patent_detail_doc_info pddi on pd.patent_id=pddi.patent_id
-      where pd.`type`=#{type,jdbcType=VARCHAR} and pd.case_status=#{caseStatus,jdbcType=VARCHAR} and pd.`apply_date`<![CDATA[>=]]>'2020-01-01' and pddi.patent_id is null limit #{start,jdbcType=INTEGER} , #{end,jdbcType=INTEGER};
+      where pd.`type`=#{type,jdbcType=VARCHAR} and pd.case_status=#{caseStatus,jdbcType=VARCHAR} and pd.`apply_date`<![CDATA[>=]]>'2021-01-01' and pddi.patent_id is null limit #{start,jdbcType=INTEGER} , #{end,jdbcType=INTEGER};
 </select>
     <update id="updateStatusByPatentId">
     update patent_detail set `status` = #{status,jdbcType=INTEGER}  where patent_id = #{patentId,jdbcType=VARCHAR}
