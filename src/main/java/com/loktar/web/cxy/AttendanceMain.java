@@ -24,18 +24,18 @@ public class AttendanceMain {
     private final static Map<String, CellStyle> STYLE_MAP = new HashMap<>();
     // TODO 需要预处理daily表中是否都是正常班和正常晚班
     // TODO 需要预处理daily表中日期格式带不带-
-    private final static String MONTH = "202411";
-    private final static String MAX_DAY = "30";
+    private final static String MONTH = "202412";
+    private final static String MAX_DAY = "31";
 
     // TODO  30天的请假数据是从85列开始，31天的请假数据是从86列开始
-    private final static int columns = 85;
+    private final static int columns = 86;
 
     // TODO 法定补班日 eg:"2023-06-25"
     private final static String[] SPECIALWORKDAYS = new String[]{};
     // TODO 法定节假日（除周末） eg:"2023-06-22", "2023-06-23"
     private final static String[] SPECIALWEEKDAYS = new String[]{};
 
-    private final static String ATTENDANCE_PATH = "";
+    private final static String ATTENDANCE_PATH = "F:/OneDrive/赵晓滨/13 桌面临时文件/小陈考勤/2023版/";
 
     private final static String DAILY_FILE_PATH = ATTENDANCE_PATH + MONTH + "/每日统计_" + MONTH + "01_" + MONTH + MAX_DAY + ".xlsx";
     private final static String MONTH_FILE_PATH = ATTENDANCE_PATH + MONTH + "/月度汇总_" + MONTH + "01_" + MONTH + MAX_DAY + ".xlsx";
@@ -201,6 +201,23 @@ public class AttendanceMain {
                     LateCFlagCell.setCellValue("C");
                 }
             }
+            //标记迟到
+            //下午班 上班打卡结果包含迟到
+            // 且 出勤是1
+            //上班打卡时间大于13:30，标记为迟到A(13:31-14:00)迟到B(14:01-14:30)迟到C(14:31~)
+            if (checkInResultCell.getStringCellValue().contains("迟到") && classCell.getStringCellValue().contains("下午班")
+                    && attendanceCell.getNumericCellValue() == 1) {
+                if (checkInTimeCell.getStringCellValue().trim().compareTo("13:30") > 0 && checkInTimeCell.getStringCellValue().trim().compareTo("14:00") <= 0) {
+                    LateAFlagCell.setCellValue("A");
+                }
+                if (checkInTimeCell.getStringCellValue().trim().compareTo("14:00") > 0 && checkInTimeCell.getStringCellValue().trim().compareTo("14:30") <= 0) {
+                    LateBFlagCell.setCellValue("B");
+                }
+                if (checkInTimeCell.getStringCellValue().trim().compareTo("14:30") > 0) {
+                    LateCFlagCell.setCellValue("C");
+                }
+            }
+
             //标记上班时间不足
             //正常晚班
             //  迟到的打卡时间需要晚于21:15 否则标记绿色
@@ -208,6 +225,8 @@ public class AttendanceMain {
             //正常班
             //  迟到的打卡时间需要晚于18:15 否则标记绿色
             //  晚到的 顺延 比如09:10打卡的，需要18:10 否则标记绿色
+            //下午班
+            //  打卡时间需要晚于21:30 否则标记绿色
             if (classCell.getStringCellValue().contains("正常晚班") && !checkInResultCell.getStringCellValue().contains("无需打卡") && !checkOutResultCell.getStringCellValue().contains("无需打卡") && !checkInResultCell.getStringCellValue().trim().contains("缺卡") && !checkOutResultCell.getStringCellValue().trim().contains("缺卡")) {
                 //晚到且时间不够
                 if (checkInTimeCell.getStringCellValue().trim().compareTo("09:00") > 0 && checkInTimeCell.getStringCellValue().trim().compareTo("09:15") <= 0) {
@@ -238,6 +257,11 @@ public class AttendanceMain {
                     classCell.setCellStyle(cellStyle3);
                 }
             }
+            if (classCell.getStringCellValue().contains("下午班") && !checkInResultCell.getStringCellValue().contains("无需打卡") && !checkOutResultCell.getStringCellValue().contains("无需打卡") && !checkInResultCell.getStringCellValue().trim().contains("缺卡") && !checkOutResultCell.getStringCellValue().trim().contains("缺卡")) {
+                if (checkOutTimeCell.getStringCellValue().trim().compareTo("21:30") < 0) {
+                    classCell.setCellStyle(cellStyle3);
+                }
+            }
 
             //标记工作日加班、周末加班
             //正常晚班 日期标记橙色
@@ -245,6 +269,8 @@ public class AttendanceMain {
             //正常班且是周六(排除法定补班日) 日期标记黄色
             //上班打卡时间<=9:30 并且 下班打卡时间>=18:00，标记周末加班
             //上班打卡时间<=9:30 并且 下班打卡时间>=21:00，标记周末加班 周末晚班
+            //下午班且是周六周日(排除法定补班日) 日期标记黄色
+            //上班打卡时间<=13:30 并且 下班打卡时间>=21:30，标记周末加班
             if (classCell.getStringCellValue().contains("正常晚班")) {
                 dateCell.setCellStyle(cellStyle1);
                 if (!"-".equals(checkInTimeCell.getStringCellValue().trim()) && !"-".equals(checkInTimeCell.getStringCellValue().trim()) && checkOutTimeCell.getStringCellValue().trim().compareTo("21:00") >= 0) {
@@ -261,6 +287,15 @@ public class AttendanceMain {
                     weekendHardTimeFlagCell.setCellValue(1);
                 }
             }
+
+            if (classCell.getStringCellValue().contains("下午班") && (localDate.getDayOfWeek() == DayOfWeek.SATURDAY||localDate.getDayOfWeek()==DayOfWeek.SUNDAY) && !Arrays.asList(SPECIALWORKDAYS).contains(dateCell.getStringCellValue()) && !Arrays.asList(SPECIALWEEKDAYS).contains(dateCell.getStringCellValue())) {
+                dateCell.setCellStyle(cellStyle2);
+                if (!"-".equals(checkInTimeCell.getStringCellValue().trim()) && checkInTimeCell.getStringCellValue().trim().compareTo("13:30") <= 0 && checkOutTimeCell.getStringCellValue().trim().compareTo("21:30") >= 0) {
+                    weekendOverTimeFlagCell.setCellValue(1);
+                }
+            }
+
+
 
             //标记申请加班
             //规则： 班次为正常班且申请了加班（month表中是正常+加班的才算，休息+加班的不算） 标记工作日加班
@@ -304,9 +339,12 @@ public class AttendanceMain {
 //                restInfoMap.put(restInfo.getJobNo(), restInfo);
 //            }
 
-            //调休规则 原规则 2024.3月的新规则
+            //调休规则 2025.1月的新规则
             //单个员工当月 工作班的周六考勤上班打卡早于9点30分、无早退、无忘记打卡、无请假 可调休
-            if ((classCell.getStringCellValue().contains("正常班") && localDate.getDayOfWeek() == DayOfWeek.SATURDAY) && !Arrays.asList(SPECIALWORKDAYS).contains(dateCell.getStringCellValue()) && !Arrays.asList(SPECIALWEEKDAYS).contains(dateCell.getStringCellValue())) {
+            //单个员工当月 下午班的周六周日考勤上班打卡早于13点30分、无早退、无忘记打卡、无请假 可调休
+            if (((classCell.getStringCellValue().contains("正常班") && localDate.getDayOfWeek() == DayOfWeek.SATURDAY) ||
+                            (classCell.getStringCellValue().contains("下午班") && (localDate.getDayOfWeek() == DayOfWeek.SATURDAY|| localDate.getDayOfWeek() == DayOfWeek.SUNDAY)))
+                    && !Arrays.asList(SPECIALWORKDAYS).contains(dateCell.getStringCellValue()) && !Arrays.asList(SPECIALWEEKDAYS).contains(dateCell.getStringCellValue())) {
                 RestInfo restInfo = restInfoMap.get(jobNoCell.getStringCellValue());
                 if (ObjectUtils.isEmpty(restInfo)) {
                     restInfo = new RestInfo();
@@ -316,7 +354,10 @@ public class AttendanceMain {
                     restInfo.setEligibleDays(0);
                 }
                 restInfo.setTotalDays(restInfo.getTotalDays() + 1);
-                if (checkInResultCell.getStringCellValue().contains("正常") && checkOutResultCell.getStringCellValue().contains("正常") && checkInTimeCell.getStringCellValue().trim().compareTo("09:30") <= 0) {
+                if (classCell.getStringCellValue().contains("正常班") && checkInResultCell.getStringCellValue().contains("正常") && checkOutResultCell.getStringCellValue().contains("正常") && checkInTimeCell.getStringCellValue().trim().compareTo("09:30") <= 0) {
+                    restInfo.setEligibleDays(restInfo.getEligibleDays() + 1);
+                }
+                if (classCell.getStringCellValue().contains("下午班") && checkInResultCell.getStringCellValue().contains("正常") && checkOutResultCell.getStringCellValue().contains("正常") && checkInTimeCell.getStringCellValue().trim().compareTo("13:30") <= 0) {
                     restInfo.setEligibleDays(restInfo.getEligibleDays() + 1);
                 }
                 restInfoMap.put(restInfo.getJobNo(), restInfo);
@@ -354,35 +395,6 @@ public class AttendanceMain {
         InputStream inp = new FileInputStream(MONTH_FILE_PATH);
         Workbook wb = WorkbookFactory.create(inp);
         Sheet sheet = wb.getSheetAt(0);
-//        for (int rowNum = 2; rowNum <= sheet.getLastRowNum(); rowNum++) {
-//            Row row = sheet.getRow(rowNum);
-//            for (int cellNum = 15; cellNum < row.getLastCellNum(); cellNum++) {
-//                Cell cell = row.getCell(cellNum);
-//                if (cell.getStringCellValue().contains("假") || cell.getStringCellValue().contains("出")) {
-//                    Leave leave = new Leave();
-//                    leave.setName(row.getCell(0).getStringCellValue());
-//                    leave.setJobNo(row.getCell(2).getStringCellValue());
-//                    leave.setDate(sheet.getRow(1).getCell(cellNum).getStringCellValue().substring(0, 10).replace("-", ""));
-//                    String str = cell.getStringCellValue().split(";")[1];
-//                    String leaveType = str.split("\\(")[0];
-//                    if (leaveType.equals("调休假")) {
-//                        leaveType = "调休";
-//                    }
-//                    leave.setLeaveType(leaveType);
-//                    String leaveTime = str.split("\\(")[1].replace(")", "");
-//                    //请假(11:58),请假(18:27);年假(下午);年假(上午) 这种情况处理为全天
-//                    if (cell.getStringCellValue().split(";").length > 2 && cell.getStringCellValue().split(";")[1].contains("假") && cell.getStringCellValue().split(";")[2].contains("假")) {
-//                        leaveTime = "全天";
-//                    }
-//                    leave.setLeaveTime(leaveTime);
-//                    //半天的出差和外出不用标记
-////                    if (cell.getStringCellValue().contains("出") && !leaveTime.equals("全天")) {
-////                        continue;
-////                    }
-//                    leaves.add(leave);
-//                }
-//            }
-//        }
         for (int rowNum = 2; rowNum <= sheet.getLastRowNum(); rowNum++) {
             Row row = sheet.getRow(rowNum);
             for (int cellNum = columns; cellNum < row.getLastCellNum(); cellNum++) {
@@ -402,6 +414,10 @@ public class AttendanceMain {
                     //xxx,xxx;事假(上午,下午) -->事假全天
                     //xxx,xxx;事假(下午,上午) -->事假全天
                     String str = cell.getStringCellValue().split(";")[1];
+                    if(str.equals("换班")){
+                        break;
+                    }
+                    System.out.println(str);
                     String leaveType = str.split("\\(")[0];
                     leave.setLeaveType(leaveType);
                     String leaveTime = str.split("\\(")[1].replace(")", "");

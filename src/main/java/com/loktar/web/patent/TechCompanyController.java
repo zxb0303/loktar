@@ -29,13 +29,12 @@ public class TechCompanyController {
 
     @SneakyThrows
     @GetMapping("/gen.do")
-    public void gen(String province) {
-        File pdfFolder = new File(basepath + province + "/");
+    public void gen(String year) {
+        File pdfFolder = new File(basepath + year + "/");
         File[] pdfFiles = pdfFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".pdf"));
         for (File pdfFile : pdfFiles) {
             String fileName = pdfFile.getName();
             System.out.println("开始处理：" + fileName);
-            String year = fileName.split("-")[0];
             genFile(pdfFile, year);
         }
         System.out.println("全部完成");
