@@ -338,7 +338,6 @@ public class AttendanceMain {
 //                }
 //                restInfoMap.put(restInfo.getJobNo(), restInfo);
 //            }
-
             //调休规则 2025.1月的新规则
             //单个员工当月 工作班的周六考勤上班打卡早于9点30分、无早退、无忘记打卡、无请假 可调休
             //单个员工当月 下午班的周六周日考勤上班打卡早于13点30分、无早退、无忘记打卡、无请假 可调休
@@ -354,10 +353,10 @@ public class AttendanceMain {
                     restInfo.setEligibleDays(0);
                 }
                 restInfo.setTotalDays(restInfo.getTotalDays() + 1);
-                if (classCell.getStringCellValue().contains("正常班") && checkInResultCell.getStringCellValue().contains("正常") && checkOutResultCell.getStringCellValue().contains("正常") && checkInTimeCell.getStringCellValue().trim().compareTo("09:30") <= 0) {
+                if (classCell.getStringCellValue().contains("正常班") && checkInResultCell.getStringCellValue().contains("正常") && (checkOutResultCell.getStringCellValue().contains("正常")||checkOutResultCell.getStringCellValue().contains("无需打卡")) && checkInTimeCell.getStringCellValue().trim().compareTo("09:30") <= 0) {
                     restInfo.setEligibleDays(restInfo.getEligibleDays() + 1);
                 }
-                if (classCell.getStringCellValue().contains("下午班") && checkInResultCell.getStringCellValue().contains("正常") && checkOutResultCell.getStringCellValue().contains("正常") && checkInTimeCell.getStringCellValue().trim().compareTo("13:30") <= 0) {
+                if (classCell.getStringCellValue().contains("下午班") && checkInResultCell.getStringCellValue().contains("正常") && (checkOutResultCell.getStringCellValue().contains("正常")||checkOutResultCell.getStringCellValue().contains("无需打卡")) && checkInTimeCell.getStringCellValue().trim().compareTo("13:30") <= 0) {
                     restInfo.setEligibleDays(restInfo.getEligibleDays() + 1);
                 }
                 restInfoMap.put(restInfo.getJobNo(), restInfo);
