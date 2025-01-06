@@ -414,7 +414,7 @@ public class AttendanceMain {
                     //xxx,xxx;事假(下午,上午) -->事假全天
                     String str = cell.getStringCellValue().split(";")[1];
                     if(str.equals("换班")){
-                        break;
+                        continue;
                     }
                     System.out.println(str);
                     String leaveType = str.split("\\(")[0];
