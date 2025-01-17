@@ -88,7 +88,7 @@ public class QyWeixinCallbackChatGPTController {
         System.out.println("after decrypt msg: ");
         System.out.println(xmlMsg);
         Element rawRootElement = DocumentHelper.parseText(xmlMsg).getRootElement();
-        String msgType = rawRootElement.element(LokTarConstant.WX_RECEICE_MSGTYPE).getTextTrim();
+        String msgType = rawRootElement.element(LokTarConstant.WX_RECEIVE_MSGTYPE).getTextTrim();
         ReceiveBaseMsg receiveBaseMsg;
         ReceiceMsgType type = ReceiceMsgType.getByName(msgType);
         receiveBaseMsg = switch (type) {
