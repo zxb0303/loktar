@@ -86,7 +86,7 @@ public class QyWeixinCallbackController {
         System.out.println("after decrypt msg: ");
         System.out.println(xmlMsg);
         Element rawRootElement = DocumentHelper.parseText(xmlMsg).getRootElement();
-        String msgType = rawRootElement.element(LokTarConstant.WX_RECEICE_MSGTYPE).getTextTrim();
+        String msgType = rawRootElement.element(LokTarConstant.WX_RECEIVE_MSGTYPE).getTextTrim();
         ReceiceMsgType type = ReceiceMsgType.getByName(msgType);
         switch (type) {
             case ReceiceMsgType.TEXT:

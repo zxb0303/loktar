@@ -42,7 +42,7 @@ public class ContracTask {
         if (ObjectUtils.isEmpty(contracts)) {
             return;
         }
-        StringBuilder content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_CONTRAC).append(System.lineSeparator());
+        StringBuilder content = new StringBuilder().append(LokTarConstant.NOTICE_TITLE_CONTRACT).append(System.lineSeparator());
         for (Contract cntract : contracts) {
             content.append(System.lineSeparator())
                     .append(cntract.getParty()).append(System.lineSeparator())

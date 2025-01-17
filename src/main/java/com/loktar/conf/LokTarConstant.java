@@ -36,14 +36,14 @@ public class LokTarConstant {
     public final static String NOTICE_TITLE_IP = "家庭宽带IP通知";
     public final static String NOTICE_TITLE_CAR_VERSION = "沃尔沃车机系统更新通知";
     public final static String NOTICE_TITLE_WORK = "干活通知";
-    public final static String NOTICE_TITLE_CONTRAC = "合作合同到期通知";
+    public final static String NOTICE_TITLE_CONTRACT = "合作合同到期通知";
     public final static String NOTICE_TITLE_EMPLOYEE = "劳动合同到期通知";
     public final static String NOTICE_CERT_UPDATE = "证书更新通知";
     public final static String NOTICE_JELLYFIN = "Jellyfin常规通知";
     public final static String NOTICE_JELLYFIN_START = "Jellyfin开始播放通知";
     public final static String NOTICE_JELLYFIN_STOP = "Jellyfin停止播放通知";
 
-    public final static String WX_RECEICE_MSGTYPE = "MsgType";
+    public final static String WX_RECEIVE_MSGTYPE = "MsgType";
 
     public final static String JELLYFIN_NOT_NOTIFY = "adult";
     public final static String VOICE_SUFFIX_WAV = ".wav";
