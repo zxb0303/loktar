@@ -63,9 +63,6 @@ public class PatentServiceImpl implements PatentService {
             });
             //处理patentDetail
             for (PatentDetail patentDetail : patentDetails) {
-                if (patentDetail.getApplyName().contains(",") || patentDetail.getApplyName().contains("分公司")) {
-                    needRemove.add(patentDetail);
-                }
                 String name = patentDetail.getName();
                 int status;
                 if (name.contains("水利")) {
@@ -77,6 +74,31 @@ public class PatentServiceImpl implements PatentService {
                 }
                 patentDetail.setStatus(status);
                 patentDetail.setApplyId(applyId);
+                if (patentDetail.getApplyName().contains(",") || patentDetail.getApplyName().contains("分公司")) {
+                    needRemove.add(patentDetail);
+                    continue;
+                }
+                if (patentDetail.getPatentId().length() < 10) {
+                    needRemove.add(patentDetail);
+                    continue;
+                }
+                if (patentDetail.getApplyDate().compareTo("2021-01-01") < 0 && patentDetail.getType().equals("实用新型")) {
+                    needRemove.add(patentDetail);
+                    continue;
+                }
+                if (patentDetail.getApplyDate().compareTo("2019-01-01") < 0 && patentDetail.getType().equals("发明专利")) {
+                    needRemove.add(patentDetail);
+                    continue;
+                }
+                if (patentDetail.getCaseStatus().contains("失效") ||
+                        patentDetail.getCaseStatus().contains("撤回") ||
+                        patentDetail.getCaseStatus().contains("放弃专利权")) {
+                    needRemove.add(patentDetail);
+                    continue;
+                }
+                if (patentDetail.getType().equals("外观设计")) {
+                    needRemove.add(patentDetail);
+                }
             }
             patentDetails.removeAll(needRemove);
             if (!CollectionUtils.isEmpty(patentDetails)) {
