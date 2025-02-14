@@ -19,6 +19,7 @@ public class LokTarConfig {
     private Openai openai;
     private Path path;
     private Common common;
+    private HomeAssistant homeAssistant;
 
 
     @Data
@@ -100,5 +101,12 @@ public class LokTarConfig {
         private String loktarUrl;
         private String cxyNoticeText;
         private String clashRssUrl;
+    }
+
+    @Data
+    public static class HomeAssistant {
+        private String baseUrl;
+        private String apiToken;
+        private String yhtTvSwitchId;
     }
 }

@@ -4,7 +4,9 @@ target/
 !**/src/test/**/target/
 src/main/java/com/loktar/web/wesales/**
 src/main/resources/application-dev.yml
+src/main/resources/application-wesales.yml
 src/main/resources/mybatis-generator.properties
+src/main/resources/mybatis-generator-wesales.properties
 ### STS ###
 .apt_generated
 .classpath
