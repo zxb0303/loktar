@@ -1,4 +1,4 @@
-FROM ibm-semeru-runtimes:open-21.0.2_13-jre-focal
+FROM ibm-semeru-runtimes:open-21.0.6_7-jre-focal
 EXPOSE 8080
 ARG JAR_FILE
 ADD $JAR_FILE /app.jar
