@@ -33,7 +33,7 @@ public class VPSInitMain {
     //2.trojan(与vless共用443端口)
     //3.vless-ws-tls(加上warp)
     //前期准备：
-    //1.购买vps，系统版本ubuntu22.04，域名指向vps的ip
+    //1.购买vps，系统版本ubuntu22.04，域名指向vps的ip，vps如果有安全组，需提前将PORT_CUSTOM加入
     //2.修改下面的TODO配置
     //3.run main
 
