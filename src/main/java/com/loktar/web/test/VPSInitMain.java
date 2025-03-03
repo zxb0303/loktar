@@ -3,12 +3,9 @@ package com.loktar.web.test;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.*;
 import lombok.Data;
 import lombok.SneakyThrows;
 
@@ -19,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -42,7 +40,7 @@ public class VPSInitMain {
     //TODO 邮箱
     private final static String EMAIL = "";
     //TODO 用户名 root 非root需先修改root权限
-    private final static String USER = "root";
+    private final static String USER = "";
     //TODO 密码
     private final static String PASSWORD = "";
     //TODO nginx伪造的重定向地址
@@ -50,7 +48,7 @@ public class VPSInitMain {
     //TODO 默认的ssh端口
     private final static int PORT = 22;
     //TODO 修改后的登录端口
-    private final static int PORT_CUSTOM = 28462;
+    private final static int PORT_CUSTOM = 23684;
     //TODO 保存凭证等信息的本地主路径
     private final static String LOCAL_BASE_FOLD_PATH = "F:/loktar/vps";
 
@@ -63,24 +61,25 @@ public class VPSInitMain {
     private final static String REMOTE_SSHKEY_FILEPATH = "/root/.ssh/id_ed25519";
     private final static String REMOTE_SSHDCONFIG_FILEPATH = "/etc/ssh/sshd_config";
     private final static String REMOTE_NGINX_CONF_FILEPATH = "/etc/nginx/conf.d/nginx-vps.conf";
-    private final static String REMOTE_WGCF_FILEPATH = "/root/wgcf.ini.xray.json";
+    private final static String REMOTE_WGCF_FILEPATH = "/root/warp.json";
     private final static String REMOTE_XRAY_CONFIG_FILEPATH = "/usr/local/etc/xray/config.json";
     private final static String REMOTE_CERTIFICATE_FILEPATH = "/etc/letsencrypt/live/" + HOST + "/fullchain.pem";
     private final static String REMOTE_KEY_FILEPATH = "/etc/letsencrypt/live/" + HOST + "/privkey.pem";
     private final static ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL).enable(SerializationFeature.INDENT_OUTPUT);
+    private final static ObjectMapper objectMapper2 = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL).enable(SerializationFeature.INDENT_OUTPUT);
 
 
     public static void main(String[] args) {
         //1.密码登录vps,配置秘钥登录,下载秘钥
-        step1();
+        //step1();
         //2.秘钥登录，更新包,修改时区,开启防火墙80 443端口,删除root密码
-        step2();
+        //step2();
         //3.安装certbot,生成证书，配置自动更新
-        step3();
+        //step3();
         //4.安装nginx,配置nginx
-        step4();
+        //step4();
         //5.安装xray,安装warp,配置xray,重启xray,格式化输出连接信息到本地
-        step5();
+        //step5();
     }
 
     @SneakyThrows
@@ -89,14 +88,10 @@ public class VPSInitMain {
         session.connect();
         String command1 = "bash -c \"$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)\" @ install -u root";
         jschExec(session, command1);
-        String command2 = "bash -c \"$(curl -L wgcf-cli.vercel.app) \"";
+        String command2 = "bash -c \"$(curl -L warp-reg.vercel.app)\" > warp.json";
         jschExec(session, command2);
-        String command3 = "wgcf-cli -r";
-        jschExec(session, command3);
-        String command4 = "wgcf-cli -g xray";
-        jschExec(session, command4);
         String wgcfStr = jschReadFile(session, REMOTE_WGCF_FILEPATH);
-        Wgcf wgcf = objectMapper.readValue(wgcfStr, Wgcf.class);
+        Wgcf wgcf = objectMapper2.readValue(wgcfStr, Wgcf.class);
         String xrayConfigTemplateStr = new String(Files.readAllBytes(Paths.get(TEMPLATE_XRAYCONFIG)));
         XrayConfig xrayConfig = objectMapper.readValue(xrayConfigTemplateStr, XrayConfig.class);
         xrayConfig.getInbounds().get(0).getSettings().getClients().get(0).setId(UUID.randomUUID().toString());
@@ -108,11 +103,14 @@ public class VPSInitMain {
         xrayConfig.getInbounds().get(2).getSettings().getClients().get(0).setId(UUID.randomUUID().toString());
         xrayConfig.getInbounds().get(2).getSettings().getClients().get(0).setEmail(EMAIL);
         xrayConfig.getInbounds().get(2).getStreamSettings().getWsSettings().setPath(path);
-        xrayConfig.getOutbounds().get(2).getSettings().setSecretKey(wgcf.getSettings().getSecretKey());
-        xrayConfig.getOutbounds().get(2).getSettings().setAddress(wgcf.getSettings().getAddress());
-        xrayConfig.getOutbounds().get(2).getSettings().getPeers().get(0).setPublicKey(wgcf.getSettings().getPeers().get(0).getPublicKey());
-        xrayConfig.getOutbounds().get(2).getSettings().getPeers().get(0).setEndpoint(wgcf.getSettings().getPeers().get(0).getEndpoint());
-        xrayConfig.getOutbounds().get(2).getSettings().setReserved(wgcf.getSettings().getReserved());
+        xrayConfig.getOutbounds().get(2).getSettings().setSecretKey(wgcf.getPrivateKey());
+        List<String> addressList = new ArrayList<>();
+        addressList.add(wgcf.getV4());
+        addressList.add(wgcf.getV6());
+        xrayConfig.getOutbounds().get(2).getSettings().setAddress(addressList);
+        xrayConfig.getOutbounds().get(2).getSettings().getPeers().get(0).setPublicKey(wgcf.getPublicKey());
+        xrayConfig.getOutbounds().get(2).getSettings().getPeers().get(0).setEndpoint("engage.cloudflareclient.com:2408");
+        xrayConfig.getOutbounds().get(2).getSettings().setReserved(wgcf.getReservedDec());
         String newXrayConfig = objectMapper.writeValueAsString(xrayConfig);
         jschWriteFile(session, newXrayConfig, REMOTE_XRAY_CONFIG_FILEPATH);
         String command5 = "systemctl restart xray";
@@ -351,24 +349,19 @@ public class VPSInitMain {
 
     @Data
     private static class Wgcf {
-        private String protocol;
-        private Setting settings;
-        private String tag;
+        private Endpoint endpoint;
+        private List<Integer> reservedDec;
+        private String reservedHex;
+        private String reservedStr;
+        private String privateKey;
+        private String publicKey;
+        private String v4;
+        private String v6;
 
         @Data
-        private static class Setting {
-            private String secretKey;
-            private List<String> address;
-            private List<Peer> peers;
-            private List<Integer> reserved;
-            private Integer mtu;
-
-            @Data
-            private static class Peer {
-                private String publicKey;
-                private List<String> allowedIPs;
-                private String endpoint;
-            }
+        public static class Endpoint {
+            private String v4;
+            private String v6;
         }
     }
 
