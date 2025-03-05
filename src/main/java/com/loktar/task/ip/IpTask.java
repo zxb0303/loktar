@@ -37,7 +37,7 @@ public class IpTask {
         this.ipUtil = ipUtil;
     }
 
-    @Scheduled(cron = "0 */10 * * * ?")
+    @Scheduled(cron = "0 */30 * * * ?")
     private void notice() {
         System.out.println("IP检测定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         Property ipProperty = propertyMapper.selectByPrimaryKey("yht_ip");
