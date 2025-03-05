@@ -28,18 +28,20 @@ public class IpTask {
 
     private final LokTarConfig lokTarConfig;
 
+    private final IPUtil ipUtil;
 
-    public IpTask(QywxApi qywxApi, PropertyMapper propertyMapper, LokTarConfig lokTarConfig) {
+    public IpTask(QywxApi qywxApi, PropertyMapper propertyMapper, LokTarConfig lokTarConfig, IPUtil ipUtil) {
         this.qywxApi = qywxApi;
         this.propertyMapper = propertyMapper;
         this.lokTarConfig = lokTarConfig;
+        this.ipUtil = ipUtil;
     }
 
     @Scheduled(cron = "0 */10 * * * ?")
     private void notice() {
         System.out.println("IP检测定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         Property ipProperty = propertyMapper.selectByPrimaryKey("yht_ip");
-        String ip = IPUtil.getip();
+        String ip = ipUtil.getip();
         if (!ObjectUtils.isEmpty(ip) && !ipProperty.getValue().equals(ip)) {
             String content = LokTarConstant.NOTICE_TITLE_IP + System.lineSeparator() +
                     System.lineSeparator() +
