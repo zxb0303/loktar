@@ -40,7 +40,7 @@ public class VPSInitMain {
     //TODO 邮箱
     private final static String EMAIL = "";
     //TODO 用户名 root 非root需先修改root权限
-    private final static String USER = "";
+    private final static String USER = "root";
     //TODO 密码
     private final static String PASSWORD = "";
     //TODO nginx伪造的重定向地址
@@ -53,6 +53,7 @@ public class VPSInitMain {
     private final static String LOCAL_BASE_FOLD_PATH = "F:/loktar/vps";
 
     private final static String LOCAL_SSHKEY_FILEPATH = LOCAL_BASE_FOLD_PATH + "/" + HOST + "/id_ed25519";
+    private final static String LOCAL_CLINET_FILEPATH = LOCAL_BASE_FOLD_PATH + "/" + HOST + "/login.txt";
     private final static String NGINX_REDIRECT_DEFAULT_URL = "https://www.baidu.com";
     private final static String TEMPLATE_SSHDCONFIG = "src/main/resources/template/sshd_config";
     private final static String TEMPLATE_NGINXCONFIG = "src/main/resources/template/nginx-vps.conf";
@@ -65,6 +66,7 @@ public class VPSInitMain {
     private final static String REMOTE_XRAY_CONFIG_FILEPATH = "/usr/local/etc/xray/config.json";
     private final static String REMOTE_CERTIFICATE_FILEPATH = "/etc/letsencrypt/live/" + HOST + "/fullchain.pem";
     private final static String REMOTE_KEY_FILEPATH = "/etc/letsencrypt/live/" + HOST + "/privkey.pem";
+    private final static String WARP_ENDPOINT = "engage.cloudflareclient.com:2408";
     private final static ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL).enable(SerializationFeature.INDENT_OUTPUT);
     private final static ObjectMapper objectMapper2 = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL).enable(SerializationFeature.INDENT_OUTPUT);
 
@@ -78,10 +80,38 @@ public class VPSInitMain {
         //step3();
         //4.安装nginx,配置nginx
         //step4();
-        //5.安装xray,安装warp,配置xray,重启xray,格式化输出连接信息到本地
+        //5.安装xray,安装warp,配置xray,重启xray
         //step5();
-    }
+        //6.格式化输出连接信息到本地
+        step6();
 
+    }
+    @SneakyThrows
+    private static void step6() {
+        Session session = getJschKeySession(USER, HOST, PORT_CUSTOM, LOCAL_SSHKEY_FILEPATH);
+        session.connect();
+        String xrayConfigStr = jschReadFile(session, REMOTE_XRAY_CONFIG_FILEPATH);
+        XrayConfig xrayConfig = objectMapper.readValue(xrayConfigStr, XrayConfig.class);
+        //输出连接信息
+        String clashTemplateStr = new String(Files.readAllBytes(Paths.get(TEMPLATE_PROXIES)));
+        String clashStr = MessageFormat.format(clashTemplateStr,
+                HOST,
+                HOST,
+                xrayConfig.getInbounds().get(0).getSettings().getClients().get(0).getId(),
+                HOST,
+                HOST,
+                xrayConfig.getInbounds().get(1).getSettings().getClients().get(0).getPassword(),
+                HOST,
+                HOST,
+                xrayConfig.getInbounds().get(2).getSettings().getClients().get(0).getId(),
+                HOST,
+                xrayConfig.getInbounds().get(2).getStreamSettings().getWsSettings().getPath(),
+                HOST
+        );
+        System.out.println(clashStr);
+        Files.write(Paths.get(LOCAL_CLINET_FILEPATH), clashStr.getBytes());
+        session.disconnect();
+    }
     @SneakyThrows
     private static void step5() {
         Session session = getJschKeySession(USER, HOST, PORT_CUSTOM, LOCAL_SSHKEY_FILEPATH);
@@ -109,36 +139,16 @@ public class VPSInitMain {
         addressList.add(wgcf.getV6());
         xrayConfig.getOutbounds().get(2).getSettings().setAddress(addressList);
         xrayConfig.getOutbounds().get(2).getSettings().getPeers().get(0).setPublicKey(wgcf.getPublicKey());
-        xrayConfig.getOutbounds().get(2).getSettings().getPeers().get(0).setEndpoint("engage.cloudflareclient.com:2408");
+        xrayConfig.getOutbounds().get(2).getSettings().getPeers().get(0).setEndpoint(WARP_ENDPOINT);
         xrayConfig.getOutbounds().get(2).getSettings().setReserved(wgcf.getReservedDec());
         String newXrayConfig = objectMapper.writeValueAsString(xrayConfig);
         jschWriteFile(session, newXrayConfig, REMOTE_XRAY_CONFIG_FILEPATH);
         String command5 = "systemctl restart xray";
         jschExec(session, command5);
-        //输出连接信息
-        printlnInfo(xrayConfig);
         session.disconnect();
     }
 
-    @SneakyThrows
-    private static void printlnInfo(XrayConfig xrayConfig) {
-        String clashTemplateStr = new String(Files.readAllBytes(Paths.get(TEMPLATE_PROXIES)));
-        String clashStr = MessageFormat.format(clashTemplateStr,
-                HOST,
-                HOST,
-                xrayConfig.getInbounds().get(0).getSettings().getClients().get(0).getId(),
-                HOST,
-                HOST,
-                xrayConfig.getInbounds().get(1).getSettings().getClients().get(0).getPassword(),
-                HOST,
-                HOST,
-                xrayConfig.getInbounds().get(2).getSettings().getClients().get(0).getId(),
-                HOST,
-                xrayConfig.getInbounds().get(2).getStreamSettings().getWsSettings().getPath(),
-                HOST
-        );
-        System.out.println(clashStr);
-    }
+
 
     @SneakyThrows
     private static void step4() {
