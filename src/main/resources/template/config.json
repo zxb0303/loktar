@@ -148,7 +148,7 @@
         "rules": [
             {
                 "type": "field",
-                "inboundTag": ["inbound-trojan"],
+                "inboundTag": ["inbound-trojan","inbound-vless"],
                 "domain": [
                     "qyapi.weixin.qq.com"
                 ],
