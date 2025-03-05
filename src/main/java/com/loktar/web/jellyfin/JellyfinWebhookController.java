@@ -28,13 +28,15 @@ public class JellyfinWebhookController {
     private final JellyfinUtil jellyfinUtil;
     private final LokTarConfig lokTarConfig;
     private final RedisUtil redisUtil;
+    private final IPUtil ipUtil;
 
-    public JellyfinWebhookController(QywxApi qywxApi, TransmissionUtil transmissionUtil, JellyfinUtil jellyfinUtil, LokTarConfig lokTarConfig, RedisUtil redisUtil) {
+    public JellyfinWebhookController(QywxApi qywxApi, TransmissionUtil transmissionUtil, JellyfinUtil jellyfinUtil, LokTarConfig lokTarConfig, RedisUtil redisUtil, IPUtil ipUtil) {
         this.qywxApi = qywxApi;
         this.transmissionUtil = transmissionUtil;
         this.jellyfinUtil = jellyfinUtil;
         this.lokTarConfig = lokTarConfig;
         this.redisUtil = redisUtil;
+        this.ipUtil = ipUtil;
     }
 
     @PostMapping("/webhook.do")
@@ -133,10 +135,10 @@ public class JellyfinWebhookController {
     }
 
     @SneakyThrows
-    private static boolean isLocalNetwork(String remoteEndPoint) {
+    private boolean isLocalNetwork(String remoteEndPoint) {
         String ipAddress = remoteEndPoint.split(":")[0];
         InetAddress address = InetAddress.getByName(ipAddress);
-        String ip = IPUtil.getip();
+        String ip = ipUtil.getip();
 
         if (remoteEndPoint.equals(ip)) {
             return true;

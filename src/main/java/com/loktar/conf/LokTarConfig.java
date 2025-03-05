@@ -20,6 +20,7 @@ public class LokTarConfig {
     private Path path;
     private Common common;
     private HomeAssistant homeAssistant;
+    private Ipstack ipstack;
 
 
     @Data
@@ -108,5 +109,9 @@ public class LokTarConfig {
         private String baseUrl;
         private String apiToken;
         private String yhtTvSwitchId;
+    }
+    @Data
+    public static class Ipstack {
+        private String accessKey;
     }
 }
