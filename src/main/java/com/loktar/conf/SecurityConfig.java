@@ -17,6 +17,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/jellyfin/webhook.do",
+                                "/certimate/webhook.do",
                                 "/qywx/callback/chatgpt/receive.do",
                                 "/qywx/callback/receive.do",
                                 "/qywx/callback/patent/receive.do",
