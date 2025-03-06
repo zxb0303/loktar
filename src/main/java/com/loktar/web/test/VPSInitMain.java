@@ -64,8 +64,8 @@ public class VPSInitMain {
     private final static String REMOTE_NGINX_CONF_FILEPATH = "/etc/nginx/conf.d/nginx-vps.conf";
     private final static String REMOTE_WGCF_FILEPATH = "/root/warp.json";
     private final static String REMOTE_XRAY_CONFIG_FILEPATH = "/usr/local/etc/xray/config.json";
-    private final static String REMOTE_CERTIFICATE_FILEPATH = "/etc/letsencrypt/live/" + HOST + "/fullchain.pem";
-    private final static String REMOTE_KEY_FILEPATH = "/etc/letsencrypt/live/" + HOST + "/privkey.pem";
+    private static String REMOTE_CERTIFICATE_FILEPATH = "/etc/letsencrypt/live/" + HOST + "/fullchain.pem";
+    private static String REMOTE_KEY_FILEPATH = "/etc/letsencrypt/live/" + HOST + "/privkey.pem";
     private final static String WARP_ENDPOINT = "engage.cloudflareclient.com:2408";
     private final static ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL).enable(SerializationFeature.INDENT_OUTPUT);
     private final static ObjectMapper objectMapper2 = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL).enable(SerializationFeature.INDENT_OUTPUT);
@@ -78,6 +78,9 @@ public class VPSInitMain {
         //step2();
         //3.安装certbot,生成证书，配置自动更新
         //step3();
+        //TODO 该用Certimate生成的证书则不执行上面的step3，step2后使用Certimate部署一下证书
+        //REMOTE_CERTIFICATE_FILEPATH = "/root/certimate/certs/" + HOST + "/cert.crt";
+        //REMOTE_KEY_FILEPATH = "/root/certimate/certs/" + HOST + "/cert.key";
         //4.安装nginx,配置nginx
         //step4();
         //5.安装xray,安装warp,配置xray,重启xray
