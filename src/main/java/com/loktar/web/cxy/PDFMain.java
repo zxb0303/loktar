@@ -132,27 +132,38 @@ public class PDFMain {
                 File[] imageFiles = folder.listFiles();
                 PDDocument document = new PDDocument();
                 if (imageFiles != null) {
+                    // 对文件按自定义规则排序: 先主图（无`-1`的），后副图（有`-1`的），并保持数字顺序
+                    Arrays.sort(imageFiles, (f1, f2) -> {
+                        String name1 = f1.getName().replaceFirst("\\.\\w+$", ""); // 去掉扩展名
+                        String name2 = f2.getName().replaceFirst("\\.\\w+$", "");
+
+                        // 提取文件名中的数字部分
+                        String base1 = name1.replaceAll("-\\d+$", ""); // 去掉 `-1`
+                        String base2 = name2.replaceAll("-\\d+$", "");
+
+                        int result = base1.compareTo(base2); // 比较主文件名（数字部分）
+                        if (result == 0) {
+                            // 如果主文件名相同，将不带`-`的文件优先
+                            boolean isSuffix1 = name1.matches(".*-\\d+$");
+                            boolean isSuffix2 = name2.matches(".*-\\d+$");
+                            return Boolean.compare(isSuffix1, isSuffix2);
+                        }
+                        return result;
+                    });
+
                     for (File imageFile : imageFiles) {
                         if (imageFile.isFile()) {
                             System.out.println(imageFile.getName());
-
-                            // Define A4 page size
                             PDRectangle pageSize = PDRectangle.A4;
                             PDPage page = new PDPage(pageSize);
                             document.addPage(page);
-
                             PDImageXObject image = PDImageXObject.createFromFileByExtension(imageFile, document);
                             PDPageContentStream contentStream = new PDPageContentStream(document, page);
-
-                            // Calculate the scaling to fit the image within A4 dimensions
                             float imageWidth = image.getWidth();
                             float imageHeight = image.getHeight();
                             float scale = Math.min(pageSize.getWidth() / imageWidth, pageSize.getHeight() / imageHeight);
-
-                            // Calculate the position to center the image
                             float x = (pageSize.getWidth() - imageWidth * scale) / 2;
                             float y = (pageSize.getHeight() - imageHeight * scale) / 2;
-
                             contentStream.drawImage(image, x, y, imageWidth * scale, imageHeight * scale);
                             contentStream.close();
                         }
