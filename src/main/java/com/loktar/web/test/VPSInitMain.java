@@ -209,9 +209,9 @@ public class VPSInitMain {
     private static void step1() {
         Session session = getJschPasswordSession(USER, HOST, PORT, PASSWORD);
         session.connect();
-        String command1 = "rm -f ~/.ssh/id_ed25519 ~/.ssh/id_ed25519.pub && ssh-keygen -t ed25519 -N \"\" -f ~/.ssh/id_ed25519";
+        String command1 = "rm -f ~/.ssh/id_rsa ~/.ssh/id_rsa.pub && ssh-keygen -t rsa -b 2048 -m PEM -N \"\" -f ~/.ssh/id_rsa";
         jschExec(session, command1);
-        String command2 = "mv /root/.ssh/id_ed25519.pub /root/.ssh/authorized_keys";
+        String command2 = "mv /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys";
         jschExec(session, command2);
         String command3 = "chmod 644 /root/.ssh/authorized_keys";
         jschExec(session, command3);
