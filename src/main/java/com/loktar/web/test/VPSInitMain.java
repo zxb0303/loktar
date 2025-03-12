@@ -73,20 +73,21 @@ public class VPSInitMain {
 
     public static void main(String[] args) {
         //1.密码登录vps,配置秘钥登录,下载秘钥
-        step1();
+        //step1();
         //2.秘钥登录，更新包,修改时区,开启防火墙80 443端口,删除root密码
-        step2();
+        //step2();
         //3.安装certbot,生成证书，配置自动更新
-        step3();
+        //step3();
         //TODO 该用Certimate生成的证书则不执行上面的step3，step2后使用Certimate部署一下证书
-        //REMOTE_CERTIFICATE_FILEPATH = "/root/certimate/certs/" + HOST + "/cert.crt";
-        //REMOTE_KEY_FILEPATH = "/root/certimate/certs/" + HOST + "/cert.key";
+        //String host = HOST.substring(HOST.indexOf(".") + 1);
+        //REMOTE_CERTIFICATE_FILEPATH = "/root/certimate/certs/" + host + "/cert.crt";
+        //REMOTE_KEY_FILEPATH = "/root/certimate/certs/" + host + "/cert.key";
         //4.安装nginx,配置nginx
-        step4();
+        //step4();
         //5.安装xray,安装warp,配置xray,重启xray
-        step5();
+        //step5();
         //6.格式化输出连接信息到本地
-        step6();
+        //step6();
 
     }
     @SneakyThrows
