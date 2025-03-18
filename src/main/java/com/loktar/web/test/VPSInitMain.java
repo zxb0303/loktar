@@ -143,7 +143,7 @@ public class VPSInitMain {
         addressList.add(wgcf.getV6());
         xrayConfig.getOutbounds().get(2).getSettings().setAddress(addressList);
         xrayConfig.getOutbounds().get(2).getSettings().getPeers().get(0).setPublicKey(wgcf.getPublicKey());
-        xrayConfig.getOutbounds().get(2).getSettings().getPeers().get(0).setEndpoint(WARP_ENDPOINT);
+        xrayConfig.getOutbounds().get(2).getSettings().getPeers().get(0).setEndpoint(wgcf.getEndpoint().v4+":2408");
         xrayConfig.getOutbounds().get(2).getSettings().setReserved(wgcf.getReservedDec());
         String newXrayConfig = objectMapper.writeValueAsString(xrayConfig);
         jschWriteFile(session, newXrayConfig, REMOTE_XRAY_CONFIG_FILEPATH);
