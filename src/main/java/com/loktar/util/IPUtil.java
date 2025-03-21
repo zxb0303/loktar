@@ -46,7 +46,7 @@ public class IPUtil {
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        String responseBody = response.body();
+        String responseBody = response.body().trim();
         return responseBody;
     }
 
