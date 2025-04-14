@@ -21,6 +21,7 @@ public class LokTarConfig {
     private Common common;
     private HomeAssistant homeAssistant;
     private Ipstack ipstack;
+    private Security security;
 
 
     @Data
@@ -113,5 +114,9 @@ public class LokTarConfig {
     @Data
     public static class Ipstack {
         private String accessKey;
+    }
+    @Data
+    public static class Security {
+        private String token;
     }
 }
