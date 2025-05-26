@@ -11,7 +11,6 @@ import com.loktar.util.wx.qywx.QywxApi;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -35,7 +34,7 @@ public class ContracTask {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @Scheduled(cron = "0 30 10,11,12 * * MON-FRI")
+//    @Scheduled(cron = "0 30 10,11,12 * * MON-FRI")
     private void notice() {
         System.out.println("合同到期监测器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         List<Contract> contracts = contractMapper.getNeedNoticeContracts();
