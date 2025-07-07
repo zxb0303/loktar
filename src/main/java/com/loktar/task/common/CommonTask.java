@@ -85,7 +85,7 @@ public class CommonTask {
     }
 
     /**
-     * @description: 每个月最后一个工作日下午5点推送消息 小陈税盘提醒
+     * @description: 每个月最后一个工作日下午5点推送消息给小陈
      * @param:
      * @retuan: void
      * @author: zxb
@@ -107,9 +107,42 @@ public class CommonTask {
         if (today.equals(lastDayOfMonth)) {
             String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator() +
                     System.lineSeparator() +
-                    lokTarConfig.getCommon().getCxyNoticeText() + System.lineSeparator() +
+                    "今天是本月最后1个工作日" + System.lineSeparator() +
                     DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeCxy(), lokTarConfig.getQywx().getAgent002Id(), content));
+        }
+    }
+
+
+    /**
+     * @description: 每月第一个工作日**前一天**下午5点半提醒小陈
+     * @param:
+     * @retuan: void
+     * @author: zxb
+     * @createTime: 2024-06-19
+     */
+    @Scheduled(cron = "0 30 17 * * ?")
+    private void CXYnotice2() {
+        LocalDate today = LocalDate.now();
+
+        // 计算下一个月的第一个工作日
+        LocalDate nextMonth = today.withDayOfMonth(1).plusMonths(1);
+        LocalDate firstWorkdayOfNextMonth = nextMonth;
+        while (firstWorkdayOfNextMonth.getDayOfWeek() == DayOfWeek.SATURDAY
+                || firstWorkdayOfNextMonth.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            firstWorkdayOfNextMonth = firstWorkdayOfNextMonth.plusDays(1);
+        }
+
+        // 需要提醒的日期（即下个月第一个工作日的前一天）
+        LocalDate remindDay = firstWorkdayOfNextMonth.minusDays(1);
+
+        if (today.equals(remindDay)) {
+            String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator()
+                    + System.lineSeparator()
+                    + "明天是当月第一个工作日，记得去拿回单" + System.lineSeparator()
+                    + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeCxy(), lokTarConfig.getQywx().getAgent002Id(), content)
+            );
         }
     }
 
