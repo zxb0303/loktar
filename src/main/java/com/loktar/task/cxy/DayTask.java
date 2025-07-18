@@ -93,26 +93,50 @@ public class DayTask {
         }
     }
 
+
     /**
-     * @description: 每月20号15点提醒
+     * @description: 每月21日前的最后一个工作日15点提醒
      * @author: zxb
      * @createTime: 2024-06-20
      */
-    @Scheduled(cron = "0 0 15 20 * ?")
+    @Scheduled(cron = "0 0 15 * * ?") // 每天下午3点
     private void gjjBalanceRemind() {
-        String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator()
-                + System.lineSeparator()
-                + "明天要扣缴公积金，确认账上余额是否充足" + System.lineSeparator()
-                + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
-        qywxApi.sendTextMsg(new AgentMsgText(
-                lokTarConfig.getQywx().getNoticeCxy(),
-                lokTarConfig.getQywx().getAgent002Id(),
-                content
-        ));
+        LocalDate today = LocalDate.now();
+        // 只处理每月1-21号的日期（可以适当优化范围，性能影响其实很小）
+        if (today.getDayOfMonth() < 21) {
+            // 判断今天是否工作日
+            if (isWorkday(today)) {
+                LocalDate tomorrow = today.plusDays(1);
+                // tomorrow是21号之前非工作日/或21号当天/或21号之后
+                if ((tomorrow.getDayOfMonth() < 21 && !isWorkday(tomorrow))
+                        || tomorrow.getDayOfMonth() > 21
+                        || tomorrow.getDayOfMonth() == 21) {
+                    // 发送消息
+                    String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator()
+                            + System.lineSeparator()
+                            + "21号要扣缴公积金 确认账上余额是否充足" + System.lineSeparator()
+                            + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
+                    qywxApi.sendTextMsg(new AgentMsgText(
+                            lokTarConfig.getQywx().getNoticeCxy(),
+                            lokTarConfig.getQywx().getAgent002Id(),
+                            content
+                    ));
+                }
+            }
+        }
     }
 
     /**
-     * @description: 每月21号为工作日则推送，否则顺延至21号后的第一个工作日10点推送
+     * 判断工作日
+     * 这里只做周末判断，你可以补充节假日等
+     */
+    private boolean isWorkday(LocalDate date) {
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        return dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY;
+    }
+
+    /**
+     * @description: 每月21号为工作日则推送，否则提前至21号前的第一个工作日10点推送
      * @author: zxb
      * @createTime: 2024-06-20
      */
