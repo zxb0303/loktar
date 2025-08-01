@@ -86,7 +86,7 @@ public class DayTask {
         if (today.equals(remindDay)) {
             String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator()
                     + System.lineSeparator()
-                    + "明天是当月第一个工作日，记得去拿回单" + System.lineSeparator()
+                    + "明天是当月第一个工作日，记得去拿回单，带上回单卡、包、雨伞" + System.lineSeparator()
                     + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeCxy(), lokTarConfig.getQywx().getAgent002Id(), content)
             );
