@@ -99,29 +99,32 @@ public class DayTask {
      * @author: zxb
      * @createTime: 2024-06-20
      */
-    @Scheduled(cron = "0 0 15 * * ?") // 每天下午3点
+    @Scheduled(cron = "0 0 15 * * ?")
     private void gjjBalanceRemind() {
         LocalDate today = LocalDate.now();
-        // 只处理每月1-21号的日期（可以适当优化范围，性能影响其实很小）
-        if (today.getDayOfMonth() < 21) {
-            // 判断今天是否工作日
-            if (isWorkday(today)) {
-                LocalDate tomorrow = today.plusDays(1);
-                // tomorrow是21号之前非工作日/或21号当天/或21号之后
-                if ((tomorrow.getDayOfMonth() < 21 && !isWorkday(tomorrow))
-                        || tomorrow.getDayOfMonth() > 21
-                        || tomorrow.getDayOfMonth() == 21) {
-                    // 发送消息
-                    String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator()
-                            + System.lineSeparator()
-                            + "21号要扣缴公积金 确认账上余额是否充足" + System.lineSeparator()
-                            + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
-                    qywxApi.sendTextMsg(new AgentMsgText(
-                            lokTarConfig.getQywx().getNoticeCxy(),
-                            lokTarConfig.getQywx().getAgent002Id(),
-                            content
-                    ));
+        // 只处理每月1-21号的日期
+        if (today.getDayOfMonth() <= 21) {
+            // 找到本月1号到21号内的最后一个工作日
+            LocalDate lastWorkdayBefore21 = null;
+            for (int d = 21; d >= 1; d--) {
+                LocalDate date = today.withDayOfMonth(d);
+                if (isWorkday(date)) {
+                    lastWorkdayBefore21 = date;
+                    break;
                 }
+            }
+            // 今天是否就是最后一个工作日
+            if (today.equals(lastWorkdayBefore21)) {
+                // 发送通知
+                String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator()
+                        + System.lineSeparator()
+                        + "21号要扣缴公积金 确认账上余额是否充足" + System.lineSeparator()
+                        + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
+                qywxApi.sendTextMsg(new AgentMsgText(
+                        lokTarConfig.getQywx().getNoticeCxy(),
+                        lokTarConfig.getQywx().getAgent002Id(),
+                        content
+                ));
             }
         }
     }
