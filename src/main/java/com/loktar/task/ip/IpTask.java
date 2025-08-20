@@ -42,6 +42,9 @@ public class IpTask {
         System.out.println("IP检测定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         Property ipProperty = propertyMapper.selectByPrimaryKey("yht_ip");
         String ip = ipUtil.getip();
+        if (ip.contains("error")) {
+            return;
+        }
         if (!ObjectUtils.isEmpty(ip) && !ipProperty.getValue().equals(ip)) {
             String content = LokTarConstant.NOTICE_TITLE_IP + System.lineSeparator() +
                     System.lineSeparator() +
