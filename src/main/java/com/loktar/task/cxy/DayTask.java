@@ -102,30 +102,32 @@ public class DayTask {
     @Scheduled(cron = "0 0 15 * * ?")
     private void gjjBalanceRemind() {
         LocalDate today = LocalDate.now();
-        // 只处理每月1-21号的日期
-        if (today.getDayOfMonth() <= 21) {
-            // 找到本月1号到21号内的最后一个工作日
-            LocalDate lastWorkdayBefore21 = null;
-            for (int d = 21; d >= 1; d--) {
-                LocalDate date = today.withDayOfMonth(d);
-                if (isWorkday(date)) {
-                    lastWorkdayBefore21 = date;
-                    break;
-                }
+        // 获取本月21号
+        LocalDate day21 = today.withDayOfMonth(21);
+
+        // 找到21号前的最后一个工作日
+        LocalDate lastWorkdayBefore21 = null;
+        // 从21号前一天开始往前找
+        for (int d = 20; d >= 1; d--) {
+            LocalDate date = today.withDayOfMonth(d);
+            if (isWorkday(date)) {
+                lastWorkdayBefore21 = date;
+                break;
             }
-            // 今天是否就是最后一个工作日
-            if (today.equals(lastWorkdayBefore21)) {
-                // 发送通知
-                String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator()
-                        + System.lineSeparator()
-                        + "21号要扣缴公积金 确认账上余额是否充足" + System.lineSeparator()
-                        + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
-                qywxApi.sendTextMsg(new AgentMsgText(
-                        lokTarConfig.getQywx().getNoticeCxy(),
-                        lokTarConfig.getQywx().getAgent002Id(),
-                        content
-                ));
-            }
+        }
+
+        // 今天是否就是21号前的最后一个工作日
+        if (today.equals(lastWorkdayBefore21)) {
+            // 发送通知
+            String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator()
+                    + System.lineSeparator()
+                    + "21号要扣缴公积金 确认账上余额是否充足" + System.lineSeparator()
+                    + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
+            qywxApi.sendTextMsg(new AgentMsgText(
+                    lokTarConfig.getQywx().getNoticeCxy(),
+                    lokTarConfig.getQywx().getAgent002Id(),
+                    content
+            ));
         }
     }
 
@@ -147,12 +149,22 @@ public class DayTask {
     private void gjjOpRemind() {
         LocalDate today = LocalDate.now();
         LocalDate baseDay = today.withDayOfMonth(21);
-        // 先找到21号当天或之后的第一个工作日
-        LocalDate noticeDay = baseDay;
-        while (noticeDay.getDayOfWeek() == DayOfWeek.SATURDAY || noticeDay.getDayOfWeek() == DayOfWeek.SUNDAY) {
-            noticeDay = noticeDay.plusDays(1);
+
+        LocalDate noticeDay;
+
+        // 判断21号是否为周末
+        if (baseDay.getDayOfWeek() != DayOfWeek.SATURDAY && baseDay.getDayOfWeek() != DayOfWeek.SUNDAY) {
+            // 21号不是周末，就在21号推送
+            noticeDay = baseDay;
+        } else {
+            // 21号是周末，找到21号前的最后一个工作日
+            noticeDay = baseDay;
+            do {
+                noticeDay = noticeDay.minusDays(1);
+            } while (noticeDay.getDayOfWeek() == DayOfWeek.SATURDAY || noticeDay.getDayOfWeek() == DayOfWeek.SUNDAY);
         }
-        // 如果今天就是这个“需要通知的日子”，才发送
+
+        // 如果今天就是这个"需要通知的日子"，才发送
         if (today.equals(noticeDay)) {
             String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator()
                     + System.lineSeparator()
