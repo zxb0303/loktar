@@ -38,6 +38,8 @@ public class RelxTask {
         List<VapeOnlineUtil.Product> products = VapeOnlineUtil.getInStockProducts();
         List<String> skuList = products.stream()
                 .map(VapeOnlineUtil.Product::getName)
+                // 去除所有英文和紧跟的空格
+                .map(name -> name.replaceAll("[a-zA-Z]+ ?",""))
                 .sorted()
                 .collect(Collectors.toList());
         String nowInStock = String.join(",", skuList);
