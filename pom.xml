@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.3</version>
+        <version>3.5.7</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com</groupId>
     <artifactId>loktar</artifactId>
-    <version>5.4.4</version>
+    <version>5.4.5</version>
     <name>loktar</name>
     <description>loktar</description>
     <properties>
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>3.0.3</version>
+            <version>3.0.5</version>
         </dependency>
 
         <dependency>
