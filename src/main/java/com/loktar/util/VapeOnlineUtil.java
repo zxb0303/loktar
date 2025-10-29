@@ -29,6 +29,11 @@ public class VapeOnlineUtil {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static void main(String[] args) {
+        List<Product> product1s = getProductsFromPage();
+        for (Product product : product1s) {
+            System.out.println(product);
+        }
+
         List<Product> products = getInStockProducts();
         for (Product product : products) {
             System.out.println(product);
@@ -72,7 +77,7 @@ public class VapeOnlineUtil {
         HttpClient httpClient = HttpClient.newBuilder().build();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(URL))
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(60))
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
                 .GET()
                 .build();

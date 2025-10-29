@@ -33,7 +33,7 @@ public class RelxTask {
         this.qywxApi = qywxApi;
     }
 
-    @Scheduled(cron = "0 */3 * * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     public void relxStockAvailable() {
         List<VapeOnlineUtil.Product> products = VapeOnlineUtil.getInStockProducts();
         List<String> skuList = products.stream()
