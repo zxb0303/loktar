@@ -30,6 +30,21 @@ public class DayTask {
         this.lokTarConfig = lokTarConfig;
     }
 
+    /**
+     * 每月第一个工作日 9点半提醒
+     */
+    @Scheduled(cron = "0 30 9 * * ?")
+    private void zhiyiFlowRemind() {
+        LocalDate today = LocalDate.now();
+        LocalDate firstWorkday = getFirstWorkdayOfMonth(today);
+        if (today.equals(firstWorkday)) {
+            String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator()
+                    + System.lineSeparator()
+                    + "芷懿流水 发王欢" + System.lineSeparator() +
+                    DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeCxy(), lokTarConfig.getQywx().getAgent002Id(), content));
+        }
+    }
 
     /**
      * @description: 每个月最后一个工作日10点提醒
@@ -60,6 +75,34 @@ public class DayTask {
         }
     }
 
+    /**
+     * @description: 每个月最后一个工作日16点半提醒
+     * @param:
+     * @retuan: void
+     * @author: zxb
+     * @createTime: 2021-06-02 14:38
+     */
+    @Scheduled(cron = "0 0 10 * * ?")
+    private void CXYnotice1() {
+        LocalDate today = LocalDate.now();
+        LocalDate lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
+
+        // 如果最后一天是周日，则向前推两天到周五
+        if (lastDayOfMonth.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            lastDayOfMonth = lastDayOfMonth.minusDays(2);
+        }
+        // 如果最后一天是周六，则向前推一天到周五
+        else if (lastDayOfMonth.getDayOfWeek() == DayOfWeek.SATURDAY) {
+            lastDayOfMonth = lastDayOfMonth.minusDays(1);
+        }
+        if (today.equals(lastDayOfMonth)) {
+            String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator() +
+                    System.lineSeparator() +
+                    "芷懿流水 发王欢" + System.lineSeparator() +
+                    DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
+            qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeCxy(), lokTarConfig.getQywx().getAgent002Id(), content));
+        }
+    }
 
     /**
      * @description: 每月第一个工作日的前一天15点提醒
@@ -132,15 +175,6 @@ public class DayTask {
     }
 
     /**
-     * 判断工作日
-     * 这里只做周末判断，你可以补充节假日等
-     */
-    private boolean isWorkday(LocalDate date) {
-        DayOfWeek dayOfWeek = date.getDayOfWeek();
-        return dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY;
-    }
-
-    /**
      * @description: 每月21号为工作日则推送，否则提前至21号前的第一个工作日10点推送
      * @author: zxb
      * @createTime: 2024-06-20
@@ -176,5 +210,22 @@ public class DayTask {
                     content
             ));
         }
+    }
+
+    /**
+     * 判断工作日
+     * 这里只做周末判断，你可以补充节假日等
+     */
+    private boolean isWorkday(LocalDate date) {
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        return dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY;
+    }
+
+    private LocalDate getFirstWorkdayOfMonth(LocalDate date) {
+        LocalDate first = date.withDayOfMonth(1);
+        while (!isWorkday(first)) {
+            first = first.plusDays(1);
+        }
+        return first;
     }
 }
