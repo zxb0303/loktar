@@ -82,7 +82,7 @@ public class DayTask {
      * @author: zxb
      * @createTime: 2021-06-02 14:38
      */
-    @Scheduled(cron = "0 0 10 * * ?")
+    @Scheduled(cron = "0 30 16 * * ?")
     private void CXYnotice1() {
         LocalDate today = LocalDate.now();
         LocalDate lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
