@@ -26,37 +26,64 @@ import java.util.regex.Pattern;
 public class VapeOnlineUtil {
 
     private static final String URL = "https://www.vapeonlines.net/collections/all_9415de3f/products/relxddp?data_from=index_index&prefetch_cache=1";
+    private static final String ADD_URL = "https://www.vapeonlines.net/homeapi/cart/add";
+
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static void main(String[] args) {
-        List<Product> product1s = getProductsFromPage();
-        for (Product product : product1s) {
-            System.out.println(product);
-        }
+//        List<Product> product1s = getProductsFromPage();
+//        for (Product product : product1s) {
+//            System.out.println(product);
+//        }
+//
+//        List<Product> product2s = getInStockProducts();
+//        for (Product product : product2s) {
+//            System.out.println(product);
+//        }
 
-        List<Product> products = getInStockProducts();
-        for (Product product : products) {
+        List<Product> prodcut3s = getInStockProductsAndStockInfo();
+        for (Product product : prodcut3s) {
             System.out.println(product);
         }
     }
 
-    private static final Pattern JSON_STRING = Pattern.compile(
-            "\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"",
-            Pattern.MULTILINE);
+    @SneakyThrows
+    public static List<Product> getInStockProductsAndStockInfo() {
+        List<Product> product2s = getInStockProducts();
 
-    public static String escapeStringLiteralsNewline(String jsonText) {
-        Matcher m = JSON_STRING.matcher(jsonText);
-        StringBuffer sb = new StringBuffer();
-        while (m.find()) {
-            String orig = m.group(1);
-            String fixed = orig
-                    .replace("\r\n", "\\n")
-                    .replace("\n", "\\n")
-                    .replace("\r", "\\n");
-            m.appendReplacement(sb, Matcher.quoteReplacement("\"" + fixed + "\""));
+        HttpClient httpClient = HttpClient.newBuilder().build();
+        for (Product product : product2s) {
+            int maxQuantity = 0;
+            int batch = 5;
+            // 只测试5的整数倍
+            for (int quantity = batch; quantity <= 500; quantity += batch) {
+                String body = String.format(
+                        "{\"product_id\":%s,\"sku_code\":\"%s\",\"quantity\":%d," +
+                                "\"data_from\":\"index_index\",\"property\":[]}",
+                        product.getProductId(), product.getSkuCode(), quantity
+                );
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(ADD_URL))
+                        .timeout(Duration.ofSeconds(30))
+                        .header("Content-Type", "application/json")
+                        .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                        .POST(HttpRequest.BodyPublishers.ofString(body))
+                        .build();
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                JsonNode root = MAPPER.readTree(response.body());
+                int code = root.get("code").asInt();
+                if (code == 0) {
+                    maxQuantity = quantity;
+                } else if (code == 1001) {
+                    break;
+                } else {
+                    break;
+                }
+                Thread.sleep(200);
+            }
+            product.setStockQuantity(maxQuantity);
         }
-        m.appendTail(sb);
-        return sb.toString();
+        return product2s;
     }
 
 
@@ -97,10 +124,51 @@ public class VapeOnlineUtil {
                 JsonNode offersNode = node.get("offers");
                 List<Product> offerList = MAPPER.readValue(offersNode.traverse(), new TypeReference<List<Product>>() {
                 });
+                for (Product p : offerList) {
+                    if (p.getUrl() != null) {
+                        String skuCode = extractSkuCode(p.getUrl());
+                        p.setSkuCode(skuCode);
+                        String productId = (skuCode != null && skuCode.contains("-")) ? skuCode.split("-")[0] : skuCode;
+                        p.setProductId(productId);
+                    }
+                }
                 result.addAll(offerList);
             }
         }
         return result;
+    }
+
+    private static final Pattern JSON_STRING = Pattern.compile(
+            "\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"",
+            Pattern.MULTILINE);
+
+    public static String escapeStringLiteralsNewline(String jsonText) {
+        Matcher m = JSON_STRING.matcher(jsonText);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            String orig = m.group(1);
+            String fixed = orig
+                    .replace("\r\n", "\\n")
+                    .replace("\n", "\\n")
+                    .replace("\r", "\\n");
+            m.appendReplacement(sb, Matcher.quoteReplacement("\"" + fixed + "\""));
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
+    private static String extractSkuCode(String url) {
+        try {
+            int idx = url.indexOf("sku_code=");
+            if (idx == -1) return null;
+            String sub = url.substring(idx + "sku_code=".length());
+            int andIdx = sub.indexOf('&');
+            String skuCode = (andIdx != -1 ? sub.substring(0, andIdx) : sub);
+            // 防止有URL编码
+            return java.net.URLDecoder.decode(skuCode, java.nio.charset.StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Data
@@ -115,5 +183,8 @@ public class VapeOnlineUtil {
         private String gtin;
         private String url;
         private String availability;
+        private String productId;
+        private String skuCode;
+        private int stockQuantity;
     }
 }

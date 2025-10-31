@@ -1,5 +1,6 @@
 package com.loktar.web.test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
@@ -9,6 +10,7 @@ import com.loktar.util.IPUtil;
 import com.loktar.util.RedisUtil;
 import com.loktar.util.VapeOnlineUtil;
 import com.loktar.util.wx.qywx.QywxApi;
+import lombok.SneakyThrows;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +36,8 @@ public class TestController {
 
     private final QywxApi qywxApi;
 
+    private static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
 
 
     public TestController(LokTarConfig lokTarConfig, Environment environment, GithubRepositoryMapper githubRepositoryMapper, IPUtil ipUtil, RedisUtil redisUtil, QywxApi qywxApi) {
@@ -47,28 +51,30 @@ public class TestController {
     }
 
     @GetMapping("/test.do")
+    @SneakyThrows
     public void test() {
-        List<VapeOnlineUtil.Product> products = VapeOnlineUtil.getInStockProducts();
-        List<String> skuList = products.stream()
-                .map(VapeOnlineUtil.Product::getName)
-                // 去除所有英文和紧跟的空格
-                .map(name -> name.replaceAll("[a-zA-Z]+ ?",""))
-                .sorted()
-                .collect(Collectors.toList());
-        String nowInStock = String.join(System.lineSeparator(), skuList);
-        String nowInStockForRedis = String.join(",", skuList);
+        System.out.println("华人蒸汽库存定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
 
+        List<VapeOnlineUtil.Product> products = VapeOnlineUtil.getInStockProductsAndStockInfo();
+        String nowProductsJson = OBJECT_MAPPER.writeValueAsString(products);
+        String lastProductsJson = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX);
 
-        String last = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX);
-        if (!nowInStock.equals(last)) {
+        if (!nowProductsJson.equals(lastProductsJson)) {
+            String nowInStock = products.stream()
+                    .map(p -> p.getName().replaceAll("[a-zA-Z]+ ?", "").replaceAll("【","[").replaceAll("】","]") + "," + p.getStockQuantity())
+                    .sorted()
+                    .collect(Collectors.joining(System.lineSeparator()));
+
             String content = LokTarConstant.NOTICE_RELX_STOCK + System.lineSeparator() +
                     System.lineSeparator() +
                     nowInStock + System.lineSeparator() +
                     System.lineSeparator() +
                     DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), content));
-            redisUtil.set(LokTarConstant.REDIS_KEY_RELX, nowInStockForRedis);
+            redisUtil.set(LokTarConstant.REDIS_KEY_RELX, nowProductsJson);
         }
+        System.out.println("华人蒸汽库存定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+
     }
 
 }
