@@ -42,7 +42,9 @@ public class RelxTask {
                 .map(name -> name.replaceAll("[a-zA-Z]+ ?",""))
                 .sorted()
                 .collect(Collectors.toList());
-        String nowInStock = String.join(",", skuList);
+        String nowInStock = String.join(System.lineSeparator(), skuList);
+        String nowInStockForRedis = String.join(",", skuList);
+
 
         String last = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX);
         if (!nowInStock.equals(last)) {
@@ -52,7 +54,7 @@ public class RelxTask {
                     System.lineSeparator() +
                     DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), content));
-            redisUtil.set(LokTarConstant.REDIS_KEY_RELX, nowInStock);
+            redisUtil.set(LokTarConstant.REDIS_KEY_RELX, nowInStockForRedis);
         }
     }
 }
