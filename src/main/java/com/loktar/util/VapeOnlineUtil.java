@@ -49,41 +49,58 @@ public class VapeOnlineUtil {
 
     @SneakyThrows
     public static List<Product> getInStockProductsAndStockInfo() {
-        List<Product> product2s = getInStockProducts();
-
+        List<Product> products = getInStockProducts();
         HttpClient httpClient = HttpClient.newBuilder().build();
-        for (Product product : product2s) {
-            int maxQuantity = 0;
-            int batch = 5;
-            // 只测试5的整数倍
-            for (int quantity = batch; quantity <= 500; quantity += batch) {
-                String body = String.format(
-                        "{\"product_id\":%s,\"sku_code\":\"%s\",\"quantity\":%d," +
-                                "\"data_from\":\"index_index\",\"property\":[]}",
-                        product.getProductId(), product.getSkuCode(), quantity
-                );
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(ADD_URL))
-                        .timeout(Duration.ofSeconds(30))
-                        .header("Content-Type", "application/json")
-                        .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
-                        .POST(HttpRequest.BodyPublishers.ofString(body))
-                        .build();
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                JsonNode root = MAPPER.readTree(response.body());
-                int code = root.get("code").asInt();
-                if (code == 0) {
-                    maxQuantity = quantity;
-                } else if (code == 1001) {
-                    break;
-                } else {
-                    break;
-                }
-                Thread.sleep(200);
+
+        for (Product product : products) {
+            // 先用步进5确认最大库存
+            int coarseStep = 5;
+            int roughMax = findMaxPurchasable(httpClient, product, 1, 500, coarseStep);
+
+            int preciseMax = roughMax;
+            // 如果低于5，用步进1精确再查一遍
+            if (roughMax < 5) {
+                preciseMax = findMaxPurchasable(httpClient, product, 1, roughMax + coarseStep - 1, 1);
             }
-            product.setStockQuantity(maxQuantity);
+            product.setStockQuantity(preciseMax);
         }
-        return product2s;
+        return products;
+    }
+
+    @SneakyThrows
+    private static int findMaxPurchasable(HttpClient httpClient, Product product, int min, int max, int step) {
+        int maxQuantity = 0;
+        for (int quantity = min; quantity <= max; quantity += step) {
+            int code = tryPurchase(httpClient, product, quantity);
+            if (code == 0) {
+                maxQuantity = quantity;
+            } else if (code == 1001) {
+                break;
+            } else {
+                break;
+            }
+            Thread.sleep(200);
+        }
+        return maxQuantity;
+    }
+
+    @SneakyThrows
+    private static int tryPurchase(HttpClient httpClient, Product product, int quantity) {
+        String body = String.format(
+                "{\"product_id\":%s,\"sku_code\":\"%s\",\"quantity\":%d," +
+                        "\"data_from\":\"index_index\",\"property\":[]}",
+                product.getProductId(), product.getSkuCode(), quantity
+        );
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(ADD_URL))
+                .timeout(Duration.ofSeconds(30))
+                .header("Content-Type", "application/json")
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        JsonNode root = MAPPER.readTree(response.body());
+        return root.get("code").asInt();
     }
 
 
