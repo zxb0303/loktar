@@ -50,7 +50,7 @@ public class RelxTask {
 
         if (!nowProductsJson.equals(lastProductsJson)) {
             String nowInStock = products.stream()
-                    .map(p -> trans.transliterate(p.getName().trim().replaceAll("[a-zA-Z]+ ?", "").replaceAll("【", "[").replaceAll("】", "]")) + "," + p.getStockQuantity())
+                    .map(p -> trans.transliterate(p.getName().trim().replaceAll(" ","").replaceAll("[a-zA-Z]+ ?", "").replaceAll("【", "[").replaceAll("】", "]").replace("(三颗装)","").replace("[新]","").replace("[]","")) + "," + p.getStockQuantity())
                     .sorted()
                     .collect(Collectors.joining(System.lineSeparator()));
             String content = LokTarConstant.NOTICE_RELX_STOCK + System.lineSeparator() +
