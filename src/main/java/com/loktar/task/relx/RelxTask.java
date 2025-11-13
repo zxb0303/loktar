@@ -1,6 +1,7 @@
 package com.loktar.task.relx;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ibm.icu.text.Transliterator;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
@@ -31,6 +32,7 @@ public class RelxTask {
 
     private static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    private static Transliterator trans = Transliterator.getInstance("Traditional-Simplified");
 
     public RelxTask(LokTarConfig lokTarConfig, RedisUtil redisUtil, QywxApi qywxApi) {
         this.lokTarConfig = lokTarConfig;
@@ -41,14 +43,14 @@ public class RelxTask {
     @Scheduled(cron = "0 */3 * * * *")
     @SneakyThrows
     public void relxStockAvailable() {
-        System.out.println("华人蒸汽库存定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+        System.out.println("华人蒸汽库存定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         List<VapeOnlineUtil.Product> products = VapeOnlineUtil.getInStockProductsAndStockInfo();
         String nowProductsJson = OBJECT_MAPPER.writeValueAsString(products);
         String lastProductsJson = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX);
 
         if (!nowProductsJson.equals(lastProductsJson)) {
             String nowInStock = products.stream()
-                    .map(p -> p.getName().replaceAll("[a-zA-Z]+ ?", "").replaceAll("【","[").replaceAll("】","]") + "," + p.getStockQuantity())
+                    .map(p -> trans.transliterate(p.getName().trim().replaceAll("[a-zA-Z]+ ?", "").replaceAll("【", "[").replaceAll("】", "]")) + "," + p.getStockQuantity())
                     .sorted()
                     .collect(Collectors.joining(System.lineSeparator()));
             String content = LokTarConstant.NOTICE_RELX_STOCK + System.lineSeparator() +
@@ -59,6 +61,6 @@ public class RelxTask {
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), content));
             redisUtil.set(LokTarConstant.REDIS_KEY_RELX, nowProductsJson);
         }
-        System.out.println("华人蒸汽库存定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+        System.out.println("华人蒸汽库存定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
     }
 }
