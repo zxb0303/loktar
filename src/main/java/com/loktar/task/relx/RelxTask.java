@@ -56,6 +56,7 @@ public class RelxTask {
                                     .replaceAll("【", "[")
                                     .replaceAll("】", "]")
                                     .replace("(三颗装)", "")
+                                    .replace("（三颗装）", "")
                                     .replace("[新]", "")
                                     .replace("[]", "")
                                     + "," + p.getStockQuantity()
