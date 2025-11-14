@@ -10,7 +10,7 @@
     </parent>
     <groupId>com</groupId>
     <artifactId>loktar</artifactId>
-    <version>5.5.4</version>
+    <version>5.5.5</version>
     <name>loktar</name>
     <description>loktar</description>
     <properties>
@@ -220,9 +220,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.ibm.icu</groupId>
-            <artifactId>icu4j</artifactId>
-            <version>78.1</version>
+            <groupId>com.github.houbb</groupId>
+            <artifactId>opencc4j</artifactId>
+            <version>1.14.0</version>
         </dependency>
 
     </dependencies>

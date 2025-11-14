@@ -1,7 +1,7 @@
 package com.loktar.task.relx;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ibm.icu.text.Transliterator;
+import com.github.houbb.opencc4j.util.ZhConverterUtil;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
@@ -32,8 +32,6 @@ public class RelxTask {
 
     private static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private static Transliterator trans = Transliterator.getInstance("Traditional-Simplified");
-
     public RelxTask(LokTarConfig lokTarConfig, RedisUtil redisUtil, QywxApi qywxApi) {
         this.lokTarConfig = lokTarConfig;
         this.redisUtil = redisUtil;
@@ -50,7 +48,18 @@ public class RelxTask {
 
         if (!nowProductsJson.equals(lastProductsJson)) {
             String nowInStock = products.stream()
-                    .map(p -> trans.transliterate(p.getName().trim().replaceAll(" ","").replaceAll("[a-zA-Z]+ ?", "").replaceAll("【", "[").replaceAll("】", "]").replace("(三颗装)","").replace("[新]","").replace("[]","")) + "," + p.getStockQuantity())
+                    .map(p ->
+                            ZhConverterUtil.toSimple(p.getName())
+                                    .trim()
+                                    .replaceAll(" ", "")
+                                    .replaceAll("[a-zA-Z]+ ?", "")
+                                    .replaceAll("【", "[")
+                                    .replaceAll("】", "]")
+                                    .replace("(三颗装)", "")
+                                    .replace("[新]", "")
+                                    .replace("[]", "")
+                                    + "," + p.getStockQuantity()
+                    )
                     .sorted()
                     .collect(Collectors.joining(System.lineSeparator()));
             String content = LokTarConstant.NOTICE_RELX_STOCK + System.lineSeparator() +
