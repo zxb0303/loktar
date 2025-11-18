@@ -205,6 +205,7 @@ public class QyWeixinCallbackController {
                 String relxStatus = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH);
                 if ("on".equals(relxStatus)) {
                     redisUtil.del(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH);
+                    redisUtil.del(LokTarConstant.REDIS_KEY_RELX);
                     replymsg.append("已关闭Relx监控").append(System.lineSeparator());
                 } else {
                     redisUtil.set(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH, "on", -1);
