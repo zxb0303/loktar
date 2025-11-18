@@ -201,9 +201,22 @@ public class QyWeixinCallbackController {
                 replymsg.append(System.lineSeparator())
                         .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                 break;
+            case EventCommandType.RELX_MONITOR_SWITCH:
+                String relxStatus = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH);
+                if ("on".equals(relxStatus)) {
+                    redisUtil.del(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH);
+                    replymsg.append("已关闭Relx监控").append(System.lineSeparator());
+                } else {
+                    redisUtil.set(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH, "on", -1);
+                    replymsg.append("已开启Relx监控").append(System.lineSeparator());
+                }
+                replymsg.append(System.lineSeparator())
+                        .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
+                break;
             default:
                 replymsg.append("不支持该命令");
                 break;
+
         }
         qywxApi.sendTextMsg(new AgentMsgText(receiveEventMsg.getFromUserName(), receiveEventMsg.getAgentID(), replymsg.toString()));
 

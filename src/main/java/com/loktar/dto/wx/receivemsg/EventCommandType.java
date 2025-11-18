@@ -15,7 +15,9 @@ public enum EventCommandType {
     UDATE_WX_MENU("更新菜单"),
     TRANSMISSION_SPEED_SWTICH("TR限速开关"),
     PATENT_SEARCH_PROCESS("专利查询进度"),
-    PATENT_MONITOR_SWITCH("专利查询监控");
+    PATENT_MONITOR_SWITCH("专利查询监控"),
+    RELX_MONITOR_SWITCH("Relx监控开关");
+
 
     private final String name;
 

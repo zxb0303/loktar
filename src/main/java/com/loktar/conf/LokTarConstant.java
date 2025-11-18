@@ -30,7 +30,7 @@ public class LokTarConstant {
     public static final String REDIS_KEY_PATENT_MONITOR_SWITCH = "qywx_patent_monitor_switch";
     public static final String REDIS_KEY_PATENT_MONITOR_COUNT = "qywx_patent_monitor_count";
     public static final String REDIS_KEY_RELX = "relx_stock_available";
-
+    public static final String REDIS_KEY_RELX_MONITOR_SWITCH = "relx_monitor_switch";
 
 
     public final static String NOTICE_TITLE_GITHUB = "GitHub项目更新通知";

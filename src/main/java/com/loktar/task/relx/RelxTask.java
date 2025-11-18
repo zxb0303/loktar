@@ -10,6 +10,7 @@ import com.loktar.util.RedisUtil;
 import com.loktar.util.VapeOnlineUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -41,6 +42,10 @@ public class RelxTask {
     @Scheduled(cron = "0 */3 * * * *")
     @SneakyThrows
     public void relxStockAvailable() {
+        String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH);
+        if (StringUtils.isEmpty(status)) {
+            return;
+        }
         System.out.println("华人蒸汽库存定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         List<VapeOnlineUtil.Product> products = VapeOnlineUtil.getInStockProductsAndStockInfo();
         String nowProductsJson = OBJECT_MAPPER.writeValueAsString(products);
