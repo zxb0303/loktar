@@ -55,7 +55,7 @@ public class TestController {
     public void test() {
         System.out.println("华人蒸汽库存定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
 
-        List<VapeOnlineUtil.Product> products = VapeOnlineUtil.getInStockProductsAndStockInfo();
+        List<VapeOnlineUtil.Product> products = VapeOnlineUtil.getInStockAndNeedProductsAndStockInfo();
         String nowProductsJson = OBJECT_MAPPER.writeValueAsString(products);
         String lastProductsJson = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX);
 
