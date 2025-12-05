@@ -35,21 +35,42 @@ public class VapeOnlineUtil {
 //        for (Product product : product1s) {
 //            System.out.println(product);
 //        }
-//
+
 //        List<Product> product2s = getInStockProducts();
 //        for (Product product : product2s) {
 //            System.out.println(product);
 //        }
 
-        List<Product> prodcut3s = getInStockProductsAndStockInfo();
+//        List<Product> product3s = getInStockAndNeedProducts();
+//        for (Product product : product3s) {
+//            System.out.println(product);
+//        }
+
+        List<Product> prodcut3s = getInStockAndNeedProductsAndStockInfo();
         for (Product product : prodcut3s) {
             System.out.println(product);
         }
     }
 
-    @SneakyThrows
-    public static List<Product> getInStockProductsAndStockInfo() {
+    private static List<Product> getInStockAndNeedProducts() {
         List<Product> products = getInStockProducts();
+        List<Product> needProducts = new ArrayList<>();
+        for (Product product : products) {
+            if (product.getName().contains("可樂") ||
+                            product.getName().toLowerCase().contains("sparkle") ||
+//                            product.getName().toLowerCase().contains("tabacco") ||
+                            product.getName().toLowerCase().contains("cola") ||
+                            product.getName().contains("寶礦力") ||
+                            product.getName().toLowerCase().contains("grapefruit")) {
+                needProducts.add(product);
+            }
+        }
+        return needProducts;
+    }
+
+    @SneakyThrows
+    public static List<Product> getInStockAndNeedProductsAndStockInfo() {
+        List<Product> products = getInStockAndNeedProducts();
         HttpClient httpClient = HttpClient.newBuilder().build();
 
         for (Product product : products) {

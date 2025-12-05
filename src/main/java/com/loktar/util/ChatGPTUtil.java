@@ -113,4 +113,30 @@ public class ChatGPTUtil {
         return openAiRequest;
     }
 
+    public static OpenAiRequest getTranslateRequest(String englishText) {
+        // system 消息
+        OpenAiMessage sys = new OpenAiMessage();
+        sys.setRole(ROLE_SYSTEM);
+        sys.setContent("你是一个专业的中英翻译助手。"
+                + "请把后面用户给出的英文内容准确翻译成通顺的简体中文，只返回翻译结果本身，不要解释，不要添加额外内容。");
+
+        // user 消息
+        OpenAiMessage user = new OpenAiMessage();
+        user.setRole(ROLE_USER);
+        user.setContent(englishText);
+
+        List<OpenAiMessage> list = new ArrayList<>();
+        list.add(sys);
+        list.add(user);
+
+        OpenAiRequest req = new OpenAiRequest();
+        req.setModel(GPT_MODEL_4_TURBO_PREVIEW);
+        req.setTemperature(0.3);          // 翻译建议温度低一点，保证稳定
+        req.setStream(false);
+        req.setMaxTokens(2000);
+        req.setPresencePenalty(0.0);
+        req.setTopP(1.0);
+        req.setMessages(list);
+        return req;
+    }
 }
