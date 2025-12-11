@@ -70,7 +70,8 @@ public class VapeOnlineUtil {
 
     @SneakyThrows
     public static List<Product> getInStockAndNeedProductsAndStockInfo() {
-        List<Product> products = getInStockAndNeedProducts();
+        //TODO 如果只监控需要的就换这行代码 List<Product> products = getInStockAndNeedProducts();
+        List<Product> products = getInStockProducts();
         HttpClient httpClient = HttpClient.newBuilder().build();
 
         for (Product product : products) {

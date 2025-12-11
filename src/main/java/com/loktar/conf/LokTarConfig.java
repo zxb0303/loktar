@@ -64,6 +64,8 @@ public class LokTarConfig {
         private String agent006Secert;
         private String agent007Id;
         private String agent007Secert;
+        private String agent008Id;
+        private String agent008Secert;
     }
 
     @Data
