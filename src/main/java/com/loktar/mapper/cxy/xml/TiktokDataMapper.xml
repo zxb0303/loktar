@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.cxy.TiktokDataMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.cxy.TiktokData">
+    <id column="data_id" jdbcType="INTEGER" property="dataId" />
+    <result column="account_id" jdbcType="INTEGER" property="accountId" />
+    <result column="date" jdbcType="VARCHAR" property="date" />
+    <result column="today_diamond_cnt" jdbcType="INTEGER" property="todayDiamondCnt" />
+    <result column="today_live_cnt" jdbcType="INTEGER" property="todayLiveCnt" />
+    <result column="today_new_member_cnt" jdbcType="INTEGER" property="todayNewMemberCnt" />
+    <result column="month_diamond_cnt" jdbcType="INTEGER" property="monthDiamondCnt" />
+    <result column="month_diamond_pct" jdbcType="VARCHAR" property="monthDiamondPct" />
+    <result column="month_new_creator_cnt" jdbcType="INTEGER" property="monthNewCreatorCnt" />
+    <result column="month_new_creator_diamond_cnt" jdbcType="INTEGER" property="monthNewCreatorDiamondCnt" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tiktok_data
+    where data_id = #{dataId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.cxy.TiktokData">
+    insert into tiktok_data (data_id, account_id, `date`, 
+      today_diamond_cnt, today_live_cnt, today_new_member_cnt, 
+      month_diamond_cnt, month_diamond_pct, month_new_creator_cnt, 
+      month_new_creator_diamond_cnt, create_time, 
+      update_time)
+    values (#{dataId,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{date,jdbcType=VARCHAR}, 
+      #{todayDiamondCnt,jdbcType=INTEGER}, #{todayLiveCnt,jdbcType=INTEGER}, #{todayNewMemberCnt,jdbcType=INTEGER}, 
+      #{monthDiamondCnt,jdbcType=INTEGER}, #{monthDiamondPct,jdbcType=VARCHAR}, #{monthNewCreatorCnt,jdbcType=INTEGER}, 
+      #{monthNewCreatorDiamondCnt,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.cxy.TiktokData">
+    update tiktok_data
+    set account_id = #{accountId,jdbcType=INTEGER},
+      `date` = #{date,jdbcType=VARCHAR},
+      today_diamond_cnt = #{todayDiamondCnt,jdbcType=INTEGER},
+      today_live_cnt = #{todayLiveCnt,jdbcType=INTEGER},
+      today_new_member_cnt = #{todayNewMemberCnt,jdbcType=INTEGER},
+      month_diamond_cnt = #{monthDiamondCnt,jdbcType=INTEGER},
+      month_diamond_pct = #{monthDiamondPct,jdbcType=VARCHAR},
+      month_new_creator_cnt = #{monthNewCreatorCnt,jdbcType=INTEGER},
+      month_new_creator_diamond_cnt = #{monthNewCreatorDiamondCnt,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where data_id = #{dataId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select data_id, account_id, `date`, today_diamond_cnt, today_live_cnt, today_new_member_cnt, 
+    month_diamond_cnt, month_diamond_pct, month_new_creator_cnt, month_new_creator_diamond_cnt, 
+    create_time, update_time
+    from tiktok_data
+    where data_id = #{dataId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select data_id, account_id, `date`, today_diamond_cnt, today_live_cnt, today_new_member_cnt, 
+    month_diamond_cnt, month_diamond_pct, month_new_creator_cnt, month_new_creator_diamond_cnt, 
+    create_time, update_time
+    from tiktok_data
+  </select>
+</mapper>

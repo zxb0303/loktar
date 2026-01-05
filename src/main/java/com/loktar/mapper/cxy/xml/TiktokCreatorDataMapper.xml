@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.cxy.TiktokCreatorDataMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.cxy.TiktokCreatorData">
+    <id column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="account_id" jdbcType="INTEGER" property="accountId" />
+    <result column="date" jdbcType="VARCHAR" property="date" />
+    <result column="rank" jdbcType="INTEGER" property="rank" />
+    <result column="display_id" jdbcType="VARCHAR" property="displayId" />
+    <result column="income_current" jdbcType="INTEGER" property="incomeCurrent" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tiktok_creator_data
+    where user_id = #{userId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.cxy.TiktokCreatorData">
+    insert into tiktok_creator_data (user_id, account_id, `date`, 
+      `rank`, display_id, income_current, 
+      create_time, update_time)
+    values (#{userId,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{date,jdbcType=VARCHAR}, 
+      #{rank,jdbcType=INTEGER}, #{displayId,jdbcType=VARCHAR}, #{incomeCurrent,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.cxy.TiktokCreatorData">
+    update tiktok_creator_data
+    set account_id = #{accountId,jdbcType=INTEGER},
+      `date` = #{date,jdbcType=VARCHAR},
+      `rank` = #{rank,jdbcType=INTEGER},
+      display_id = #{displayId,jdbcType=VARCHAR},
+      income_current = #{incomeCurrent,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select user_id, account_id, `date`, `rank`, display_id, income_current, create_time, 
+    update_time
+    from tiktok_creator_data
+    where user_id = #{userId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select user_id, account_id, `date`, `rank`, display_id, income_current, create_time, 
+    update_time
+    from tiktok_creator_data
+  </select>
+</mapper>

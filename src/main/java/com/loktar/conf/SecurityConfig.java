@@ -26,6 +26,7 @@ public class SecurityConfig {
                                 "/patentpdf/**",
                                 "/patentpdfv2/**",
                                 "/patentdoc/**",
+                                "/tiktok/**",
                                 "/test/**"
                         ).permitAll()
                         .anyRequest().authenticated())
