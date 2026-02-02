@@ -102,7 +102,6 @@ public class LokTarConfig {
 
     @Data
     public static class Common {
-        private String loktarUrl;
         private String clashRssUrl;
     }
 
