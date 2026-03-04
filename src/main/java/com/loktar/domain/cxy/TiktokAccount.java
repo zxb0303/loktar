@@ -20,6 +20,8 @@ public class TiktokAccount implements Serializable {
 
     private String excelEnd;
 
+    private String excelMonthlyIndex;
+
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
@@ -90,6 +92,14 @@ public class TiktokAccount implements Serializable {
         this.excelEnd = excelEnd == null ? null : excelEnd.trim();
     }
 
+    public String getExcelMonthlyIndex() {
+        return excelMonthlyIndex;
+    }
+
+    public void setExcelMonthlyIndex(String excelMonthlyIndex) {
+        this.excelMonthlyIndex = excelMonthlyIndex == null ? null : excelMonthlyIndex.trim();
+    }
+
     public LocalDateTime getCreateTime() {
         return createTime;
     }
@@ -120,6 +130,7 @@ public class TiktokAccount implements Serializable {
         sb.append(", status=").append(status);
         sb.append(", excelStart=").append(excelStart);
         sb.append(", excelEnd=").append(excelEnd);
+        sb.append(", excelMonthlyIndex=").append(excelMonthlyIndex);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
         sb.append(", serialVersionUID=").append(serialVersionUID);
