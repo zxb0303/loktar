@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.investment.EquityIndexDividendYieldDailyMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.investment.EquityIndexDividendYieldDaily">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="equity_index" jdbcType="VARCHAR" property="equityIndex" />
+    <result column="equity_index_name" jdbcType="VARCHAR" property="equityIndexName" />
+    <result column="date" jdbcType="VARCHAR" property="date" />
+    <result column="dividend_yield" jdbcType="REAL" property="dividendYield" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from equity_index_dividend_yield_daily
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.investment.EquityIndexDividendYieldDaily">
+    insert into equity_index_dividend_yield_daily (id, equity_index, equity_index_name, 
+      `date`, dividend_yield, create_time, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{equityIndex,jdbcType=VARCHAR}, #{equityIndexName,jdbcType=VARCHAR}, 
+      #{date,jdbcType=VARCHAR}, #{dividendYield,jdbcType=REAL}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.investment.EquityIndexDividendYieldDaily">
+    update equity_index_dividend_yield_daily
+    set equity_index = #{equityIndex,jdbcType=VARCHAR},
+      equity_index_name = #{equityIndexName,jdbcType=VARCHAR},
+      `date` = #{date,jdbcType=VARCHAR},
+      dividend_yield = #{dividendYield,jdbcType=REAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, equity_index, equity_index_name, `date`, dividend_yield, create_time, 
+    update_time
+    from equity_index_dividend_yield_daily
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, equity_index, equity_index_name, `date`, dividend_yield, create_time, 
+    update_time
+    from equity_index_dividend_yield_daily
+  </select>
+  <insert id="insertIgnore" parameterType="com.loktar.domain.investment.EquityIndexDividendYieldDaily">
+    insert ignore into equity_index_dividend_yield_daily (equity_index, equity_index_name, `date`, dividend_yield, create_time, update_time)
+        values (#{equityIndex,jdbcType=VARCHAR},#{equityIndexName,jdbcType=VARCHAR},#{date,jdbcType=VARCHAR},#{dividendYield,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <select id="getRecentEquityIndexDividendYieldDaily" resultMap="BaseResultMap">
+    SELECT t.id,t.equity_index, t.equity_index_name, t.date, t.dividend_yield FROM equity_index_dividend_yield_daily t
+     JOIN (
+      SELECT equity_index, MAX(`date`) AS max_date
+      FROM equity_index_dividend_yield_daily
+      GROUP BY equity_index
+    ) m ON t.equity_index = m.equity_index AND t.`date` = m.max_date order by t.id;
+  </select>
+</mapper>
