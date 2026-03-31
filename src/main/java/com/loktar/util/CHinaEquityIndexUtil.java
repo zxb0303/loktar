@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CHinaEquityIndexUtil {
-    public final static List<String> EQUITY_INDEXS = List.of("930955", "H30269", "931446");
+    public final static List<String> EQUITY_INDEXS = List.of("930955", "H30269", "931446","932422");
     public final static String INDICATOR_URL = "https://oss-ch.csindex.com.cn/static/html/csindex/public/uploads/file/autofile/indicator/{0}indicator.xls";
 
     @SneakyThrows
