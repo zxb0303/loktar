@@ -5,7 +5,7 @@ import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.investment.EquityIndexDividendYieldDaily;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.investment.EquityIndexDividendYieldDailyMapper;
-import com.loktar.util.CHinaEquityIndexUtil;
+import com.loktar.util.ChinaEquityIndexUtil;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import org.springframework.context.annotation.Profile;
@@ -33,9 +33,9 @@ public class ChinaEquityIndexTask {
 
     @Scheduled(cron = "0 0 7 * * MON-FRI")
     private void getData() {
-        for (String index : CHinaEquityIndexUtil.EQUITY_INDEXS) {
-            String fileUrl = MessageFormat.format(CHinaEquityIndexUtil.INDICATOR_URL, index);
-            List<EquityIndexDividendYieldDaily> result = CHinaEquityIndexUtil.readExcelFromUrl(fileUrl);
+        for (String index : ChinaEquityIndexUtil.EQUITY_INDEXS) {
+            String fileUrl = MessageFormat.format(ChinaEquityIndexUtil.INDICATOR_URL, index);
+            List<EquityIndexDividendYieldDaily> result = ChinaEquityIndexUtil.readExcelFromUrl(fileUrl);
             for (EquityIndexDividendYieldDaily entity : result) {
                 equityIndexDividendYieldDailyMapper.insertIgnore(entity);
             }

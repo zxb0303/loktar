@@ -4,7 +4,7 @@ import com.loktar.conf.LokTarConfig;
 import com.loktar.domain.investment.EquityIndexDividendYieldDaily;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.investment.EquityIndexDividendYieldDailyMapper;
-import com.loktar.util.CHinaEquityIndexUtil;
+import com.loktar.util.ChinaEquityIndexUtil;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
@@ -33,9 +33,9 @@ public class ChinaEquityIndexController {
     @PostMapping("/getData.do")
     @SneakyThrows
     public void getData() {
-        for (String index : CHinaEquityIndexUtil.EQUITY_INDEXS) {
-            String fileUrl = MessageFormat.format(CHinaEquityIndexUtil.INDICATOR_URL, index);
-            List<EquityIndexDividendYieldDaily> result = CHinaEquityIndexUtil.readExcelFromUrl(fileUrl);
+        for (String index : ChinaEquityIndexUtil.EQUITY_INDEXS) {
+            String fileUrl = MessageFormat.format(ChinaEquityIndexUtil.INDICATOR_URL, index);
+            List<EquityIndexDividendYieldDaily> result = ChinaEquityIndexUtil.readExcelFromUrl(fileUrl);
             for (EquityIndexDividendYieldDaily entity : result) {
                 equityIndexDividendYieldDailyMapper.insertIgnore(entity);
             }
