@@ -95,17 +95,17 @@ public class TransmissionServiceImpl implements TransmissionService {
                 trTorrentTrackerMapper.deleteByTorrentId(errorTrTorrent.getId());
                 transmissionUtil.removeTorrents(removeIds.toArray(new Integer[0]), true);
             }
-            if (trTorrents.size() > 1) {
-                //错误的>1个时，只删种不文件
-                for (TrTorrent t : trTorrents) {
-                    if (t.getError() != 0) {
-                        removeIds.add(t.getId());
-                        trTorrentMapper.deleteByPrimaryKey(t.getId());
-                        trTorrentTrackerMapper.deleteByTorrentId(t.getId());
-                    }
-                }
-                transmissionUtil.removeTorrents(removeIds.toArray(new Integer[0]), false);
-            }
+//            if (trTorrents.size() > 1) {
+//                //错误的>1个时，只删种不文件
+//                for (TrTorrent t : trTorrents) {
+//                    if (t.getError() != 0) {
+//                        removeIds.add(t.getId());
+//                        trTorrentMapper.deleteByPrimaryKey(t.getId());
+//                        trTorrentTrackerMapper.deleteByTorrentId(t.getId());
+//                    }
+//                }
+//                transmissionUtil.removeTorrents(removeIds.toArray(new Integer[0]), false);
+//            }
         }
     }
 

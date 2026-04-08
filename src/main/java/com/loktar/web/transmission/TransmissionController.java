@@ -56,8 +56,8 @@ public class TransmissionController {
     }
 
     @GetMapping("/removeTorrents.do")
-    public void testRemoveTorrents() {
-        transmissionUtil.removeTorrents(new Integer[]{2486},true);
+    public void testRemoveTorrents(int id) {
+        transmissionUtil.removeTorrents(new Integer[]{id},true);
     }
 
     @GetMapping("/getFreeSpaceByPath.do")
