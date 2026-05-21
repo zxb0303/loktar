@@ -57,6 +57,7 @@ public class RelxTask {
                             ZhConverterUtil.toSimple(p.getName())
                                     .trim()
                                     .replaceAll(" ", "")
+                                    .replaceAll("-", "")
                                     .replaceAll("[a-zA-Z]+ ?", "")
                                     .replaceAll("【", "[")
                                     .replaceAll("】", "]")
