@@ -141,7 +141,6 @@ public class QyWeixinCallbackChatGPTController {
         if (ObjectUtils.isEmpty(openAiRequest)) {
             openAiRequest = ChatGPTUtil.getDefalutRequest();
             openAiRequest.setModel(chatgptModelProperty.getValue());
-            openAiRequest.setMaxTokens(Integer.parseInt(chatgptMaxTokensProperty.getValue()));
         }
         OpenAiMessage openAiMessage = new OpenAiMessage(ChatGPTUtil.ROLE_USER, receiveMsg);
         openAiRequest.getMessages().add(openAiMessage);
