@@ -117,7 +117,6 @@ public class QyWeixinCallbackChatGPTController {
             return;
         }
         Property chatgptModelProperty = propertyMapper.selectByPrimaryKey("chatgpt_model");
-        Property chatgptMaxTokensProperty = propertyMapper.selectByPrimaryKey("chatgpt_maxtoken");
 
         //记录收到的消息
         QywxChatgptMsg receiveQywxChatgptMsg = new QywxChatgptMsg();
