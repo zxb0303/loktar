@@ -116,6 +116,8 @@ public class QSNG {
 //            System.out.println("上课时间: " + getScheduleTime(bean.getSchedule()));
 //            System.out.println("上课教室: " + getScheduleRoom(bean.getSchedule()));
 //            System.out.println("课次: " + bean.getClassTime());
+//            System.out.println("开始日期: " + (bean.getBeginDate() != null ? DateTimeUtil.getDatetimeStr(DateTimeUtil.convertSecondsToDateTime(bean.getBeginDate() / 1000), DateTimeUtil.FORMATTER_DATE) : ""));
+//            System.out.println("结束日期: " + (bean.getEndDate() != null ? DateTimeUtil.getDatetimeStr(DateTimeUtil.convertSecondsToDateTime(bean.getEndDate() / 1000), DateTimeUtil.FORMATTER_DATE) : ""));
 //            System.out.println("描述: " + bean.getDescription());
 //        }
         saveToExcel(allBeans);
@@ -134,7 +136,7 @@ public class QSNG {
     }
 
     private static void saveToExcel(List<QSNGBean> allBeans) throws Exception {
-        String[] headers = {"校区", "班级名称", "班级编码", "等级", "学员年级(小)", "学员年级(大)", "出生日期(小)", "出生日期(大)", "教师", "学费", "上课时间", "上课教室", "课次", "描述"};
+        String[] headers = {"校区", "班级名称", "班级编码", "等级", "学员年级(小)", "学员年级(大)", "出生日期(小)", "出生日期(大)", "教师", "学费", "上课时间", "上课教室", "课次", "开始日期", "结束日期", "描述"};
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("班级列表");
             // 表头加粗样式
@@ -167,7 +169,9 @@ public class QSNG {
                 row.createCell(10).setCellValue(getScheduleTime(bean.getSchedule()));
                 row.createCell(11).setCellValue(getScheduleRoom(bean.getSchedule()));
                 row.createCell(12).setCellValue(bean.getClassTime() != null ? bean.getClassTime() : 0);
-                row.createCell(13).setCellValue(bean.getDescription());
+                row.createCell(13).setCellValue(bean.getBeginDate() != null ? DateTimeUtil.getDatetimeStr(DateTimeUtil.convertSecondsToDateTime(bean.getBeginDate() / 1000), DateTimeUtil.FORMATTER_DATE) : "");
+                row.createCell(14).setCellValue(bean.getEndDate() != null ? DateTimeUtil.getDatetimeStr(DateTimeUtil.convertSecondsToDateTime(bean.getEndDate() / 1000), DateTimeUtil.FORMATTER_DATE) : "");
+                row.createCell(15).setCellValue(bean.getDescription());
             }
             // 自动筛选
             sheet.setAutoFilter(new org.apache.poi.ss.util.CellRangeAddress(0, allBeans.size(), 0, headers.length - 1));
