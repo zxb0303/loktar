@@ -52,7 +52,7 @@ public class FundNavTask {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @Scheduled(cron = "0 0/10 18-23 * * TUE-SAT")
+    @Scheduled(cron = "0 0/10 18-23 * * MON-FRI")
     @SneakyThrows
     public void syncToday() {
         LocalDate today = LocalDate.now();
