@@ -109,6 +109,9 @@ public class FundNavController {
                 msg.append("涨幅：").append(fundNav.getGrowthRate() != null ? fundNav.getGrowthRate().setScale(2, RoundingMode.HALF_UP) + "%" : "").append(System.lineSeparator());
                 msg.append("当日净值：").append(fundNav.getUnitNav()).append(System.lineSeparator());
                 msg.append("资产合计：").append(total).append(System.lineSeparator());
+                if (fundNav.getBonus() != null) {
+                    msg.append("每份分红：").append(fundNav.getBonus()).append(System.lineSeparator());
+                }
                 msg.append(System.lineSeparator());
                 msg.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                 qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent009Id(), msg.toString()));
