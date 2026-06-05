@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.investment.FundNavMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.investment.FundNav">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="fund_code" jdbcType="VARCHAR" property="fundCode" />
+    <result column="nav_date" jdbcType="DATE" property="navDate" />
+    <result column="unit_nav" jdbcType="DECIMAL" property="unitNav" />
+    <result column="acc_nav" jdbcType="DECIMAL" property="accNav" />
+    <result column="growth_rate" jdbcType="DECIMAL" property="growthRate" />
+    <result column="subscribe_status" jdbcType="VARCHAR" property="subscribeStatus" />
+    <result column="redeem_status" jdbcType="VARCHAR" property="redeemStatus" />
+    <result column="bonus" jdbcType="DECIMAL" property="bonus" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from fund_nav
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.investment.FundNav">
+    insert into fund_nav (id, fund_code, nav_date, 
+      unit_nav, acc_nav, growth_rate, 
+      subscribe_status, redeem_status, bonus, 
+      create_time, update_time)
+    values (#{id,jdbcType=BIGINT}, #{fundCode,jdbcType=VARCHAR}, #{navDate,jdbcType=DATE}, 
+      #{unitNav,jdbcType=DECIMAL}, #{accNav,jdbcType=DECIMAL}, #{growthRate,jdbcType=DECIMAL}, 
+      #{subscribeStatus,jdbcType=VARCHAR}, #{redeemStatus,jdbcType=VARCHAR}, #{bonus,jdbcType=DECIMAL}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.investment.FundNav">
+    update fund_nav
+    set fund_code = #{fundCode,jdbcType=VARCHAR},
+      nav_date = #{navDate,jdbcType=DATE},
+      unit_nav = #{unitNav,jdbcType=DECIMAL},
+      acc_nav = #{accNav,jdbcType=DECIMAL},
+      growth_rate = #{growthRate,jdbcType=DECIMAL},
+      subscribe_status = #{subscribeStatus,jdbcType=VARCHAR},
+      redeem_status = #{redeemStatus,jdbcType=VARCHAR},
+      bonus = #{bonus,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, fund_code, nav_date, unit_nav, acc_nav, growth_rate, subscribe_status, 
+    redeem_status, bonus, create_time, update_time
+    from fund_nav
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, fund_code, nav_date, unit_nav, acc_nav, growth_rate, subscribe_status,
+    redeem_status, bonus, create_time, update_time
+    from fund_nav
+  </select>
+  <select id="selectByFundCodeAndNavDate" resultMap="BaseResultMap">
+    select id, fund_code, nav_date, unit_nav, acc_nav, growth_rate, subscribe_status,
+    redeem_status, bonus, create_time, update_time
+    from fund_nav
+    where fund_code = #{fundCode,jdbcType=VARCHAR}
+      and nav_date = #{navDate,jdbcType=DATE}
+  </select>
+</mapper>
