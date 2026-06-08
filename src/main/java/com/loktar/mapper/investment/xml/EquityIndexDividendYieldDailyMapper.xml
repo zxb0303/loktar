@@ -55,4 +55,9 @@
       GROUP BY equity_index
     ) m ON t.equity_index = m.equity_index AND t.`date` = m.max_date order by t.id;
   </select>
+  <select id="selectByEquityIndexAndDate" resultMap="BaseResultMap">
+    select id, equity_index, equity_index_name, `date`, dividend_yield, create_time, update_time
+    from equity_index_dividend_yield_daily
+    where equity_index = #{equityIndex,jdbcType=VARCHAR} and `date` = #{date,jdbcType=VARCHAR}
+  </select>
 </mapper>

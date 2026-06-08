@@ -1,6 +1,7 @@
 package com.loktar.mapper.investment;
 
 import com.loktar.domain.investment.EquityIndexDividendYieldDaily;
+
 import java.util.List;
 
 public interface EquityIndexDividendYieldDailyMapper {
@@ -17,4 +18,6 @@ public interface EquityIndexDividendYieldDailyMapper {
     int insertIgnore(EquityIndexDividendYieldDaily row);
 
     List<EquityIndexDividendYieldDaily> getRecentEquityIndexDividendYieldDaily();
+
+    EquityIndexDividendYieldDaily selectByEquityIndexAndDate(String equityIndex,String date);
 }
