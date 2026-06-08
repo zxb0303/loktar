@@ -32,7 +32,7 @@ public class ChinaEquityIndexTask {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @Scheduled(cron = "0 0/10 19-23 * * *")
+    @Scheduled(cron = "0 0/30 18-23 * * *")
     @SneakyThrows
     public void syncAndNotify() {
         boolean hasNewData = false;
