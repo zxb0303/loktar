@@ -31,29 +31,36 @@ public class ChinaEquityIndexTask {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @Scheduled(cron = "0 0 7 * * MON-FRI")
+    @Scheduled(cron = "0 0/30 18-23 * * *")
     private void getData() {
+        boolean hasNew = false;
         for (String index : ChinaEquityIndexUtil.EQUITY_INDEXS) {
             String fileUrl = MessageFormat.format(ChinaEquityIndexUtil.INDICATOR_URL, index);
             List<EquityIndexDividendYieldDaily> result = ChinaEquityIndexUtil.readExcelFromUrl(fileUrl);
             for (EquityIndexDividendYieldDaily entity : result) {
-                equityIndexDividendYieldDailyMapper.insertIgnore(entity);
+                boolean exists = equityIndexDividendYieldDailyMapper.existsByEquityIndexAndDate(entity.getEquityIndex(), entity.getDate());
+                if (!exists) {
+                    equityIndexDividendYieldDailyMapper.insert(entity);
+                    hasNew = true;
+                }
             }
         }
-    }
-
-    @Scheduled(cron = "0 30 7 * * MON-FRI")
-    public void sendMsg() {
-        List<EquityIndexDividendYieldDaily> result = equityIndexDividendYieldDailyMapper.getRecentEquityIndexDividendYieldDaily();
+        if (!hasNew) {
+            return;
+        }
+        List<EquityIndexDividendYieldDaily> equityIndexDividendYieldDailys = equityIndexDividendYieldDailyMapper.getRecentEquityIndexDividendYieldDaily();
+        if (!equityIndexDividendYieldDailys.getFirst().getDate().equals(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE2))) {
+            return;
+        }
         StringBuilder msg = new StringBuilder();
-        msg.append("上一交易日红利指数股息率情况：").append(System.lineSeparator()).append(System.lineSeparator());
-        for (EquityIndexDividendYieldDaily entity : result) {
+        msg.append("红利指数股息率情况：").append(System.lineSeparator()).append(System.lineSeparator());
+        for (EquityIndexDividendYieldDaily entity : equityIndexDividendYieldDailys) {
             msg.append(entity.getEquityIndexName() + "(" + entity.getEquityIndex() + ")：" + entity.getDividendYield() + "%").append(System.lineSeparator());
         }
         msg.append(System.lineSeparator());
         msg.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
         qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent009Id(), msg.toString()));
-        System.out.println(result);
+        System.out.println(equityIndexDividendYieldDailys);
     }
 
 }

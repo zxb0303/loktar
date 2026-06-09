@@ -20,4 +20,6 @@ public interface EquityIndexDividendYieldDailyMapper {
     List<EquityIndexDividendYieldDaily> getRecentEquityIndexDividendYieldDaily();
 
     EquityIndexDividendYieldDaily selectByEquityIndexAndDate(String equityIndex,String date);
+
+    boolean existsByEquityIndexAndDate(String equityIndex, String date);
 }

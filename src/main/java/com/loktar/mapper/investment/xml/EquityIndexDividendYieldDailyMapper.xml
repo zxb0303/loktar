@@ -60,4 +60,8 @@
     from equity_index_dividend_yield_daily
     where equity_index = #{equityIndex,jdbcType=VARCHAR} and `date` = #{date,jdbcType=VARCHAR}
   </select>
+  <select id="existsByEquityIndexAndDate" resultType="java.lang.Boolean">
+    select count(1) > 0 from equity_index_dividend_yield_daily
+    where equity_index = #{equityIndex,jdbcType=VARCHAR} and `date` = #{date,jdbcType=VARCHAR}
+  </select>
 </mapper>
