@@ -4,35 +4,37 @@
   <resultMap id="BaseResultMap" type="com.loktar.domain.common.Property">
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="value" jdbcType="VARCHAR" property="value" />
+    <result column="value2" jdbcType="VARCHAR" property="value2" />
+    <result column="value3" jdbcType="VARCHAR" property="value3" />
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="value" jdbcType="LONGVARCHAR" property="value" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from property
     where id = #{id,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.loktar.domain.common.Property">
-    insert into property (`id`, `type`, `status`, update_time,
-      `value`)
-    values (#{id,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP},
-      #{value,jdbcType=LONGVARCHAR})
+    insert into property (`id`, `type`, `value`, `value2`, `value3`, `status`, update_time)
+    values (#{id,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}, #{value2,jdbcType=VARCHAR}, #{value3,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.loktar.domain.common.Property">
     update property
     set `type` = #{type,jdbcType=VARCHAR},
+      `value` = #{value,jdbcType=VARCHAR},
+      `value2` = #{value2,jdbcType=VARCHAR},
+      `value3` = #{value3,jdbcType=VARCHAR},
       `status` = #{status,jdbcType=VARCHAR},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      `value` = #{value,jdbcType=LONGVARCHAR}
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=VARCHAR}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select id, `type`, `status`, update_time, `value`
+    select id, `type`, `value`, `value2`, `value3`, `status`, update_time
     from property
     where id = #{id,jdbcType=VARCHAR}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select id, `type`, `status`, update_time, `value`
+    select id, `type`, `value`, `value2`, `value3`, `status`, update_time
     from property
   </select>
 </mapper>

@@ -100,15 +100,19 @@ public class FundNavController {
             System.out.println(code + " 新增成功：" + fundNav.getNavDate());
             Property property = propertyMapper.selectByPrimaryKey("fund_nav_" + code);
             if (property != null && property.getValue() != null) {
-                BigDecimal share = new BigDecimal(property.getValue());
+                BigDecimal share = new BigDecimal(property.getValue2());
+                BigDecimal principal = new BigDecimal(property.getValue3());
                 BigDecimal total = share.multiply(fundNav.getUnitNav()).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal profitRate = total.subtract(principal).divide(principal, 4, RoundingMode.HALF_UP).multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP);
                 StringBuilder msg = new StringBuilder();
-                msg.append(property.getType()).append(System.lineSeparator());
+                msg.append(property.getValue()).append(System.lineSeparator());
                 msg.append(System.lineSeparator());
+                msg.append("单位净值：").append(fundNav.getUnitNav()).append(System.lineSeparator());
+                msg.append("日涨跌幅：").append(fundNav.getGrowthRate() != null ? fundNav.getGrowthRate().setScale(2, RoundingMode.HALF_UP) + "%" : "").append(System.lineSeparator());
                 msg.append("持有份额：").append(share).append(System.lineSeparator());
-                msg.append("涨幅：").append(fundNav.getGrowthRate() != null ? fundNav.getGrowthRate().setScale(2, RoundingMode.HALF_UP) + "%" : "").append(System.lineSeparator());
-                msg.append("当日净值：").append(fundNav.getUnitNav()).append(System.lineSeparator());
-                msg.append("资产合计：").append(total).append(System.lineSeparator());
+                msg.append("本金总额：").append(principal).append(System.lineSeparator());
+                msg.append("资产总额：").append(total).append(System.lineSeparator());
+                msg.append("盈亏比例：").append(profitRate).append("%").append(System.lineSeparator());
                 if (fundNav.getBonus() != null) {
                     msg.append("每份分红：").append(fundNav.getBonus()).append(System.lineSeparator());
                 }
