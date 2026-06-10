@@ -27,7 +27,7 @@ public class SecurityConfig {
                                 "/patentpdf/**",
                                 "/patentpdfv2/**",
                                 "/patentdoc/**",
-                                "/tiktok/**",
+                                "/tiktok/getTimeParams.do",
                                 "/test/**"
                         ).permitAll()
                         .anyRequest().authenticated())
