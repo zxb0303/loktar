@@ -57,7 +57,6 @@ public class FundNavTask {
     public void syncToday() {
         LocalDate today = LocalDate.now();
         String todayStr = today.format(DateTimeUtil.FORMATTER_DATE2);
-
         HttpClient client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();

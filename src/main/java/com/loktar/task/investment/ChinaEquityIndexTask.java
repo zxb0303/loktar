@@ -31,10 +31,19 @@ public class ChinaEquityIndexTask {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @Scheduled(cron = "0 0/30 18-23 * * *")
+    @Scheduled(cron = "0 0/10 18-23 * * *")
     private void getData() {
+        String today = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE2);
+        boolean allExist = ChinaEquityIndexUtil.EQUITY_INDEXS.stream()
+                .allMatch(index -> equityIndexDividendYieldDailyMapper.existsByEquityIndexAndDate(index, today));
+        if (allExist) {
+            return;
+        }
         boolean hasNew = false;
         for (String index : ChinaEquityIndexUtil.EQUITY_INDEXS) {
+            if (equityIndexDividendYieldDailyMapper.existsByEquityIndexAndDate(index, today)) {
+                continue;
+            }
             String fileUrl = MessageFormat.format(ChinaEquityIndexUtil.INDICATOR_URL, index);
             List<EquityIndexDividendYieldDaily> result = ChinaEquityIndexUtil.readExcelFromUrl(fileUrl);
             for (EquityIndexDividendYieldDaily entity : result) {
