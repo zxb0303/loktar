@@ -36,7 +36,7 @@ public class TiktokController {
 
     @GetMapping("/getTimeParams.do")
     @SneakyThrows
-    public String getTimeParams(String dateStr){
+    public String getTimeParams(String dateStr) {
         LocalDate date = LocalDate.parse(dateStr); // yyyy-MM-dd
         String monthStartSecond = String.valueOf(date.withDayOfMonth(1).atStartOfDay().toEpochSecond(ZoneOffset.UTC));
         String dayStartSecond = String.valueOf(date.atStartOfDay().toEpochSecond(ZoneOffset.UTC));
@@ -45,6 +45,7 @@ public class TiktokController {
         // yyyy-M-d（不补零）
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-M-d");
         String monthStartDate = date.withDayOfMonth(1).format(fmt);
+        String monthEndDate = date.withDayOfMonth(date.lengthOfMonth()).format(fmt);
         String dayStartDate = date.format(fmt);
         String dayEndDate = date.format(fmt);
 
@@ -60,7 +61,7 @@ public class TiktokController {
 
         UtcTimeParams dto = new UtcTimeParams(
                 monthStartSecond, dayStartSecond, dayEndSecond,
-                monthStartDate, dayStartDate, dayEndDate,
+                monthStartDate, monthEndDate, dayStartDate, dayEndDate,
                 lastMonthStartDate, lastMonthSameDayDate
         );
         return objectMapper.writeValueAsString(dto);
@@ -71,9 +72,9 @@ public class TiktokController {
         public String dayStartSecond;   // 当天 00:00:00 UTC
         public String dayEndSecond;     // 当天 23:59:59 UTC（inclusive）
         public String monthStartDate;   // yyyy-M-d
+        public String monthEndDate;
         public String dayStartDate;     // yyyy-M-d
         public String dayEndDate;       // yyyy-M-d
-
         // 新增
         public String lastMonthStartDate;     // 上月第一天 yyyy-M-d
         public String lastMonthSameDayDate;   // 上月“同一天” yyyy-M-d（不存在则取上月最后一天）
@@ -82,6 +83,7 @@ public class TiktokController {
                              String dayStartSecond,
                              String dayEndSecond,
                              String monthStartDate,
+                             String monthEndDate,
                              String dayStartDate,
                              String dayEndDate,
                              String lastMonthStartDate,
@@ -90,6 +92,7 @@ public class TiktokController {
             this.dayStartSecond = dayStartSecond;
             this.dayEndSecond = dayEndSecond;
             this.monthStartDate = monthStartDate;
+            this.monthEndDate = monthEndDate;
             this.dayStartDate = dayStartDate;
             this.dayEndDate = dayEndDate;
             this.lastMonthStartDate = lastMonthStartDate;
