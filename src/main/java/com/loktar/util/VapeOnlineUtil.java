@@ -25,8 +25,8 @@ import java.util.regex.Pattern;
 
 public class VapeOnlineUtil {
 
-    private static final String URL = "https://www.vapeonlines.net/collections/all_9415de3f/products/relxddp?data_from=index_index&prefetch_cache=1";
-    private static final String ADD_URL = "https://www.vapeonlines.net/homeapi/cart/add";
+    private static final String URL = "https://vapeonlines.shop/collections/all_9415de3f/products/relxddp";
+    private static final String ADD_URL = "https://vapeonlines.shop/homeapi/cart/add";
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -70,21 +70,24 @@ public class VapeOnlineUtil {
 
     @SneakyThrows
     public static List<Product> getInStockAndNeedProductsAndStockInfo() {
-        //TODO 如果只监控需要的就换这行代码 List<Product> products = getInStockAndNeedProducts();
+       // TODO 如果只监控需要的就换这行代码
+//        List<Product> products = getInStockAndNeedProducts();
         List<Product> products = getInStockProducts();
         HttpClient httpClient = HttpClient.newBuilder().build();
 
         for (Product product : products) {
+//            System.out.println(product.getName() + " - " + product.getProductId() + " - " + product.getSkuCode());
             // 先用步进5确认最大库存
-            int coarseStep = 5;
+            int coarseStep = 10;
             int roughMax = findMaxPurchasable(httpClient, product, 1, 500, coarseStep);
 
-            int preciseMax = roughMax;
-            // 如果低于5，用步进1精确再查一遍
-            if (roughMax < 5) {
-                preciseMax = findMaxPurchasable(httpClient, product, 1, roughMax + coarseStep - 1, 1);
-            }
-            product.setStockQuantity(preciseMax);
+//            int preciseMax = roughMax;
+//            // 如果低于5，用步进1精确再查一遍
+//            if (roughMax < 5) {
+//                preciseMax = findMaxPurchasable(httpClient, product, 1, roughMax + coarseStep - 1, 1);
+//            }
+            //product.setStockQuantity(preciseMax);
+            product.setStockQuantity(roughMax);
         }
         return products;
     }
