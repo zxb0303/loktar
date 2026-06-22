@@ -67,11 +67,11 @@ Jellyfin 用户播放时通过 Webhook 通知企微，同时对 Transmission 自
 
 ### 1.9 其他自动化通知
 
-- **公网 IP 变化通知**：[IpTask.java](src/main/java/com/loktar/task/ip/IpTask.java)。
-- **车机系统版本监控**：[CarTask.java](src/main/java/com/loktar/task/car/CarTask.java)。
-- **悦刻库存监控**：[RelxTask.java](src/main/java/com/loktar/task/relx/RelxTask.java)。
+- **IP 变化通知**：[IpTask.java](src/main/java/com/loktar/task/ip/IpTask.java)。
+- **Volvo 车机系统版本监控**：[CarTask.java](src/main/java/com/loktar/task/car/CarTask.java)。
+- **Relx 库存监控**：[RelxTask.java](src/main/java/com/loktar/task/relx/RelxTask.java)。
 - **Certimate 证书签发通知**：[CertimateController.java](src/main/java/com/loktar/web/certimate/CertimateController.java)。
-- **群晖 Webhook 转发**：[SynologyWebhookController.java](src/main/java/com/loktar/web/synology/SynologyWebhookController.java)。
+- **Synology Webhook 转发**：[SynologyWebhookController.java](src/main/java/com/loktar/web/synology/SynologyWebhookController.java)。
 
 ### 1.10 一键搭建 Xray
 
