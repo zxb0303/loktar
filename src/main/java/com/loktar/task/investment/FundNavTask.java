@@ -55,6 +55,7 @@ public class FundNavTask {
     @Scheduled(cron = "0 0/10 18-23 * * *")
     @SneakyThrows
     public void syncToday() {
+        System.out.println("基金定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         LocalDate today = LocalDate.now();
         String todayStr = today.format(DateTimeUtil.FORMATTER_DATE2);
         HttpClient client = HttpClient.newBuilder()

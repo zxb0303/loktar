@@ -33,6 +33,8 @@ public class ChinaEquityIndexTask {
 
     @Scheduled(cron = "0 0/10 18-23 * * *")
     private void getData() {
+        System.out.println("指数定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+
         String today = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE2);
         boolean allExist = ChinaEquityIndexUtil.EQUITY_INDEXS.stream()
                 .allMatch(index -> equityIndexDividendYieldDailyMapper.existsByEquityIndexAndDate(index, today));
