@@ -362,7 +362,7 @@ services:
 
 部署后曾报错：`Failed to initialize platform (azure-c-shared)`。
 
-参考 https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2272，微软语音 SDK 需要 OpenSSL 1.x，对应支持的发行版：
+参考 https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2272 ，微软语音 SDK 需要 OpenSSL 1.x，对应支持的发行版：
 
 | Ubuntu LTS | 名称            |
 |------------|-----------------|
