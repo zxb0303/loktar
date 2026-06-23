@@ -96,7 +96,7 @@ public class PatentDocMain {
 //                    start = true;
 //                }
                 if (line.contains("本申请不具备授权前景") || line.contains("本申请不具备被授予专利权的前景")
-                        || line.contains("本申请将被驳回") || line.contains("本申请将被驳回")
+                        || line.contains("本申请将被驳回")
                         || line.contains("申请人应当在本通知书指定的答复期限内对本通知书提出的问题逐一进行答复") || line.contains("申请人应在本通知书指定的答复期限内") || line.contains("本申请按照目前的文本尚存在缺陷")
                         || line.contains("不能被授予专利权")) {
                     start = true;

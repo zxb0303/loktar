@@ -315,8 +315,7 @@ public class PDF {
      */
     private static int[] computeWatermarkPixelRect(int iw, int ih,
                                                    float originalWidth, float originalHeight) {
-        if (WATERMARK_POSITION == null || WATERMARK_POSITION == WatermarkPosition.NONE
-                || WATERMARK_WIDTH <= 0 || WATERMARK_HEIGHT <= 0) {
+        if (WATERMARK_POSITION == WatermarkPosition.NONE) {
             return null;
         }
         int wmW = Math.min(iw, Math.round(WATERMARK_WIDTH * iw / originalWidth));

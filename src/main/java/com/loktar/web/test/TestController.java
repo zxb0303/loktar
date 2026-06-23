@@ -61,7 +61,7 @@ public class TestController {
 
         if (!nowProductsJson.equals(lastProductsJson)) {
             String nowInStock = products.stream()
-                    .map(p -> p.getName().replaceAll("[a-zA-Z]+ ?", "").replaceAll("【","[").replaceAll("】","]") + "," + p.getStockQuantity())
+                    .map(p -> p.getName().replaceAll("[a-zA-Z]+ ?", "").replace("【","[").replace("】","]") + "," + p.getStockQuantity())
                     .sorted()
                     .collect(Collectors.joining(System.lineSeparator()));
 

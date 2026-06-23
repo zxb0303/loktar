@@ -64,7 +64,7 @@ public class ChinaEquityIndexTask {
         StringBuilder msg = new StringBuilder();
         msg.append("红利指数股息率情况：").append(System.lineSeparator()).append(System.lineSeparator());
         for (EquityIndexDividendYieldDaily entity : equityIndexDividendYieldDailys) {
-            msg.append(entity.getEquityIndexName() + "(" + entity.getEquityIndex() + ")：" + entity.getDividendYield() + "%").append(System.lineSeparator());
+            msg.append(entity.getEquityIndexName()).append("(").append(entity.getEquityIndex()).append(")：").append(entity.getDividendYield()).append("%").append(System.lineSeparator());
         }
         msg.append(System.lineSeparator());
         msg.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));

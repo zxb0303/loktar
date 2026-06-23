@@ -1,7 +1,7 @@
 package com.loktar.web.patent;
 
 import com.loktar.dto.patent.PatentCertDTO;
-import com.loktar.util.PDFPdfCertUtil1;
+import com.loktar.util.PDFPdfCertUtil;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -30,7 +30,7 @@ public class PatentCertMain {
             if(authNoticeDate.before(sdf.parse("2022.06.15"))){
                 //2018-11-20~2022-06-14 pdf图片+印花税标志
                 System.out.println("template1");
-                PDFPdfCertUtil1.generatePDF(patentCertDTO);
+                PDFPdfCertUtil.generatePDF(patentCertDTO);
                 continue;
             }
             if(authNoticeDate.after(sdf.parse("2022.06.16"))&&authNoticeDate.before(sdf.parse("2023.01.31"))){

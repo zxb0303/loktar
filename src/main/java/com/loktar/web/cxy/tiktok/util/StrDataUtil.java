@@ -242,7 +242,6 @@ public class StrDataUtil {
                 acc = (acc + (w & 15)) & 15;
             }
             int rounds = acc + 5;
-            if (rounds > 20) continue;
 
             byte[] cipher = new byte[total];
             System.arraycopy(merged, 0, cipher, 0, split);

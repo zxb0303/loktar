@@ -189,7 +189,7 @@ public class QyWeixinCallbackChatGPTController {
         List<String> result = new ArrayList<>();
         StringBuilder currentChunk = new StringBuilder();
         // 使用正向预查保留分隔符
-        String[] sentences = text.split("(?<=。|！|？|\n)");
+        String[] sentences = text.split("(?<=[。！？\\r\\n\\u0085\\u2028\\u2029])");
 
         for (String sentence : sentences) {
             if (currentChunk.length() + sentence.length() <= maxLength) {

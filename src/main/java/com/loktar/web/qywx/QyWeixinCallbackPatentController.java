@@ -121,7 +121,7 @@ public class QyWeixinCallbackPatentController {
             qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "请提供公司名称"));
             return;
         }
-        String sendMsg = "";
+        String sendMsg;
         if (qywxPatentMsg.getType().equals(LokTarConstant.QYWX_PATENT_MSG_TYPE_QUOTATION)) {
             sendMsg = MessageFormat.format(LokTarConstant.PATENT_NOTICE_MSG_QUOTATION, qywxPatentMsg.getApplyName(), qywxPatentMsg.getPrice());
         } else {

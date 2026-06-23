@@ -140,9 +140,11 @@ public class PatentPdfUtil {
         if (StringUtils.isEmpty(newLine)) {
             return j;
         }
+        StringBuilder sb = new StringBuilder(newLine);
         while (!newLine.endsWith("U")) {
-            newLine = newLine + lines[j + 1].replace(" ", "");
-            j = j + 1;
+            sb.append(lines[j + 1].replace(" ", ""));
+            newLine = sb.toString();
+            j++;
         }
 
         String[] strs = newLine.split("CN");
@@ -159,7 +161,7 @@ public class PatentPdfUtil {
     private static void dealPatent(String line) {
         //TODO 打印
         //System.out.println(line);
-        String[] strs = line.replaceAll(" ", "").split("CN");
+        String[] strs = line.replace(" ", "").split("CN");
         if (strs.length <= 1) {
             return;
         }

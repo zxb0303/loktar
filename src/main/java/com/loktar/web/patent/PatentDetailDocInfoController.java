@@ -176,7 +176,7 @@ public class PatentDetailDocInfoController {
             }
         }
         reader.close();
-        if (patentId != null && !patentId.isEmpty()) {
+        if (!patentId.isEmpty()) {
             File newFile = new File(renamedFolderPath + patentId + "-审查文件.pdf");
             try {
                 Files.copy(originalFile.toPath(), newFile.toPath());

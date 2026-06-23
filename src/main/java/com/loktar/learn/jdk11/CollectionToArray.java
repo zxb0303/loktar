@@ -11,7 +11,6 @@ public class CollectionToArray {
         list.add("C++");
         //jdk8
         String[] array = list.toArray(new String[0]);
-        String[] array2 = (String[])list.toArray();
         //jdk11
         String[] array3 = list.toArray(String[]::new);
 

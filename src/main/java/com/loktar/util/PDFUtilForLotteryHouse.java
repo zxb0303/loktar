@@ -39,7 +39,7 @@ public class PDFUtilForLotteryHouse {
                     }
                 }
 
-                String result = builder.toString().replaceAll("\n", "").replaceAll("\r", "");
+                String result = builder.toString().replace("\n", "").replace("\r", "");
                 String[] strs = result.split(";");
 
                 for (int i = 0; i < strs.length; i++) {

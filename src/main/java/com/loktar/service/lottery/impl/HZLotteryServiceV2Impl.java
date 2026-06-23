@@ -272,12 +272,12 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
         double realUnHomelessHouseNum = lotteryHouse.getUnhomelessHouseNum() + extraUnHomelessHouseNum;
         double secondRoundPeopleNum = lotteryHouse.getHomelessPeopleNum() + unluckyElitePeopleNum;
         double thirdRoundPeopleNum = lotteryHouse.getUnhomelessPeopleNum() + unluckyHomelessPeopleNum;
-        double elitechance = lotteryHouse.getEliteHouseNum() * 1.0 / lotteryHouse.getElitePeopleNum() * 1.0
-                + realHomelessHouseNum * 1.0 / secondRoundPeopleNum * 1.0 * unluckyElitePeopleNum / secondRoundPeopleNum * 1.0
-                + realUnHomelessHouseNum * 1.0 / thirdRoundPeopleNum * 1.0 * unluckyElitePeopleNum * 1.0 / thirdRoundPeopleNum * 1.0;
-        double homelesschance = realHomelessHouseNum * 1.0 / secondRoundPeopleNum * 1.0 * lotteryHouse.getHomelessPeopleNum() / secondRoundPeopleNum * 1.0
-                + realUnHomelessHouseNum * 1.0 / thirdRoundPeopleNum * 1.0 * unluckyHomelessPeopleNum * 1.0 / thirdRoundPeopleNum * 1.0;
-        double unhomelesschance = realUnHomelessHouseNum * 1.0 / thirdRoundPeopleNum * 1.0 * lotteryHouse.getUnhomelessPeopleNum() * 1.0 / thirdRoundPeopleNum * 1.0;
+        double elitechance = (double) lotteryHouse.getEliteHouseNum() / lotteryHouse.getElitePeopleNum()
+                + realHomelessHouseNum / secondRoundPeopleNum * unluckyElitePeopleNum / secondRoundPeopleNum
+                + realUnHomelessHouseNum / thirdRoundPeopleNum * unluckyElitePeopleNum / thirdRoundPeopleNum;
+        double homelesschance = realHomelessHouseNum / secondRoundPeopleNum * lotteryHouse.getHomelessPeopleNum() / secondRoundPeopleNum
+                + realUnHomelessHouseNum / thirdRoundPeopleNum * unluckyHomelessPeopleNum / thirdRoundPeopleNum;
+        double unhomelesschance = realUnHomelessHouseNum / thirdRoundPeopleNum * lotteryHouse.getUnhomelessPeopleNum() / thirdRoundPeopleNum;
         String elitechanceStr = elitechance >= 1 ? "100%" : String.format("%.2f", elitechance * 100) + "%";
         String homelesschanceStr = homelesschance >= 1 ? "100%" : String.format("%.2f", homelesschance * 100) + "%";
         String unhomelesschanceStr = unhomelesschance >= 1 ? "100%" : String.format("%.2f", unhomelesschance * 100) + "%";
