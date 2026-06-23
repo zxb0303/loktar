@@ -12,7 +12,7 @@ public class Http {
     @SneakyThrows
     public static void main(String[] args)  {
         //异步请求示例
-        //test1();
+        test1();
         //同步请求示例
         //test2();
         //POST请求示例
