@@ -15,7 +15,6 @@ import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@EnableScheduling
 @Profile(LokTarConstant.ENV_PRO)
 public class PatentTask {
     private final QywxPatentMsgMapper qywxPatentMsgMapper;

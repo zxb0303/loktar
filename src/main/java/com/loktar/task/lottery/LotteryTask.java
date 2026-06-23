@@ -4,14 +4,12 @@ import com.loktar.conf.LokTarConstant;
 import com.loktar.service.lottery.HZLotteryServiceV2;
 import com.loktar.util.DateTimeUtil;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
-@EnableScheduling
 @Profile(LokTarConstant.ENV_PRO)
 public class LotteryTask {
     private final HZLotteryServiceV2 hZLotteryServiceV2;

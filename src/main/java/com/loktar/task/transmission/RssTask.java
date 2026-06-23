@@ -6,14 +6,13 @@ import com.loktar.domain.transmission.TrRss;
 import com.loktar.service.transmission.RssService;
 import com.loktar.util.DelayUtil;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
 import java.util.List;
+
 @Component
-@EnableScheduling
 @Profile(LokTarConstant.ENV_PRO)
 public class RssTask {
 

@@ -10,13 +10,12 @@ import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 @Component
-@EnableScheduling
 @Profile(LokTarConstant.ENV_PRO)
 public class EmployeeTask {
     private final QywxApi qywxApi;

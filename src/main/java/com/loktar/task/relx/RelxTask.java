@@ -12,7 +12,6 @@ import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@EnableScheduling
 @Profile(LokTarConstant.ENV_PRO)
 public class RelxTask {
 
@@ -39,7 +37,7 @@ public class RelxTask {
         this.qywxApi = qywxApi;
     }
 
-    @Scheduled(cron = "0 */3 * * * *")
+    @Scheduled(cron = "0 */30 * * * *")
     @SneakyThrows
     public void relxStockAvailable() {
         String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH);
