@@ -4,63 +4,70 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <!-- 配置生成器 -->
 <generatorConfiguration>
-    <!--执行generator插件生成文件的命令： call mvn mybatis-generator:generate -e -->
+    <!-- 执行 generator 插件生成文件的命令：mvn mybatis-generator:generate -e -->
     <!-- 引入配置文件 -->
     <properties resource="mybatis-generator.properties"/>
-    <!--classPathEntry:数据库的JDBC驱动,换成你自己的驱动位置 可选 -->
-<!--    <classPathEntry location="F:\OneDrive\Workspace\Maven\repository\mysql\mysql-connector-java\5.1.46\mysql-connector-java-5.1.46.jar" />-->
 
-    <!-- 一个数据库一个context -->
-    <!--defaultModelType="flat" 大数据字段，不分表 -->
+    <!-- 一个数据库一个 context -->
+    <!-- defaultModelType="flat" 表示不分表，所有字段生成在同一个类中 -->
     <context id="MysqlTables" targetRuntime="MyBatis3Simple" defaultModelType="flat">
-        <!-- 自动识别数据库关键字，默认false，如果设置为true，根据SqlReservedWords中定义的关键字列表；
-        一般保留默认值，遇到数据库关键字（Java关键字），使用columnOverride覆盖 -->
+        <!-- 自动识别数据库关键字，遇到 Java 关键字时使用 columnOverride 覆盖 -->
         <property name="autoDelimitKeywords" value="true" />
-        <!-- 生成的Java文件的编码 -->
+        <!-- 生成的 Java 文件的编码 -->
         <property name="javaFileEncoding" value="utf-8" />
-        <!-- beginningDelimiter和endingDelimiter：指明数据库的用于标记数据库对象名的符号，比如ORACLE就是双引号，MYSQL默认是`反引号； -->
+        <!-- 数据库对象名的标记符号，MySQL 使用反引号 -->
         <property name="beginningDelimiter" value="`" />
         <property name="endingDelimiter" value="`" />
-
-        <!-- 格式化java代码 -->
+        <!-- 格式化 Java 代码 -->
         <property name="javaFormatter" value="org.mybatis.generator.api.dom.DefaultJavaFormatter"/>
-        <!-- 格式化XML代码 -->
+        <!-- 格式化 XML 代码 -->
         <property name="xmlFormatter" value="org.mybatis.generator.api.dom.DefaultXmlFormatter"/>
+
+        <!-- 生成 Serializable 接口 -->
         <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+        <!-- Lombok 插件：生成 @Data 注解，替代 getter/setter/toString -->
+        <plugin type="com.softwareloop.mybatis.generator.plugins.LombokPlugin" />
 
-        <plugin type="org.mybatis.generator.plugins.ToStringPlugin" />
-
-        <!-- 不生成注释 -->
-        <commentGenerator >
-            <property name="suppressAllComments" value="true"/><!-- 是否取消注释 -->
-            <property name="suppressDate" value="true" /> <!-- 是否生成注释代时间戳-->
+        <!-- 注释生成器配置 -->
+        <commentGenerator>
+            <!-- 不生成任何注释 -->
+            <property name="suppressAllComments" value="true"/>
         </commentGenerator>
 
-        <!-- jdbc连接 -->
-        <jdbcConnection driverClass="${datasource.driverClassName}" connectionURL="${datasource.url}" userId="${datasource.username}" password="${datasource.password}" />
-        <!-- 类型转换 -->
+        <!-- JDBC 连接配置 -->
+        <jdbcConnection driverClass="${datasource.driverClassName}"
+                        connectionURL="${datasource.url}"
+                        userId="${datasource.username}"
+                        password="${datasource.password}" />
+
+        <!-- 类型转换配置 -->
         <javaTypeResolver>
-            <!-- 是否使用bigDecimal， false可自动转化以下类型（Long, Integer, Short, etc.） -->
+            <!-- 是否使用 BigDecimal，false 可自动转化为 Long/Integer/Short 等 -->
             <property name="forceBigDecimals" value="false"/>
-            <!-- 增加下面这行，用于配置生成LocalDateTime对应数据库的DATETIME类型 -->
-            <property name="useJSR310Types" value="true" />
         </javaTypeResolver>
 
-        <!-- 生成实体类地址 -->
-        <javaModelGenerator targetPackage="${domain.package}" targetProject="${source.targetProject}" >
+        <!-- 生成实体类（domain）的目录配置 -->
+        <modelGenerator targetPackage="${domain.package}" targetProject="${source.targetProject}">
             <property name="enableSubPackages" value="false"/>
             <property name="trimStrings" value="true"/>
-        </javaModelGenerator>
-        <!-- 生成mapxml文件 -->
-        <sqlMapGenerator targetPackage="${xmlMapper.package}" targetProject="${source.targetProject}" >
+        </modelGenerator>
+
+        <!-- 生成 Mapper XML 文件的目录配置 -->
+        <sqlMapGenerator targetPackage="${xmlMapper.package}" targetProject="${source.targetProject}">
             <property name="enableSubPackages" value="false" />
         </sqlMapGenerator>
-        <!-- 生成mapxml对应client，也就是接口dao -->
-        <javaClientGenerator targetPackage="${dao.package}" targetProject="${source.targetProject}" type="XMLMAPPER" >
+
+        <!-- 生成 Mapper 接口（DAO）的目录配置 -->
+        <clientGenerator targetPackage="${dao.package}" targetProject="${source.targetProject}" type="XMLMAPPER">
             <property name="enableSubPackages" value="false" />
-        </javaClientGenerator>
-        <!-- table可以有多个,每个数据库中的表都可以写一个table，tableName表示要匹配的数据库表,也可以在tableName属性中通过使用%通配符来匹配所有数据库表,只有匹配的表才会自动生成文件 -->
-        <table schema="${table.schema}" tableName="${table.tableName}" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="true">
+        </clientGenerator>
+
+        <!-- 要生成的表配置，tableName 支持 % 通配符匹配多张表 -->
+        <table schema="${table.schema}" tableName="${table.tableName}"
+               enableCountByExample="true"
+               enableUpdateByExample="true"
+               enableDeleteByExample="true"
+               enableSelectByExample="true">
             <property name="useActualColumnNames" value="false" />
             <!-- 数据库表主键 -->
 <!--            <generatedKey column="id" sqlStatement="Mysql" identity="true" />-->

@@ -1,8 +1,11 @@
 package com.loktar.domain.cxy;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Data
 public class TiktokAccount implements Serializable {
     private Integer accountId;
 
@@ -31,132 +34,4 @@ public class TiktokAccount implements Serializable {
     private LocalDateTime updateTime;
 
     private static final long serialVersionUID = 1L;
-
-    public Integer getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(Integer accountId) {
-        this.accountId = accountId;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country == null ? null : country.trim();
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email == null ? null : email.trim();
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password == null ? null : password.trim();
-    }
-
-    public String getFactionId() {
-        return factionId;
-    }
-
-    public void setFactionId(String factionId) {
-        this.factionId = factionId == null ? null : factionId.trim();
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public String getExcelStart() {
-        return excelStart;
-    }
-
-    public void setExcelStart(String excelStart) {
-        this.excelStart = excelStart == null ? null : excelStart.trim();
-    }
-
-    public String getExcelEnd() {
-        return excelEnd;
-    }
-
-    public void setExcelEnd(String excelEnd) {
-        this.excelEnd = excelEnd == null ? null : excelEnd.trim();
-    }
-
-    public String getExcelMonthlyIndex() {
-        return excelMonthlyIndex;
-    }
-
-    public void setExcelMonthlyIndex(String excelMonthlyIndex) {
-        this.excelMonthlyIndex = excelMonthlyIndex == null ? null : excelMonthlyIndex.trim();
-    }
-
-    public String getExcelMonthlyDataIndex() {
-        return excelMonthlyDataIndex;
-    }
-
-    public void setExcelMonthlyDataIndex(String excelMonthlyDataIndex) {
-        this.excelMonthlyDataIndex = excelMonthlyDataIndex == null ? null : excelMonthlyDataIndex.trim();
-    }
-
-    public String getExcelMonthlyDataPartner() {
-        return excelMonthlyDataPartner;
-    }
-
-    public void setExcelMonthlyDataPartner(String excelMonthlyDataPartner) {
-        this.excelMonthlyDataPartner = excelMonthlyDataPartner == null ? null : excelMonthlyDataPartner.trim();
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", accountId=").append(accountId);
-        sb.append(", country=").append(country);
-        sb.append(", email=").append(email);
-        sb.append(", password=").append(password);
-        sb.append(", factionId=").append(factionId);
-        sb.append(", status=").append(status);
-        sb.append(", excelStart=").append(excelStart);
-        sb.append(", excelEnd=").append(excelEnd);
-        sb.append(", excelMonthlyIndex=").append(excelMonthlyIndex);
-        sb.append(", excelMonthlyDataIndex=").append(excelMonthlyDataIndex);
-        sb.append(", excelMonthlyDataPartner=").append(excelMonthlyDataPartner);
-        sb.append(", createTime=").append(createTime);
-        sb.append(", updateTime=").append(updateTime);
-        sb.append(", serialVersionUID=").append(serialVersionUID);
-        sb.append("]");
-        return sb.toString();
-    }
 }

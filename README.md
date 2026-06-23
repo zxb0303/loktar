@@ -131,7 +131,12 @@ com.loktar
 <dependency>
     <groupId>org.mybatis.generator</groupId>
     <artifactId>mybatis-generator-core</artifactId>
-    <version>1.4.2</version>
+    <version>2.0.0</version>
+</dependency>
+<dependency>
+    <groupId>com.softwareloop</groupId>
+    <artifactId>mybatis-generator-lombok-plugin</artifactId>
+    <version>1.0</version>
 </dependency>
 ```
 
@@ -158,7 +163,7 @@ table.tableName=tr_torrent_tracker
 <plugin>
     <groupId>org.mybatis.generator</groupId>
     <artifactId>mybatis-generator-maven-plugin</artifactId>
-    <version>1.4.2</version>
+    <version>2.0.0</version>
     <configuration>
         <configurationFile>./src/main/resources/mybatis-generator-config.xml</configurationFile>
         <verbose>true</verbose>
@@ -170,23 +175,38 @@ table.tableName=tr_torrent_tracker
             <artifactId>mysql-connector-j</artifactId>
             <version>9.6.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.softwareloop</groupId>
+            <artifactId>mybatis-generator-lombok-plugin</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 </plugin>
 ```
 
-#### 2.4.4 执行生成
+#### 2.4.4 在 mybatis-generator-config.xml 中启用 Lombok 插件
 
-执行 `maven -> mybatis-generator` 即可生成 domain、mapper 接口与 XML。
+在 `<context>` 内添加插件声明，生成的 domain 类将自动带 `@Data` 注解，不再生成 getter/setter：
 
-#### 2.4.5 在 application.yml 中配置 mybatis
+```xml
+<plugin type="com.softwareloop.mybatis.generator.plugins.LombokPlugin" />
+```
+
+> **注**：2.0.0 起 JSR-310 类型（`LocalDate`、`LocalDateTime`）为默认行为，无需再配置 `useJSR310Types`；`<javaModelGenerator>` 已更名为 `<modelGenerator>`，`<javaClientGenerator>` 更名为 `<clientGenerator>`（旧名仍可用但会产生警告）。
+
+#### 2.4.5 执行生成
+
+执行 `maven -> mybatis-generator` 即可生成带 `@Data` 注解的 domain、mapper 接口与 XML。
+
+#### 2.4.6 在 application.yml 中配置 mybatis
 
 开启驼峰转下划线、指定 mapper XML 位置。
 
-#### 2.4.6 统一开启 Mapper 扫描
+#### 2.4.7 统一开启 Mapper 扫描
 
 不在每个 Mapper 上加 `@Mapper`，改为创建统一的配置类，参考 [MybatisConfig.java](src/main/java/com/loktar/conf/MybatisConfig.java)。
 
-#### 2.4.7 IDEA 自动注入告警处理
+#### 2.4.8 IDEA 自动注入告警处理
 
 使用 `@MapperScan` 后，注入时 IDEA 可能提示 `Could not autowire`，可在
 `Settings - Editor - Inspections - Spring - Spring Core - Code - Incorrect autowiring in spring bean components` 中调整。
