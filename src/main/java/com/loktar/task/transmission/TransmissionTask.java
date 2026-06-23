@@ -23,7 +23,7 @@ public class TransmissionTask {
     @Scheduled(cron = "0 */10 * * * ?")
     private void refresh() {
         //TODO 打印
-        System.out.println("transmission:refreshTorrents");
+        System.out.println("Transmission定时器：刷新做种数据");
         transmissionService.refreshAllTorrents();
         transmissionService.autoStart();
         transmissionService.autoRemove(lokTarConfig.getTransmission().getMinSizeGB(), lokTarConfig.getTransmission().getDays(), lokTarConfig.getTransmission().getTempDownloadDir());

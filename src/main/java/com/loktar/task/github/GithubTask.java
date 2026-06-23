@@ -23,7 +23,7 @@ public class GithubTask {
 
     @Scheduled(cron = "0 */20 * * * ?")
     private void notice() {
-        System.out.println("GITHUB定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+        System.out.println("Github定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         githubService.checkRepositoryTag();
     }
 }

@@ -29,7 +29,7 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
     public void onMessage(Message message, byte[] pattern) {
         String expiredKey = message.toString();
         //TODO 打印
-        System.out.println("redis key过期：" + expiredKey);
+        System.out.println("Redis key过期：" + expiredKey);
         switch (expiredKey) {
             case LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET:
                 transmissionUtil.altSpeedEnabled(false);
