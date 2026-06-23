@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,12 +41,12 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("patentdoc")
 public class PatentDetailDocInfoController {
-    private static String URL_DETAIL = "https://cpquery.cponline.cnipa.gov.cn/detail/index?zhuanlisqh={0}&anjianbh";
-    private static String TYPE = "发明专利";
+    private final static String URL_DETAIL = "https://cpquery.cponline.cnipa.gov.cn/detail/index?zhuanlisqh={0}&anjianbh";
+    private final static String TYPE = "发明专利";
     private final PatentDetailMapper patentDetailMapper;
     private final PatentDetailDocInfoMapper patentDetailDocInfoMapper;
     private final PatentDetailYitongMapper patentDetailYitongMapper;
-    private ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE).registerModule(new JavaTimeModule());
+    private final ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE).registerModule(new JavaTimeModule());
 
     public PatentDetailDocInfoController(PatentDetailMapper patentDetailMapper, PatentDetailDocInfoMapper patentDetailDocInfoMapper, PatentDetailYitongMapper patentDetailYitongMapper) {
         this.patentDetailMapper = patentDetailMapper;
@@ -65,8 +67,8 @@ public class PatentDetailDocInfoController {
             patentDetailDTO.setName(patentDetail.getName());
             patentDetailDTO.setApplyName(patentDetail.getApplyName());
             patentDetailDTO.setCaseStatus(patentDetail.getCaseStatus());
-            String urlEncodedUrl = URLEncoder.encode(PatentUtil.encrypt(patentDetail.getPatentId()), StandardCharsets.UTF_8.toString());
-            String doubleUrlEncodedUrl = URLEncoder.encode(urlEncodedUrl, StandardCharsets.UTF_8.toString());
+            String urlEncodedUrl = URLEncoder.encode(PatentUtil.encrypt(patentDetail.getPatentId()), StandardCharsets.UTF_8);
+            String doubleUrlEncodedUrl = URLEncoder.encode(urlEncodedUrl, StandardCharsets.UTF_8);
             patentDetailDTO.setEncodeUrl(MessageFormat.format(URL_DETAIL, doubleUrlEncodedUrl));
             patentDetailDTOs.add(patentDetailDTO);
         }
@@ -100,7 +102,13 @@ public class PatentDetailDocInfoController {
         String pdfFolderPath = "F:/OneDrive/Patent/doc/renamed/";
         List<PatentDetail> patentDetails = patentDetailMapper.getNeedAnalyzeDocPatent();
         for (PatentDetail patentDetail : patentDetails) {
-            String pdfdocPath = pdfFolderPath + patentDetail.getPatentId() + "-审查文件.pdf";
+            Path basePath = Paths.get(pdfFolderPath).toAbsolutePath().normalize();
+            Path targetPath = basePath.resolve(patentDetail.getPatentId() + "-审查文件.pdf").toAbsolutePath().normalize();
+            if (!targetPath.startsWith(basePath)) {
+                System.out.println("非法路径，跳过: " + patentDetail.getPatentId());
+                continue;
+            }
+            String pdfdocPath = targetPath.toString();
             File docFile = new File(pdfdocPath);
             if (docFile.exists()) {
                 AnalyzeResult analyzeLayoutResult = AzureDocIntelligenceUtil.getAnalyze("prebuilt-layout", pdfdocPath, "2");
@@ -124,8 +132,8 @@ public class PatentDetailDocInfoController {
     }
 
     private String getAnalyzeResult(String content) {
-        String result = content.replaceAll(":unselected:", "0")
-                .replaceAll(":selected:", "1");
+        String result = content.replace(":unselected:", "0")
+                .replace(":selected:", "1");
         StringBuilder output = new StringBuilder();
         for (char c : result.toCharArray()) {
             if (c == '0' || c == '1') {

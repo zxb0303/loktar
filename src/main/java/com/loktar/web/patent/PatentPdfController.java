@@ -150,8 +150,8 @@ public class PatentPdfController {
             patentDetailDTO.setName(patentDetail.getName());
             patentDetailDTO.setApplyName(patentDetail.getApplyName());
             patentDetailDTO.setCaseStatus(patentDetail.getCaseStatus());
-            String urlEncodedUrl = URLEncoder.encode(PatentUtil.encrypt(patentDetail.getPatentId()), StandardCharsets.UTF_8.toString());
-            String doubleUrlEncodedUrl = URLEncoder.encode(urlEncodedUrl, StandardCharsets.UTF_8.toString());
+            String urlEncodedUrl = URLEncoder.encode(PatentUtil.encrypt(patentDetail.getPatentId()), StandardCharsets.UTF_8);
+            String doubleUrlEncodedUrl = URLEncoder.encode(urlEncodedUrl, StandardCharsets.UTF_8);
             patentDetailDTO.setEncodeUrl(MessageFormat.format(URL_DETAIL, doubleUrlEncodedUrl));
             patentDetailDTOs.add(patentDetailDTO);
         }
