@@ -6,8 +6,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.loktar.domain.patent.PatentDetail;
 import com.loktar.domain.patent.PatentDetailDocInfo;
 import com.loktar.domain.patent.PatentDetailYitong;
@@ -20,6 +18,9 @@ import com.loktar.util.DateTimeUtil;
 import com.loktar.util.PatentUtil;
 import com.loktar.util.UUIDUtil;
 import lombok.SneakyThrows;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -165,17 +166,20 @@ public class PatentDetailDocInfoController {
     private static void renamePDF(String pdfFileName, String pdfFolderPath, String renamedFolderPath) {
         File originalFile = new File(pdfFolderPath + pdfFileName);
         String patentId = "";
-        PdfReader reader = new PdfReader(originalFile.getPath());
-        String pageContent = PdfTextExtractor.getTextFromPage(reader, 1);
-        String[] lines = pageContent.split("\n");
-        for (String line : lines) {
-            if (line.contains("申请号：")) {
-                patentId = extractApplicationNumber(line);
-                patentId = patentId.replace(".", "");
-                break;
+        try (PDDocument document = Loader.loadPDF(originalFile)) {
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setStartPage(1);
+            stripper.setEndPage(1);
+            String pageContent = stripper.getText(document);
+            String[] lines = pageContent.split("\n");
+            for (String line : lines) {
+                if (line.contains("申请号：")) {
+                    patentId = extractApplicationNumber(line);
+                    patentId = patentId.replace(".", "");
+                    break;
+                }
             }
         }
-        reader.close();
         if (!patentId.isEmpty()) {
             File newFile = new File(renamedFolderPath + patentId + "-审查文件.pdf");
             try {
