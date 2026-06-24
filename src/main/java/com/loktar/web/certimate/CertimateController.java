@@ -29,7 +29,7 @@ public class CertimateController {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @PostMapping("/webhook.do")
+    @PostMapping("/webhook")
     public void webhook(@RequestBody Notification notification) {
         HtmlEntityDecoderUtil.decodeHtmlEntities(notification);
         log.info("{}", notification.toString());

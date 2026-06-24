@@ -30,7 +30,7 @@ public class TransmissionController {
         this.transmissionUtil = transmissionUtil;
         this.lokTarConfig = lokTarConfig;
     }
-    @GetMapping("/testRss.do")
+    @GetMapping("/testRss")
     public void testRss() {
         List<TrRss> trRsss = rssService.getTrRsssByStatus(1);
         for (TrRss trRss : trRsss) {
@@ -44,7 +44,7 @@ public class TransmissionController {
     }
 
 
-    @GetMapping("/testAdd.do")
+    @GetMapping("/testAdd")
     public void testAdd() {
         String url="";
         String downloadDir="/downloads2/complete";
@@ -52,38 +52,38 @@ public class TransmissionController {
         transmissionUtil.addTorrent(url,downloadDir,paused);
     }
 
-    @GetMapping("/start.do")
+    @GetMapping("/start")
     public void testStart() {
         Integer[] ids= new Integer[]{2919};
         transmissionUtil.startTorrents(ids);
     }
 
-    @GetMapping("/removeTorrents.do")
+    @GetMapping("/removeTorrents")
     public void testRemoveTorrents(int id) {
         transmissionUtil.removeTorrents(new Integer[]{id},true);
     }
 
-    @GetMapping("/getFreeSpaceByPath.do")
+    @GetMapping("/getFreeSpaceByPath")
     public void testGetFreeSpaceByPath() {
         log.info("{}", transmissionUtil.getFreeSpaceByPath(lokTarConfig.getTransmission().getTempDownloadDir()).toString());
     }
 
-    @GetMapping("/altSpeedEnabled.do")
+    @GetMapping("/altSpeedEnabled")
     public void altSpeedEnabled() {
         transmissionUtil.altSpeedEnabled(false);
     }
 
-    @GetMapping("/getSession.do")
+    @GetMapping("/getSession")
     public void getSession() {
         transmissionUtil.getSession();
     }
 
-    @GetMapping("/refreshAllTorrents.do")
+    @GetMapping("/refreshAllTorrents")
     public void refreshAllTorrents() {
         transmissionService.refreshAllTorrents();
     }
 
-    @GetMapping("/autoRemoveError.do")
+    @GetMapping("/autoRemoveError")
     public void autoRemoveError() {
         transmissionService.autoRemoveError();
     }

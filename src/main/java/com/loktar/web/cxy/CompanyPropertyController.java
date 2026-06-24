@@ -21,7 +21,7 @@ public class CompanyPropertyController {
         this.companyPropertyMapper = companyPropertyMapper;
     }
 
-    @GetMapping("/deal.do")
+    @GetMapping("/deal")
     public void test() {
         List<CompanyProperty> tests = companyPropertyMapper.selectAll();
         for (CompanyProperty companyProperty : tests) {

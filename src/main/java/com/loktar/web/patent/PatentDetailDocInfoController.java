@@ -60,7 +60,7 @@ public class PatentDetailDocInfoController {
 
 
     @SneakyThrows
-    @PostMapping("/getEncodeDetails.do")
+    @PostMapping("/getEncodeDetails")
     public String getEncodeDetails(String caseStatus, String start, String end) {
         List<PatentDetailDTO> patentDetailDTOs = new ArrayList<>();
         List<PatentDetail> patentDetails = patentDetailMapper.selectByTypeAndCaseStatus(TYPE, caseStatus, Integer.parseInt(start), Integer.parseInt(end));
@@ -80,7 +80,7 @@ public class PatentDetailDocInfoController {
     }
 
     @SneakyThrows
-    @PostMapping("/saveDocData.do")
+    @PostMapping("/saveDocData")
     public void saveDocData(String docData, String patentId) {
         List<PatentDetailDocInfo> patentDetailDocInfos = objectMapper.readValue(docData, new TypeReference<>() {
         });
@@ -96,12 +96,12 @@ public class PatentDetailDocInfoController {
     }
 
     @SneakyThrows
-    @PostMapping("/updateStatus.do")
+    @PostMapping("/updateStatus")
     public void updateStatus(String caseStatus, String patentId) {
         patentDetailMapper.updateCaseStatusByPatentId(patentId, caseStatus);
     }
 
-    @GetMapping("/analyze.do")
+    @GetMapping("/analyze")
     public void test() {
         String pdfFolderPath = "F:/OneDrive/Patent/doc/renamed/";
         List<PatentDetail> patentDetails = patentDetailMapper.getNeedAnalyzeDocPatent();

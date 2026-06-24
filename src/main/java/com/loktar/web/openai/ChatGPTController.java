@@ -45,7 +45,7 @@ public class ChatGPTController {
         this.ffmpegUtil = ffmpegUtil;
     }
 
-    @GetMapping("/completions.do")
+    @GetMapping("/completions")
     public void completions(String text) {
         OpenAiMessage openAiMessage = new OpenAiMessage(ChatGPTUtil.ROLE_USER, text);
         if (ObjectUtils.isEmpty(openAiRequest)) {
@@ -60,7 +60,7 @@ public class ChatGPTController {
     }
 
     @SneakyThrows
-    @GetMapping("/voiceAndSend.do")
+    @GetMapping("/voiceAndSend")
     public void testVoiceAndSend() {
         String wavFileName = UUIDUtil.randomUUID() + LokTarConstant.VOICE_SUFFIX_WAV;
         azureVoiceUtil.textToWav(lokTarConfig.getPath().getVoice(), wavFileName, "你叫什么名字");

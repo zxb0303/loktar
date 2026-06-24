@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("ffmpeg")
 public class FfmpegController {
 
-    @GetMapping("/execute.do")
+    @GetMapping("/execute")
     public void execute() {
         String voicePath ="/loktar/voice/";
         String wavFilename = "20240329172212_2.wav";

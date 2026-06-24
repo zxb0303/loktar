@@ -20,7 +20,7 @@ public class RssController {
     }
 
 
-    @GetMapping("/refreshTrRssTorrents.do")
+    @GetMapping("/refreshTrRssTorrents")
     public void test() {
         TrRss trRss = trRssMapper.selectByPrimaryKey(7);
         rssService.refreshTrRssTorrents(trRss);

@@ -69,7 +69,7 @@ public class QyWeixinCallbackController {
         xmlMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
     }
 
-    @PostMapping("receive.do")
+    @PostMapping("receive")
     public ResponseEntity<Void> receive(
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce, @RequestBody String xml) {
@@ -267,7 +267,7 @@ public class QyWeixinCallbackController {
 
 
     @SneakyThrows
-    @GetMapping("receive.do")
+    @GetMapping("receive")
     public ResponseEntity<String> msgValid(
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp,

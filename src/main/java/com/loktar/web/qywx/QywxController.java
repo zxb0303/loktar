@@ -27,7 +27,7 @@ public class QywxController {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @GetMapping("/send.do")
+    @GetMapping("/send")
     public void send() {
 //        String content1 = "试试1";
 //        qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent006Id(), content1));
@@ -40,7 +40,7 @@ public class QywxController {
         qywxApi.sendTextCardMsg(new AgentMsgTextCard(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), "标题", "<div class=\"gray\">2016年9月26日</div> <div class=\"normal\">恭喜你抽中iPhone 7一台，领奖码：xxxx</div><div class=\"highlight\">请于2016年10月10日前联系行政同事领取</div>", "https://work.weixin.qq.com"));
     }
 
-    @GetMapping("/getAccessToken.do")
+    @GetMapping("/getAccessToken")
     public void getAccessToken(String agentId) {
         AccessToken accessToken = qywxApi.accessToken(agentId);
         log.info("{}", accessToken.toString());
@@ -48,7 +48,7 @@ public class QywxController {
 
 
     @SneakyThrows
-    @GetMapping("/download.do")
+    @GetMapping("/download")
     public void download() {
         String voicePath = "F:/voice/";
         String mediaId = "15nIsJJ02LJ4yc67RXJdBdwoMFAaNzNty8fVfT2f9TH-LB33FEPvCEw2kYFfetpq_";
@@ -57,7 +57,7 @@ public class QywxController {
         log.info("{}", filename);
     }
 
-    @GetMapping("/upload.do")
+    @GetMapping("/upload")
     public void upload() {
         String voicePath = "F:/loktar/patent/";
         String amrFilename = "a.xlsx";
@@ -65,7 +65,7 @@ public class QywxController {
         UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(voicePath + amrFilename), agentId);
         log.info("{}", uploadMediaRsp.getMediaId());
     }
-    @GetMapping("/upload2.do")
+    @GetMapping("/upload2")
     public void upload2() {
         String voicePath = "F:/loktar/patent/";
         String amrFilename = "a.xlsx";

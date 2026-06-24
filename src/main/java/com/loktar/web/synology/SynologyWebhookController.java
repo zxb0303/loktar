@@ -21,7 +21,7 @@ public class SynologyWebhookController {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @GetMapping("/sendMsg.do")
+    @GetMapping("/sendMsg")
     public void send(String title,String text,String touser) {
         String content = title + System.lineSeparator() +
                 System.lineSeparator() +

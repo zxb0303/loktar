@@ -39,7 +39,7 @@ public class JellyfinWebhookController {
         this.ipUtil = ipUtil;
     }
 
-    @PostMapping("/webhook.do")
+    @PostMapping("/webhook")
     public void webhook(@RequestBody Notification notification) {
         HtmlEntityDecoderUtil.decodeHtmlEntities(notification);
         StringBuilder contentBuilder = new StringBuilder();

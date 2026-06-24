@@ -45,7 +45,7 @@ public class PatentPdf2Controller {
 
     // Uipath 生成合同协议使用
     @SneakyThrows
-    @PostMapping("/getContractDTO.do")
+    @PostMapping("/getContractDTO")
     public String getContractDTO(String applyName, String price) {
         PatentContractDTO patentContractDTO = companyInfoCqqMapper.getPatentContractDTOByApplyName(applyName);
         List<PatentDetail> patentDetails = patentDetailMapper.selectForQuoteV2(patentContractDTO.getApplyId());
@@ -58,7 +58,7 @@ public class PatentPdf2Controller {
 
     //Uipath 生成报价单时使用
     @SneakyThrows
-    @PostMapping("/getEncodeDetails.do")
+    @PostMapping("/getEncodeDetails")
     public String getEncodeDetails(String applyName) {
         PatentApply patentApply = patentApplyMapper.selectByApplyName(applyName);
         List<PatentDetailDTO> patentDetailDTOs = new ArrayList<>();

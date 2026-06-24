@@ -33,7 +33,7 @@ public class ChinaEquityIndexController {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @PostMapping("/getData.do")
+    @PostMapping("/getData")
     @SneakyThrows
     public void getData() {
         for (String index : ChinaEquityIndexUtil.EQUITY_INDEXS) {
@@ -45,7 +45,7 @@ public class ChinaEquityIndexController {
         }
     }
 
-    @PostMapping("/sendMsg.do")
+    @PostMapping("/sendMsg")
     @SneakyThrows
     public void sendMsg() {
         List<EquityIndexDividendYieldDaily> result = equityIndexDividendYieldDailyMapper.getRecentEquityIndexDividendYieldDaily();

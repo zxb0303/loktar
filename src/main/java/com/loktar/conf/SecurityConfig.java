@@ -16,15 +16,15 @@ public class SecurityConfig {
      * 无需鉴权即可访问的公开端点（第三方回调、webhook、静态资源等）。
      */
     private static final String[] PUBLIC_ENDPOINTS = {
-            "/jellyfin/webhook.do",
-            "/certimate/webhook.do",
-            "/synology/sendMsg.do",
-            "/github/notifyMsg.do",
+            "/jellyfin/webhook",
+            "/certimate/webhook",
+            "/synology/sendMsg",
+            "/github/notifyMsg",
             "/qywx/callback/**",
             "/patentpdf/**",
             "/patentpdfv2/**",
             "/patentdoc/**",
-            "/tiktok/getTimeParams.do",
+            "/tiktok/getTimeParams",
             "/test/**"
     };
 

@@ -23,7 +23,7 @@ public class SecondController {
         this.secondHandHouseMapper = secondHandHouseMapper;
     }
 
-    @GetMapping("/updateSecondHandHouseData.do")
+    @GetMapping("/updateSecondHandHouseData")
     public void updateSecondHandHouseData() {
         log.info("{}", "开始手动更新二手房数据");
         secondHandHouseService.updateSecondHandHouseData();

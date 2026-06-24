@@ -31,7 +31,7 @@ public class TechCompanyController {
     }
 
     @SneakyThrows
-    @GetMapping("/gen.do")
+    @GetMapping("/gen")
     public void gen(String year) {
         File pdfFolder = new File(basepath + year + "/");
         File[] pdfFiles = pdfFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".pdf"));

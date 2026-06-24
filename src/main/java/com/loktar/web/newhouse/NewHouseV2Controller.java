@@ -17,7 +17,7 @@ public class NewHouseV2Controller {
     }
 
 
-    @GetMapping("/getNewHouseData.do")
+    @GetMapping("/getNewHouseData")
     public String getNewHouseData(String ids) {
         if (!"_".contains(ids)) {
             return "ids不对。应该是areaCode_houseId";

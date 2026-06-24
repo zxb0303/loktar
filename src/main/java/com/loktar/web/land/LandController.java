@@ -21,7 +21,7 @@ public class LandController {
         this.landService = landService;
     }
 
-    @GetMapping("/update.do")
+    @GetMapping("/update")
     public void update() {
         String year = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_YEAR);
         log.info("{}", year);

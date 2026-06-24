@@ -24,7 +24,7 @@ public class PatentController {
 //
 //
 //
-//    @GetMapping("/gen.do")
+//    @GetMapping("/gen")
 //    public void gen(int year, int type, int start, int count) {
 //        //year 2022 type 2 start 1 count 100
 //        List<String> patentNumbers = PatentUtil.generatePatentNumbers(year, type, start, count);
@@ -38,7 +38,7 @@ public class PatentController {
 //        patentContentMapper.insertBatch(patentContents);
 //    }
 //
-//    @GetMapping("/dealContent.do")
+//    @GetMapping("/dealContent")
 //    public void dealContent() {
 //        List<PatentContent> patentContents = patentContentMapper.selectByStatus(1);
 //        for (PatentContent patentContent : patentContents) {
@@ -50,7 +50,7 @@ public class PatentController {
 //        }
 //    }
 //
-//    @GetMapping("/dealDetail.do")
+//    @GetMapping("/dealDetail")
 //    public void dealDetail() {
 //        List<PatentDetail> patentDetails = patentDetailMapper.selectByStatus(0);
 //        for (PatentDetail patentDetail : patentDetails) {

@@ -53,7 +53,7 @@ public class TestController {
         this.qywxApi = qywxApi;
     }
 
-    @GetMapping("/test.do")
+    @GetMapping("/test")
     @SneakyThrows
     public void test() {
         log.info("{}", "华人蒸汽库存定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));

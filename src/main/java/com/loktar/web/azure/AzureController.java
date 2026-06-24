@@ -36,12 +36,12 @@ public class AzureController {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @GetMapping("/wavToText.do")
+    @GetMapping("/wavToText")
     public void wavToText() {
         log.info("{}", azureVoiceUtil.wavToText("F:/voice/", "20240402134417.wav"));
     }
 
-    @GetMapping("/analyze.do")
+    @GetMapping("/analyze")
     public void test() {
         String jpgfilepath = "F:/doc/0a8454a7f004be1668df8291aa0a0c2d.pdf";
         AnalyzeResult analyzeLayoutResult = AzureDocIntelligenceUtil.getAnalyze("prebuilt-layout", jpgfilepath, "2");
@@ -54,7 +54,7 @@ public class AzureController {
         }
     }
     @SneakyThrows
-    @GetMapping("/xiaozhiTTS.do")
+    @GetMapping("/xiaozhiTTS")
     public void xiaozhiTTS(String text, String voiceName, HttpServletResponse response) {
         config = SpeechConfig.fromSubscription(lokTarConfig.getAzure().getVoiceKey(), lokTarConfig.getAzure().getVoiceRegion());
         config.setSpeechRecognitionLanguage(AzureVoiceUtil.LANGUAGE);

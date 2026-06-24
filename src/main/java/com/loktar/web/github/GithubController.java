@@ -25,13 +25,13 @@ public class GithubController {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @GetMapping("/check.do")
+    @GetMapping("/check")
     public void check() {
         githubService.checkRepositoryTag();
     }
 
 
-    @PostMapping("/notifyMsg.do")
+    @PostMapping("/notifyMsg")
     public void notifyMsg(String version) {
         QywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), version+"已经推送到镜像仓库"));
     }

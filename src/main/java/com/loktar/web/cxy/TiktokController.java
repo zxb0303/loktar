@@ -27,14 +27,14 @@ public class TiktokController {
     }
 
 
-    @GetMapping("/getAccount.do")
+    @GetMapping("/getAccount")
     @SneakyThrows
     public String getAccount() {
         List<TiktokAccount> tiktokAccounts = tiktokAccountMapper.selectByStatus(1);
         return objectMapper.writeValueAsString(tiktokAccounts);
     }
 
-    @GetMapping("/getTimeParams.do")
+    @GetMapping("/getTimeParams")
     @SneakyThrows
     public String getTimeParams(String dateStr) {
         LocalDate date = LocalDate.parse(dateStr); // yyyy-MM-dd

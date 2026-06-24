@@ -27,32 +27,32 @@ public class NewHouseV3Controller {
 
 
 
-    @GetMapping("/memberLogin.do")
+    @GetMapping("/memberLogin")
     public void memberLogin() {
         newHouseHangzhouV3Service.memberLogin();
     }
 
-    @GetMapping("/getNewHouseDataByName.do")
+    @GetMapping("/getNewHouseDataByName")
     public void getNewHouseData(String houseName) {
         NewHouseHangzhouV3 newHouseHangzhouV3 = newHouseHangzhouV3Service.getNewHouseData(houseName);
     }
 
-    @GetMapping("/getNewHousePresellDataByHouseId.do")
+    @GetMapping("/getNewHousePresellDataByHouseId")
     public void getNewHousePresellDataByHouseId(String houseId) {
         log.info("{}", houseId);
         List<NewHouseHangzhouV3Presell> newHouseHangzhouV3 = newHouseHangzhouV3Service.getNewHousePresellDataByHouseId(houseId);
     }
 
-    @GetMapping("/getNewHousePresellBuildDataByHouseId.do")
+    @GetMapping("/getNewHousePresellBuildDataByHouseId")
     public void getNewHousePresellBuildDataByHouseId(String houseId) {
         List<NewHouseHangzhouV3PresellBuild> newHouseHangzhouV3PresellBuilds = newHouseHangzhouV3Service.getNewHousePresellBuildDataByHouseId(houseId);
     }
-    @GetMapping("/getNewHouseDetailByHouseId.do")
+    @GetMapping("/getNewHouseDetailByHouseId")
     public void getNewHouseDetailByHouseId(String houseId) {
         List<NewHouseHangzhouV3Detail> newHouseHangzhouV3Details = newHouseHangzhouV3Service.getNewHouseDetailByHouseId(houseId);
     }
 
-    @GetMapping("/getNewHouseDetailByHouseIdAndAzure.do")
+    @GetMapping("/getNewHouseDetailByHouseIdAndAzure")
     public void coverImages(String houseId) {
         newHouseHangzhouV3Service.getNewHouseDetailByHouseIdAndAzure(houseId);
     }
