@@ -24,8 +24,6 @@ import com.loktar.util.wx.aes.WXBizMsgCrypt;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,8 +83,7 @@ public class QyWeixinCallbackController {
         String xmlMsg = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, xml);
         System.out.println("after decrypt msg: ");
         System.out.println(xmlMsg);
-        Element rawRootElement = DocumentHelper.parseText(xmlMsg).getRootElement();
-        String msgType = rawRootElement.element(LokTarConstant.WX_RECEIVE_MSGTYPE).getTextTrim();
+        String msgType = xmlMapper.readTree(xmlMsg).get(LokTarConstant.WX_RECEIVE_MSGTYPE).asText().trim();
         ReceiceMsgType type = ReceiceMsgType.getByName(msgType);
         switch (type) {
             case ReceiceMsgType.TEXT:
