@@ -59,8 +59,9 @@ public class FFmpegUtil {
     public static void convertWavToAmrDev(String voicePath, String wavFilename) {
         FFmpeg ffmpeg = new FFmpeg("D:/ffmpeg/ffmpeg-8.0.1-full_build/bin/ffmpeg.exe");
         FFmpegBuilder builder = new FFmpegBuilder()
-                .setInput(voicePath + wavFilename)
                 .overrideOutputFiles(true)
+                .setInput(voicePath + wavFilename)
+                .done()
                 .addOutput(voicePath + wavFilename.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR))
                 .setAudioCodec("libopencore_amrnb")
                 // Set the audio sample rate to 8000 Hz
@@ -76,8 +77,9 @@ public class FFmpegUtil {
         FFmpeg ffmpeg = new FFmpeg("D:/ffmpeg/ffmpeg-8.0.1-full_build/bin/ffmpeg.exe");
 
         FFmpegBuilder builder = new FFmpegBuilder()
-                .setInput(voicePath + amrFilename)
                 .overrideOutputFiles(true)
+                .setInput(voicePath + amrFilename)
+                .done()
                 .addOutput(voicePath + amrFilename.replace(LokTarConstant.VOICE_SUFFIX_AMR, LokTarConstant.VOICE_SUFFIX_WAV))
                 .setAudioChannels(1)
                 .setAudioSampleRate(16_000)
@@ -108,11 +110,11 @@ public class FFmpegUtil {
 
             // 使用FFmpeg的concat demuxer将所有MP4文件合并为一个文件
             FFmpegBuilder builder = new FFmpegBuilder()
-                    .setInput(listFile.toString())
-                    .addExtraArgs("-f", "concat")
-                    .setFormat("mp4")
-                    .addExtraArgs("-safe", "0")
                     .overrideOutputFiles(true)
+                    .setInput(listFile.toString())
+                    .setFormat("concat")
+                    .addExtraArgs("-safe", "0")
+                    .done()
                     .addOutput(outputFilePath + ".mp4")
                     .setVideoCodec("copy")
                     .setAudioCodec("aac")
