@@ -57,7 +57,7 @@ public class FFmpegUtil {
 
     @SneakyThrows
     public static void convertWavToAmrDev(String voicePath, String wavFilename) {
-        FFmpeg ffmpeg = new FFmpeg("D:/ffmpeg/bin/ffmpeg.exe");
+        FFmpeg ffmpeg = new FFmpeg("D:/ffmpeg/ffmpeg-8.0.1-full_build/bin/ffmpeg.exe");
         FFmpegBuilder builder = new FFmpegBuilder()
                 .setInput(voicePath + wavFilename)
                 .overrideOutputFiles(true)
@@ -73,7 +73,7 @@ public class FFmpegUtil {
 
     @SneakyThrows
     public static void convertAmrToWavDev(String voicePath, String amrFilename) {
-        FFmpeg ffmpeg = new FFmpeg("D:/ffmpeg/bin/ffmpeg.exe");
+        FFmpeg ffmpeg = new FFmpeg("D:/ffmpeg/ffmpeg-8.0.1-full_build/bin/ffmpeg.exe");
 
         FFmpegBuilder builder = new FFmpegBuilder()
                 .setInput(voicePath + amrFilename)

@@ -15,8 +15,6 @@ import com.loktar.util.DateTimeUtil;
 import com.loktar.util.RedisUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,6 +30,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -209,16 +208,19 @@ public class QywxApi {
 
     @SneakyThrows
     private static HttpRequest.BodyPublisher ofMimeMultipartData(File file, String boundary) {
-        var builder = MultipartEntityBuilder.create();
-        builder.setBoundary(boundary);
-        builder.addBinaryBody(FORM_NAME, file, ContentType.APPLICATION_OCTET_STREAM, file.getName());
-        var multipart = builder.build();
+        byte[] fileBytes = Files.readAllBytes(file.toPath());
+        String crlf = "\r\n";
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        multipart.writeTo(baos);
+        baos.write(("--" + boundary + crlf).getBytes(StandardCharsets.UTF_8));
+        baos.write(("Content-Disposition: form-data; name=\"" + FORM_NAME + "\"; filename=\"" + file.getName() + "\"" + crlf).getBytes(StandardCharsets.UTF_8));
+        baos.write(("Content-Type: application/octet-stream" + crlf).getBytes(StandardCharsets.UTF_8));
+        baos.write(crlf.getBytes(StandardCharsets.UTF_8));
+        baos.write(fileBytes);
+        baos.write(crlf.getBytes(StandardCharsets.UTF_8));
+        baos.write(("--" + boundary + "--" + crlf).getBytes(StandardCharsets.UTF_8));
         return HttpRequest.BodyPublishers.ofByteArray(baos.toByteArray());
     }
 
-    //上面的upload方法中文文件名乱码未解决
     public UploadMediaRsp uploadMediaForPatent(File file ,String agentId)  {
         HttpHeaders headers = new HttpHeaders();
         MediaType type = MediaType.parseMediaType("multipart/form-data");

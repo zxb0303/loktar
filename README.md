@@ -294,16 +294,6 @@ public class GithubController {
 
 `org.apache.http.impl.client`、`org.springframework.web.client.RestTemplate` -> `java.net.http.HttpClient`（JDK 11+），参考 [Http.java](src/main/java/com/loktar/learn/jdk11/Http.java)。
 
-> **注**：文件上传仍使用 `httpmime` 构建 `multipart` 实体：
-
-```xml
-<dependency>
-    <groupId>org.apache.httpcomponents</groupId>
-    <artifactId>httpmime</artifactId>
-    <version>4.5.14</version>
-</dependency>
-```
-
 参考 [QywxApi.java](src/main/java/com/loktar/util/wx/qywx/QywxApi.java)。
 
 ### 3.5 XML 解析使用 jackson-dataformat-xml
