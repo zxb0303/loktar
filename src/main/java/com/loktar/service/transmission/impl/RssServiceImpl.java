@@ -1,6 +1,8 @@
 package com.loktar.service.transmission.impl;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.domain.transmission.TrRss;
 import com.loktar.domain.transmission.TrRssTorrent;
@@ -20,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
+@Slf4j
 public class RssServiceImpl implements RssService {
 
     private final TrRssMapper trRssMapper;
@@ -64,10 +67,10 @@ public class RssServiceImpl implements RssService {
                 DelayUtil.delaySeconds(3, 5);
                 TrResponse trResponse = transmissionUtil.addTorrent(downloadUrl, lokTarConfig.getTransmission().getTempDownloadDir(), false);
                 if (!ObjectUtils.isEmpty(trResponse) && trResponse.getResult().equals(TrResponse.RESULT_SUCCESS)) {
-                    System.out.println("RSS自动添加-" + trRss.getHostCnName() + ":" + trRssTorrent.getTitle());
+                    log.info("{}", "RSS自动添加-" + trRss.getHostCnName() + ":" + trRssTorrent.getTitle());
                     trRssTorrent.setStatus(1);
                 } else {
-                    System.out.println("RSS添加失败-" + trRss.getHostCnName() + ":" + trRssTorrent.getTitle());
+                    log.info("{}", "RSS添加失败-" + trRss.getHostCnName() + ":" + trRssTorrent.getTitle());
                     trRssTorrent.setStatus(3);
                 }
             } else {

@@ -1,6 +1,8 @@
 package com.loktar.util;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Slf4j
 public class TransmissionUtil {
     private final static String TRANSMISSION_SESSION_ID = "X-Transmission-Session-Id";
     private final static long TRANSMISSION_SESSION_ID_EXPIRE = 28 * 60;
@@ -92,7 +95,7 @@ public class TransmissionUtil {
 
     public TrResponse removeTorrents(Integer[] ids, boolean deleteLocalData) {
         if (ids.length == 0) {
-            System.out.println("不传id会全删除的 朋友");
+            log.info("{}", "不传id会全删除的 朋友");
             return null;
         }
         TrRequest trRequest = new TrRequest();

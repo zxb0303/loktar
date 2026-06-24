@@ -1,13 +1,16 @@
 package com.loktar.learn.jdk14;
 
+
+import lombok.extern.slf4j.Slf4j;
 import java.text.NumberFormat;
 
+@Slf4j
 public class NumeralFormatting {
     public static void main(String[] args) {
         double value = 12345678;
         NumberFormat nf = NumberFormat.getCompactNumberInstance();
         String formattedValue = nf.format(value);
-        System.out.println(formattedValue);
+        log.info("{}", formattedValue);
 
 //        NumberFormat nf2 = NumberFormat.getInstance();
 //        String localizedPattern = nf2.toLocalizedPattern();
@@ -20,7 +23,7 @@ public class NumeralFormatting {
         nf3.setMaximumFractionDigits(-1);
         nf3.setMinimumFractionDigits(2);
         String formattedValue3 = nf.format(value2);
-        System.out.println(formattedValue3);
+        log.info("{}", formattedValue3);
 
 
     }

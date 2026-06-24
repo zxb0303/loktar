@@ -1,6 +1,8 @@
 package com.loktar.service.lottery.impl;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loktar.conf.LokTarConfig;
@@ -36,6 +38,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
 
     private final LotteryHouseMapper lotteryHouseMapper;
@@ -97,14 +100,14 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
         for (LotteryHouse lotteryHouse : lotteryHouses) {
             int MaxRank = lotteryHouseMapper.getMaxRankByHouseId(lotteryHouse.getHouseId());
             if (MaxRank < lotteryHouse.getTotalPeopleNum()) {
-                System.out.println(lotteryHouse.getHouseName() + " 摇号人员数据需要更新");
-                System.out.println("清空历史数据-其他人员");
+                log.info("{}", lotteryHouse.getHouseName() + " 摇号人员数据需要更新");
+                log.info("{}", "清空历史数据-其他人员");
                 lotteryOtherPeopleMapper.deleteLotteryOtherPeoplesByHouseId(lotteryHouse.getHouseId());
-                System.out.println("清空历史数据-人员");
+                log.info("{}", "清空历史数据-人员");
                 lotteryPeopleMapper.deleteLotteryPeopleByHouseId(lotteryHouse.getHouseId());
-                System.out.println("开始获取人员数据");
+                log.info("{}", "开始获取人员数据");
                 getLotteryPeopleData(lotteryHouse);
-                System.out.println(lotteryHouse.getHouseName() + " 摇号人员数据完成更新");
+                log.info("{}", lotteryHouse.getHouseName() + " 摇号人员数据完成更新");
             }
         }
     }
@@ -158,7 +161,7 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
         lotteryOtherPeopleMapper.insertBatch(lotteryOtherPeoples);
 
         //TODO 打印
-        System.out.println("人数:" + lotteryPeoples.size());
+        log.info("{}", "人数:" + lotteryPeoples.size());
     }
 
     /**
@@ -174,10 +177,10 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
             LotteryHouse exist = lotteryHouseMapper.selectByPrimaryKey(lotteryHouse.getHouseId());
             if (ObjectUtils.isEmpty(exist)) {
                 lotteryHouseMapper.insert(lotteryHouse);
-                System.out.println("新增摇号楼盘：" + lotteryHouse.getHouseName() + "(" + lotteryHouse.getLotteryTime() + ")");
+                log.info("{}", "新增摇号楼盘：" + lotteryHouse.getHouseName() + "(" + lotteryHouse.getLotteryTime() + ")");
             } else {
                 lotteryHouseMapper.updateByPrimaryKey(lotteryHouse);
-                System.out.println("更新摇号楼盘：" + lotteryHouse.getHouseName() + "(" + lotteryHouse.getLotteryTime() + ")");
+                log.info("{}", "更新摇号楼盘：" + lotteryHouse.getHouseName() + "(" + lotteryHouse.getLotteryTime() + ")");
             }
         }
 

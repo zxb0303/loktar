@@ -1,5 +1,7 @@
 package com.loktar.web.cxy;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.dto.cxy.HardWork;
 import com.loktar.dto.cxy.Leave;
 import com.loktar.dto.cxy.RestInfo;
@@ -18,6 +20,7 @@ import java.io.OutputStream;
 import java.time.*;
 import java.util.*;
 
+@Slf4j
 public class AttendanceMain {
 
     //style需要缓存，否则太多个会卡，文件也会变大
@@ -93,7 +96,7 @@ public class AttendanceMain {
         Sheet newSheet = newWb.getSheetAt(1);
         Sheet newSheetRest = newWb.getSheetAt(2);
         for (int rowNum = 2; rowNum <= oldSheet.getLastRowNum(); rowNum++) {
-            System.out.println(rowNum);
+            log.info("{}", rowNum);
             Row oldRow = oldSheet.getRow(rowNum);
             if (ObjectUtils.isEmpty(oldRow.getCell(0).getStringCellValue())) {
                 continue;
@@ -416,7 +419,7 @@ public class AttendanceMain {
                     if(str.equals("换班")){
                         continue;
                     }
-                    System.out.println(str);
+                    log.info("{}", str);
                     String leaveType = str.split("\\(")[0];
                     leave.setLeaveType(leaveType);
                     String leaveTime = str.split("\\(")[1].replace(")", "");
@@ -439,8 +442,8 @@ public class AttendanceMain {
                     String str2 = cell.getStringCellValue().split(";")[2];
                     String leaveType1 = str1.split("\\(")[0];
                     String leaveType2 = str2.split("\\(")[0];
-                    System.out.println(leaveType1);
-                    System.out.println(leaveType2);
+                    log.info("{}", leaveType1);
+                    log.info("{}", leaveType2);
 
                     if (leaveType1.equals(leaveType2)) {
                         String leaveType = str1.split("\\(")[0];

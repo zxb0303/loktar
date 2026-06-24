@@ -1,5 +1,7 @@
 package com.loktar.web.cxy;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.dto.openai.OpenAiRequest;
 import com.loktar.dto.openai.OpenAiResponse;
 import com.loktar.util.ChatGPTUtil;
@@ -16,6 +18,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ExcelTranslator {
 
     private final ChatGPTUtil chatGPTUtil;
@@ -70,7 +73,7 @@ public class ExcelTranslator {
         String key = text.trim();
         if (cache.containsKey(key)) {
             String cached = cache.get(key);
-            System.out.println("[缓存命中] " + text + "  =>  " + cached);
+            log.info("{}", "[缓存命中] " + text + "  =>  " + cached);
             return cached;
         }
 
@@ -79,7 +82,7 @@ public class ExcelTranslator {
         OpenAiResponse response = chatGPTUtil.completions(request);
         if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
             // 出错时，保留原文
-            System.out.println("[翻译失败，保留原文] " + text);
+            log.info("{}", "[翻译失败，保留原文] " + text);
             return text;
         }
 
@@ -90,7 +93,7 @@ public class ExcelTranslator {
                 .trim();
 
         // 关键打印：原文 -> 译文
-        System.out.println("[翻译] " + text + "  =>  " + translated);
+        log.info("{}", "[翻译] " + text + "  =>  " + translated);
 
         cache.put(key, translated);
         return translated;

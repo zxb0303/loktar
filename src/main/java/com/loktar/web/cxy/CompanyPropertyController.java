@@ -1,5 +1,7 @@
 package com.loktar.web.cxy;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.domain.cxy.CompanyProperty;
 import com.loktar.mapper.cxy.CompanyPropertyMapper;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("companyProperty")
+@Slf4j
 public class CompanyPropertyController {
 
     private final CompanyPropertyMapper companyPropertyMapper;
@@ -24,7 +27,7 @@ public class CompanyPropertyController {
         for (CompanyProperty companyProperty : tests) {
             String[] strs = companyProperty.getZichanbianhao().split("-");
             if (strs.length < 4) {
-                System.out.println(companyProperty.getZhuti() + ";" + companyProperty.getZichanbianhao() + ";" + companyProperty.getShebeimingcheng() + ";" + companyProperty.getPinpai() + ";" + companyProperty.getXinghao() + ";" + "1" + ";" + companyProperty.getDanjia() + ";" + companyProperty.getDanjia());
+                log.info("{}", companyProperty.getZhuti() + ";" + companyProperty.getZichanbianhao() + ";" + companyProperty.getShebeimingcheng() + ";" + companyProperty.getPinpai() + ";" + companyProperty.getXinghao() + ";" + "1" + ";" + companyProperty.getDanjia() + ";" + companyProperty.getDanjia());
             } else {
                 //22060014
                 int start = Integer.parseInt(strs[2]);
@@ -32,7 +35,7 @@ public class CompanyPropertyController {
                 int end = Integer.parseInt(replaceEnd(strs[2], strs[3]));
                 for (int i = start; i <= end; i++) {
                     String newBianhao = strs[0] + "-" + strs[1] + "-" + i;
-                    System.out.println(companyProperty.getZhuti() + ";" + newBianhao + ";" + companyProperty.getShebeimingcheng() + ";" + companyProperty.getPinpai() + ";" + companyProperty.getXinghao() + ";" + "1" + ";" + companyProperty.getDanjia() + ";" + companyProperty.getDanjia());
+                    log.info("{}", companyProperty.getZhuti() + ";" + newBianhao + ";" + companyProperty.getShebeimingcheng() + ";" + companyProperty.getPinpai() + ";" + companyProperty.getXinghao() + ";" + "1" + ";" + companyProperty.getDanjia() + ";" + companyProperty.getDanjia());
                 }
             }
         }

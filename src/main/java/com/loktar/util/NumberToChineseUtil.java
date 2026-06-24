@@ -1,5 +1,8 @@
 package com.loktar.util;
 
+
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 public class NumberToChineseUtil {
     // 数字对应的中文大写
     private static final String[] CN_UPPER_NUMBER = {"零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"};
@@ -62,6 +65,6 @@ public class NumberToChineseUtil {
 
     public static void main(String[] args) {
 
-        System.out.println(numberToChinese(3608));
+        log.info("{}", numberToChinese(3608));
     }
 }

@@ -1,5 +1,7 @@
 package com.loktar.web.cxy;
 
+
+import lombok.extern.slf4j.Slf4j;
 import lombok.SneakyThrows;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.ss.usermodel.*;
@@ -12,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Slf4j
 public class ExcelMain {
 
     @SneakyThrows
@@ -28,7 +31,7 @@ public class ExcelMain {
             Sheet oldSheet = oldWb.getSheetAt(0);
             Row oldRow = oldSheet.getRow(1);
             Cell oldCell = oldRow.getCell(5);
-            System.out.println(filepath+","+oldCell.getNumericCellValue());
+            log.info("{}", filepath+","+oldCell.getNumericCellValue());
         }
 
 

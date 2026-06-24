@@ -1,5 +1,7 @@
 package com.loktar.task.relx;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.houbb.opencc4j.util.ZhConverterUtil;
 import com.loktar.conf.LokTarConfig;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Profile(LokTarConstant.ENV_PRO)
+@Slf4j
 public class RelxTask {
 
     private final LokTarConfig lokTarConfig;
@@ -44,7 +47,7 @@ public class RelxTask {
         if (StringUtils.isEmpty(status)) {
             return;
         }
-        System.out.println("华人蒸汽库存定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
+        log.info("{}", "华人蒸汽库存定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         List<VapeOnlineUtil.Product> products = VapeOnlineUtil.getInStockAndNeedProductsAndStockInfo();
         String nowProductsJson = OBJECT_MAPPER.writeValueAsString(products);
         String lastProductsJson = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX);
@@ -75,6 +78,6 @@ public class RelxTask {
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent008Id(), content));
             redisUtil.set(LokTarConstant.REDIS_KEY_RELX, nowProductsJson);
         }
-        System.out.println("华人蒸汽库存定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
+        log.info("{}", "华人蒸汽库存定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
     }
 }

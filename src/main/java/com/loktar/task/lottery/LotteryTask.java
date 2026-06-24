@@ -1,5 +1,7 @@
 package com.loktar.task.lottery;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.service.lottery.HZLotteryServiceV2;
 import com.loktar.util.DateTimeUtil;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Component
 @Profile(LokTarConstant.ENV_PRO)
+@Slf4j
 public class LotteryTask {
     private final HZLotteryServiceV2 hZLotteryServiceV2;
 
@@ -23,9 +26,9 @@ public class LotteryTask {
     @Scheduled(cron = "0 30 9,10,11,12,13 * * ?")
     private void updateHZLotteryData() {
 
-        System.out.println("杭州摇号数据定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+        log.info("{}", "杭州摇号数据定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         hZLotteryServiceV2.updateHZLotteryData();
-        System.out.println("杭州摇号数据定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+        log.info("{}", "杭州摇号数据定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
     }
 
 

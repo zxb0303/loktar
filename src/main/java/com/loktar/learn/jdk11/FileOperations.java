@@ -1,9 +1,12 @@
 package com.loktar.learn.jdk11;
 
+
+import lombok.extern.slf4j.Slf4j;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+@Slf4j
 public class FileOperations {
     public static void main(String[] args) throws Exception {
         String filePath = "example.txt";
@@ -15,7 +18,7 @@ public class FileOperations {
 
         // 读取文件
         String fileContent = Files.readString(path);
-        System.out.println("文件内容：\n" + fileContent);
+        log.info("{}", "文件内容：\n" + fileContent);
 
         // 逐行写入文件
         List<String> lines = List.of("Line 1", "Line 2", "Line 3");

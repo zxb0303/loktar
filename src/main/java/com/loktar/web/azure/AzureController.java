@@ -1,5 +1,7 @@
 package com.loktar.web.azure;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.azure.ai.documentintelligence.models.AnalyzeResult;
 import com.azure.ai.documentintelligence.models.DocumentParagraph;
 import com.loktar.conf.LokTarConfig;
@@ -21,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("azure")
+@Slf4j
 public class AzureController {
 
     private final AzureVoiceUtil azureVoiceUtil;
@@ -35,18 +38,18 @@ public class AzureController {
 
     @GetMapping("/wavToText.do")
     public void wavToText() {
-        System.out.println(azureVoiceUtil.wavToText("F:/voice/", "20240402134417.wav"));
+        log.info("{}", azureVoiceUtil.wavToText("F:/voice/", "20240402134417.wav"));
     }
 
     @GetMapping("/analyze.do")
     public void test() {
         String jpgfilepath = "F:/doc/0a8454a7f004be1668df8291aa0a0c2d.pdf";
         AnalyzeResult analyzeLayoutResult = AzureDocIntelligenceUtil.getAnalyze("prebuilt-layout", jpgfilepath, "2");
-        System.out.println(analyzeLayoutResult.toString());
+        log.info("{}", analyzeLayoutResult.toString());
         List<DocumentParagraph> documentParagraphs = analyzeLayoutResult.getParagraphs();
         for (DocumentParagraph documentParagraph : documentParagraphs) {
             if (documentParagraph.getContent().contains("7.基于上述结论性意见,审查员认为")) {
-                System.out.println(documentParagraph.getContent());
+                log.info("{}", documentParagraph.getContent());
             }
         }
     }
@@ -67,7 +70,7 @@ public class AzureController {
                 response.setContentLength(audioData.length);
                 response.getOutputStream().write(audioData);
                 response.getOutputStream().flush();
-                System.out.println("合成完成:"+text);
+                log.info("{}", "合成完成:"+text);
             } else {
                 SpeechSynthesisCancellationDetails cancellation =
                         SpeechSynthesisCancellationDetails.fromResult(result);

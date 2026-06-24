@@ -1,5 +1,7 @@
 package com.loktar.web.child;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +31,7 @@ import java.util.Map;
 /*
  * 杭州市西湖区青少年宫课程查询
  */
+@Slf4j
 public class QSNG {
 
     private static final String LIST_URL = "https://bm.qsng.cn/eduplat/api/public/ic/iclass/list";
@@ -74,10 +77,10 @@ public class QSNG {
                     .POST(HttpRequest.BodyPublishers.ofString(formData))
                     .build();
             HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            System.out.println("第 " + pageNo + " 页, 响应状态码: " + response.statusCode());
+            log.info("{}", "第 " + pageNo + " 页, 响应状态码: " + response.statusCode());
             QSNGResponse qsngResponse = objectMapper.readValue(response.body(), QSNGResponse.class);
             if (!Boolean.TRUE.equals(qsngResponse.getSuccess()) || qsngResponse.getData() == null) {
-                System.out.println("请求失败: " + qsngResponse.getMsg());
+                log.info("{}", "请求失败: " + qsngResponse.getMsg());
                 break;
             }
             totalCount = qsngResponse.getData().getTotal();
@@ -90,15 +93,15 @@ public class QSNG {
                     allBeans.add(row.getBean());
                 }
             }
-            System.out.println("已获取: " + allBeans.size() + "/" + totalCount);
+            log.info("{}", "已获取: " + allBeans.size() + "/" + totalCount);
             if (allBeans.size() >= totalCount) {
                 break;
             }
             pageNo++;
         }
 
-        System.out.println("\n========== 查询完成 ==========");
-        System.out.println("总数: " + allBeans.size());
+        log.info("{}", "\n========== 查询完成 ==========");
+        log.info("{}", "总数: " + allBeans.size());
 //        for (int i = 0; i < allBeans.size(); i++) {
 //            QSNGBean bean = allBeans.get(i);
 //            QSNGCaption caption = bean.getCaption();
@@ -178,7 +181,7 @@ public class QSNG {
             try (FileOutputStream fos = new FileOutputStream(getExcelPath())) {
                 workbook.write(fos);
             }
-            System.out.println("Excel已保存: " + getExcelPath());
+            log.info("{}", "Excel已保存: " + getExcelPath());
         }
     }
 

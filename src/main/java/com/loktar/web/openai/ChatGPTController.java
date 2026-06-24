@@ -1,5 +1,7 @@
 package com.loktar.web.openai;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.openai.OpenAiMessage;
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("chatgpt")
+@Slf4j
 public class ChatGPTController {
     private OpenAiRequest openAiRequest;
 
@@ -46,13 +49,13 @@ public class ChatGPTController {
     public void completions(String text) {
         OpenAiMessage openAiMessage = new OpenAiMessage(ChatGPTUtil.ROLE_USER, text);
         if (ObjectUtils.isEmpty(openAiRequest)) {
-            openAiRequest = ChatGPTUtil.getDefalutRequest();
+            openAiRequest = ChatGPTUtil.getDefaultRequest();
         }
         openAiRequest.getMessages().add(openAiMessage);
         OpenAiResponse openAiResponse = chatGPTUtil.completions(openAiRequest);
         OpenAiMessage replyMsg = openAiResponse.getChoices().getFirst().getMessage();
         openAiRequest.getMessages().add(replyMsg);
-        System.out.println(replyMsg.content);
+        log.info("{}", replyMsg.content);
 
     }
 
@@ -65,23 +68,23 @@ public class ChatGPTController {
         testFileExist(lokTarConfig.getPath().getVoice(),wavFileName);
         String filepath = lokTarConfig.getPath().getVoice() + wavFileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR);
         UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(filepath), lokTarConfig.getQywx().getAgent003Id());
-        System.out.println(uploadMediaRsp.getMediaId());
+        log.info("{}", uploadMediaRsp.getMediaId());
         qywxApi.sendVoiceMsg(new AgentMsgVoice(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent003Id(), uploadMediaRsp.getMediaId()));
     }
 
     @SneakyThrows
     private void testFileExist(String voicePath, String fileName) {
-        System.out.println("fileName："+fileName);
+        log.info("{}", "fileName："+fileName);
         String coverFileName = fileName.lastIndexOf(LokTarConstant.VOICE_SUFFIX_WAV) != -1 ? fileName.replace(LokTarConstant.VOICE_SUFFIX_WAV, LokTarConstant.VOICE_SUFFIX_AMR) : fileName.replace(LokTarConstant.VOICE_SUFFIX_AMR, LokTarConstant.VOICE_SUFFIX_WAV);
-        System.out.println(coverFileName);
+        log.info("{}", coverFileName);
         int times = 10;
         while (times > 0) {
             File file = new File(voicePath + coverFileName);
             if (file.exists()) {
-                System.out.println("file exist "+ DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+                log.info("{}", "file exist "+ DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
                 break;
             }
-            System.out.println("file not exist "+DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+            log.info("{}", "file not exist "+DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
             times--;
             Thread.sleep(1000);
         }

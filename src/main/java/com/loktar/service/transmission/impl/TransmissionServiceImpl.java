@@ -1,6 +1,8 @@
 package com.loktar.service.transmission.impl;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.domain.transmission.TrTorrent;
 import com.loktar.domain.transmission.TrTorrentTracker;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class TransmissionServiceImpl implements TransmissionService {
 
     private final TrTorrentMapper trTorrentMapper;
@@ -81,10 +84,10 @@ public class TransmissionServiceImpl implements TransmissionService {
     public void autoRemoveError() {
         List<String> errorNames = trTorrentMapper.getErrorName();
         if (!errorNames.isEmpty()) {
-            System.out.println("自动删除下列错误种子：");
+            log.info("{}", "自动删除下列错误种子：");
         }
         for (String name : errorNames) {
-            System.out.println(name);
+            log.info("{}", name);
             List<TrTorrent> trTorrents = trTorrentMapper.getTorrentsByName(name);
             List<Integer> removeIds = new ArrayList<>();
             if (trTorrents.size() == 1) {
@@ -113,15 +116,15 @@ public class TransmissionServiceImpl implements TransmissionService {
         List<Integer> tempIds = new ArrayList<>();
         List<String> tempNames = new ArrayList<>();
         //TODO 打印
-        System.out.println("当前空间：" + Math.floor((double) leftSize / 1024 / 1024 / 1024) + ";不足" + minSizeGB + "GB");
-        System.out.println("自动删除下列种子：");
+        log.info("{}", "当前空间：" + Math.floor((double) leftSize / 1024 / 1024 / 1024) + ";不足" + minSizeGB + "GB");
+        log.info("{}", "自动删除下列种子：");
         while (leftSize <= minSize) {
             TrTorrent worstTorrent = trTorrentMapper.getworstTorrent(days, downloadDir);
             if (ObjectUtils.isEmpty(worstTorrent)) {
                 return;
             }
             //TODO 打印
-            System.out.println(Math.floor((double) worstTorrent.getTotalSize() / 1024 / 1024 / 1024) + ";" + worstTorrent.getName() + ";" + worstTorrent.getTotalSize().toString());
+            log.info("{}", Math.floor((double) worstTorrent.getTotalSize() / 1024 / 1024 / 1024) + ";" + worstTorrent.getName() + ";" + worstTorrent.getTotalSize().toString());
             tempNames.add(worstTorrent.getName());
             List<TrTorrent> needRemoveTrTorrents = trTorrentMapper.getTorrentsByNameAndSize(worstTorrent.getName(), worstTorrent.getTotalSize());
             for (TrTorrent needRemoveTrTorrent : needRemoveTrTorrents) {

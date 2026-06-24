@@ -1,5 +1,7 @@
 package com.loktar.web.certimate;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.certimate.Notification;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("certimate")
+@Slf4j
 public class CertimateController {
 
     private final QywxApi qywxApi;
@@ -29,7 +32,7 @@ public class CertimateController {
     @PostMapping("/webhook.do")
     public void webhook(@RequestBody Notification notification) {
         HtmlEntityDecoderUtil.decodeHtmlEntities(notification);
-        System.out.println(notification.toString());
+        log.info("{}", notification.toString());
         String content = LokTarConstant.NOTICE_CERTIMATE + System.lineSeparator() +
                 System.lineSeparator() +
                 notification.getMessage() + System.lineSeparator() +

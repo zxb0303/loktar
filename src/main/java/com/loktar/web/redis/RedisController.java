@@ -1,5 +1,7 @@
 package com.loktar.web.redis;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.dto.cxy.RestInfo;
 import com.loktar.util.RedisUtil;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("redis")
+@Slf4j
 public class RedisController {
     private final RedisUtil redisUtil;
 
@@ -28,7 +31,7 @@ public class RedisController {
     @GetMapping("get.do")
     public void get(){
         Object obj = redisUtil.get("qywx_accessToken_1000002");
-        System.out.println(obj.toString());
+        log.info("{}", obj.toString());
     }
 
     @GetMapping("set1.do")
@@ -42,7 +45,7 @@ public class RedisController {
     }
     @GetMapping("getSet.do")
     public void getSet(){
-        System.out.println(redisUtil.sGetSetSize("111"));
+        log.info("{}", redisUtil.sGetSetSize("111"));
     }
 
 

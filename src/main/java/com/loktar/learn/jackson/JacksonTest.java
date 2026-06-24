@@ -1,5 +1,7 @@
 package com.loktar.learn.jackson;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +13,7 @@ import lombok.SneakyThrows;
 
 import java.util.List;
 
+@Slf4j
 public class JacksonTest {
     @SneakyThrows
     public static void main(String[] args)  {
@@ -47,37 +50,37 @@ public class JacksonTest {
         // 驼峰命名，字段的首字母小写. {"animalName":"sam","animalSex":1,"animalWeight":100}
         ObjectMapper mapper1 = new ObjectMapper();
         mapper1.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE);
-        System.out.println(mapper1.writeValueAsString(githubRepository));
+        log.info("{}", mapper1.writeValueAsString(githubRepository));
 
         // 驼峰命名，字段的首字母大写. {"AnimalName":"sam","AnimalSex":1,"AnimalWeight":100}
         ObjectMapper mapper2 = new ObjectMapper();
         mapper2.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
-        System.out.println(mapper2.writeValueAsString(githubRepository));
+        log.info("{}", mapper2.writeValueAsString(githubRepository));
 
         // 字段小写，多个单词以下划线_分隔. {"animal_name":"sam","animal_sex":1,"animal_weight":100}
         ObjectMapper mapper3 = new ObjectMapper();
         mapper3.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-        System.out.println(mapper3.writeValueAsString(githubRepository));
+        log.info("{}", mapper3.writeValueAsString(githubRepository));
 
         // 字段小写，多个单词以中横线-分隔. {"animal-name":"sam","animal-sex":1,"animal-weight":100}
         ObjectMapper mapper4 = new ObjectMapper();
         mapper4.setPropertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE);
-        System.out.println(mapper4.writeValueAsString(githubRepository));
+        log.info("{}", mapper4.writeValueAsString(githubRepository));
 
         // 字段小写，多个单词间无分隔符. {"animalname":"sam","animalsex":1,"animalweight":100}
         ObjectMapper mapper5 = new ObjectMapper();
         mapper5.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CASE);
-        System.out.println(mapper5.writeValueAsString(githubRepository));
+        log.info("{}", mapper5.writeValueAsString(githubRepository));
 
         // 字段小写，多个单词以点号.分隔. {"animal.name":"sam","animal.sex":1,"animal.weight":100}
         ObjectMapper mapper6 = new ObjectMapper();
         mapper6.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_DOT_CASE);
-        System.out.println(mapper6.writeValueAsString(githubRepository));
+        log.info("{}", mapper6.writeValueAsString(githubRepository));
 
         // 字段大写，多个单词以下划线_分隔. {"ANIMAL_NAME":"sam","ANIMAL_SEX":1,"ANIMAL_WEIGHT":100}
         ObjectMapper mapper7 = new ObjectMapper();
         mapper7.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_SNAKE_CASE);
-        System.out.println(mapper7.writeValueAsString(githubRepository));
+        log.info("{}", mapper7.writeValueAsString(githubRepository));
     }
 
     @SneakyThrows
@@ -88,7 +91,7 @@ public class JacksonTest {
         githubRepository.setLastTagId(2);
         githubRepository.setRepository("1111");
         String githubRepositoryStr = new ObjectMapper().writeValueAsString(githubRepository);
-        System.out.println(githubRepositoryStr);
+        log.info("{}", githubRepositoryStr);
         //JSON字符串转java对象
         GithubRepository newGithubRepository2 = new ObjectMapper().readValue(githubRepositoryStr, GithubRepository.class);
     }
@@ -107,7 +110,7 @@ public class JacksonTest {
         arguments.put("delete-local-data", false);
         arguments.set("ids", idsArray);
         obj.set("arguments", arguments);
-        System.out.println(obj);
+        log.info("{}", obj);
     }
 
     @SneakyThrows
@@ -119,7 +122,7 @@ public class JacksonTest {
         jsonObject1.put("姓名", "张三");
         jsonObject1.put("年龄", "18");
         jsonObject1.put("地理", 70);
-        System.out.println(jsonObject1);
+        log.info("{}", jsonObject1);
         //json数组创建1
         ArrayNode jsonArray1 = objectMapper.createArrayNode();
         ObjectNode jsonObject2 = objectMapper.createObjectNode();
@@ -128,23 +131,23 @@ public class JacksonTest {
         jsonObject2.put("地理", 80);
         jsonArray1.add(jsonObject1);
         jsonArray1.add(jsonObject2);
-        System.out.println(jsonArray1);
+        log.info("{}", jsonArray1);
         //json数组创建2
         ArrayNode jsonArray2 = objectMapper.createArrayNode();
         jsonArray2.add("张三");
         jsonArray2.add("李四");
-        System.out.println(jsonArray2);
+        log.info("{}", jsonArray2);
         //json对象取值
         String name1 = jsonObject1.get("姓名").asText();
         String age1 = jsonObject1.get("年龄").asText();
-        System.out.println(name1);
-        System.out.println(age1);
+        log.info("{}", name1);
+        log.info("{}", age1);
         JsonNode obj = jsonArray1.get(0);
         String name2 = obj.get("姓名").asText();
-        System.out.println(name2);
+        log.info("{}", name2);
         //遍历获取json数组中对象的值
         for (JsonNode j : jsonArray1) {
-            System.out.println(j.get("姓名").asText());
+            log.info("{}", j.get("姓名").asText());
         }
         //JSON 对象转字符串
         String str = jsonObject1.toString();
@@ -159,7 +162,7 @@ public class JacksonTest {
         ArrayNode jsonArray = (ArrayNode)mapper.readTree(str1);
         //json数组转字符串
         String s = jsonArray.toString();
-        System.out.println(s);
+        log.info("{}", s);
         //json字符串数组转List
         List<String> list = mapper.readValue(str1, new TypeReference<>() {});
 
@@ -172,12 +175,12 @@ public class JacksonTest {
         //java对象转JSON字符串
         String githubRepositoryStr = new ObjectMapper().writeValueAsString(githubRepository);
 
-        System.out.println(githubRepositoryStr);
+        log.info("{}", githubRepositoryStr);
         //JSON字符串转java对象
         GithubRepository newGithubRepository = mapper.readValue(githubRepositoryStr, GithubRepository.class);
         GithubRepository newGithubRepository2 = new ObjectMapper().readValue(githubRepositoryStr, GithubRepository.class);
 
-        System.out.println(newGithubRepository.toString());
-        System.out.println(newGithubRepository2.toString());
+        log.info("{}", newGithubRepository.toString());
+        log.info("{}", newGithubRepository2.toString());
     }
 }

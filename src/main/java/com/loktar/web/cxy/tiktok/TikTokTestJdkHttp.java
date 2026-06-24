@@ -1,5 +1,7 @@
 package com.loktar.web.cxy.tiktok;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class TikTokTestJdkHttp {
     // 保持 Cookie 顺序
     private static final Map<String, String> COOKIE_MAP = new LinkedHashMap<>();
@@ -152,7 +155,7 @@ public class TikTokTestJdkHttp {
                     OBJECT_MAPPER.readTree(bodyStr).path("message").asText("")
             );
         }
-        System.out.println("账号: " + tiktokAccount.getEmail() + " 登录 " + (flag ? "成功" : "失败"));
+        log.info("{}", "账号: " + tiktokAccount.getEmail() + " 登录 " + (flag ? "成功" : "失败"));
         return flag;
     }
 

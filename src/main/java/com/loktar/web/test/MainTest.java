@@ -1,9 +1,12 @@
 package com.loktar.web.test;
 
+
+import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
+@Slf4j
 public class MainTest {
     private final static String HOST = "a.vv.com";
 
@@ -22,7 +25,7 @@ public class MainTest {
 
         String endTime = String.valueOf(endUtc.toEpochSecond());
 
-        System.out.println(endTime);
+        log.info("{}", endTime);
 
         LocalDate date = LocalDate.parse("2025-12-28");
         long start1 = date.withDayOfMonth(1) // 调整为当月1号
@@ -33,9 +36,9 @@ public class MainTest {
                 .getEpochSecond();
         long start2 = date.atStartOfDay(ZoneOffset.UTC)
                 .toEpochSecond();
-        System.out.println(start1);
-        System.out.println(end1);
-        System.out.println(start2);
+        log.info("{}", start1);
+        log.info("{}", end1);
+        log.info("{}", start2);
     }
 
 }

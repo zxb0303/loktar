@@ -1,5 +1,7 @@
 package com.loktar.web.patent;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.azure.ai.documentintelligence.models.AnalyzeResult;
 import com.azure.ai.documentintelligence.models.DocumentParagraph;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -41,6 +43,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("patentdoc")
+@Slf4j
 public class PatentDetailDocInfoController {
     private final static String URL_DETAIL = "https://cpquery.cponline.cnipa.gov.cn/detail/index?zhuanlisqh={0}&anjianbh";
     private final static String TYPE = "发明专利";
@@ -106,7 +109,7 @@ public class PatentDetailDocInfoController {
             Path basePath = Paths.get(pdfFolderPath).toAbsolutePath().normalize();
             Path targetPath = basePath.resolve(patentDetail.getPatentId() + "-审查文件.pdf").toAbsolutePath().normalize();
             if (!targetPath.startsWith(basePath)) {
-                System.out.println("非法路径，跳过: " + patentDetail.getPatentId());
+                log.info("{}", "非法路径，跳过: " + patentDetail.getPatentId());
                 continue;
             }
             String pdfdocPath = targetPath.toString();
@@ -121,15 +124,15 @@ public class PatentDetailDocInfoController {
                         patentDetailYitong.setPatentId(patentDetail.getPatentId());
                         patentDetailYitong.setType(result);
                         patentDetailYitongMapper.insert(patentDetailYitong);
-                        System.out.println(patentDetail.getPatentId() + "已处理");
+                        log.info("{}", patentDetail.getPatentId() + "已处理");
                     }
                 }
             } else {
-                System.out.println(patentDetail.getPatentId() + "文件不存在,已删除发文数据，重新爬虫即可");
+                log.info("{}", patentDetail.getPatentId() + "文件不存在,已删除发文数据，重新爬虫即可");
                 patentDetailDocInfoMapper.deleteByPatentId(patentDetail.getPatentId());
             }
         }
-        System.out.println("done");
+        log.info("{}", "done");
     }
 
     private String getAnalyzeResult(String content) {
@@ -146,7 +149,7 @@ public class PatentDetailDocInfoController {
 
     public static void main(String[] args) {
         renamePdfDoc();
-        System.out.println("done");
+        log.info("{}", "done");
     }
 
     private static void renamePdfDoc() {
@@ -185,7 +188,7 @@ public class PatentDetailDocInfoController {
             try {
                 Files.copy(originalFile.toPath(), newFile.toPath());
             } catch (IOException e) {
-                System.out.println("Failed to copy: " + originalFile.getName());
+                log.info("{}", "Failed to copy: " + originalFile.getName());
                 e.printStackTrace();
             }
         }

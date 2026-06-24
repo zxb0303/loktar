@@ -1,6 +1,8 @@
 package com.loktar.task.transmission;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.transmission.TrRss;
 import com.loktar.service.transmission.RssService;
@@ -14,6 +16,7 @@ import java.util.List;
 
 @Component
 @Profile(LokTarConstant.ENV_PRO)
+@Slf4j
 public class RssTask {
 
     private final RssService rssService;
@@ -32,7 +35,7 @@ public class RssTask {
             if (minute % trRss.getIntervalMinutes() == 0) {
                 DelayUtil.delaySeconds(2, 5);
                 //TODO 打印
-                System.out.println("transmission:refreshAndDealTrRssTorrents:每隔" + trRss.getIntervalMinutes() + "分钟执行RSS:" + trRss.getHostCnName());
+                log.info("{}", "transmission:refreshAndDealTrRssTorrents:每隔" + trRss.getIntervalMinutes() + "分钟执行RSS:" + trRss.getHostCnName());
                 rssService.refreshTrRssTorrents(trRss);
                 rssService.dealTrRssTorrents(trRss);
             }

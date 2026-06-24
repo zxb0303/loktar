@@ -1,5 +1,7 @@
 package com.loktar.util;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.microsoft.cognitiveservices.speech.*;
@@ -8,6 +10,7 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class AzureVoiceUtil {
 
     public final static String LANGUAGE = "zh-CN";
@@ -28,10 +31,10 @@ public class AzureVoiceUtil {
         SpeechSynthesisResult result = synthesizer.SpeakTextAsync(text).get();
         if (result.getReason() == ResultReason.Canceled) {
             SpeechSynthesisCancellationDetails cancellation = SpeechSynthesisCancellationDetails.fromResult(result);
-            System.out.println("CANCELED: Reason=" + cancellation.getReason());
-            System.out.println("CANCELED: ErrorCode=" + cancellation.getErrorCode());
-            System.out.println("CANCELED: ErrorDetails=" + cancellation.getErrorDetails());
-            System.out.println("CANCELED: Did you update the subscription info?");
+            log.info("{}", "CANCELED: Reason=" + cancellation.getReason());
+            log.info("{}", "CANCELED: ErrorCode=" + cancellation.getErrorCode());
+            log.info("{}", "CANCELED: ErrorDetails=" + cancellation.getErrorDetails());
+            log.info("{}", "CANCELED: Did you update the subscription info?");
         }
         result.close();
         synthesizer.close();

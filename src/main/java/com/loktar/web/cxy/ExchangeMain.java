@@ -1,5 +1,7 @@
 package com.loktar.web.cxy;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.util.DateTimeUtil;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class ExchangeMain {
     private static final String URL = "https://chl.cn/huilv/?{0}-2025";
     private static final String EXCEL_PATH = "F:\\OneDrive\\Cxy\\汇率模版.xlsx";
@@ -102,7 +105,7 @@ public class ExchangeMain {
             double exchangeRate = Double.parseDouble(exchangeRateStr);
             double inverseRate = Double.parseDouble(inverseRateStr);
 
-            System.out.println(month + "," + exchangeRate + "," + inverseRate);
+            log.info("{}", month + "," + exchangeRate + "," + inverseRate);
 
             int rowIndex = startRowIndex + rowOffset;
             Row row = sheet.getRow(rowIndex);

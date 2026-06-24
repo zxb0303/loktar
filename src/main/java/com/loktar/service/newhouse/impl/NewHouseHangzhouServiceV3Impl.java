@@ -1,6 +1,8 @@
 package com.loktar.service.newhouse.impl;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.azure.ai.documentintelligence.models.AnalyzeResult;
 import com.azure.ai.documentintelligence.models.DocumentTable;
 import com.azure.ai.documentintelligence.models.DocumentTableCell;
@@ -47,6 +49,7 @@ import java.util.zip.GZIPInputStream;
 
 
 @Service
+@Slf4j
 public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service {
 
     private final static String URL_NEW_HOUSE_MEMBER_LOGIN = "https://www.hangzhou.gov.cn/hzyhzx/member/login/showUserResult.do";
@@ -318,7 +321,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
                 String path = MessageFormat.format(lokTarConfig.getPath().getNewhouseOriginal(), houseId, newHouseHangzhouV3PresellBuild.getPresellId(), newHouseHangzhouV3PresellBuild.getBuildId());
                 String filename = String.format("%04d", page) + LokTarConstant.PIC_SUFFIX_PNG;
                 //TODO 打印
-                System.out.println(path + filename);
+                log.info("{}", path + filename);
                 saveBase64ToPNG(base64String, path + filename);
                 page = page + 1;
             }
@@ -342,7 +345,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
                 String pngfilePath = pngfilesFoldpath + pngfileName;
                 String jpgfilePath = jpgfilesFoldpath + pngfileName.replace(LokTarConstant.PIC_SUFFIX_PNG, LokTarConstant.PIC_SUFFIX_JPG);
                 //TODO 打印
-                System.out.println(jpgfilePath);
+                log.info("{}", jpgfilePath);
                 PicUtil.converPNGtoJPG(pngfilePath, jpgfilePath);
                 AnalyzeResult analyzeLayoutResult = AzureDocIntelligenceUtil.getAnalyze(LokTarConstant.AZURE_DOCINTELLIGENCE_MODEL_ID, jpgfilePath,"1");
                 DocumentTable documentTable = analyzeLayoutResult.getTables().getFirst();
@@ -368,7 +371,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
                     newHouseHangzhouV3Detail.setStatus(STATUS_MAP.get(statusStr));
                     newHouseHangzhouV3Details.add(newHouseHangzhouV3Detail);
                 }
-                System.out.println(newHouseHangzhouV3Details.size());
+                log.info("{}", newHouseHangzhouV3Details.size());
             }
 
         }

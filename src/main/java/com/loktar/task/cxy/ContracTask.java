@@ -1,6 +1,8 @@
 package com.loktar.task.cxy;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.cxy.Contract;
@@ -17,6 +19,7 @@ import java.util.List;
 
 @Component
 @Profile(LokTarConstant.ENV_PRO)
+@Slf4j
 public class ContracTask {
 
     private final QywxApi qywxApi;
@@ -34,7 +37,7 @@ public class ContracTask {
 
 //    @Scheduled(cron = "0 30 10,11,12 * * MON-FRI")
     private void notice() {
-        System.out.println("合同到期监测器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+        log.info("{}", "合同到期监测器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         List<Contract> contracts = contractMapper.getNeedNoticeContracts();
         if (ObjectUtils.isEmpty(contracts)) {
             return;

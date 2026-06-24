@@ -1,5 +1,7 @@
 package com.loktar.web.investment;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.domain.investment.EquityIndexDividendYieldDaily;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
@@ -18,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("chinaEquityIndex")
+@Slf4j
 public class ChinaEquityIndexController {
     private final EquityIndexDividendYieldDailyMapper equityIndexDividendYieldDailyMapper;
     private final QywxApi qywxApi;
@@ -54,7 +57,7 @@ public class ChinaEquityIndexController {
         msg.append(System.lineSeparator());
         msg.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
         qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent009Id(), msg.toString()));
-        System.out.println(result);
+        log.info("{}", result);
     }
 
 

@@ -1,6 +1,8 @@
 package com.loktar.web.land;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.service.land.LandService;
 import com.loktar.util.DateTimeUtil;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("land")
+@Slf4j
 public class LandController {
     private final LandService landService;
 
@@ -21,7 +24,7 @@ public class LandController {
     @GetMapping("/update.do")
     public void update() {
         String year = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_YEAR);
-        System.out.println(year);
+        log.info("{}", year);
         landService.updateLandData(year);
     }
 }

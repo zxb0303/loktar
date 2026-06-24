@@ -1,5 +1,7 @@
 package com.loktar.web.test;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +25,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Slf4j
 public class VPSInitMain {
 
     //通过jsch 搭建xray
@@ -112,7 +115,7 @@ public class VPSInitMain {
                 xrayConfig.getInbounds().get(2).getStreamSettings().getWsSettings().getPath(),
                 HOST
         );
-        System.out.println(clashStr);
+        log.info("{}", clashStr);
         Files.write(Paths.get(LOCAL_CLINET_FILEPATH), clashStr.getBytes());
         session.disconnect();
     }
@@ -239,7 +242,7 @@ public class VPSInitMain {
         try (InputStream inputStream = new ByteArrayInputStream(content.getBytes())) {
             channelSftp.put(inputStream, remoteFilepath, ChannelSftp.OVERWRITE);
         }
-        System.out.println("File uploaded successfully");
+        log.info("{}", "File uploaded successfully");
     }
 
     @SneakyThrows
@@ -279,10 +282,10 @@ public class VPSInitMain {
         try {
             sftpChannel.rm(remoteFilePath);
         } catch (Exception e) {
-            System.out.println("No need to remove file, it doesn't exist.");
+            log.info("{}", "No need to remove file, it doesn't exist.");
         }
         sftpChannel.put(localFilePath, remoteFilePath);
-        System.out.println("File uploaded successfully to host");
+        log.info("{}", "File uploaded successfully to host");
     }
 
     @SneakyThrows
@@ -333,7 +336,7 @@ public class VPSInitMain {
                 if (i < 0) {
                     break;
                 }
-                System.out.print(new String(tmp, 0, i));
+                log.info("{}", new String(tmp, 0, i));
             }
             if (channel.isClosed()) {
                 if (in.available() > 0) {

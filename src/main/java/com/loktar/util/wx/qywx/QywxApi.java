@@ -1,6 +1,8 @@
 package com.loktar.util.wx.qywx;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +36,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
+@Slf4j
 public class QywxApi {
     private final static String KEY_ACCESSTOKEN = "qywx_accessToken_";
 
@@ -160,14 +163,14 @@ public class QywxApi {
         buttons.sort(Comparator.comparingInt(Menu.Button::getOrder));
         Menu wxMenu = new Menu(buttons);
         String requestBody = objectMapper.writeValueAsString(wxMenu);
-        System.out.println(requestBody);
+        log.info("{}", requestBody);
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(MENU_CREATE_URL, accessToken(agentId).getAccessToken(), agentId)))
                 .timeout(Duration.ofSeconds(10))
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        System.out.println(response.body());
+        log.info("{}", response.body());
         return objectMapper.readValue(response.body(), AgentMsgRsp.class);
     }
 

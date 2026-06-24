@@ -1,5 +1,7 @@
 package com.loktar.web.patent;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -33,6 +35,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("patentpdf")
+@Slf4j
 public class PatentPdfController {
     private static String BASEPATH = "F:/loktar/patent/";
     private static String FILENAME = "{0}.pdf";
@@ -91,7 +94,7 @@ public class PatentPdfController {
         File[] pdfFiles = pdfFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".pdf"));
         for (File pdfFile : pdfFiles) {
             String filename = pdfFile.getName().replace(".pdf", "");
-            System.out.println(filename);
+            log.info("{}", filename);
             deal(filename);
         }
     }

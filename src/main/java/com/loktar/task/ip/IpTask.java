@@ -1,6 +1,8 @@
 package com.loktar.task.ip;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.common.Property;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 
 @Component
 @Profile(LokTarConstant.ENV_PRO)
+@Slf4j
 public class IpTask {
 
     private final QywxApi qywxApi;
@@ -37,7 +40,7 @@ public class IpTask {
 
     @Scheduled(cron = "0 */10 * * * ?")
     private void notice() {
-        System.out.println("IP检测定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
+        log.info("{}", "IP检测定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         Property ipProperty = propertyMapper.selectByPrimaryKey("yht_ip");
         String ip = ipUtil.getip();
         if (ip.contains("error")) {

@@ -96,13 +96,6 @@ public class ChatGPTUtil {
         return openAiResponse;
     }
 
-    /**
-     * @deprecated 拼写错误，请使用 {@link #getDefaultRequest()}
-     */
-    @Deprecated
-    public static OpenAiRequest getDefalutRequest() {
-        return getDefaultRequest();
-    }
 
     public static OpenAiRequest getDefaultRequest() {
         OpenAiMessage sysMsg = new OpenAiMessage(ROLE_SYSTEM, "请用5周岁中国小朋友能听懂的语言进行回答");

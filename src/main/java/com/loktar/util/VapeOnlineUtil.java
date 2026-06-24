@@ -1,5 +1,7 @@
 package com.loktar.util;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class VapeOnlineUtil {
 
     private static final String URL = "https://vapeonlines.shop/collections/all_9415de3f/products/relxddp";
@@ -48,7 +51,7 @@ public class VapeOnlineUtil {
 
         List<Product> prodcut3s = getInStockAndNeedProductsAndStockInfo();
         for (Product product : prodcut3s) {
-            System.out.println(product);
+            log.info("{}", product);
         }
     }
 

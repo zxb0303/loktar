@@ -1,5 +1,7 @@
 package com.loktar.web.test;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("test")
+@Slf4j
 public class TestController {
 
     private final LokTarConfig lokTarConfig;
@@ -53,7 +56,7 @@ public class TestController {
     @GetMapping("/test.do")
     @SneakyThrows
     public void test() {
-        System.out.println("华人蒸汽库存定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+        log.info("{}", "华人蒸汽库存定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
 
         List<VapeOnlineUtil.Product> products = VapeOnlineUtil.getInStockAndNeedProductsAndStockInfo();
         String nowProductsJson = OBJECT_MAPPER.writeValueAsString(products);
@@ -73,7 +76,7 @@ public class TestController {
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent008Id(), content));
             redisUtil.set(LokTarConstant.REDIS_KEY_RELX, nowProductsJson);
         }
-        System.out.println("华人蒸汽库存定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+        log.info("{}", "华人蒸汽库存定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
 
     }
 

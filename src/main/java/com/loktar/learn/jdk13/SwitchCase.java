@@ -1,5 +1,8 @@
 package com.loktar.learn.jdk13;
 
+
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 public class SwitchCase {
     public static void main(String[] args) {
         int day = 3;
@@ -12,19 +15,19 @@ public class SwitchCase {
             default -> "Invalid day";
         };
 
-        System.out.println(dayName);
+        log.info("{}", dayName);
 
         int day2 = 5;
         String dayType = switch (day2) {
             case 1, 2, 3, 4, 5 -> "Weekday";
             case 6, 7 -> {
-                System.out.println("It's a weekend!");
+                log.info("{}", "It's a weekend!");
                 yield "Weekend";
             }
             default -> "Invalid day";
         };
 
-        System.out.println(dayType);
+        log.info("{}", dayType);
 
 //        String dayName = switch (getDayOfWeek()) {
 //            case 1 -> "Monday";

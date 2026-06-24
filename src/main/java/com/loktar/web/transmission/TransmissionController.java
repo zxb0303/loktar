@@ -1,5 +1,7 @@
 package com.loktar.web.transmission;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.domain.transmission.TrRss;
 import com.loktar.service.transmission.RssService;
@@ -14,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("transmission")
+@Slf4j
 public class TransmissionController {
     private final TransmissionService transmissionService;
     private final RssService rssService;
@@ -33,7 +36,7 @@ public class TransmissionController {
         for (TrRss trRss : trRsss) {
             DelayUtil.delaySeconds(2, 5);
             //TODO 打印
-            System.out.println("transmission:refreshAndDealTrRssTorrents:每隔" + trRss.getIntervalMinutes() + "分钟执行RSS:" + trRss.getHostCnName());
+            log.info("{}", "transmission:refreshAndDealTrRssTorrents:每隔" + trRss.getIntervalMinutes() + "分钟执行RSS:" + trRss.getHostCnName());
             rssService.refreshTrRssTorrents(trRss);
             rssService.dealTrRssTorrents(trRss);
 
@@ -62,7 +65,7 @@ public class TransmissionController {
 
     @GetMapping("/getFreeSpaceByPath.do")
     public void testGetFreeSpaceByPath() {
-        System.out.println(transmissionUtil.getFreeSpaceByPath(lokTarConfig.getTransmission().getTempDownloadDir()).toString());
+        log.info("{}", transmissionUtil.getFreeSpaceByPath(lokTarConfig.getTransmission().getTempDownloadDir()).toString());
     }
 
     @GetMapping("/altSpeedEnabled.do")

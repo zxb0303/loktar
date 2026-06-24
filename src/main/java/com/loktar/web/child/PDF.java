@@ -1,5 +1,7 @@
 package com.loktar.web.child;
 
+
+import lombok.extern.slf4j.Slf4j;
 import lombok.SneakyThrows;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -12,6 +14,7 @@ import org.apache.pdfbox.util.Matrix;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+@Slf4j
 public class PDF {
 
     // 自适应放大后保留的边距比例：1.0 表示让黑色内容完全填满 A4 页面， 小于 1 则四周留出对应比例的空白。可按打印机/装订需求自行调整。
@@ -69,7 +72,7 @@ public class PDF {
              PDDocument outputDoc = new PDDocument()) {
 
             int totalPages = sourceDoc.getNumberOfPages();
-            System.out.println("源PDF共 " + totalPages + " 页（简单拆分），拆分方向: " + direction + "，对换顺序: " + swapOrder);
+            log.info("{}", "源PDF共 " + totalPages + " 页（简单拆分），拆分方向: " + direction + "，对换顺序: " + swapOrder);
 
             for (int i = 0; i < totalPages; i++) {
                 PDPage sourcePage = sourceDoc.getPage(i);
@@ -77,7 +80,7 @@ public class PDF {
                 float originalWidth = mediaBox.getWidth();
                 float originalHeight = mediaBox.getHeight();
 
-                System.out.println("处理第 " + (i + 1) + " 页，原始尺寸: " + originalWidth + " x " + originalHeight);
+                log.info("{}", "处理第 " + (i + 1) + " 页，原始尺寸: " + originalWidth + " x " + originalHeight);
 
                 if (direction == SplitDirection.HORIZONTAL) {
                     float halfWidth = originalWidth / 2f;
@@ -101,7 +104,7 @@ public class PDF {
             }
 
             outputDoc.save(outputPath);
-            System.out.println("简单拆分完成，输出文件: " + outputPath
+            log.info("{}", "简单拆分完成，输出文件: " + outputPath
                     + "，共 " + outputDoc.getNumberOfPages() + " 页");
         }
     }
@@ -172,7 +175,7 @@ public class PDF {
 
             PDFRenderer renderer = new PDFRenderer(sourceDoc);
             int totalPages = sourceDoc.getNumberOfPages();
-            System.out.println("源PDF共 " + totalPages + " 页，拆分方向: " + direction
+            log.info("{}", "源PDF共 " + totalPages + " 页，拆分方向: " + direction
                     + "，对换顺序: " + swapOrder
                     + "，边距比例: " + MARGIN_RATIO
                     + "，检测DPI: " + DETECT_DPI + "，黑色阈值: " + DARK_THRESHOLD);
@@ -198,7 +201,7 @@ public class PDF {
                     PDRectangle leftBbox = detectContentBox(img, 0, halfIw, 0, ih, originalWidth, originalHeight, watermarkPxRect);
                     PDRectangle rightBbox = detectContentBox(img, halfIw, iw, 0, ih, originalWidth, originalHeight, watermarkPxRect);
 
-                    System.out.println("第 " + (i + 1) + " 页 左半黑色范围: " + describe(leftBbox)
+                    log.info("{}", "第 " + (i + 1) + " 页 左半黑色范围: " + describe(leftBbox)
                             + "，右半黑色范围: " + describe(rightBbox));
 
                     // 根据 swapOrder 决定左右顺序
@@ -217,7 +220,7 @@ public class PDF {
                     PDRectangle topBbox = detectContentBox(img, 0, iw, 0, halfIh, originalWidth, originalHeight, watermarkPxRect);
                     PDRectangle bottomBbox = detectContentBox(img, 0, iw, halfIh, ih, originalWidth, originalHeight, watermarkPxRect);
 
-                    System.out.println("第 " + (i + 1) + " 页 上半黑色范围: " + describe(topBbox)
+                    log.info("{}", "第 " + (i + 1) + " 页 上半黑色范围: " + describe(topBbox)
                             + "，下半黑色范围: " + describe(bottomBbox));
 
                     // 根据 swapOrder 决定上下顺序
@@ -232,7 +235,7 @@ public class PDF {
             }
 
             outputDoc.save(outputPath);
-            System.out.println("拆分完成，输出文件: " + outputPath
+            log.info("{}", "拆分完成，输出文件: " + outputPath
                     + "，共 " + outputDoc.getNumberOfPages() + " 页");
         }
     }

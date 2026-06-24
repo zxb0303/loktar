@@ -1,5 +1,7 @@
 package com.loktar.task.patent;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.qywx.QywxPatentMsg;
@@ -26,6 +28,7 @@ import java.util.List;
 
 @Component
 @Profile(LokTarConstant.ENV_PRO)
+@Slf4j
 public class PatentTask {
     private final QywxPatentMsgMapper qywxPatentMsgMapper;
     private final PatentPdfApplyMapper patentPdfApplyMapper;
@@ -76,7 +79,7 @@ public class PatentTask {
 
     @Scheduled(cron = "0 0 1,19 * * *")
     public void updatePatentPdfApply() {
-        System.out.println("updatePatentPdfApply定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
+        log.info("{}", "updatePatentPdfApply定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         patentPdfApplyMapper.updatePatentPdfApply();
     }
 

@@ -1,6 +1,8 @@
 package com.loktar.web.lottery;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.domain.lottery.LotteryHouse;
 import com.loktar.dto.lottery.HZLotteryPeopleDTOV2;
@@ -17,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("lottery")
+@Slf4j
 public class LotteryController {
 
     private final HZLotteryServiceV2 hZLotteryServiceV2;
@@ -50,7 +53,7 @@ public class LotteryController {
         String pdfUrl = "http://down.hz-notary.com:10006/pdf/2022/1126/221126082946440_37750059084723307.pdf";
         List<HZLotteryPeopleDTOV2> hZLotteryPeopleDTOV2s = PDFUtilForLotteryHouse.getTableContentFromPDFUrl(pdfUrl, lokTarConfig.getPath().getPdf());
         for (HZLotteryPeopleDTOV2 hZLotteryPeopleDTOV2 : hZLotteryPeopleDTOV2s) {
-            System.out.println(hZLotteryPeopleDTOV2.getPeopleId() + ";" + hZLotteryPeopleDTOV2.getSerialNum() + ";" +
+            log.info("{}", hZLotteryPeopleDTOV2.getPeopleId() + ";" + hZLotteryPeopleDTOV2.getSerialNum() + ";" +
                     hZLotteryPeopleDTOV2.getName() + ";" +
                     hZLotteryPeopleDTOV2.getIdentityNum() + ";" +
                     hZLotteryPeopleDTOV2.getFamilyType() + ";" +

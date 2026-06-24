@@ -1,6 +1,8 @@
 package com.loktar.web.newhouse;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.domain.newhouse.NewHouseHangzhouV3;
 import com.loktar.domain.newhouse.NewHouseHangzhouV3Detail;
 import com.loktar.domain.newhouse.NewHouseHangzhouV3Presell;
@@ -14,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("newhouseV3")
+@Slf4j
 public class NewHouseV3Controller {
 
     private final NewHouseHangzhouV3Service newHouseHangzhouV3Service;
@@ -36,7 +39,7 @@ public class NewHouseV3Controller {
 
     @GetMapping("/getNewHousePresellDataByHouseId.do")
     public void getNewHousePresellDataByHouseId(String houseId) {
-        System.out.println(houseId);
+        log.info("{}", houseId);
         List<NewHouseHangzhouV3Presell> newHouseHangzhouV3 = newHouseHangzhouV3Service.getNewHousePresellDataByHouseId(houseId);
     }
 

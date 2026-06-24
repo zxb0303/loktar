@@ -1,6 +1,8 @@
 package com.loktar.util;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -22,6 +24,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class RssUtil {
 
     public final static ObjectMapper xmlMapper = new XmlMapper();
@@ -74,7 +77,7 @@ public class RssUtil {
         trRss.setRssId(111);
         trRss.setRssUrl("");
         List<TrRssTorrent> trRssTorrents = getRssData(trRss);
-        System.out.println(trRssTorrents);
+        log.info("{}", trRssTorrents);
     }
 
 }

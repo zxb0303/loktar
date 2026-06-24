@@ -1,10 +1,13 @@
 package com.loktar.web.cxy.tiktok.util;
 
+
+import lombok.extern.slf4j.Slf4j;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.*;
 
+@Slf4j
 public class StrDataUtil {
 
     private static final long MASK32 = 0xFFFFFFFFL;
@@ -297,7 +300,7 @@ public class StrDataUtil {
     public static void main(String[] args) {
         String original = "Hello";
         String enc = encryptStr(original);
-        System.out.println("Encrypted: " + enc);
-        System.out.println("Decrypted: " + decryptStr(enc));
+        log.info("{}", "Encrypted: " + enc);
+        log.info("{}", "Decrypted: " + decryptStr(enc));
     }
 }

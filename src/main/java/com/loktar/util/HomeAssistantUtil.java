@@ -1,5 +1,7 @@
 package com.loktar.util;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 
 @Component
+@Slf4j
 public class HomeAssistantUtil {
     private final LokTarConfig lokTarConfig;
     private final HttpClient httpClient;
@@ -41,7 +44,7 @@ public class HomeAssistantUtil {
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
-            System.out.println("Action " + action + " executed successfully for " + entityId);
+            log.info("{}", "Action " + action + " executed successfully for " + entityId);
         } else {
             System.err.println("Failed to execute action " + action + ": " + response.statusCode());
             System.err.println("Response: " + response.body());

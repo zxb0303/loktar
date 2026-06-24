@@ -1,5 +1,7 @@
 package com.loktar.web.cxy.tiktok.util;
 
+
+import lombok.extern.slf4j.Slf4j;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -9,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class XGnarlyUtil {
 
     private static final long[] AA = {
@@ -288,6 +291,6 @@ public class XGnarlyUtil {
 
         // JS 中的默认 timestamp 是 1735620000000
         String token = encrypt(qs, body, ua, 0, "5.1.1", 1735620000000L);
-        System.out.println("[+] X-Gnarly: " + token);
+        log.info("{}", "[+] X-Gnarly: " + token);
     }
 }

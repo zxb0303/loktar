@@ -1,5 +1,7 @@
 package com.loktar.task.investment;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.common.Property;
@@ -33,6 +35,7 @@ import java.util.List;
 
 @Component
 @Profile(LokTarConstant.ENV_PRO)
+@Slf4j
 public class FundNavTask {
 
     private final FundNavMapper fundNavMapper;
@@ -55,14 +58,14 @@ public class FundNavTask {
     @Scheduled(cron = "0 0/10 18-23 * * *")
     @SneakyThrows
     public void syncToday() {
-        System.out.println("基金定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+        log.info("{}", "基金定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         LocalDate today = LocalDate.now();
         String todayStr = today.format(DateTimeUtil.FORMATTER_DATE2);
 
         for (String fundCode : FUND_CODES) {
             FundNav exist = fundNavMapper.selectByFundCodeAndNavDate(fundCode, today);
             if (exist != null) {
-                System.out.println(fundCode + " 当日数据已存在，跳过");
+                log.info("{}", fundCode + " 当日数据已存在，跳过");
                 continue;
             }
 
@@ -78,13 +81,13 @@ public class FundNavTask {
             List<FundNav> list = parseFundNav(response.body(), fundCode);
 
             if (list.isEmpty()) {
-                System.out.println(fundCode + " 未获取到数据");
+                log.info("{}", fundCode + " 未获取到数据");
                 continue;
             }
 
             FundNav fundNav = list.get(0);
             if (!today.equals(fundNav.getNavDate())) {
-                System.out.println(fundCode + " 接口返回日期非今日，跳过");
+                log.info("{}", fundCode + " 接口返回日期非今日，跳过");
                 continue;
             }
 
@@ -93,7 +96,7 @@ public class FundNavTask {
                 fundNav.setCreateTime(LocalDateTime.now());
                 fundNav.setUpdateTime(LocalDateTime.now());
                 fundNavMapper.insert(fundNav);
-                System.out.println(fundCode + " 新增成功：" + fundNav.getNavDate());
+                log.info("{}", fundCode + " 新增成功：" + fundNav.getNavDate());
                 Property property = propertyMapper.selectByPrimaryKey("fund_nav_" + fundCode);
                 if (property != null && property.getValue() != null) {
                     BigDecimal share = new BigDecimal(property.getValue2());

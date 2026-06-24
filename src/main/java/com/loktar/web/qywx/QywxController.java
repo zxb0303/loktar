@@ -1,5 +1,7 @@
 package com.loktar.web.qywx;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.dto.wx.AccessToken;
 import com.loktar.dto.wx.UploadMediaRsp;
@@ -14,6 +16,7 @@ import java.io.File;
 
 @RestController
 @RequestMapping("wxapi")
+@Slf4j
 public class QywxController {
 
     private final QywxApi qywxApi;
@@ -40,7 +43,7 @@ public class QywxController {
     @GetMapping("/getAccessToken.do")
     public void getAccessToken(String agentId) {
         AccessToken accessToken = qywxApi.accessToken(agentId);
-        System.out.println(accessToken.toString());
+        log.info("{}", accessToken.toString());
     }
 
 
@@ -51,7 +54,7 @@ public class QywxController {
         String mediaId = "15nIsJJ02LJ4yc67RXJdBdwoMFAaNzNty8fVfT2f9TH-LB33FEPvCEw2kYFfetpq_";
         String agentId = lokTarConfig.getQywx().getAgent003Id();
         String filename = qywxApi.saveMedia(voicePath, mediaId, agentId);
-        System.out.println(filename);
+        log.info("{}", filename);
     }
 
     @GetMapping("/upload.do")
@@ -60,7 +63,7 @@ public class QywxController {
         String amrFilename = "a.xlsx";
         String agentId = lokTarConfig.getQywx().getAgent003Id();
         UploadMediaRsp uploadMediaRsp = qywxApi.uploadMedia(new File(voicePath + amrFilename), agentId);
-        System.out.println(uploadMediaRsp.getMediaId());
+        log.info("{}", uploadMediaRsp.getMediaId());
     }
     @GetMapping("/upload2.do")
     public void upload2() {
@@ -68,7 +71,7 @@ public class QywxController {
         String amrFilename = "a.xlsx";
         String agentId = lokTarConfig.getQywx().getAgent003Id();
         UploadMediaRsp uploadMediaRsp = qywxApi.uploadMediaForPatent(new File(voicePath + amrFilename), agentId);
-        System.out.println(uploadMediaRsp.getMediaId());
+        log.info("{}", uploadMediaRsp.getMediaId());
     }
 
 }

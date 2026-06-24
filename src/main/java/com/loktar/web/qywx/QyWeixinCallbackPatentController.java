@@ -1,6 +1,8 @@
 package com.loktar.web.qywx;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -26,6 +28,7 @@ import java.text.MessageFormat;
 
 @RestController
 @RequestMapping("qywx/callback/patent")
+@Slf4j
 public class QyWeixinCallbackPatentController {
 
     private final RedisUtil redisUtil;
@@ -65,8 +68,8 @@ public class QyWeixinCallbackPatentController {
     private void asyncDealMsg(String msgSignature, String timestamp, String nonce, String xml) {
         WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.getQywx().getToken(), lokTarConfig.getQywx().getEncodingAeskey(), lokTarConfig.getQywx().getCorpid());
         String xmlMsg = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, xml);
-        System.out.println("after decrypt msg: ");
-        System.out.println(xmlMsg);
+        log.info("{}", "after decrypt msg: ");
+        log.info("{}", xmlMsg);
         String msgType = xmlMapper.readTree(xmlMsg).get(LokTarConstant.WX_RECEIVE_MSGTYPE).asText().trim();
         ReceiceMsgType type = ReceiceMsgType.getByName(msgType);
         switch (type) {
@@ -81,7 +84,7 @@ public class QyWeixinCallbackPatentController {
     private void dealTextMsg(ReceiveTextMsg receiveTextMsg) {
         String content = receiveTextMsg.getContent();
         if (ObjectUtils.isEmpty(content) || !content.contains("公司")) {
-            System.out.println("content为空");
+            log.info("{}", "content为空");
             qywxApi.sendTextMsg(new AgentMsgText(receiveTextMsg.getFromUserName(), receiveTextMsg.getAgentID(), "请提供公司名称"));
             return;
         }

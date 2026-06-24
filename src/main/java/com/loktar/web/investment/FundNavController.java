@@ -1,5 +1,7 @@
 package com.loktar.web.investment;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.common.Property;
@@ -36,6 +38,7 @@ import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("fundNav")
+@Slf4j
 public class FundNavController {
 
     private final FundNavMapper fundNavMapper;
@@ -64,7 +67,7 @@ public class FundNavController {
 
         FundNav exist = fundNavMapper.selectByFundCodeAndNavDate(code, today);
         if (exist != null) {
-            System.out.println(code + " 当日数据已存在，跳过");
+            log.info("{}", code + " 当日数据已存在，跳过");
             return;
         }
 
@@ -81,13 +84,13 @@ public class FundNavController {
         List<FundNav> list = parseFundNav(response.body(), code);
 
         if (list.isEmpty()) {
-            System.out.println(code + " 未获取到数据");
+            log.info("{}", code + " 未获取到数据");
             return;
         }
 
         FundNav fundNav = list.get(0);
         if (!today.equals(fundNav.getNavDate())) {
-            System.out.println(code + " 接口返回日期非今日，跳过");
+            log.info("{}", code + " 接口返回日期非今日，跳过");
             return;
         }
 
@@ -96,7 +99,7 @@ public class FundNavController {
             fundNav.setCreateTime(LocalDateTime.now());
             fundNav.setUpdateTime(LocalDateTime.now());
             fundNavMapper.insert(fundNav);
-            System.out.println(code + " 新增成功：" + fundNav.getNavDate());
+            log.info("{}", code + " 新增成功：" + fundNav.getNavDate());
             Property property = propertyMapper.selectByPrimaryKey("fund_nav_" + code);
             if (property != null && property.getValue() != null) {
                 BigDecimal share = new BigDecimal(property.getValue2());
@@ -136,11 +139,11 @@ public class FundNavController {
                 response = doRequest(url);
             }
             List<FundNav> list = parseFundNav(response, code);
-            System.out.println("第" + page + "/" + totalPages + "页，获取" + list.size() + "条数据");
+            log.info("{}", "第" + page + "/" + totalPages + "页，获取" + list.size() + "条数据");
             allList.addAll(list);
         }
         Collections.reverse(allList);
-        System.out.println("总共获取" + allList.size() + "条数据，开始入库");
+        log.info("{}", "总共获取" + allList.size() + "条数据，开始入库");
 
         for (FundNav fundNav : allList) {
             FundNav exist = fundNavMapper.selectByFundCodeAndNavDate(fundNav.getFundCode(), fundNav.getNavDate());

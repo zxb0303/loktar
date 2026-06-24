@@ -1,5 +1,7 @@
 package com.loktar.web.patent;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.domain.patent.TechCompany;
 import com.loktar.mapper.patent.TechCompanyMapper;
 import com.loktar.util.UUIDUtil;
@@ -19,6 +21,7 @@ import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("tech")
+@Slf4j
 public class TechCompanyController {
     private final TechCompanyMapper techCompanyMapper;
     private static String basepath = "F:/loktar/tech/";
@@ -34,10 +37,10 @@ public class TechCompanyController {
         File[] pdfFiles = pdfFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".pdf"));
         for (File pdfFile : pdfFiles) {
             String fileName = pdfFile.getName();
-            System.out.println("开始处理：" + fileName);
+            log.info("{}", "开始处理：" + fileName);
             genFile(pdfFile, year);
         }
-        System.out.println("全部完成");
+        log.info("{}", "全部完成");
     }
 
     @SneakyThrows
@@ -58,7 +61,7 @@ public class TechCompanyController {
                 if (matcher.find()) {
                     String number = matcher.group(1);
                     String companyName = matcher.group(2).replace("（", "(").replace("）", ")");
-                    System.out.println("序号: " + number + ", 公司名称: " + companyName);
+                    log.info("{}", "序号: " + number + ", 公司名称: " + companyName);
                     TechCompany techCompany = new TechCompany();
                     techCompany.setCompanyId(UUIDUtil.randomUUID());
                     techCompany.setName(companyName);
@@ -69,7 +72,7 @@ public class TechCompanyController {
             }
         }
         techCompanyMapper.insertBatch(techCompanys);
-        System.out.println("完成处理：" + pdfFile.getPath());
+        log.info("{}", "完成处理：" + pdfFile.getPath());
     }
 
 

@@ -1,6 +1,8 @@
 package com.loktar.web.second;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.mapper.second.SecondHandHouseMapper;
 import com.loktar.service.second.SecondHandHouseService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("second")
+@Slf4j
 public class SecondController {
     private final SecondHandHouseService secondHandHouseService;
 
@@ -22,9 +25,9 @@ public class SecondController {
 
     @GetMapping("/updateSecondHandHouseData.do")
     public void updateSecondHandHouseData() {
-        System.out.println("开始手动更新二手房数据");
+        log.info("{}", "开始手动更新二手房数据");
         secondHandHouseService.updateSecondHandHouseData();
-        System.out.println("结束手动更新二手房数据");
+        log.info("{}", "结束手动更新二手房数据");
     }
 
 }

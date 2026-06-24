@@ -1,5 +1,7 @@
 package com.loktar.web.patent;
 
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -7,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 //处理费减数据
+@Slf4j
 public class PatentPriceMain {
 
     public static void main(String[] args) {
@@ -34,7 +37,7 @@ public class PatentPriceMain {
                                         if (cellValue.contains("费减")) {
                                             count++;
                                             if (count >= 3) {
-                                                System.out.println(file.getName().replace(".xlsx",""));
+                                                log.info("{}", file.getName().replace(".xlsx",""));
                                                 found = true;
                                                 break;
                                             }
@@ -52,7 +55,7 @@ public class PatentPriceMain {
                 }
             }
         } else {
-            System.out.println("No files found in the directory.");
+            log.info("{}", "No files found in the directory.");
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.loktar.learn.jdk11;
 
+
+import lombok.extern.slf4j.Slf4j;
 import lombok.SneakyThrows;
 
 import java.net.URI;
@@ -8,6 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 public class Http {
     @SneakyThrows
     public static void main(String[] args)  {
@@ -29,8 +32,8 @@ public class Http {
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
         String responseBody = response.body();
-        System.out.println("Status code: " + statusCode);
-        System.out.println("Response body: " + responseBody);
+        log.info("{}", "Status code: " + statusCode);
+        log.info("{}", "Response body: " + responseBody);
     }
 
     private static void test1() {
@@ -44,8 +47,8 @@ public class Http {
         future.thenAccept(response -> {
             int statusCode = response.statusCode();
             String responseBody = response.body();
-            System.out.println("Status code: " + statusCode);
-            System.out.println("Response body: " + responseBody);
+            log.info("{}", "Status code: " + statusCode);
+            log.info("{}", "Response body: " + responseBody);
         });
         // 等待异步请求完成
         future.join();

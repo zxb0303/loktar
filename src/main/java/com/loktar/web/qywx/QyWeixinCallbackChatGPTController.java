@@ -1,6 +1,8 @@
 package com.loktar.web.qywx;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -36,6 +38,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("qywx/callback/chatgpt")
+@Slf4j
 public class QyWeixinCallbackChatGPTController {
 
     private final RedisUtil redisUtil;
@@ -83,8 +86,8 @@ public class QyWeixinCallbackChatGPTController {
     private void asyncDealMsg(String msgSignature, String timestamp, String nonce, String xml) {
         WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.getQywx().getToken(), lokTarConfig.getQywx().getEncodingAeskey(), lokTarConfig.getQywx().getCorpid());
         String xmlMsg = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, xml);
-        System.out.println("after decrypt msg: ");
-        System.out.println(xmlMsg);
+        log.info("{}", "after decrypt msg: ");
+        log.info("{}", xmlMsg);
         String msgType = xmlMapper.readTree(xmlMsg).get(LokTarConstant.WX_RECEIVE_MSGTYPE).asText().trim();
         ReceiveBaseMsg receiveBaseMsg;
         ReceiceMsgType type = ReceiceMsgType.getByName(msgType);
@@ -110,7 +113,7 @@ public class QyWeixinCallbackChatGPTController {
 
     private void dealWitchChatGPT(String receiveFileName, String receiveMsg, ReceiveBaseMsg receiveBaseMsg) {
         if (ObjectUtils.isEmpty(receiveMsg)) {
-            System.out.println("content为空");
+            log.info("{}", "content为空");
             return;
         }
         Property chatgptModelProperty = propertyMapper.selectByPrimaryKey("chatgpt_model");
@@ -135,7 +138,7 @@ public class QyWeixinCallbackChatGPTController {
 
         OpenAiRequest openAiRequest = (OpenAiRequest) redisUtil.get(LokTarConstant.REDIS_KEY_PREFIX_OPENAI_REQUEST + receiveBaseMsg.getFromUserName());
         if (ObjectUtils.isEmpty(openAiRequest)) {
-            openAiRequest = ChatGPTUtil.getDefalutRequest();
+            openAiRequest = ChatGPTUtil.getDefaultRequest();
             openAiRequest.setModel(chatgptModelProperty.getValue());
         }
         OpenAiMessage openAiMessage = new OpenAiMessage(ChatGPTUtil.ROLE_USER, receiveMsg);

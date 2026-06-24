@@ -1,5 +1,7 @@
 package com.loktar.web.patent;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.dto.patent.PatentQuotationDTO;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+@Slf4j
 public class PatentSellMain {
     //TODO start 公司名称和营业执照格式 每个公司需要确认后修改
     public static String COMPANT_NAME = "上海比拉兹科技有限公司";
@@ -79,7 +82,7 @@ public class PatentSellMain {
         zipSellFold(SELL_FOLD_PATH, SELL_FOLD_PATH + ".zip");
         //删除文件夹
         deleteFolder(COMPANT_FOLD_PATH, SELL_FOLD_NAME);
-        System.out.println("[" + COMPANT_NAME + "]打包完成");
+        log.info("{}", "[" + COMPANT_NAME + "]打包完成");
     }
 
     @SneakyThrows
@@ -161,7 +164,7 @@ public class PatentSellMain {
         }
 
         if (!pictureInserted) {
-            System.out.println("在文档的表格中未找到指定的文本: " + searchText);
+            log.info("{}", "在文档的表格中未找到指定的文本: " + searchText);
         }
 
         document.write(out);
@@ -198,7 +201,7 @@ public class PatentSellMain {
         }
 
         if (!pictureInserted) {
-            System.out.println("文档中的行数不足 " + (lineIndex + 1) + " 行。");
+            log.info("{}", "文档中的行数不足 " + (lineIndex + 1) + " 行。");
         }
 
         document.write(out);
@@ -246,7 +249,7 @@ public class PatentSellMain {
             }
         }
         if (!pictureInserted) {
-            System.out.println("文档中的行数不足 " + (lineIndex + 1) + " 行。");
+            log.info("{}", "文档中的行数不足 " + (lineIndex + 1) + " 行。");
         }
         document.write(out);
         out.close();
@@ -259,11 +262,11 @@ public class PatentSellMain {
         Path sourcePath = Paths.get(filepath);
         Path destinationPath = Paths.get(directFoldPath, sourcePath.getFileName().toString());
         if (!Files.exists(sourcePath)) {
-            System.out.println("源文件不存在: " + sourcePath);
+            log.info("{}", "源文件不存在: " + sourcePath);
             return;
         }
         if (Files.exists(destinationPath)) {
-            System.out.println("目标文件已存在: " + destinationPath);
+            log.info("{}", "目标文件已存在: " + destinationPath);
             return;
         }
         Files.copy(sourcePath, destinationPath);

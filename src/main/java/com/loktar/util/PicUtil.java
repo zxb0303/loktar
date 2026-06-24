@@ -1,5 +1,7 @@
 package com.loktar.util;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConstant;
 import lombok.SneakyThrows;
 
@@ -12,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+@Slf4j
 public class PicUtil {
     @SneakyThrows
     public static void converPNGtoJPG(String pngFileNamePath, String jpgFileNamePath) {
@@ -28,7 +31,7 @@ public class PicUtil {
         File dir = new File(pngFilesPath);
         String[] imageFiles = dir.list((dir1, name) -> name.toLowerCase().endsWith(LokTarConstant.PIC_SUFFIX_PNG));
         if (imageFiles == null || imageFiles.length == 0) {
-            System.out.println("No PNG files found in the directory.");
+            log.info("{}", "No PNG files found in the directory.");
             return;
         }
         Arrays.sort(imageFiles);

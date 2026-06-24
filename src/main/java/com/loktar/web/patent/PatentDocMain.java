@@ -1,6 +1,8 @@
 package com.loktar.web.patent;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import lombok.SneakyThrows;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -12,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 
+@Slf4j
 public class PatentDocMain {
 
     public static LinkedHashMap<String, String[]> reasonMap = new LinkedHashMap<>();
@@ -73,6 +76,6 @@ public class PatentDocMain {
             }
         }
         String sql = String.format(INSERT_OR_UPDATE_SQL, patentId, statusMap.get(docMsg), "0", fileName);
-        System.out.println(sql);
+        log.info("{}", sql);
     }
 }

@@ -1,6 +1,8 @@
 package com.loktar.listener;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
@@ -12,6 +14,7 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class RedisKeyExpirationListener extends KeyExpirationEventMessageListener {
     private final TransmissionUtil transmissionUtil;
     private final QywxApi qywxApi;
@@ -29,7 +32,7 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
     public void onMessage(Message message, byte[] pattern) {
         String expiredKey = message.toString();
         //TODO 打印
-        System.out.println("Redis key过期：" + expiredKey);
+        log.info("{}", "Redis key过期：" + expiredKey);
         switch (expiredKey) {
             case LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET:
                 transmissionUtil.altSpeedEnabled(false);

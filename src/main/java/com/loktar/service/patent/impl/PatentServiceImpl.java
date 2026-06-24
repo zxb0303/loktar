@@ -1,5 +1,7 @@
 package com.loktar.service.patent.impl;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class PatentServiceImpl implements PatentService {
     private final PatentDetailMapper patentDetailMapper;
     private final PatentPdfApplyMapper patentPdfApplyMapper;
@@ -45,7 +48,7 @@ public class PatentServiceImpl implements PatentService {
     public void deal(String applyId, int patentCount, String detail) {
         //System.out.println("detail:" + detail);
         //System.out.println("patentCount:" + patentCount);
-        System.out.println("applyId:" + applyId);
+        log.info("{}", "applyId:" + applyId);
         patentDetailMapper.deleteByApplyId(applyId);
         patentApplyMapper.deleteByPrimaryKey(applyId);
         List<PatentDetail> needRemove = new ArrayList<>();

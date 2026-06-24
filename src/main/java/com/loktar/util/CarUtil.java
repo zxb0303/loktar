@@ -1,5 +1,7 @@
 package com.loktar.util;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -12,6 +14,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
+@Slf4j
 public class CarUtil {
     private final static String URL = "https://support.volvo.care/v1/quality-info/release-notes/cn/V526/23w17";
     private final static ObjectMapper objectMapper = new ObjectMapper();
@@ -38,6 +41,6 @@ public class CarUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(getLastVersion());
+        log.info("{}", getLastVersion());
     }
 }

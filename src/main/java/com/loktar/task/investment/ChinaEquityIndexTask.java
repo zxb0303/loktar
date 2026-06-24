@@ -1,5 +1,7 @@
 package com.loktar.task.investment;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.investment.EquityIndexDividendYieldDaily;
@@ -18,6 +20,7 @@ import java.util.List;
 
 @Component
 @Profile(LokTarConstant.ENV_PRO)
+@Slf4j
 public class ChinaEquityIndexTask {
     private final EquityIndexDividendYieldDailyMapper equityIndexDividendYieldDailyMapper;
     private final QywxApi qywxApi;
@@ -31,7 +34,7 @@ public class ChinaEquityIndexTask {
 
     @Scheduled(cron = "0 0/10 18-23 * * *")
     private void getData() {
-        System.out.println("指数定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+        log.info("{}", "指数定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
 
         String today = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE2);
         boolean allExist = ChinaEquityIndexUtil.EQUITY_INDEXS.stream()
@@ -69,7 +72,7 @@ public class ChinaEquityIndexTask {
         msg.append(System.lineSeparator());
         msg.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
         qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent009Id(), msg.toString()));
-        System.out.println(equityIndexDividendYieldDailys);
+        log.info("{}", equityIndexDividendYieldDailys);
     }
 
 }

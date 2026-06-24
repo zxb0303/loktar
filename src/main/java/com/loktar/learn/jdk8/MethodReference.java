@@ -1,17 +1,20 @@
 package com.loktar.learn.jdk8;
 
+
+import lombok.extern.slf4j.Slf4j;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 public class MethodReference {
     public static void main(String[] args) {
         List<String> names = Arrays.asList("Alex", "Bob", "Charlie");
         for (String key : names) {
-            System.out.println(key);
+            log.info("{}", key);
         }
         //lamdba表达式
         names.forEach(name -> {
-            System.out.println(name);
+            log.info("{}", name);
         });
         //静态方法引用
         names.forEach(System.out::println);

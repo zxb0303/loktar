@@ -1,5 +1,7 @@
 package com.loktar.util;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.domain.patent.PatentPdf;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +17,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class PatentPdfUtil {
     private static Map<String, String> IPC_MAP = new HashMap<>();
     private static Map<String, String> PATENT_MAP = new HashMap<>();
@@ -42,9 +45,9 @@ public class PatentPdfUtil {
             patentPdf.setMainCategoryNum(IPC_MAP.get(k));
             patentPdfs.add(patentPdf);
         });
-        System.out.println(PATENT_MAP.size());
-        System.out.println(APPLY_MAP.size());
-        System.out.println(IPC_MAP.size());
+        log.info("{}", PATENT_MAP.size());
+        log.info("{}", APPLY_MAP.size());
+        log.info("{}", IPC_MAP.size());
         return patentPdfs;
     }
 
@@ -70,7 +73,7 @@ public class PatentPdfUtil {
             boolean startIPC = false;
             boolean startPatent = false;
             boolean startApply = false;
-            System.out.println("i:" + i);
+            log.info("{}", "i:" + i);
             for (int j = 0; j < lines.length; j++) {
                 String line = lines[j];
                 if (StringUtils.isEmpty(date) && line.indexOf("授权公告日") != -1) {

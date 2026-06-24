@@ -1,10 +1,13 @@
 package com.loktar.learn.jdk21;
 
+
+import lombok.extern.slf4j.Slf4j;
 import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class VirtualThread {
     @SneakyThrows
     public static void main(String[] args) {
@@ -15,16 +18,16 @@ public class VirtualThread {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("Hello, virtual thread11!");
+            log.info("{}", "Hello, virtual thread11!");
 
         });
         // 也可以指定虚拟线程的名字
-        Thread thread2 = Thread.ofVirtual().name("virtual thread").start(() -> System.out.println("Hello, virtual thread22!"));
+        Thread thread2 = Thread.ofVirtual().name("virtual thread").start(() -> log.info("{}", "Hello, virtual thread22!"));
         threads.add(thread2);
         threads.add(thread1);
         for (Thread thread : threads){
             thread.join();
         }
-        System.out.println("Hello, main thread33!");
+        log.info("{}", "Hello, main thread33!");
     }
 }

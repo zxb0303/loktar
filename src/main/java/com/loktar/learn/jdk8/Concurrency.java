@@ -1,8 +1,11 @@
 package com.loktar.learn.jdk8;
 
+
+import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 public class Concurrency {
     public static void main(String[] args) {
         ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<>();
@@ -34,10 +37,10 @@ public class Concurrency {
             int result2 = future2.join();
             map.put("result1", result1);
             map.put("result2", result2);
-            System.out.println("Results: " + map);
+            log.info("{}", "Results: " + map);
         });
         // 等待所有任务完成
         combinedFuture.join();
-        System.out.println("111");
+        log.info("{}", "111");
     }
 }

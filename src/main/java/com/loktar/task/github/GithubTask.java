@@ -1,6 +1,8 @@
 package com.loktar.task.github;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.service.github.GithubService;
 import com.loktar.util.DateTimeUtil;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 
 @Component
 @Profile(LokTarConstant.ENV_PRO)
+@Slf4j
 public class GithubTask {
 
     private final GithubService githubService;
@@ -23,7 +26,7 @@ public class GithubTask {
 
     @Scheduled(cron = "0 */20 * * * ?")
     private void notice() {
-        System.out.println("Github定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+        log.info("{}", "Github定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         githubService.checkRepositoryTag();
     }
 }

@@ -1,5 +1,7 @@
 package com.loktar.web.cxy;
 
+
+import lombok.extern.slf4j.Slf4j;
 import lombok.SneakyThrows;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
@@ -19,6 +21,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+@Slf4j
 public class PDFMain {
 
     public static void main(String[] args) {
@@ -59,12 +62,12 @@ public class PDFMain {
         File[] folders = mainFolder.listFiles();
         for (File folder : folders) {
             if (folder.isDirectory()) {
-                System.out.println(folder.getName());
+                log.info("{}", folder.getName());
                 File[] pdfFiles = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".pdf"));
                 //Arrays.sort(pdfFiles, new ChineseFileNameComparatorUtil());
 
                 if (pdfFiles == null || pdfFiles.length == 0) {
-                    System.out.println("No PDF files found in the folder.");
+                    log.info("{}", "No PDF files found in the folder.");
                     return;
                 }
                 Arrays.sort(pdfFiles, Comparator.comparing(File::getName));
@@ -74,7 +77,7 @@ public class PDFMain {
                 mergerUtility.setDestinationFileName(outputFilePath);
 
                 for (File pdfFile : pdfFiles) {
-                    System.out.println(pdfFile.getName());
+                    log.info("{}", pdfFile.getName());
                     try {
                         PDDocument document = Loader.loadPDF(pdfFile);
                         mergerUtility.addSource(pdfFile);
@@ -86,7 +89,7 @@ public class PDFMain {
 
                 try {
                     mergerUtility.mergeDocuments(null);
-                    System.out.println("Merge completed. Output file: " + outputFilePath);
+                    log.info("{}", "Merge completed. Output file: " + outputFilePath);
                 } catch (IOException e) {
                     System.err.println("Error merging documents: " + e.getMessage());
                 }
@@ -100,7 +103,7 @@ public class PDFMain {
         File pdfFolder = new File(pdfFolderPath);
         File[] pdfFiles = pdfFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".pdf"));
         if (pdfFiles == null) {
-            System.out.println("No PDF files found in the directory.");
+            log.info("{}", "No PDF files found in the directory.");
             return;
         }
         for (File pdfFile : pdfFiles) {
@@ -128,7 +131,7 @@ public class PDFMain {
         for (File folder : folders) {
             if (folder.isDirectory()) {
                 String foldername = folder.getName();
-                System.out.println(foldername);
+                log.info("{}", foldername);
                 File[] imageFiles = folder.listFiles();
                 PDDocument document = new PDDocument();
                 if (imageFiles != null) {
@@ -153,7 +156,7 @@ public class PDFMain {
 
                     for (File imageFile : imageFiles) {
                         if (imageFile.isFile()) {
-                            System.out.println(imageFile.getName());
+                            log.info("{}", imageFile.getName());
                             PDRectangle pageSize = PDRectangle.A4;
                             PDPage page = new PDPage(pageSize);
                             document.addPage(page);
@@ -180,7 +183,7 @@ public class PDFMain {
     public static void splitPdfByPages(String pdfFilePath, int pagesPerSplit) {
         File pdfFile = new File(pdfFilePath);
         if (!pdfFile.exists() || !pdfFile.isFile()) {
-            System.out.println("PDF file not found.");
+            log.info("{}", "PDF file not found.");
             return;
         }
 
@@ -201,7 +204,7 @@ public class PDFMain {
             }
 
             document.close();
-            System.out.println("PDF split completed.");
+            log.info("{}", "PDF split completed.");
         } catch (IOException e) {
             System.err.println("Error splitting PDF: " + e.getMessage());
         }

@@ -1,5 +1,7 @@
 package com.loktar.service.newhouse.impl;
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loktar.conf.LokTarConstant;
@@ -36,6 +38,7 @@ import java.util.UUID;
 import java.util.zip.GZIPInputStream;
 
 @Service
+@Slf4j
 public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service {
 
     private final NewHouseHangzhouV2Mapper newHouseHangzhouV2Mapper;
@@ -113,7 +116,7 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
             }
             // 将解压缩后的数据转换为字符串
             String responseString = new String(responseBody);
-            System.out.println(responseString);
+            log.info("{}", responseString);
             Document document = Jsoup.parse(responseString);
             if (page == 1) {
                 Element pageDiv = document.selectFirst("[class=spagenext]");

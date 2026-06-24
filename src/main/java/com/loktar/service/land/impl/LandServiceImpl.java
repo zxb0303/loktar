@@ -1,6 +1,8 @@
 package com.loktar.service.land.impl;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class LandServiceImpl implements LandService {
 
     private final LandMapper landMapper;
@@ -60,10 +63,10 @@ public class LandServiceImpl implements LandService {
         firstDayOfYear = firstDayOfYear.withYear(Integer.parseInt(year));
         String yearfirstDate = DateTimeUtil.getDatetimeStr(firstDayOfYear, DateTimeUtil.FORMATTER_DATE);
         int num = landMapper.deleteByDate(yearfirstDate);
-        System.out.println(year + "年土拍数据开始删除，共" + num + "条");
+        log.info("{}", year + "年土拍数据开始删除，共" + num + "条");
         List<Land> lands = getData(year);
         landMapper.insertBatch(lands);
-        System.out.println(year + "年土拍数据更新完成，共" + lands.size() + "条");
+        log.info("{}", year + "年土拍数据更新完成，共" + lands.size() + "条");
     }
 
     @SneakyThrows

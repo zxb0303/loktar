@@ -1,5 +1,7 @@
 package com.loktar.web.cxy.tiktok.util;
 
+
+import lombok.extern.slf4j.Slf4j;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -8,6 +10,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class XBogusUtil {
 
     private static final String STANDARD_B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -125,6 +128,6 @@ public class XBogusUtil {
     public static void main(String[] args) {
         // 测试
         String result = encrypt("param_test", "post_test", "Mozilla/5.0", 1735620000L);
-        System.out.println("Signature: " + result);
+        log.info("{}", "Signature: " + result);
     }
 }

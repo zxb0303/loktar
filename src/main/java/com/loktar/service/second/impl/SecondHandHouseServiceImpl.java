@@ -1,6 +1,8 @@
 package com.loktar.service.second.impl;
 
 
+
+import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loktar.conf.LokTarConstant;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class SecondHandHouseServiceImpl implements SecondHandHouseService {
 
     private final SecondHandHouseMapper secondHandHouseMapper;
@@ -63,11 +66,11 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
         LocalDate yestoday = LocalDate.now().minusDays(1);
         while(date.isBefore(yestoday)){
             List<SecondHandHouse> secondHandHouses = getHouseData(dateStr, property);
-            System.out.println(dateStr + "共" + secondHandHouses.size() + "条数据待处理");
+            log.info("{}", dateStr + "共" + secondHandHouses.size() + "条数据待处理");
             if (!secondHandHouses.isEmpty()) {
                 secondHandHouseMapper.insertBatch(secondHandHouses);
             }
-            System.out.println(dateStr + "共" + secondHandHouses.size() + "条数据处理完成");
+            log.info("{}", dateStr + "共" + secondHandHouses.size() + "条数据处理完成");
             date=date.plusDays(1);
             dateStr = DateTimeUtil.getDatetimeStr(date, DateTimeUtil.FORMATTER_DATE);
         }
@@ -108,7 +111,7 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 SecondHandHouseResultDTO secondHandHouseResultDTO = objectMapper.readValue(response.body(), SecondHandHouseResultDTO.class);
                 if (secondHandHouseResultDTO.getList() == null) {
-                    System.out.println("cookie失效");
+                    log.info("{}", "cookie失效");
                     throw new Exception("cookie失效");
                 }
                 List<SecondHandHouseDTO> secondHandHouseDTOS = secondHandHouseResultDTO.getList();
@@ -118,7 +121,7 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
                 }
                 totalNum = secondHandHouseResultDTO.getTotaltows();
                 //TODO 打印
-                System.out.println("完成 " + date + "," + secondHandHouses.size() + "/" + totalNum);
+                log.info("{}", "完成 " + date + "," + secondHandHouses.size() + "/" + totalNum);
                 pageName = pageName + 1;
             }
         }

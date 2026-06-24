@@ -1,8 +1,11 @@
 package com.loktar.web.test;
 
+
+import lombok.extern.slf4j.Slf4j;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class RegexTest {
     public static void main(String[] args) {
 //        String str = "wsslc_detail_yfyj?id=3302e1515a1740beb912ea858e551cf7&yszbh=2018000009&zrzid=66151";
@@ -19,9 +22,9 @@ public class RegexTest {
         Pattern r = Pattern.compile(".*U$");
         Matcher m = r.matcher(str);
         if (m.matches()) {
-            System.out.println(str);
+            log.info("{}", str);
         }else{
-            System.out.println(0);
+            log.info("{}", 0);
         }
 
 
