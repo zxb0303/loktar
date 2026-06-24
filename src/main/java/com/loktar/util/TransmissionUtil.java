@@ -28,11 +28,13 @@ public class TransmissionUtil {
     private final static String AUTHORIZATION = "Authorization";
     private final RedisUtil redisUtil;
     private final LokTarConfig lokTarConfig;
+    private final HttpClient httpClient;
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
-    public TransmissionUtil(RedisUtil redisUtil, LokTarConfig lokTarConfig) {
+    public TransmissionUtil(RedisUtil redisUtil, LokTarConfig lokTarConfig, HttpClient httpClient) {
         this.redisUtil = redisUtil;
         this.lokTarConfig = lokTarConfig;
+        this.httpClient = httpClient;
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
@@ -42,7 +44,6 @@ public class TransmissionUtil {
         if (StringUtils.isEmpty(sessionId)) {
             sessionId = "";
         }
-        HttpClient httpClient = HttpClient.newHttpClient();
         String requestStr = objectMapper.writeValueAsString(trRequest);
         //TODO 打印
         //System.out.println(requestStr);

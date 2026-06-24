@@ -42,16 +42,18 @@ public class FundNavController {
     private final PropertyMapper propertyMapper;
     private final QywxApi qywxApi;
     private final LokTarConfig lokTarConfig;
+    private final HttpClient httpClient;
 
 
     private static final String FUND_NAV_URL = "https://fundf10.eastmoney.com/F10DataApi.aspx?type=lsjz&code={0}&sdate={1}&edate={2}&per={3}&page={4}";
     private static final Pattern PAGES_PATTERN = Pattern.compile("pages:(\\d+)");
 
-    public FundNavController(FundNavMapper fundNavMapper, PropertyMapper propertyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig) {
+    public FundNavController(FundNavMapper fundNavMapper, PropertyMapper propertyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig, HttpClient httpClient) {
         this.fundNavMapper = fundNavMapper;
         this.propertyMapper = propertyMapper;
         this.qywxApi = qywxApi;
         this.lokTarConfig = lokTarConfig;
+        this.httpClient = httpClient;
     }
 
     @PostMapping("/testSync")
@@ -67,9 +69,6 @@ public class FundNavController {
         }
 
         String url = MessageFormat.format(FUND_NAV_URL, code, todayStr, todayStr, "1", "1");
-        HttpClient client = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
-                .build();
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -78,7 +77,7 @@ public class FundNavController {
                 .GET()
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         List<FundNav> list = parseFundNav(response.body(), code);
 
         if (list.isEmpty()) {
@@ -126,19 +125,15 @@ public class FundNavController {
     @PostMapping("/sync")
     @SneakyThrows
     public void sync(String code, String sdate, String edate, int per) {
-        HttpClient client = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
-                .build();
-
         String url = MessageFormat.format(FUND_NAV_URL, code, sdate, edate, String.valueOf(per), "1");
-        String response = doRequest(client, url);
+        String response = doRequest(url);
         int totalPages = extractPages(response);
 
         List<FundNav> allList = new ArrayList<>();
         for (int page = 1; page <= totalPages; page++) {
             if (page > 1) {
                 url = MessageFormat.format(FUND_NAV_URL, code, sdate, edate, String.valueOf(per), String.valueOf(page));
-                response = doRequest(client, url);
+                response = doRequest(url);
             }
             List<FundNav> list = parseFundNav(response, code);
             System.out.println("第" + page + "/" + totalPages + "页，获取" + list.size() + "条数据");
@@ -163,14 +158,14 @@ public class FundNavController {
     }
 
     @SneakyThrows
-    private String doRequest(HttpClient client, String url) {
+    private String doRequest(String url) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, "")
                 .timeout(Duration.ofSeconds(30))
                 .GET()
                 .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         return response.body();
     }
 

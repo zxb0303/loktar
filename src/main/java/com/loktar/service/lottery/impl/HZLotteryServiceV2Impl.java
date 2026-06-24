@@ -54,12 +54,15 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
 
     private final LokTarConfig lokTarConfig;
 
-    public HZLotteryServiceV2Impl(LotteryHouseMapper lotteryHouseMapper, LotteryPeopleMapper lotteryPeopleMapper, LotteryOtherPeopleMapper lotteryOtherPeopleMapper, QywxApi qywxApi, LokTarConfig lokTarConfig) {
+    private final HttpClient httpClient;
+
+    public HZLotteryServiceV2Impl(LotteryHouseMapper lotteryHouseMapper, LotteryPeopleMapper lotteryPeopleMapper, LotteryOtherPeopleMapper lotteryOtherPeopleMapper, QywxApi qywxApi, LokTarConfig lokTarConfig, HttpClient httpClient) {
         this.lotteryHouseMapper = lotteryHouseMapper;
         this.lotteryPeopleMapper = lotteryPeopleMapper;
         this.lotteryOtherPeopleMapper = lotteryOtherPeopleMapper;
         this.qywxApi = qywxApi;
         this.lokTarConfig = lokTarConfig;
+        this.httpClient = httpClient;
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
@@ -189,7 +192,6 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
      */
     @SneakyThrows
     private LotteryHouse getHZlotteryHouseDetailByHouseId(String lotteryHouseId) {
-        HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(URL_HOUSE_DETAIL, lotteryHouseId)))
                 .timeout(Duration.ofSeconds(30))
@@ -213,7 +215,6 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
     @SneakyThrows
     private List<LotteryHouse> getRecentHZLotteryHouses() {
         List<LotteryHouse> lotteryHouses = new ArrayList<>();
-        HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(URL_HOUSE_LIST))
                 .timeout(Duration.ofSeconds(30))

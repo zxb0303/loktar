@@ -15,14 +15,7 @@ import com.loktar.util.DateTimeUtil;
 import com.loktar.util.RedisUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -62,17 +55,17 @@ public class QywxApi {
 
     private final LokTarConfig lokTarConfig;
 
-    private final RestTemplate restTemplate;
+    private final HttpClient httpClient;
 
     private final static ObjectMapper objectMapper = new ObjectMapper();
     private final static Map<String, String> AGENTMAP = new HashMap<>();
 
 
-    public QywxApi(RedisUtil redisUtil, QywxMenuMapper qywxMenuMapper, LokTarConfig lokTarConfig, RestTemplate restTemplate) {
+    public QywxApi(RedisUtil redisUtil, QywxMenuMapper qywxMenuMapper, LokTarConfig lokTarConfig, HttpClient httpClient) {
         this.redisUtil = redisUtil;
         this.qywxMenuMapper = qywxMenuMapper;
         this.lokTarConfig = lokTarConfig;
-        this.restTemplate = restTemplate;
+        this.httpClient = httpClient;
         AGENTMAP.put(lokTarConfig.getQywx().getAgent002Id(), lokTarConfig.getQywx().getAgent002Secert());
         AGENTMAP.put(lokTarConfig.getQywx().getAgent003Id(), lokTarConfig.getQywx().getAgent003Secert());
         AGENTMAP.put(lokTarConfig.getQywx().getAgent004Id(), lokTarConfig.getQywx().getAgent004Secert());
@@ -100,7 +93,6 @@ public class QywxApi {
     @SneakyThrows
     private AccessToken refreshAccessToken(String agentId) {
         String secret = AGENTMAP.get(agentId);
-        HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(ACCESSTOKEN_URL, lokTarConfig.getQywx().getCorpid(), secret)))
                 .timeout(Duration.ofSeconds(10))
@@ -137,9 +129,7 @@ public class QywxApi {
 
     @SneakyThrows
     private <T> AgentMsgRsp sendMessage(T message, String agentId) {
-        HttpClient httpClient = HttpClient.newHttpClient();
         String requestbody = objectMapper.writeValueAsString(message);
-
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(SEND_AGENTMSG_URL, accessToken(agentId).getAccessToken())))
                 .timeout(Duration.ofSeconds(60))
@@ -169,7 +159,6 @@ public class QywxApi {
         List<Menu.Button> buttons = new ArrayList<>(buttonsMap.values());
         buttons.sort(Comparator.comparingInt(Menu.Button::getOrder));
         Menu wxMenu = new Menu(buttons);
-        HttpClient httpClient = HttpClient.newHttpClient();
         String requestBody = objectMapper.writeValueAsString(wxMenu);
         System.out.println(requestBody);
         HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -194,7 +183,6 @@ public class QywxApi {
 
     @SneakyThrows
     public UploadMediaRsp uploadMedia(File file, String agentId) {
-        HttpClient httpClient = HttpClient.newHttpClient();
         String boundary = LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_MULTIPART_PREFIX + System.currentTimeMillis();
         HttpRequest.BodyPublisher bodyPublisher = ofMimeMultipartData(file, boundary);
         HttpRequest request = HttpRequest.newBuilder()
@@ -221,26 +209,53 @@ public class QywxApi {
         return HttpRequest.BodyPublishers.ofByteArray(baos.toByteArray());
     }
 
+    @SneakyThrows
     public UploadMediaRsp uploadMediaForPatent(File file ,String agentId)  {
-        HttpHeaders headers = new HttpHeaders();
-        MediaType type = MediaType.parseMediaType("multipart/form-data");
-        headers.setContentType(type);
-        FileSystemResource fileSystemResource = new FileSystemResource(file);
-        MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
-        form.add("file", fileSystemResource);
-        form.add("name", "media");
-        form.add("filename", file.getName());
-        form.add("Content-Type", "application/octet-stream");
-        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(form, headers);
-        String uploadMediaUrl = MessageFormat.format(UPLOAD_URL, accessToken(agentId).getAccessToken());
-        return restTemplate.postForObject(uploadMediaUrl, httpEntity, UploadMediaRsp.class);
+        String boundary = LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_MULTIPART_PREFIX + System.currentTimeMillis();
+        HttpRequest.BodyPublisher bodyPublisher = ofPatentMimeMultipartData(file, boundary);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(MessageFormat.format(UPLOAD_URL, accessToken(agentId).getAccessToken())))
+                .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_MULTIPART + boundary)
+                .timeout(Duration.ofSeconds(60))
+                .POST(bodyPublisher)
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return objectMapper.readValue(response.body(), UploadMediaRsp.class);
+    }
+
+    @SneakyThrows
+    private static HttpRequest.BodyPublisher ofPatentMimeMultipartData(File file, String boundary) {
+        byte[] fileBytes = Files.readAllBytes(file.toPath());
+        String crlf = "\r\n";
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // file part：保留原 RestTemplate 实现中的 "file" 字段名与 octet-stream Content-Type
+        baos.write(("--" + boundary + crlf).getBytes(StandardCharsets.UTF_8));
+        baos.write(("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"" + crlf).getBytes(StandardCharsets.UTF_8));
+        baos.write(("Content-Type: application/octet-stream" + crlf).getBytes(StandardCharsets.UTF_8));
+        baos.write(crlf.getBytes(StandardCharsets.UTF_8));
+        baos.write(fileBytes);
+        baos.write(crlf.getBytes(StandardCharsets.UTF_8));
+        // 额外的 form 字段：name / filename / Content-Type，与原 RestTemplate 版本完全等价
+        writeFormField(baos, boundary, crlf, "name", "media");
+        writeFormField(baos, boundary, crlf, "filename", file.getName());
+        writeFormField(baos, boundary, crlf, "Content-Type", "application/octet-stream");
+        baos.write(("--" + boundary + "--" + crlf).getBytes(StandardCharsets.UTF_8));
+        return HttpRequest.BodyPublishers.ofByteArray(baos.toByteArray());
+    }
+
+    private static void writeFormField(ByteArrayOutputStream baos, String boundary, String crlf, String name, String value) throws java.io.IOException {
+        baos.write(("--" + boundary + crlf).getBytes(StandardCharsets.UTF_8));
+        baos.write(("Content-Disposition: form-data; name=\"" + name + "\"" + crlf).getBytes(StandardCharsets.UTF_8));
+        baos.write(crlf.getBytes(StandardCharsets.UTF_8));
+        baos.write(value.getBytes(StandardCharsets.UTF_8));
+        baos.write(crlf.getBytes(StandardCharsets.UTF_8));
     }
 
     @SneakyThrows
     public String saveMedia(String filePath, String mediaId, String agentId) {
-        HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(GET_MEDIA_URL, accessToken(agentId).getAccessToken(), mediaId)))
+                .timeout(Duration.ofSeconds(60))
                 .GET()
                 .build();
 

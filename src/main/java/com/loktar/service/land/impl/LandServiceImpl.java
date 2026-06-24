@@ -32,6 +32,8 @@ public class LandServiceImpl implements LandService {
 
     private final LandMapper landMapper;
 
+    private final HttpClient httpClient;
+
     private static final Map<String, String> STATUS_MAP = new HashMap<>();
 
     private final static String URL_DETAIL = "http://land.zzhz.zjol.com.cn/land/{0}.html";
@@ -40,8 +42,9 @@ public class LandServiceImpl implements LandService {
 
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
-    public LandServiceImpl(LandMapper landMapper) {
+    public LandServiceImpl(LandMapper landMapper, HttpClient httpClient) {
         this.landMapper = landMapper;
+        this.httpClient = httpClient;
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
         STATUS_MAP.put("39", "已成交");
         STATUS_MAP.put("40", "未成交");
@@ -66,10 +69,9 @@ public class LandServiceImpl implements LandService {
     @SneakyThrows
     private List<Land> getData(String year) {
         List<Land> lands = new ArrayList<>();
-        HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(URK_LIST, year)))
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
                 .GET()

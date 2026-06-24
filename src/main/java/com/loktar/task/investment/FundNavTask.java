@@ -39,15 +39,17 @@ public class FundNavTask {
     private final PropertyMapper propertyMapper;
     private final QywxApi qywxApi;
     private final LokTarConfig lokTarConfig;
+    private final HttpClient httpClient;
 
     private static final String FUND_NAV_URL = "https://fundf10.eastmoney.com/F10DataApi.aspx?type=lsjz&code={0}&sdate={1}&edate={2}&per={3}&page={4}";
     private static final List<String> FUND_CODES = List.of("021550");
 
-    public FundNavTask(FundNavMapper fundNavMapper, PropertyMapper propertyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig) {
+    public FundNavTask(FundNavMapper fundNavMapper, PropertyMapper propertyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig, HttpClient httpClient) {
         this.fundNavMapper = fundNavMapper;
         this.propertyMapper = propertyMapper;
         this.qywxApi = qywxApi;
         this.lokTarConfig = lokTarConfig;
+        this.httpClient = httpClient;
     }
 
     @Scheduled(cron = "0 0/10 18-23 * * *")
@@ -56,9 +58,6 @@ public class FundNavTask {
         System.out.println("基金定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         LocalDate today = LocalDate.now();
         String todayStr = today.format(DateTimeUtil.FORMATTER_DATE2);
-        HttpClient client = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
-                .build();
 
         for (String fundCode : FUND_CODES) {
             FundNav exist = fundNavMapper.selectByFundCodeAndNavDate(fundCode, today);
@@ -75,7 +74,7 @@ public class FundNavTask {
                     .GET()
                     .build();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             List<FundNav> list = parseFundNav(response.body(), fundCode);
 
             if (list.isEmpty()) {

@@ -46,6 +46,8 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
 
     private final NewHouseHangzhouDetailMapper newHouseHangzhouDetailMapper;
 
+    private final HttpClient httpClient;
+
     private Property property;
 
     private final static ObjectMapper objectMapper = new ObjectMapper();
@@ -58,11 +60,12 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
 
 
     //TODO 加了图形验证，待调整
-    public NewHouseHangzhouServiceV2Impl(NewHouseHangzhouV2Mapper newHouseHangzhouV2Mapper, PropertyMapper propertyMapper, NewHouseHangzhouPresellMapper newHouseHangzhouPresellMapper, NewHouseHangzhouDetailMapper newHouseHangzhouDetailMapper) {
+    public NewHouseHangzhouServiceV2Impl(NewHouseHangzhouV2Mapper newHouseHangzhouV2Mapper, PropertyMapper propertyMapper, NewHouseHangzhouPresellMapper newHouseHangzhouPresellMapper, NewHouseHangzhouDetailMapper newHouseHangzhouDetailMapper, HttpClient httpClient) {
         this.newHouseHangzhouV2Mapper = newHouseHangzhouV2Mapper;
         this.propertyMapper = propertyMapper;
         this.newHouseHangzhouPresellMapper = newHouseHangzhouPresellMapper;
         this.newHouseHangzhouDetailMapper = newHouseHangzhouDetailMapper;
+        this.httpClient = httpClient;
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
@@ -88,10 +91,9 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
         int maxPage = 1;
         while (page <= maxPage) {
             DelayUtil.delaySeconds(1, 3);
-            HttpClient httpClient = HttpClient.newHttpClient();
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(MessageFormat.format(URL_PRICE, newHouseHangzhouV2.getAreaCode(), newHouseHangzhouV2.getHouseId(), newHouseHangzhouPresell.getPresellId(), String.valueOf(page))))
-                    .timeout(Duration.ofSeconds(10))
+                    .timeout(Duration.ofSeconds(30))
                     .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                     .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_HTML)
                     .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
@@ -163,10 +165,9 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
     @SneakyThrows
     private void getPresell(NewHouseHangzhouV2 newHouseHangzhouV2) {
         DelayUtil.delaySeconds(1, 3);
-        HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(URL_PRESELL, newHouseHangzhouV2.getAreaCode(), newHouseHangzhouV2.getHouseId())))
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_HTML)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
@@ -209,10 +210,9 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
 
     private NewHouseHangzhouPresell getPresellDetail(NewHouseHangzhouV2 newHouseHangzhouV2, NewHouseHangzhouPresell newHouseHangzhouPresell) throws Exception {
         DelayUtil.delaySeconds(1, 3);
-        HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(URL_PRESELL_DETAIL, newHouseHangzhouPresell.getPresellId(), newHouseHangzhouV2.getAreaCode(), newHouseHangzhouV2.getHouseId())))
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_HTML)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
@@ -256,10 +256,9 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
     private NewHouseHangzhouV2 getHouse(String areaCode, String houseId) {
         NewHouseHangzhouV2 newHouseHangzhouV2 = new NewHouseHangzhouV2();
         DelayUtil.delaySeconds(1, 3);
-        HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(URL_HOUSE_INFO, areaCode, houseId)))
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_HTML)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)

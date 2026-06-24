@@ -35,13 +35,16 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
 
     private final PropertyMapper propertyMapper;
 
+    private final HttpClient httpClient;
+
     private final static String URL = "https://zwfw.fgj.hangzhou.gov.cn/jjhygl/webty/WebFyAction_getGpxxSelectList.jspx";
 
     private final static String REQUEST_STR = "gply=1&starttime={0}&endtime={1}&page={2}&xqid=0";
 
-    public SecondHandHouseServiceImpl(SecondHandHouseMapper secondHandHouseMapper, PropertyMapper propertyMapper) {
+    public SecondHandHouseServiceImpl(SecondHandHouseMapper secondHandHouseMapper, PropertyMapper propertyMapper, HttpClient httpClient) {
         this.secondHandHouseMapper = secondHandHouseMapper;
         this.propertyMapper = propertyMapper;
+        this.httpClient = httpClient;
     }
 
     /**
@@ -90,7 +93,6 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
         int pageName = 1;
         while (secondHandHouses.size() < totalNum) {
             Thread.sleep(500);
-            HttpClient httpClient = HttpClient.newHttpClient();
             String requestBody = MessageFormat.format(REQUEST_STR, date, date, String.valueOf(pageName));
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(URL))

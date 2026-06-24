@@ -24,21 +24,22 @@ public class BandwagonhostUtil {
     private final static String URL = "https://api.64clouds.com/v1/getServiceInfo?veid={0}&&api_key={1}";
     private final static ObjectMapper objectMapper = new ObjectMapper();
     private final LokTarConfig lokTarConfig;
+    private final HttpClient httpClient;
 
     static {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
-    public BandwagonhostUtil(LokTarConfig lokTarConfig) {
+    public BandwagonhostUtil(LokTarConfig lokTarConfig, HttpClient httpClient) {
         this.lokTarConfig = lokTarConfig;
+        this.httpClient = httpClient;
     }
 
     @SneakyThrows
     public VPSInfo getVPSData(String veid) {
-        HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(URL, veid, lokTarConfig.getBwg().getApiKey())))
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
                 .GET()

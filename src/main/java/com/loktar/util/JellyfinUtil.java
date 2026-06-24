@@ -23,18 +23,19 @@ import java.util.List;
 public class JellyfinUtil {
     private final static ObjectMapper objectMapper = new ObjectMapper();
     private final LokTarConfig lokTarConfig;
+    private final HttpClient httpClient;
 
-    public JellyfinUtil(LokTarConfig lokTarConfig) {
+    public JellyfinUtil(LokTarConfig lokTarConfig, HttpClient httpClient) {
         this.lokTarConfig = lokTarConfig;
+        this.httpClient = httpClient;
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     @SneakyThrows
     public Session getSessionByDeviceId(String deviceId) {
-        HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(lokTarConfig.getJellyfin().getUrl(), deviceId)))
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
                 .header("x-emby-token", lokTarConfig.getJellyfin().getToken())
                 .GET()

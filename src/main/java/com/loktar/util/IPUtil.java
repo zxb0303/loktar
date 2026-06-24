@@ -17,15 +17,16 @@ import java.time.Duration;
 public class IPUtil {
     private final static ObjectMapper objectMapper = new ObjectMapper();
     private final LokTarConfig lokTarConfig;
+    private final HttpClient httpClient;
 
-    public IPUtil(LokTarConfig lokTarConfig) {
+    public IPUtil(LokTarConfig lokTarConfig, HttpClient httpClient) {
         this.lokTarConfig = lokTarConfig;
+        this.httpClient = httpClient;
     }
 
     @SneakyThrows
     public String getip() {
 //        HttpClient httpClient = HttpClient.newHttpClient();
-//        HttpRequest httpRequest = HttpRequest.newBuilder()
 //                .uri(URI.create(MessageFormat.format("http://api.ipstack.com/check?access_key={0}", lokTarConfig.getIpstack().getAccessKey())))
 //                .timeout(Duration.ofSeconds(10))
 //                .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
@@ -37,7 +38,6 @@ public class IPUtil {
 //        ObjectNode objectNode = (ObjectNode) objectMapper.readTree(responseBody);
 //        return objectNode.get("ip").asText();
 
-        HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.ip.sb/ip"))
                 .timeout(Duration.ofSeconds(60))

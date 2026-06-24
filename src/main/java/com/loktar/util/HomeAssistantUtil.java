@@ -8,13 +8,16 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 
 @Component
 public class HomeAssistantUtil {
     private final LokTarConfig lokTarConfig;
+    private final HttpClient httpClient;
 
-    public HomeAssistantUtil(LokTarConfig lokTarConfig) {
+    public HomeAssistantUtil(LokTarConfig lokTarConfig, HttpClient httpClient) {
         this.lokTarConfig = lokTarConfig;
+        this.httpClient = httpClient;
     }
 
     public void turnOnSwitch(String entityId) {
@@ -27,11 +30,11 @@ public class HomeAssistantUtil {
 
     @SneakyThrows
     private void sendRequest(String action, String entityId) {
-        HttpClient httpClient = HttpClient.newHttpClient();
         String url = lokTarConfig.getHomeAssistant().getBaseUrl() + action;
         String requestBody = "{\"entity_id\": \"" + entityId + "\"}";
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
+                .timeout(Duration.ofSeconds(30))
                 .header("Authorization", "Bearer " + lokTarConfig.getHomeAssistant().getApiToken())
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))

@@ -11,25 +11,29 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    /**
+     * 无需鉴权即可访问的公开端点（第三方回调、webhook、静态资源等）。
+     */
+    private static final String[] PUBLIC_ENDPOINTS = {
+            "/jellyfin/webhook.do",
+            "/certimate/webhook.do",
+            "/synology/sendMsg.do",
+            "/github/notifyMsg.do",
+            "/qywx/callback/**",
+            "/patentpdf/**",
+            "/patentpdfv2/**",
+            "/patentdoc/**",
+            "/tiktok/getTimeParams.do",
+            "/test/**"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(CsrfConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/jellyfin/webhook.do",
-                                "/certimate/webhook.do",
-                                "/qywx/callback/chatgpt/receive.do",
-                                "/qywx/callback/receive.do",
-                                "/qywx/callback/patent/receive.do",
-                                "/synology/sendMsg.do",
-                                "/github/notifyMsg.do",
-                                "/patentpdf/**",
-                                "/patentpdfv2/**",
-                                "/patentdoc/**",
-                                "/tiktok/getTimeParams.do",
-                                "/test/**"
-                        ).permitAll()
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
         return http.build();
