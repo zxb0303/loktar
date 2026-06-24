@@ -372,7 +372,7 @@ services:
 
 部署后曾报错：`Failed to initialize platform (azure-c-shared)`。
 
-参考 https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2272 ，微软语音 SDK 需要 OpenSSL 1.x，对应支持的发行版：
+参考 https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2272 ，当时使用的 SDK 版本（1.34.x）仅支持 OpenSSL 1.x，因此必须选择自带 OpenSSL 1.x 的发行版作为基础镜像：
 
 | Ubuntu LTS | 名称            |
 |------------|-----------------|
@@ -387,7 +387,9 @@ services:
 | 11         | Bullseye   |
 | 10         | Buster     |
 
-最终将基础镜像由 `eclipse-temurin:21-jammy` 调整为 `ibm-semeru-runtimes:open-21-jre-focal`。
+当时将基础镜像由 `eclipse-temurin:21-jammy` 调整为 `ibm-semeru-runtimes:open-21-jre-focal`。
+
+> **更新**：Azure Speech SDK 从 **1.38.0** 起已原生支持 OpenSSL 3.x（参考 https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2048 ），当前项目使用的 1.50.0 同样支持。因此基础镜像不再受 OpenSSL 版本限制，可自由选择基于 Ubuntu 22.04+ / Debian 12+ 等自带 OpenSSL 3.x 的现代发行版，如 `ibm-semeru-runtimes:open-21-jre-noble`。
 
 ---
 
