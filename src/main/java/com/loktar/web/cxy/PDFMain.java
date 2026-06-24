@@ -83,7 +83,7 @@ public class PDFMain {
                         mergerUtility.addSource(pdfFile);
                         document.close(); // Close the document if it's no longer needed
                     } catch (IOException e) {
-                        System.err.println("Error processing file " + pdfFile.getName() + ": " + e.getMessage());
+                        log.error("Error processing file {} : {}", pdfFile.getName(), e.getMessage());
                     }
                 }
 
@@ -91,7 +91,7 @@ public class PDFMain {
                     mergerUtility.mergeDocuments(null);
                     log.info("{}", "Merge completed. Output file: " + outputFilePath);
                 } catch (IOException e) {
-                    System.err.println("Error merging documents: " + e.getMessage());
+                    log.error("Error merging documents : {}", e.getMessage());
                 }
             }
         }
@@ -206,7 +206,7 @@ public class PDFMain {
             document.close();
             log.info("{}", "PDF split completed.");
         } catch (IOException e) {
-            System.err.println("Error splitting PDF: " + e.getMessage());
+            log.error("Error splitting PDF : {}", e.getMessage());
         }
     }
 

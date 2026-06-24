@@ -56,31 +56,21 @@ public class DockerEngineApiUtil {
                 .withTty(false)
                 .exec();
         final StringBuilder output = new StringBuilder();
-        dockerClient.execStartCmd(execCreateCmdResponse.getId())
-                .withDetach(false)
-                .withTty(true)
-                .exec(new ResultCallback.Adapter<Frame>() {
-                    @Override
-                    public void onNext(Frame object) {
-                        output.append(new String(object.getPayload(), UTF_8));
-                        super.onNext(object);
-                    }
-
-                });
-        //TODO 内容返回了 但是文件还未生成
-//        try {
-//            Thread.sleep(4000);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-//        try {
-//            dockerClient.execStartCmd(execCreateCmdResponse.getId())
-//                    .withDetach(false)
-//                    .withTty(true)
-//                    .exec(new ExecStartResultCallback(byteArrayOutputStream, System.err)).awaitCompletion();
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            dockerClient.execStartCmd(execCreateCmdResponse.getId())
+                    .withDetach(false)
+                    .withTty(true)
+                    .exec(new ResultCallback.Adapter<Frame>() {
+                        @Override
+                        public void onNext(Frame object) {
+                            output.append(new String(object.getPayload(), UTF_8));
+                            super.onNext(object);
+                        }
+                    }).awaitCompletion();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
         return output.toString();
     }
 

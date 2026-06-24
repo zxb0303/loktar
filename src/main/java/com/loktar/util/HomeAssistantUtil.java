@@ -46,8 +46,8 @@ public class HomeAssistantUtil {
         if (response.statusCode() == 200) {
             log.info("{}", "Action " + action + " executed successfully for " + entityId);
         } else {
-            System.err.println("Failed to execute action " + action + ": " + response.statusCode());
-            System.err.println("Response: " + response.body());
+            log.error("Failed to execute action " + action + ": " + response.statusCode());
+            log.error("Response: " + response.body());
         }
     }
 }

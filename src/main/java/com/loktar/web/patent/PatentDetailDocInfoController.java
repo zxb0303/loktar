@@ -87,7 +87,7 @@ public class PatentDetailDocInfoController {
         for (int i = 0; i < patentDetailDocInfos.size(); i++) {
             patentDetailDocInfos.get(i).setDocInfoId(UUIDUtil.randomUUID());
             patentDetailDocInfos.get(i).setIndex(i + 1);
-            String formattedDate = DateTimeUtil.getDatetimeStr(DateTimeUtil.parseLocalDate(patentDetailDocInfos.get(i).getDocDate(), DateTimeUtil.FORMATTER_DATE2), DateTimeUtil.FORMATTER_DATE);
+            String formattedDate = DateTimeUtil.getDatetimeStr(DateTimeUtil.parseLocalDate(patentDetailDocInfos.get(i).getDocDate(), DateTimeUtil.FORMATTER_DATE_COMPACT), DateTimeUtil.FORMATTER_DATE);
             patentDetailDocInfos.get(i).setDocDate(formattedDate);
             patentDetailDocInfos.get(i).setPatentId(patentId);
         }

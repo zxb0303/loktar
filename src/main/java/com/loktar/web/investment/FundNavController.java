@@ -63,7 +63,7 @@ public class FundNavController {
     @SneakyThrows
     public void testSync(String code) {
         LocalDate today = LocalDate.now().minusDays(1);
-        String todayStr = today.format(DateTimeUtil.FORMATTER_DATE2);
+        String todayStr = today.format(DateTimeUtil.FORMATTER_DATE_COMPACT);
 
         FundNav exist = fundNavMapper.selectByFundCodeAndNavDate(code, today);
         if (exist != null) {

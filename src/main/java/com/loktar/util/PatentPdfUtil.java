@@ -58,61 +58,61 @@ public class PatentPdfUtil {
         APPLY_MAP = new HashMap<>();
         date = null;
         File pdf = new File(filePath);
-        PDDocument document = Loader.loadPDF(pdf);
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-        int numPages = document.getNumberOfPages();
-        boolean end = false;
-        for (int i = 1; i <= numPages; i++) {
-            if (end) {
-                break;
-            }
-            pdfStripper.setStartPage(i);
-            pdfStripper.setEndPage(i);
-            String text = pdfStripper.getText(document);
-            String[] lines = text.split("\r\n");
-            boolean startIPC = false;
-            boolean startPatent = false;
-            boolean startApply = false;
-            log.info("{}", "i:" + i);
-            for (int j = 0; j < lines.length; j++) {
-                String line = lines[j];
-                if (StringUtils.isEmpty(date) && line.indexOf("授权公告日") != -1) {
-                    date = getDate(line);
-                }
-//                System.out.println("j:"+j);
-                if (line.matches("·\\d+·")) {
-                    continue;
-                }
-                if (line.equals("1.IPC索引") || line.equals("2.专利号索引") || line.equals("3.专利权人索引")) {
-                    continue;
-                }
-                if (line.equals("4.授权公告号/专利号对照表索引")) {
-                    end = true;
+        try (PDDocument document = Loader.loadPDF(pdf)) {
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            int numPages = document.getNumberOfPages();
+            boolean end = false;
+            for (int i = 1; i <= numPages; i++) {
+                if (end) {
                     break;
                 }
-                if (line.equals("IPC 授权公告号")) {
-                    startIPC = true;
-                    continue;
-                }
-                if (line.equals("专利号 授权公告号")) {
-                    startPatent = true;
-                    startIPC = false;
-                    continue;
-                }
-                if (line.equals("专利权人 授权公告号")) {
-                    startApply = true;
-                    startPatent = false;
-                    startIPC = false;
-                    continue;
-                }
-                if (startIPC) {
-                    dealIPC(line);
-                }
-                if (startPatent) {
-                    dealPatent(line);
-                }
-                if (startApply) {
-                    j = dealApply(line, lines, j);
+                pdfStripper.setStartPage(i);
+                pdfStripper.setEndPage(i);
+                String text = pdfStripper.getText(document);
+                String[] lines = text.split("\r\n");
+                boolean startIPC = false;
+                boolean startPatent = false;
+                boolean startApply = false;
+                log.info("{}", "i:" + i);
+                for (int j = 0; j < lines.length; j++) {
+                    String line = lines[j];
+                    if (StringUtils.isEmpty(date) && line.indexOf("授权公告日") != -1) {
+                        date = getDate(line);
+                    }
+                    if (line.matches("·\\d+·")) {
+                        continue;
+                    }
+                    if (line.equals("1.IPC索引") || line.equals("2.专利号索引") || line.equals("3.专利权人索引")) {
+                        continue;
+                    }
+                    if (line.equals("4.授权公告号/专利号对照表索引")) {
+                        end = true;
+                        break;
+                    }
+                    if (line.equals("IPC 授权公告号")) {
+                        startIPC = true;
+                        continue;
+                    }
+                    if (line.equals("专利号 授权公告号")) {
+                        startPatent = true;
+                        startIPC = false;
+                        continue;
+                    }
+                    if (line.equals("专利权人 授权公告号")) {
+                        startApply = true;
+                        startPatent = false;
+                        startIPC = false;
+                        continue;
+                    }
+                    if (startIPC) {
+                        dealIPC(line);
+                    }
+                    if (startPatent) {
+                        dealPatent(line);
+                    }
+                    if (startApply) {
+                        j = dealApply(line, lines, j);
+                    }
                 }
             }
         }

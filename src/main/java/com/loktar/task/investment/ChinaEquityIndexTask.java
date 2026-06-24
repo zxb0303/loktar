@@ -36,7 +36,7 @@ public class ChinaEquityIndexTask {
     private void getData() {
         log.info("{}", "指数定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
 
-        String today = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE2);
+        String today = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE_COMPACT);
         boolean allExist = ChinaEquityIndexUtil.EQUITY_INDEXS.stream()
                 .allMatch(index -> equityIndexDividendYieldDailyMapper.existsByEquityIndexAndDate(index, today));
         if (allExist) {
@@ -61,7 +61,7 @@ public class ChinaEquityIndexTask {
             return;
         }
         List<EquityIndexDividendYieldDaily> equityIndexDividendYieldDailys = equityIndexDividendYieldDailyMapper.getRecentEquityIndexDividendYieldDaily();
-        if (!equityIndexDividendYieldDailys.getFirst().getDate().equals(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE2))) {
+        if (!equityIndexDividendYieldDailys.getFirst().getDate().equals(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE_COMPACT))) {
             return;
         }
         StringBuilder msg = new StringBuilder();

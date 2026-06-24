@@ -54,26 +54,27 @@ public class PatentSmsUtil {
     @SneakyThrows
     public static List<PatentQuotationDTO> readExcelFile(File file) {
         List<PatentQuotationDTO> patents = new ArrayList<>();
-        FileInputStream fis = new FileInputStream(file);
-        Workbook workbook = new XSSFWorkbook(fis);
-        Sheet sheet = workbook.getSheetAt(0);
-        int rowCount = sheet.getPhysicalNumberOfRows();
-        for (int i = 1; i < rowCount - 1; i++) {
-            Row row = sheet.getRow(i);
-            if (row == null) {
-                continue;
+        try (FileInputStream fis = new FileInputStream(file);
+             Workbook workbook = new XSSFWorkbook(fis)) {
+            Sheet sheet = workbook.getSheetAt(0);
+            int rowCount = sheet.getPhysicalNumberOfRows();
+            for (int i = 1; i < rowCount - 1; i++) {
+                Row row = sheet.getRow(i);
+                if (row == null) {
+                    continue;
+                }
+                PatentQuotationDTO patentQuotationDTO = new PatentQuotationDTO();
+                patentQuotationDTO.setPatentId(getCellValueAsString(row.getCell(0)));
+                patentQuotationDTO.setName(getCellValueAsString(row.getCell(1)));
+                patentQuotationDTO.setCaseStatus(getCellValueAsString(row.getCell(2)));
+                patentQuotationDTO.setExpirationDate(getCellValueAsString(row.getCell(3)));
+                patentQuotationDTO.setAmount((int) row.getCell(4).getNumericCellValue());
+                patentQuotationDTO.setLateFeeAmount((int) row.getCell(5).getNumericCellValue());
+                patentQuotationDTO.setPrice((int) row.getCell(6).getNumericCellValue());
+                patentQuotationDTO.setValidDate(getCellValueAsString(row.getCell(7)));
+                patentQuotationDTO.setRemark(getCellValueAsString(row.getCell(8)));
+                patents.add(patentQuotationDTO);
             }
-            PatentQuotationDTO patentQuotationDTO = new PatentQuotationDTO();
-            patentQuotationDTO.setPatentId(getCellValueAsString(row.getCell(0)));
-            patentQuotationDTO.setName(getCellValueAsString(row.getCell(1)));
-            patentQuotationDTO.setCaseStatus(getCellValueAsString(row.getCell(2)));
-            patentQuotationDTO.setExpirationDate(getCellValueAsString(row.getCell(3)));
-            patentQuotationDTO.setAmount((int) row.getCell(4).getNumericCellValue());
-            patentQuotationDTO.setLateFeeAmount((int) row.getCell(5).getNumericCellValue());
-            patentQuotationDTO.setPrice((int) row.getCell(6).getNumericCellValue());
-            patentQuotationDTO.setValidDate(getCellValueAsString(row.getCell(7)));
-            patentQuotationDTO.setRemark(getCellValueAsString(row.getCell(8)));
-            patents.add(patentQuotationDTO);
         }
         return patents;
     }

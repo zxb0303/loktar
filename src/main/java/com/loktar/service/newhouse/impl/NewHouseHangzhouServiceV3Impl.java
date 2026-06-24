@@ -346,7 +346,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
                 String jpgfilePath = jpgfilesFoldpath + pngfileName.replace(LokTarConstant.PIC_SUFFIX_PNG, LokTarConstant.PIC_SUFFIX_JPG);
                 //TODO 打印
                 log.info("{}", jpgfilePath);
-                PicUtil.converPNGtoJPG(pngfilePath, jpgfilePath);
+                PicUtil.convertPNGtoJPG(pngfilePath, jpgfilePath);
                 AnalyzeResult analyzeLayoutResult = AzureDocIntelligenceUtil.getAnalyze(LokTarConstant.AZURE_DOCINTELLIGENCE_MODEL_ID, jpgfilePath,"1");
                 DocumentTable documentTable = analyzeLayoutResult.getTables().getFirst();
                 List<DocumentTableCell> cells = documentTable.getCells();

@@ -102,7 +102,7 @@ public class PatentSellMain {
                             Files.copy(path, zos);
                             zos.closeEntry();
                         } catch (Exception e) {
-                            System.err.println("压缩文件失败: " + path + " - " + e.getMessage());
+                            log.error("{}", "压缩文件失败: " + path + " - " + e.getMessage());
                         }
                     });
         }

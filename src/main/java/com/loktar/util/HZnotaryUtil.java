@@ -26,8 +26,9 @@ public class HZnotaryUtil {
 
     @SneakyThrows
     private static String getLotteryId(String houseName) {
+        int maxPages = 20;
         int i = 1;
-        while (i > 0) {
+        while (i <= maxPages) {
             HttpClient httpClient = HttpClient.newHttpClient();
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(MessageFormat.format(URL_INDEX, String.valueOf(i))))

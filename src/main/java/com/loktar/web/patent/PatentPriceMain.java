@@ -49,7 +49,7 @@ public class PatentPriceMain {
                         }
 
                     } catch (IOException e) {
-                        System.err.println("Error reading file: " + file.getName());
+                        log.error("Error reading file: {}", file.getName(), e);
                         e.printStackTrace();
                     }
                 }

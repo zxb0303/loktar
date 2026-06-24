@@ -13,7 +13,7 @@ public class JBCryptTest {
     public static void main(String[] args) {
         String username = "111";
         String password = "222";
-        String filePath = "F:/htpasswd";
+        String filePath = "F:/11/htpasswd";
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(10));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
@@ -21,7 +21,7 @@ public class JBCryptTest {
             writer.newLine();
             log.info("{}", "Password has been hashed and stored.");
         } catch (IOException e) {
-            System.err.println("Error writing to htpasswd file: " + e.getMessage());
-        }
+            log.error("{}","Error writing to htpasswd file: " +e.getMessage());
+         }
     }
 }

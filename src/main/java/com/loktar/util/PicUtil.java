@@ -17,7 +17,7 @@ import java.util.Arrays;
 @Slf4j
 public class PicUtil {
     @SneakyThrows
-    public static void converPNGtoJPG(String pngFileNamePath, String jpgFileNamePath) {
+    public static void convertPNGtoJPG(String pngFileNamePath, String jpgFileNamePath) {
         File input = new File(pngFileNamePath);
         BufferedImage image = ImageIO.read(input);
         File output = new File(jpgFileNamePath);

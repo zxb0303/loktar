@@ -60,7 +60,7 @@ public class FundNavTask {
     public void syncToday() {
         log.info("{}", "基金定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         LocalDate today = LocalDate.now();
-        String todayStr = today.format(DateTimeUtil.FORMATTER_DATE2);
+        String todayStr = today.format(DateTimeUtil.FORMATTER_DATE_COMPACT);
 
         for (String fundCode : FUND_CODES) {
             FundNav exist = fundNavMapper.selectByFundCodeAndNavDate(fundCode, today);
