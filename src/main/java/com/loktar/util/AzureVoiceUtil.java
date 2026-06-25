@@ -21,6 +21,8 @@ public class AzureVoiceUtil {
         config = SpeechConfig.fromSubscription(lokTarConfig.getAzure().getVoiceKey(), lokTarConfig.getAzure().getVoiceRegion());
         config.setSpeechSynthesisVoiceName(DEFAULT_VOICE_NAME);
         config.setSpeechRecognitionLanguage(LANGUAGE);
+        // 显式禁用 CRL 检查，避免 Docker 环境中 CRL 下载失败导致连接失败
+        config.setProperty("OPENSSL_DISABLE_CRL_CHECK", "true");
     }
 
     @SneakyThrows
@@ -31,14 +33,14 @@ public class AzureVoiceUtil {
         SpeechSynthesisResult result = synthesizer.SpeakTextAsync(text).get();
         if (result.getReason() == ResultReason.Canceled) {
             SpeechSynthesisCancellationDetails cancellation = SpeechSynthesisCancellationDetails.fromResult(result);
-            log.info("{}", "CANCELED: Reason=" + cancellation.getReason());
-            log.info("{}", "CANCELED: ErrorCode=" + cancellation.getErrorCode());
-            log.info("{}", "CANCELED: ErrorDetails=" + cancellation.getErrorDetails());
-            log.info("{}", "CANCELED: Did you update the subscription info?");
+            log.error("TTS 合成失败: Reason={}, ErrorCode={}, ErrorDetails={}",
+                    cancellation.getReason(), cancellation.getErrorCode(), cancellation.getErrorDetails());
+            result.close();
+            synthesizer.close();
+            throw new RuntimeException("语音合成失败: " + cancellation.getErrorDetails());
         }
         result.close();
         synthesizer.close();
-
     }
 
     @SneakyThrows
@@ -53,7 +55,7 @@ public class AzureVoiceUtil {
             throw new Exception("No speech could be recognized.");
         } else if (result.getReason() == ResultReason.Canceled) {
             CancellationDetails cancellation = CancellationDetails.fromResult(result);
-            throw new Exception("Speech recognition canceled: " + cancellation.getReason());
+            throw new Exception("语音识别失败: " + cancellation.getReason() + ", " + cancellation.getErrorDetails());
         }
         return null;
     }
