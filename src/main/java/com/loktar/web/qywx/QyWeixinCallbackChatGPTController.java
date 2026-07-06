@@ -157,7 +157,7 @@ public class QyWeixinCallbackChatGPTController {
             if (noticeIntent.isNeedConfirm()) {
                 saveNoticeDraft(receiveBaseMsg.getFromUserName(), noticeIntent);
                 String confirmReply = chatGPTUtil.buildNoticeConfirmReply(noticeIntent, chatgptModelProperty.getValue());
-                sendTextAndVoice(confirmReply, receiveBaseMsg, false, true);
+                sendTextAndVoice(confirmReply, receiveBaseMsg, true, true);
                 return;
             }
             clearNoticeDraft(receiveBaseMsg.getFromUserName());
