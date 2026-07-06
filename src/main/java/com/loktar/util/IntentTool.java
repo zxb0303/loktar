@@ -46,7 +46,7 @@ public class IntentTool {
     public String askForMissingInfo(
             @P("说明具体缺少什么信息，例如缺少提醒时间") String missingInfo,
             @P("提醒标题，从用户原始消息中提炼，简洁概括要提醒的事，例如'买票'、'开会'，不超过10字") String title,
-            @P("提醒内容，从用户原始消息中提炼，必须保留完整关键信息，例如'买23日7点30分去上海的高铁票'，'预约汽车保养'，'给xxx打电话'，不超过40字") String content) {
+            @P("提醒内容，从用户原始消息中提炼，内容可以优化，但必须保留完整关键信息，例如'买23日7点30分去上海的高铁票'，'预约汽车保养'，'给xxx打电话'，不超过40字") String content) {
         result = new IntentResult();
         result.setNotice(true);
         result.setNeedConfirm(true);
