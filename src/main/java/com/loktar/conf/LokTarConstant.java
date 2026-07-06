@@ -22,7 +22,8 @@ public class LokTarConstant {
     public static final String HTTP_HEADER_COOKIE_NAME = "Cookie";
 
 
-    public static final String REDIS_KEY_PREFIX_OPENAI_REQUEST = "openai_request_";
+    public static final String REDIS_KEY_PREFIX_CHAT_MEMORY = "chat_memory_";
+    public static final String REDIS_KEY_PREFIX_NOTICE_DRAFT = "notice_draft_";
     public static final String REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET = "jellyfin_remote_playing_set";
     public static final String REDIS_KEY_NEWHOUSE_COOKIE = "newhouse_cookie";
     public static final String REDIS_KEY_TRANSMISSION_SESSIONID = "transmission_sessionid";

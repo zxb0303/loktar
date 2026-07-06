@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 public class RedisUtil {
+    //TODO 去掉这个类
 
     private final RedisTemplate<String, Object> redisTemplate;
 

@@ -920,6 +920,7 @@ DROP TABLE IF EXISTS `qywx_chatgpt_msg`;
 CREATE TABLE `qywx_chatgpt_msg`  (
                                      `id` int(11) NOT NULL AUTO_INCREMENT,
                                      `from_user_name` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+                                     `agent_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
                                      `role` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
                                      `text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
                                      `filename` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,

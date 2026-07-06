@@ -11,15 +11,11 @@ public class QywxChatgptMsg implements Serializable {
 
     private String fromUserName;
 
+    private String agentId;
+
     private String role;
 
     private String filename;
-
-    private Integer promptTokens;
-
-    private Integer completionTokens;
-
-    private Integer totaltokens;
 
     private LocalDateTime createTime;
 

@@ -10,10 +10,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
@@ -24,6 +26,7 @@ public class RedisConfig {
         // 自定义ObjectMapper：支持JSR-310时间类型，并启用受限的default typing保证多态反序列化安全
         ObjectMapper objectMapper = JsonMapper.builder()
                 .addModule(new JavaTimeModule())
+                .addModule(new ParameterNamesModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .activateDefaultTyping(
@@ -47,5 +50,10 @@ public class RedisConfig {
         // 设置hash的value的序列化方式
         redisTemplate.setHashValueSerializer(jsonSerializer);
         return redisTemplate;
+    }
+
+    @Bean
+    public StringRedisTemplate stringRedisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
+        return new StringRedisTemplate(lettuceConnectionFactory);
     }
 }

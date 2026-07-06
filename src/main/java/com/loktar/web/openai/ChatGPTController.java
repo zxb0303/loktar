@@ -4,10 +4,8 @@ package com.loktar.web.openai;
 import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
-import com.loktar.dto.openai.OpenAiMessage;
-import com.loktar.dto.openai.OpenAiRequest;
-import com.loktar.dto.openai.OpenAiResponse;
 import com.loktar.dto.wx.UploadMediaRsp;
+import dev.langchain4j.model.chat.response.ChatResponse;
 import com.loktar.dto.wx.agentmsg.AgentMsgVoice;
 import com.loktar.util.*;
 import com.loktar.util.wx.qywx.QywxApi;
@@ -15,6 +13,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
@@ -24,7 +23,6 @@ import java.time.LocalDateTime;
 @RequestMapping("chatgpt")
 @Slf4j
 public class ChatGPTController {
-    private OpenAiRequest openAiRequest;
 
     private final QywxApi qywxApi;
 
@@ -46,17 +44,20 @@ public class ChatGPTController {
     }
 
     @GetMapping("/completions")
-    public void completions(String text) {
-        OpenAiMessage openAiMessage = new OpenAiMessage(ChatGPTUtil.ROLE_USER, text);
-        if (ObjectUtils.isEmpty(openAiRequest)) {
-            openAiRequest = ChatGPTUtil.getDefaultRequest();
+    public void completions(String text, @RequestParam(defaultValue = "test") String userId) {
+        ChatResponse openAiResponse = chatGPTUtil.chat(userId, text, ChatGPTUtil.GPT_MODEL);
+        if (ObjectUtils.isEmpty(openAiResponse)) {
+            log.error("OpenAI API 调用失败");
+            return;
         }
-        openAiRequest.getMessages().add(openAiMessage);
-        OpenAiResponse openAiResponse = chatGPTUtil.completions(openAiRequest);
-        OpenAiMessage replyMsg = openAiResponse.getChoices().getFirst().getMessage();
-        openAiRequest.getMessages().add(replyMsg);
-        log.info("{}", replyMsg.content);
+        String replyContent = openAiResponse.aiMessage().text();
+        log.info("{}", replyContent);
+    }
 
+    @GetMapping("/reset")
+    public void reset(@RequestParam(defaultValue = "default") String userId) {
+        chatGPTUtil.resetChat(userId);
+        log.info("用户 {} 会话已重置", userId);
     }
 
     @SneakyThrows
