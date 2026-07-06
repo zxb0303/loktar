@@ -161,7 +161,7 @@ public class QyWeixinCallbackChatGPTController {
                 return;
             }
             clearNoticeDraft(receiveBaseMsg.getFromUserName());
-            String replymsg = noticeIntent.isInsertSuccess() ? "已添加提醒：" + noticeIntent.getTitle() : "添加提醒失败";
+            String replymsg = noticeIntent.isInsertSuccess() ? "已添加提醒：" + noticeIntent.getTitle() + "\n" + noticeIntent.getContent() + "\n" + noticeIntent.getNoticeTime() : "添加提醒失败";
             sendTextAndVoice(replymsg, receiveBaseMsg, true, false);
             return;
         }

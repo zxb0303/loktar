@@ -19,10 +19,10 @@ public class IntentTool {
         this.noticeUser = noticeUser;
     }
 
-    @Tool("当用户明确想添加一条提醒/备忘/待办，并且已经提供了具体提醒时间时调用")
+    @Tool("当用户明确想添加一条提醒/备忘/待办，并且已经提供了具体提醒时间时调用。title 和 content 必须从用户的原始消息中准确提炼，禁止返回空泛内容（如'提醒'、'提醒事项'、'事项'）")
     public String addNotice(
-            @P("提醒标题，简洁，不超过40字") String title,
-            @P("提醒内容，不超过255字") String content,
+            @P("提醒标题，从用户原始消息中提炼，简洁概括要提醒的事，例如'买高铁票'、'接儿子'、'开会'，不超过40字") String title,
+            @P("提醒内容，从用户原始消息中提炼，必须保留完整关键信息（事件、时间、地点等），例如'买23日7点30分去上海的高铁票'，不超过255字") String content,
             @P("提醒时间，格式必须是 yyyy-MM-dd HH:mm") String noticeTime) {
         Notice notice = new Notice();
         notice.setNoticeTitle(title);
@@ -42,12 +42,17 @@ public class IntentTool {
         return insertResult == 1 ? "添加成功" : "添加失败";
     }
 
-    @Tool("当用户想添加提醒但缺少必要信息（特别是具体提醒时间）时调用")
-    public String askForMissingInfo(@P("说明具体缺少什么信息，例如缺少提醒时间") String missingInfo) {
+    @Tool("当用户想添加提醒但缺少必要信息（特别是具体提醒时间）时调用。title 和 content 必须从用户原始消息中准确提炼并保存，禁止返回空泛内容")
+    public String askForMissingInfo(
+            @P("说明具体缺少什么信息，例如缺少提醒时间") String missingInfo,
+            @P("提醒标题，从用户原始消息中提炼，简洁概括要提醒的事，例如'买票'、'开会'，不超过10字") String title,
+            @P("提醒内容，从用户原始消息中提炼，必须保留完整关键信息，例如'买23日7点30分去上海的高铁票'，'预约汽车保养'，'给xxx打电话'，不超过40字") String content) {
         result = new IntentResult();
         result.setNotice(true);
         result.setNeedConfirm(true);
         result.setUncertainField(missingInfo);
+        result.setTitle(title);
+        result.setContent(content);
         return "已记录缺失信息";
     }
 
