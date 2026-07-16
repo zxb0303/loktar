@@ -1,6 +1,8 @@
 package com.loktar.task.investment;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
@@ -43,16 +45,20 @@ public class FundNavTask {
     private final QywxApi qywxApi;
     private final LokTarConfig lokTarConfig;
     private final HttpClient httpClient;
-
-    private static final String FUND_NAV_URL = "https://fundf10.eastmoney.com/F10DataApi.aspx?type=lsjz&code={0}&sdate={1}&edate={2}&per={3}&page={4}";
+    private final ObjectMapper objectMapper;
     private static final List<String> FUND_CODES = List.of("021550");
 
-    public FundNavTask(FundNavMapper fundNavMapper, PropertyMapper propertyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig, HttpClient httpClient) {
+    private static final String FUND_NAV_URL = "https://fundf10.eastmoney.com/F10DataApi.aspx?type=lsjz&code={0}&sdate={1}&edate={2}&per={3}&page={4}";
+    private static final String FUND_NAV_FALLBACK_URL = "https://api.fund.eastmoney.com/f10/lsjz?fundCode={0}&pageIndex={1}&pageSize={2}";
+    private static final String FUND_NAV_FALLBACK_REFERER = "http://fundf10.eastmoney.com/jjjz_{0}.html";
+
+    public FundNavTask(FundNavMapper fundNavMapper, PropertyMapper propertyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig, HttpClient httpClient, ObjectMapper objectMapper) {
         this.fundNavMapper = fundNavMapper;
         this.propertyMapper = propertyMapper;
         this.qywxApi = qywxApi;
         this.lokTarConfig = lokTarConfig;
         this.httpClient = httpClient;
+        this.objectMapper = objectMapper;
     }
 
     @Scheduled(cron = "0 0/10 18-23 * * *")
@@ -81,8 +87,12 @@ public class FundNavTask {
             List<FundNav> list = parseFundNav(response.body(), fundCode);
 
             if (list.isEmpty()) {
-                log.info("{}", fundCode + " 未获取到数据");
-                continue;
+                log.info("{}", fundCode + " 主接口未获取到数据，尝试备用接口");
+                list = fetchFundNavFallback(fundCode);
+                if (list.isEmpty()) {
+                    log.info("{}", fundCode + " 备用接口也未获取到数据");
+                    continue;
+                }
             }
 
             FundNav fundNav = list.get(0);
@@ -166,6 +176,67 @@ public class FundNavTask {
                 }
             }
             result.add(fundNav);
+        }
+        return result;
+    }
+
+    @SneakyThrows
+    private List<FundNav> fetchFundNavFallback(String fundCode) {
+        String url = MessageFormat.format(FUND_NAV_FALLBACK_URL, fundCode, "1", "1");
+        String referer = MessageFormat.format(FUND_NAV_FALLBACK_REFERER, fundCode);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header(LokTarConstant.HTTP_HEADER_REFERER, referer)
+                .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
+                .timeout(Duration.ofSeconds(30))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return parseFundNavFallback(response.body(), fundCode);
+    }
+
+    private List<FundNav> parseFundNavFallback(String response, String code) {
+        List<FundNav> result = new ArrayList<>();
+        try {
+            JsonNode root = objectMapper.readTree(response);
+            JsonNode errCode = root.get("ErrCode");
+            if (errCode == null || errCode.asInt() != 0) {
+                log.warn("{} 备用接口返回错误: {}", code, root.has("ErrMsg") ? root.get("ErrMsg").asText() : "unknown");
+                return result;
+            }
+            JsonNode lsjzList = root.path("Data").path("LSJZList");
+            if (lsjzList.isMissingNode() || !lsjzList.isArray() || lsjzList.isEmpty()) {
+                return result;
+            }
+            for (JsonNode item : lsjzList) {
+                FundNav fundNav = new FundNav();
+                fundNav.setFundCode(code);
+                fundNav.setNavDate(LocalDate.parse(item.get("FSRQ").asText().trim(), DateTimeUtil.FORMATTER_DATE));
+                fundNav.setUnitNav(new BigDecimal(item.get("DWJZ").asText().trim()));
+                fundNav.setAccNav(new BigDecimal(item.get("LJJZ").asText().trim()));
+
+                String growthRateStr = item.has("JZZZL") && !item.get("JZZZL").isNull() ? item.get("JZZZL").asText().trim() : "";
+                if (!growthRateStr.isEmpty()) {
+                    fundNav.setGrowthRate(new BigDecimal(growthRateStr));
+                }
+
+                fundNav.setSubscribeStatus(item.has("SGZT") ? item.get("SGZT").asText().trim() : "");
+                fundNav.setRedeemStatus(item.has("SHZT") ? item.get("SHZT").asText().trim() : "");
+
+                String fhfcz = item.has("FHFCZ") && !item.get("FHFCZ").isNull() ? item.get("FHFCZ").asText().trim() : "";
+                if (!fhfcz.isEmpty()) {
+                    java.util.regex.Pattern bonusPattern = java.util.regex.Pattern.compile("\\d+\\.\\d+");
+                    java.util.regex.Matcher bonusMatcher = bonusPattern.matcher(fhfcz);
+                    if (bonusMatcher.find()) {
+                        fundNav.setBonus(new BigDecimal(bonusMatcher.group()));
+                    }
+                }
+
+                result.add(fundNav);
+            }
+        } catch (Exception e) {
+            log.error("{} 备用接口解析异常: {}", code, e.getMessage(), e);
         }
         return result;
     }

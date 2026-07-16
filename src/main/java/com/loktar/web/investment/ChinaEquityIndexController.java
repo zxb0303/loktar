@@ -1,64 +1,27 @@
 package com.loktar.web.investment;
 
 
-import lombok.extern.slf4j.Slf4j;
-import com.loktar.conf.LokTarConfig;
-import com.loktar.domain.investment.EquityIndexDividendYieldDaily;
-import com.loktar.dto.wx.agentmsg.AgentMsgText;
-import com.loktar.mapper.investment.EquityIndexDividendYieldDailyMapper;
-import com.loktar.util.ChinaEquityIndexUtil;
-import com.loktar.util.DateTimeUtil;
-import com.loktar.util.wx.qywx.QywxApi;
+import com.loktar.task.investment.ChinaEquityIndexTask;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("chinaEquityIndex")
 @Slf4j
 public class ChinaEquityIndexController {
-    private final EquityIndexDividendYieldDailyMapper equityIndexDividendYieldDailyMapper;
-    private final QywxApi qywxApi;
-    private final LokTarConfig lokTarConfig;
+    private final ChinaEquityIndexTask chinaEquityIndexTask;
 
-
-    public ChinaEquityIndexController(EquityIndexDividendYieldDailyMapper equityIndexDividendYieldDailyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig) {
-        this.equityIndexDividendYieldDailyMapper = equityIndexDividendYieldDailyMapper;
-        this.qywxApi = qywxApi;
-        this.lokTarConfig = lokTarConfig;
+    public ChinaEquityIndexController(ChinaEquityIndexTask chinaEquityIndexTask) {
+        this.chinaEquityIndexTask = chinaEquityIndexTask;
     }
 
-    @PostMapping("/getData")
+    @PostMapping("/testGatData")
     @SneakyThrows
     public void getData() {
-        for (String index : ChinaEquityIndexUtil.EQUITY_INDEXS) {
-            String fileUrl = MessageFormat.format(ChinaEquityIndexUtil.INDICATOR_URL, index);
-            List<EquityIndexDividendYieldDaily> result = ChinaEquityIndexUtil.readExcelFromUrl(fileUrl);
-            for (EquityIndexDividendYieldDaily entity : result) {
-                equityIndexDividendYieldDailyMapper.insertIgnore(entity);
-            }
-        }
+        chinaEquityIndexTask.getData();
     }
-
-    @PostMapping("/sendMsg")
-    @SneakyThrows
-    public void sendMsg() {
-        List<EquityIndexDividendYieldDaily> result = equityIndexDividendYieldDailyMapper.getRecentEquityIndexDividendYieldDaily();
-        StringBuilder msg = new StringBuilder();
-        msg.append("上一交易日红利指数股息率情况：").append(System.lineSeparator()).append(System.lineSeparator());
-        for (EquityIndexDividendYieldDaily entity : result) {
-            msg.append(entity.getEquityIndexName()).append("(").append(entity.getEquityIndex()).append(")：").append(entity.getDividendYield()).append("%").append(System.lineSeparator());
-        }
-        msg.append(System.lineSeparator());
-        msg.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
-        qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent009Id(), msg.toString()));
-        log.info("{}", result);
-    }
-
 
 }

@@ -33,7 +33,7 @@ public class ChinaEquityIndexTask {
     }
 
     @Scheduled(cron = "0 0/10 18-23 * * *")
-    private void getData() {
+    public void getData() {
         log.info("{}", "指数定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
 
         String today = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE_COMPACT);
