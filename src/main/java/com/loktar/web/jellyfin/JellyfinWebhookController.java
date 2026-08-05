@@ -18,6 +18,7 @@ import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("jellyfin")
@@ -115,7 +116,7 @@ public class JellyfinWebhookController {
                 content = "Transmission已自动关闭限速";
             }
             try {
-                Thread.sleep(1000);
+                TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return;

@@ -70,7 +70,7 @@ public class CommonTask {
      * @createTime: 2021-06-02 14:38
      */
     @Scheduled(cron = "0 30 7 * * ?")
-    private void lotteryNotice() {
+    public void lotteryNotice() {
 //        commonService.sendLandNotice();
 //        commonService.sendSecondHandHouseNotice();
         commonService.sendLotteryNotice();

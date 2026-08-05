@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class VirtualThread {
@@ -14,9 +15,10 @@ public class VirtualThread {
         List<Thread> threads = new ArrayList<>();
         Thread thread1 = Thread.ofVirtual().start(() -> {
             try {
-                Thread.sleep(1000);
+                TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread().interrupt();
+                return;
             }
             log.info("{}", "Hello, virtual thread11!");
 

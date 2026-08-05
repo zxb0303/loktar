@@ -24,7 +24,7 @@ public class LandTask {
     }
 
     @Scheduled(cron = "0 5 0 * * ?")
-    private void updateLandData() {
+    public void updateLandData() {
         log.info("{}", "土拍定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         String year = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_YEAR);
         landService.updateLandData(year);

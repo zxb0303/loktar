@@ -32,7 +32,7 @@ public class DayTask {
      * 每月第一个工作日 9点半提醒
      */
     @Scheduled(cron = "0 30 9 * * ?")
-    private void zhiyiFlowRemind() {
+    public void zhiyiFlowRemind() {
         LocalDate today = LocalDate.now();
         LocalDate firstWorkday = getFirstWorkdayOfMonth(today);
         if (today.equals(firstWorkday)) {
@@ -52,7 +52,7 @@ public class DayTask {
      * @createTime: 2021-06-02 14:38
      */
     @Scheduled(cron = "0 0 10 * * ?")
-    private void CXYnotice() {
+    public void CXYnotice() {
         LocalDate today = LocalDate.now();
         LocalDate lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
 
@@ -81,7 +81,7 @@ public class DayTask {
      * @createTime: 2021-06-02 14:38
      */
     @Scheduled(cron = "0 30 16 * * ?")
-    private void CXYnotice1() {
+    public void CXYnotice1() {
         LocalDate today = LocalDate.now();
         LocalDate lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
 
@@ -110,7 +110,7 @@ public class DayTask {
      * @createTime: 2024-06-19
      */
     @Scheduled(cron = "0 0 15 * * ?")
-    private void CXYnotice2() {
+    public void CXYnotice2() {
         LocalDate today = LocalDate.now();
 
         // 计算下一个月的第一个工作日
@@ -141,7 +141,7 @@ public class DayTask {
      * @createTime: 2024-06-20
      */
     @Scheduled(cron = "0 0 15 * * ?")
-    private void gjjBalanceRemind() {
+    public void gjjBalanceRemind() {
         LocalDate today = LocalDate.now();
         // 获取本月21号
         LocalDate day21 = today.withDayOfMonth(21);
@@ -178,7 +178,7 @@ public class DayTask {
      * @createTime: 2024-06-20
      */
     @Scheduled(cron = "0 0 10 * * ?")
-    private void gjjOpRemind() {
+    public void gjjOpRemind() {
         LocalDate today = LocalDate.now();
         LocalDate baseDay = today.withDayOfMonth(21);
 

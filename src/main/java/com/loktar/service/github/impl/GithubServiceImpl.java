@@ -11,10 +11,13 @@ import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.github.GHFileNotFoundException;
 import org.kohsuke.github.GHRelease;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
+import org.kohsuke.github.HttpConnector;
+import org.kohsuke.github.extras.ImpatientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class GithubServiceImpl implements GithubService {
@@ -43,9 +47,10 @@ public class GithubServiceImpl implements GithubService {
         List<GithubRepository> githubRepositorys = githubRepositoryMapper.getNeedCheckGithubRepositorys();
         for (GithubRepository githubRepository : githubRepositorys) {
             try {
-                Thread.sleep(1000);
+                TimeUnit.MILLISECONDS.sleep(200);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread().interrupt();
+                return;
             }
             GHRelease ghRelease = getGithubRelease(githubRepository.getRepository());
             if (StringUtils.isEmpty(githubRepository.getLastTagName()) || ghRelease.getId() > githubRepository.getLastTagId()) {
@@ -69,12 +74,20 @@ public class GithubServiceImpl implements GithubService {
     private GHRelease getGithubRelease(String repository) {
         GitHub github = new GitHubBuilder()
                 .withOAuthToken(lokTarConfig.getGithub().getAuthorization())
+                .withConnector(new ImpatientHttpConnector(HttpConnector.DEFAULT,
+                        (int) TimeUnit.SECONDS.toMillis(10),
+                        (int) TimeUnit.SECONDS.toMillis(30)))
                 .build();
         GHRepository ghRepository = github.getRepository(repository);
-        List<GHRelease> releases = ghRepository.listReleases().toList();
-        return releases.stream()
-                .filter(r -> !r.isPrerelease())
-                .findFirst()
-                .orElse(releases.getFirst());
+        try {
+            return ghRepository.getLatestRelease();
+        } catch (GHFileNotFoundException e) {
+            // 没有正式 release 时（仅有预发布版本），回退为遍历 release 列表
+            List<GHRelease> releases = ghRepository.listReleases().toList();
+            return releases.stream()
+                    .filter(r -> !r.isPrerelease())
+                    .findFirst()
+                    .orElse(releases.getFirst());
+        }
     }
 }

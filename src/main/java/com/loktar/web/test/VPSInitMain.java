@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -268,7 +269,12 @@ public class VPSInitMain {
                 }
                 break;
             }
-            Thread.sleep(500);
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
         }
         channel.disconnect();
         return outputBuffer.toString();
@@ -344,7 +350,12 @@ public class VPSInitMain {
                 }
                 break;
             }
-            Thread.sleep(500);
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
         }
         channel.disconnect();
     }

@@ -25,7 +25,7 @@ public class GithubTask {
 
 
     @Scheduled(cron = "0 */20 * * * ?")
-    private void notice() {
+    public void notice() {
         log.info("{}", "Github定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
         githubService.checkRepositoryTag();
     }

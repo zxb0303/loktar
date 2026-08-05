@@ -26,7 +26,7 @@ public class RssTask {
     }
 
     @Scheduled(cron = "0 */1 * * * ?")
-    private void refreshAndDealTrRssTorrents() {
+    public void refreshAndDealTrRssTorrents() {
 
         LocalTime now = LocalTime.now();
         int minute = now.getMinute();

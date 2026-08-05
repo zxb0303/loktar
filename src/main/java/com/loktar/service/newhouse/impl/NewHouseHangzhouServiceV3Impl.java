@@ -43,6 +43,7 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -99,7 +100,12 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
     @Override
     @SneakyThrows
     public void memberLogin() {
-        Thread.sleep(2000);
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
+        }
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(URL_NEW_HOUSE_MEMBER_LOGIN))
                 .timeout(Duration.ofSeconds(30))
@@ -115,7 +121,12 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
     @Override
     @SneakyThrows
     public NewHouseHangzhouV3 getNewHouseData(String houseName) {
-        Thread.sleep(2000);
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(URL_NEW_HOUSE_DATA, houseName)))
                 .timeout(Duration.ofSeconds(30))
@@ -176,7 +187,12 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
     @Override
     @SneakyThrows
     public List<NewHouseHangzhouV3Presell> getNewHousePresellDataByHouseId(String houseId) {
-        Thread.sleep(2000);
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
         NewHouseHangzhouV3 newHouseHangzhouV3 = newHouseHangzhouV3Mapper.selectByPrimaryKey(houseId);
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(MessageFormat.format(URL_NEW_HOUSE_PRESELL_DATA, newHouseHangzhouV3.getTempHouseId())))
@@ -226,7 +242,12 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
         List<NewHouseHangzhouV3PresellBuild> newHouseHangzhouV3PresellBuilds = new ArrayList<>();
 
         for (NewHouseHangzhouV3Presell newHouseHangzhouV3Presell : newHouseHangzhouV3Presells) {
-            Thread.sleep(2000);
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(MessageFormat.format(URL_NEW_HOUSE_PRESELL_BUILD_DATA, newHouseHangzhouV3.getTempHouseId(), newHouseHangzhouV3Presell.getPresellId())))
                     .timeout(Duration.ofSeconds(30))
@@ -283,7 +304,12 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
             int page = 1;
             int pageSize = 1;
             while (page <= pageSize) {
-                Thread.sleep(2000);
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
                 HttpRequest httpRequest = HttpRequest.newBuilder()
                         .uri(URI.create(MessageFormat.format(URL_NEW_HOUSE_DETAIL_DATA, page, newHouseHangzhouV3.getTempHouseId(), newHouseHangzhouV3PresellBuild.getPresellId(), newHouseHangzhouV3PresellBuild.getBuildId())))
                         .timeout(Duration.ofSeconds(30))

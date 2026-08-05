@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -95,7 +96,12 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
         int totalNum = 1;
         int pageName = 1;
         while (secondHandHouses.size() < totalNum) {
-            Thread.sleep(500);
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
             String requestBody = MessageFormat.format(REQUEST_STR, date, date, String.valueOf(pageName));
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(URL))

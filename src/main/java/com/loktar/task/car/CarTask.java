@@ -33,7 +33,7 @@ public class CarTask {
     }
 
     @Scheduled(cron = "0 */10 * * * ?")
-    private void notice() {
+    public void notice() {
         Property xc90AppVersionProperty = propertyMapper.selectByPrimaryKey("xc90_app_version");
         String lastVersion = CarUtil.getLastVersion();
         if (!lastVersion.equals(xc90AppVersionProperty.getValue())) {

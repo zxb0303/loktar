@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 @Service
@@ -156,7 +157,12 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
             page = page + 1;
             //如果没抓到数据，就再来一次
             if (trs.isEmpty()) {
-                Thread.sleep(2000);
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
                 page = page - 1;
             }
         }

@@ -4,6 +4,7 @@ package com.loktar.learn.jdk8;
 import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class Concurrency {
@@ -13,9 +14,9 @@ public class Concurrency {
         CompletableFuture<Integer> future1 = CompletableFuture.supplyAsync(() -> {
             // 模拟耗时操作
             try {
-                Thread.sleep(2000);
+                TimeUnit.SECONDS.sleep(2);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
             return 42;
         });
@@ -23,9 +24,9 @@ public class Concurrency {
         CompletableFuture<Integer> future2 = CompletableFuture.supplyAsync(() -> {
             // 模拟耗时操作
             try {
-                Thread.sleep(3000);
+                TimeUnit.SECONDS.sleep(3);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
             return 100;
         });

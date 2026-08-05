@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("chatgpt")
@@ -87,7 +88,12 @@ public class ChatGPTController {
             }
             log.info("{}", "file not exist "+DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
             times--;
-            Thread.sleep(1000);
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
         }
     }
 

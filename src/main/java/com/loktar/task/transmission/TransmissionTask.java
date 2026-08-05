@@ -24,7 +24,7 @@ public class TransmissionTask {
     }
 
     @Scheduled(cron = "0 */10 * * * ?")
-    private void refresh() {
+    public void refresh() {
         //TODO 打印
         log.info("{}", "Transmission定时器：刷新做种数据");
         transmissionService.refreshAllTorrents();

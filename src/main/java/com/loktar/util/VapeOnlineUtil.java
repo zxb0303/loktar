@@ -22,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -107,7 +108,12 @@ public class VapeOnlineUtil {
             } else {
                 break;
             }
-            Thread.sleep(200);
+            try {
+                TimeUnit.MILLISECONDS.sleep(200);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
         }
         return maxQuantity;
     }
