@@ -43,7 +43,7 @@ public class PatentTask {
         this.redisUtil = redisUtil;
     }
 
-    @Scheduled(cron = "0 */3 * * * *")
+    @Scheduled(cron = "0 */30 * * * *")
     public void patentMonitor() {
         StringBuilder replymsg = new StringBuilder();
         String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
@@ -83,7 +83,7 @@ public class PatentTask {
     }
 
 
-    @Scheduled(cron = "*/3 * * * * *")
+    @Scheduled(cron = "* */30 * * * *")
     public void dealQywxPatentMsg() {
         boolean lock = redisUtil.setIfAbsent(LokTarConstant.REDIS_KEY_QYWX_PATENT_MSG_TASK_LOCK, "1", 10);
         if (lock) {
