@@ -45,6 +45,7 @@ public class LokTarConstant {
     public final static String NOTICE_JELLYFIN_START = "Jellyfin开始播放通知";
     public final static String NOTICE_JELLYFIN_STOP = "Jellyfin停止播放通知";
     public final static String NOTICE_RELX_STOCK = "华人蒸汽库存通知";
+    public final static String NOTICE_TITLE_MINECRAFT = "Minecraft基岩版更新通知";
 
 
     public final static String NOTICE_CERTIMATE = "Certimate通知";

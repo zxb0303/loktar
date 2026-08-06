@@ -11,14 +11,12 @@ import com.loktar.mapper.cxy.EmployeeMapper;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
-@Profile(LokTarConstant.ENV_PRO)
 @Slf4j
 public class EmployeeTask {
     private final QywxApi qywxApi;

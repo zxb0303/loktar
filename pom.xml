@@ -10,7 +10,7 @@
     </parent>
     <groupId>com</groupId>
     <artifactId>loktar</artifactId>
-    <version>6.0.7</version>
+    <version>6.0.8</version>
     <name>loktar</name>
     <description>loktar</description>
     <properties>
@@ -174,6 +174,12 @@
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
             <version>1.330</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.fragland</groupId>
+            <artifactId>MineStat</artifactId>
+            <version>3.0.6</version>
         </dependency>
 
         <dependency>

@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "定时任务/HTTP调用审查清单、必须模式（构造器注入、@Slf4j参数化日志、@Profile(ENV_PRO)、JDK HttpClient单例）与禁止项"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "@SneakyThrows处理受检异常、定时任务异常由SchedulerConfig全局兜底、禁止吞异常"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "定时任务放task/{module}包、工具类放com.loktar.util扁平结构、DTO放dto/{module}"}
+{"file": ".trellis/spec/backend/logging-guidelines.md", "reason": "@Slf4j + log.info(\"{}\", v) 参数化日志模式"}

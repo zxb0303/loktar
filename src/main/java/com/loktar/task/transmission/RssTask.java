@@ -3,11 +3,9 @@ package com.loktar.task.transmission;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.transmission.TrRss;
 import com.loktar.service.transmission.RssService;
 import com.loktar.util.DelayUtil;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +13,6 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Component
-@Profile(LokTarConstant.ENV_PRO)
 @Slf4j
 public class RssTask {
 

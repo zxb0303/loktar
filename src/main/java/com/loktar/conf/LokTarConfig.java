@@ -22,6 +22,8 @@ public class LokTarConfig {
     private HomeAssistant homeAssistant;
     private Ipstack ipstack;
     private Security security;
+    private Minecraft minecraft;
+    private Portainer portainer;
 
 
     @Data
@@ -120,5 +122,19 @@ public class LokTarConfig {
     @Data
     public static class Security {
         private String token;
+    }
+
+    @Data
+    public static class Minecraft {
+        private String host;
+        private int port;
+        private String containerName;
+    }
+
+    @Data
+    public static class Portainer {
+        private String baseUrl;
+        private String apiToken;
+        private String endpointId;
     }
 }

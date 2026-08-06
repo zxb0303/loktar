@@ -7,7 +7,6 @@ import com.loktar.service.common.CommonService;
 import com.loktar.service.common.NoticeServer;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
-@Profile("pro")
 public class CommonTask {
 
     private final CommonService commonService;

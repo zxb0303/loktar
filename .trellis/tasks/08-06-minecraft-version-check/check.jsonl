@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "核对定时任务审查清单与禁止项（System.out、@Autowired字段注入、printStackTrace、new HttpClient等）"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "核对异常处理符合@SneakyThrows+全局兜底模式，无吞异常"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "核对新增类位于正确包路径（task/minecraft、util、dto/minecraft）"}

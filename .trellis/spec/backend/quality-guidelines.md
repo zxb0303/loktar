@@ -19,7 +19,7 @@
 | `@Slf4j` + `log.info("{}", v)` | 参数化日志 | [logging-guidelines.md](./logging-guidelines.md) |
 | `@SneakyThrows` 处理受检异常 | 不在方法签名声明 `throws` | [error-handling.md](./error-handling.md) |
 | `@RestController` + `@RequestMapping` 无斜杠 | 类级路由不带前导斜杠 | [api-routes.md](./api-routes.md) |
-| `@Profile(ENV_PRO)` 限定定时任务 | 定时任务仅在 PRO 环境运行 | — |
+| 调度开关集中于 `SchedulerConfig` | `@Profile(ENV_PRO)` 只标注在 `SchedulerConfig`（`@EnableScheduling` 所在配置类）上，定时任务类本身不加 `@Profile`，bean 全环境注册，dev 通过 Controller 手动触发调试 | — |
 | JDK `HttpClient` 单例注入 | 不使用 `RestTemplate` 或 `new HttpClient()` | — |
 | `DateTimeUtil` 统一日期格式化 | 不直接使用 `SimpleDateFormat` | — |
 
@@ -42,7 +42,7 @@
 
 ## 定时任务审查清单
 
-- [ ] 类标注 `@Component` + `@Profile(LokTarConstant.ENV_PRO)` + `@Slf4j`
+- [ ] 类标注 `@Component` + `@Slf4j`（**不加 `@Profile`**，调度开关由 `SchedulerConfig` 上的 `@Profile(ENV_PRO)` 统一控制，pro 才激活调度器，dev 一律不自动触发）
 - [ ] 方法标注 `@Scheduled(cron = "...")`
 - [ ] 数据库写入操作有幂等性检查（先查后插/更新）
 - [ ] 日志记录任务开始和结束时间
@@ -54,7 +54,6 @@
 
 ```java
 @Component
-@Profile(LokTarConstant.ENV_PRO)
 @Slf4j
 public class LandTask {
     private final LandService landService;

@@ -2,17 +2,14 @@ package com.loktar.task.lottery;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.loktar.conf.LokTarConstant;
 import com.loktar.service.lottery.HZLotteryServiceV2;
 import com.loktar.util.DateTimeUtil;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
-@Profile(LokTarConstant.ENV_PRO)
 @Slf4j
 public class LotteryTask {
     private final HZLotteryServiceV2 hZLotteryServiceV2;

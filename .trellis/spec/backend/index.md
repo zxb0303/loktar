@@ -15,6 +15,7 @@
 | [目录结构](./directory-structure.md) | 按业务模块分包的完整包结构 | 已填充 |
 | [数据库规范](./database-guidelines.md) | MyBatis + MBG + Lombok Domain 模式 | 已填充 |
 | [错误处理](./error-handling.md) | @SneakyThrows + SchedulerConfig 全局兜底 | 已填充 |
+| [外部集成契约](./external-integrations.md) | Portainer REST API、MineStat 基岩版查询的可执行契约 | 已填充 |
 | [质量规范](./quality-guidelines.md) | 代码审查清单、必须模式、禁止项 | 已填充 |
 | [测试规范](./tests.md) | src/test/ 为空的现状声明 | 已填充 |
 | [前端表单](./frontend-forms.md) | 无前端代码的现状声明 | 已填充 |

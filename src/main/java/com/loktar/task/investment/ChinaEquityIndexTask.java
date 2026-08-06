@@ -3,14 +3,12 @@ package com.loktar.task.investment;
 
 import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
-import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.investment.EquityIndexDividendYieldDaily;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.investment.EquityIndexDividendYieldDailyMapper;
 import com.loktar.util.ChinaEquityIndexUtil;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +17,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
-@Profile(LokTarConstant.ENV_PRO)
 @Slf4j
 public class ChinaEquityIndexTask {
     private final EquityIndexDividendYieldDailyMapper equityIndexDividendYieldDailyMapper;
