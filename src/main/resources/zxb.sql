@@ -308,6 +308,31 @@ CREATE TABLE `equity_index_dividend_yield_daily`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 4361 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Table structure for equity_index_perf_daily
+-- ----------------------------
+DROP TABLE IF EXISTS `equity_index_perf_daily`;
+CREATE TABLE `equity_index_perf_daily`  (
+                                            `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+                                            `index_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '指数代码',
+                                            `index_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '指数中文简称',
+                                            `trade_date` date NOT NULL COMMENT '交易日期',
+                                            `open` decimal(14, 2) NULL DEFAULT NULL COMMENT '开盘点位',
+                                            `high` decimal(14, 2) NULL DEFAULT NULL COMMENT '最高点位',
+                                            `low` decimal(14, 2) NULL DEFAULT NULL COMMENT '最低点位',
+                                            `close` decimal(14, 2) NULL DEFAULT NULL COMMENT '收盘点位',
+                                            `change` decimal(14, 2) NULL DEFAULT NULL COMMENT '涨跌点数',
+                                            `change_pct` decimal(6, 4) NULL DEFAULT NULL COMMENT '涨跌幅(%)',
+                                            `trading_vol` double NULL DEFAULT NULL COMMENT '成交量',
+                                            `trading_value` decimal(16, 2) NULL DEFAULT NULL COMMENT '成交额',
+                                            `cons_number` int(11) NULL DEFAULT NULL COMMENT '成分股数量',
+                                            `peg` decimal(8, 2) NULL DEFAULT NULL COMMENT '市盈率',
+                                            `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                            `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                            PRIMARY KEY (`id`) USING BTREE,
+                                            UNIQUE INDEX `uk_index_code_trade_date`(`index_code`, `trade_date`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '中证指数每日行情表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
 -- Table structure for file_name
 -- ----------------------------
 DROP TABLE IF EXISTS `file_name`;

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.loktar.mapper.investment.EquityIndexPerfDailyMapper">
+  <resultMap id="BaseResultMap" type="com.loktar.domain.investment.EquityIndexPerfDaily">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="index_code" jdbcType="VARCHAR" property="indexCode" />
+    <result column="index_name" jdbcType="VARCHAR" property="indexName" />
+    <result column="trade_date" jdbcType="DATE" property="tradeDate" />
+    <result column="open" jdbcType="DECIMAL" property="open" />
+    <result column="high" jdbcType="DECIMAL" property="high" />
+    <result column="low" jdbcType="DECIMAL" property="low" />
+    <result column="close" jdbcType="DECIMAL" property="close" />
+    <result column="change" jdbcType="DECIMAL" property="change" />
+    <result column="change_pct" jdbcType="DECIMAL" property="changePct" />
+    <result column="trading_vol" jdbcType="DOUBLE" property="tradingVol" />
+    <result column="trading_value" jdbcType="DECIMAL" property="tradingValue" />
+    <result column="cons_number" jdbcType="INTEGER" property="consNumber" />
+    <result column="peg" jdbcType="DECIMAL" property="peg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from equity_index_perf_daily
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.loktar.domain.investment.EquityIndexPerfDaily">
+    insert into equity_index_perf_daily (id, index_code, index_name, 
+      trade_date, `open`, high, 
+      low, `close`, `change`, 
+      change_pct, trading_vol, trading_value, 
+      cons_number, peg, create_time, 
+      update_time)
+    values (#{id,jdbcType=BIGINT}, #{indexCode,jdbcType=VARCHAR}, #{indexName,jdbcType=VARCHAR}, 
+      #{tradeDate,jdbcType=DATE}, #{open,jdbcType=DECIMAL}, #{high,jdbcType=DECIMAL}, 
+      #{low,jdbcType=DECIMAL}, #{close,jdbcType=DECIMAL}, #{change,jdbcType=DECIMAL}, 
+      #{changePct,jdbcType=DECIMAL}, #{tradingVol,jdbcType=DOUBLE}, #{tradingValue,jdbcType=DECIMAL}, 
+      #{consNumber,jdbcType=INTEGER}, #{peg,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.loktar.domain.investment.EquityIndexPerfDaily">
+    update equity_index_perf_daily
+    set index_code = #{indexCode,jdbcType=VARCHAR},
+      index_name = #{indexName,jdbcType=VARCHAR},
+      trade_date = #{tradeDate,jdbcType=DATE},
+      `open` = #{open,jdbcType=DECIMAL},
+      high = #{high,jdbcType=DECIMAL},
+      low = #{low,jdbcType=DECIMAL},
+      `close` = #{close,jdbcType=DECIMAL},
+      `change` = #{change,jdbcType=DECIMAL},
+      change_pct = #{changePct,jdbcType=DECIMAL},
+      trading_vol = #{tradingVol,jdbcType=DOUBLE},
+      trading_value = #{tradingValue,jdbcType=DECIMAL},
+      cons_number = #{consNumber,jdbcType=INTEGER},
+      peg = #{peg,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, index_code, index_name, trade_date, `open`, high, low, `close`, `change`, 
+    change_pct, trading_vol, trading_value, cons_number, peg, create_time, update_time
+    from equity_index_perf_daily
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, index_code, index_name, trade_date, `open`, high, low, `close`, `change`, 
+    change_pct, trading_vol, trading_value, cons_number, peg, create_time, update_time
+    from equity_index_perf_daily
+  </select>
+  <select id="selectByIndexCodeAndTradeDate" resultMap="BaseResultMap">
+    select id, index_code, index_name, trade_date, `open`, high, low, `close`, `change`,
+    change_pct, trading_vol, trading_value, cons_number, peg, create_time, update_time
+    from equity_index_perf_daily
+    where index_code = #{indexCode,jdbcType=VARCHAR} and trade_date = #{tradeDate,jdbcType=DATE}
+  </select>
+  <select id="existsByIndexCodeAndTradeDate" resultType="java.lang.Boolean">
+    select count(1) > 0 from equity_index_perf_daily
+    where index_code = #{indexCode,jdbcType=VARCHAR} and trade_date = #{tradeDate,jdbcType=DATE}
+  </select>
+</mapper>
