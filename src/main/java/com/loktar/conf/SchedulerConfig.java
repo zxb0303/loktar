@@ -16,10 +16,10 @@ public class SchedulerConfig implements SchedulingConfigurer {
     @Bean(destroyMethod = "shutdown")
     public ThreadPoolTaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setPoolSize(8);                       // 同时可并行运行的任务数
+        scheduler.setPoolSize(10);                       // 同时可并行运行的任务数
         scheduler.setThreadNamePrefix("scheduled-");    // 线程名，方便看日志/线程栈
         scheduler.setWaitForTasksToCompleteOnShutdown(true);
-        scheduler.setAwaitTerminationSeconds(30);       // 关闭时最多等 30s
+        scheduler.setAwaitTerminationSeconds(60);       // 关闭时最多等 60s
         scheduler.setRemoveOnCancelPolicy(true);        // 取消的任务从队列移除，避免内存堆积
         scheduler.setErrorHandler(t -> 
             org.slf4j.LoggerFactory.getLogger("ScheduledError")

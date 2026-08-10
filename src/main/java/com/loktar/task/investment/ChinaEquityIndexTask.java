@@ -31,7 +31,7 @@ public class ChinaEquityIndexTask {
 
     @Scheduled(cron = "0 0/10 18-23 * * *")
     public void getData() {
-        log.info("{}", "指数定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
+        log.info("{}", "指数股息率定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
 
         String today = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE);
         boolean allExist = ChinaEquityIndexUtil.EQUITY_INDEXS.stream()

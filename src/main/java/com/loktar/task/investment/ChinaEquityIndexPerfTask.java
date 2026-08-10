@@ -38,7 +38,7 @@ public class ChinaEquityIndexPerfTask {
         this.objectMapper = objectMapper;
     }
 
-    @Scheduled(cron = "0 0/10 15-23 * * *")
+    @Scheduled(cron = "0 0/10 16-23 * * *")
     public void syncToday() {
         log.info("{}", "指数行情定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         LocalDate today = LocalDate.now();
@@ -90,7 +90,7 @@ public class ChinaEquityIndexPerfTask {
         }
         JsonNode data = root.path("data");
         if (!data.isArray() || data.isEmpty()) {
-            log.info("{} 行情接口未返回数据", indexCode);
+//            log.info("{} 行情接口未返回数据", indexCode);
             return;
         }
         for (JsonNode item : data) {
@@ -114,7 +114,7 @@ public class ChinaEquityIndexPerfTask {
                 perfDaily.setCreateTime(LocalDateTime.now());
                 perfDaily.setUpdateTime(LocalDateTime.now());
                 equityIndexPerfDailyMapper.insert(perfDaily);
-                log.info("{}", indexCode + " 新增成功：" + perfDaily.getTradeDate());
+                log.info("{}", indexCode + " 指数行情新增成功：" + perfDaily.getTradeDate());
             }
         }
     }
