@@ -7,6 +7,8 @@ import org.apache.poi.ss.usermodel.*;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URLConnection;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,11 +51,30 @@ public class ChinaEquityIndexUtil {
                 EquityIndexDividendYieldDaily entity = new EquityIndexDividendYieldDaily();
                 entity.setEquityIndex(equityIndex);
                 entity.setEquityIndexName(equityIndexName);
-                entity.setDate(date);
+                entity.setDate(normalizeDate(date));
                 entity.setDividendYield(Float.parseFloat(dividendYield));
                 result.add(entity);
             }
         }
         return result;
+    }
+
+    /**
+     * 将Excel中的日期单元格文本统一规范为yyyy-MM-dd格式
+     */
+    private static String normalizeDate(String date) {
+        if (date.isBlank()) {
+            return date;
+        }
+        try {
+            return DateTimeUtil.getDatetimeStr(DateTimeUtil.parseLocalDate(date, DateTimeUtil.FORMATTER_DATE_COMPACT), DateTimeUtil.FORMATTER_DATE);
+        } catch (Exception e) {
+            // 兼容yyyy/M/d等带分隔符的日期格式
+        }
+        try {
+            return DateTimeUtil.getDatetimeStr(LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy/M/d")), DateTimeUtil.FORMATTER_DATE);
+        } catch (Exception e) {
+            return date;
+        }
     }
 }
