@@ -1,6 +1,6 @@
 ---
 name: trellis-finish-work
-description: Wrap up the current session: quality gate, commit reminder, archive, journal.
+description: "Wrap up the current session: quality gate, commit reminder, archive, journal."
 ---
 
 # Finish Work

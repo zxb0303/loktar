@@ -1,6 +1,6 @@
 ---
 name: trellis-continue
-description: Resume work on the current task at the correct phase.
+description: "Resume work on the current task at the correct phase."
 ---
 
 # Continue Current Task
