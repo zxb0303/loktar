@@ -49,7 +49,8 @@ Jellyfin 用户播放时通过 Webhook 通知企微，同时对 Transmission 自
 ### 1.6 投资监控
 
 - **基金净值同步**：[FundNavTask.java](src/main/java/com/loktar/task/investment/FundNavTask.java) 定时拉取东方财富基金净值，结合持仓配置计算资产总额、盈亏比例并推送企微。
-- **A 股红利指数股息率**：[ChinaEquityIndexTask.java](src/main/java/com/loktar/task/investment/ChinaEquityIndexTask.java) 抓取指数股息率数据并播报。
+- **中证紅利指数股息率**：[ChinaEquityIndexTask.java](src/main/java/com/loktar/task/investment/ChinaEquityIndexTask.java) 抓取指数股息率数据并播报。
+- **中证指数每日行情**：[ChinaEquityIndexPerfTask.java](src/main/java/com/loktar/task/investment/ChinaEquityIndexPerfTask.java) 定时同步中证指数官网行情数据（开高低收、涨跌幅、成交量、市盈率等），支持多指数配置、幂等入库；[ChinaEquityIndexPerfController.java](src/main/java/com/loktar/web/investment/ChinaEquityIndexPerfController.java) 提供手动触发当日同步与按日期区间初始化历史数据接口。
 
 ### 1.7 专利业务自动化
 
