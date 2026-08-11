@@ -59,7 +59,7 @@ public class FundNavTask {
         this.objectMapper = objectMapper;
     }
 
-    @Scheduled(cron = "0 0/10 18-23 * * *")
+    @Scheduled(cron = "0 0/10 19-23 * * *")
     @SneakyThrows
     public void syncToday() {
         log.info("{}", "基金定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));

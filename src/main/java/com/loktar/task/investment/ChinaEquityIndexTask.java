@@ -29,7 +29,7 @@ public class ChinaEquityIndexTask {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @Scheduled(cron = "0 0/10 18-23 * * *")
+    @Scheduled(cron = "0 0/10 19-23 * * *")
     public void getData() {
         log.info("{}", "指数股息率定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
 

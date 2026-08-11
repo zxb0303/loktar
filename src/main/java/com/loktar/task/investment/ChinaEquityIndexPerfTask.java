@@ -38,7 +38,7 @@ public class ChinaEquityIndexPerfTask {
         this.objectMapper = objectMapper;
     }
 
-    @Scheduled(cron = "0 0/10 16-23 * * *")
+    @Scheduled(cron = "0 0/10 18-23 * * *")
     public void syncToday() {
         log.info("{}", "指数行情定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         LocalDate today = LocalDate.now();
