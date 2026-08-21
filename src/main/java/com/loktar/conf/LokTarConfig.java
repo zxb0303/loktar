@@ -24,6 +24,7 @@ public class LokTarConfig {
     private Security security;
     private Minecraft minecraft;
     private Portainer portainer;
+    private Homepage homepage;
 
 
     @Data
@@ -136,5 +137,15 @@ public class LokTarConfig {
         private String baseUrl;
         private String apiToken;
         private String endpointId;
+    }
+
+    @Data
+    public static class Homepage {
+        private Services services;
+
+        @Data
+        public static class Services {
+            private String yaml;
+        }
     }
 }

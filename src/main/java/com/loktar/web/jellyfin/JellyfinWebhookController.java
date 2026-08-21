@@ -4,7 +4,6 @@ import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.jellyfin.Notification;
 import com.loktar.dto.jellyfin.Session;
-import com.loktar.dto.transmission.TrResponse;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.util.*;
 import com.loktar.util.wx.qywx.QywxApi;
@@ -30,65 +29,92 @@ public class JellyfinWebhookController {
     private final LokTarConfig lokTarConfig;
     private final RedisUtil redisUtil;
     private final IPUtil ipUtil;
+    private final HomepageUtil homepageUtil;
 
-    public JellyfinWebhookController(QywxApi qywxApi, TransmissionUtil transmissionUtil, JellyfinUtil jellyfinUtil, LokTarConfig lokTarConfig, RedisUtil redisUtil, IPUtil ipUtil) {
+    public JellyfinWebhookController(QywxApi qywxApi, TransmissionUtil transmissionUtil, JellyfinUtil jellyfinUtil, LokTarConfig lokTarConfig, RedisUtil redisUtil, IPUtil ipUtil, HomepageUtil homepageUtil) {
         this.qywxApi = qywxApi;
         this.transmissionUtil = transmissionUtil;
         this.jellyfinUtil = jellyfinUtil;
         this.lokTarConfig = lokTarConfig;
         this.redisUtil = redisUtil;
         this.ipUtil = ipUtil;
+        this.homepageUtil = homepageUtil;
     }
 
     @PostMapping("/webhook")
     public void webhook(@RequestBody Notification notification) {
         HtmlEntityDecoderUtil.decodeHtmlEntities(notification);
-        StringBuilder contentBuilder = new StringBuilder();
         switch (notification.getNotificationType()) {
             case "Generic":
-                contentBuilder.append(LokTarConstant.NOTICE_JELLYFIN).append(System.lineSeparator())
-                        .append(System.lineSeparator())
-                        .append(notification.getMessage());
-                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent004Id(), contentBuilder.toString()));
+                handleGenericNotification(notification);
                 break;
             case "PlaybackStart":
+                handlePlaybackStart(notification);
+                break;
             case "PlaybackStop":
-                Session session = jellyfinUtil.getSessionByDeviceId(notification.getDeviceId());
-                handlePlaybackEvents(notification, session, contentBuilder);
-                contentBuilder.append(System.lineSeparator())
-                        .append(System.lineSeparator())
-                        .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
-                if (!notification.getNotificationUsername().equals(LokTarConstant.JELLYFIN_NOT_NOTIFY)) {
-                    qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent004Id(), contentBuilder.toString()));
-                }
-                handleTransmissionSpeed(notification, session);
+                handlePlaybackStop(notification);
                 break;
             default:
                 break;
         }
-
     }
 
-    private void handlePlaybackEvents(Notification notification, Session session, StringBuilder contentBuilder) {
-        String playName = getPlayName(notification);
-        String eventType = "PlaybackStart".equals(notification.getNotificationType()) ? LokTarConstant.NOTICE_JELLYFIN_START : LokTarConstant.NOTICE_JELLYFIN_STOP;
+    /**
+     * 处理Jellyfin通用通知，直接推送通知消息
+     */
+    private void handleGenericNotification(Notification notification) {
+        String content = LokTarConstant.NOTICE_JELLYFIN + System.lineSeparator()
+                + System.lineSeparator()
+                + notification.getMessage();
+        sendNotice(content);
+    }
 
-        if ("PlaybackStart".equals(notification.getNotificationType()) && !isLocalNetwork(session.getRemoteEndPoint())) {
+    /**
+     * 处理播放开始事件：记录远程播放状态、推送播放通知、按需开启Transmission限速、切换homepage widget为NowPlaying模式
+     */
+    private void handlePlaybackStart(Notification notification) {
+        Session session = jellyfinUtil.getSessionByDeviceId(notification.getDeviceId());
+        if (!isLocalNetwork(session.getRemoteEndPoint())) {
             long expireTime = calculateSecondsDifference(notification);
             long existExpireTime = redisUtil.getExpire(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET);
-            expireTime = Math.max(expireTime, existExpireTime);
-            redisUtil.sSetAndTime(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, expireTime, notification.getNotificationUsername());
+            redisUtil.sSetAndTime(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, Math.max(expireTime, existExpireTime), notification.getNotificationUsername());
         } else {
             redisUtil.setRemove(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, notification.getNotificationUsername());
         }
+        sendPlaybackNotification(notification, session, LokTarConstant.NOTICE_JELLYFIN_START);
+        handleTransmissionSpeedOnStart(notification, session);
+        handleHomepageWidgetOnStart(notification);
+    }
 
+    /**
+     * 处理播放停止事件：清除远程播放状态、推送播放通知、按需关闭Transmission限速、无播放时切换homepage widget为Blocks模式
+     */
+    private void handlePlaybackStop(Notification notification) {
+        Session session = jellyfinUtil.getSessionByDeviceId(notification.getDeviceId());
+        redisUtil.setRemove(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, notification.getNotificationUsername());
+        sendPlaybackNotification(notification, session, LokTarConstant.NOTICE_JELLYFIN_STOP);
+        handleTransmissionSpeedOnStop(notification, session);
+        handleHomepageWidgetOnStop(notification);
+    }
+
+    /**
+     * 组装播放事件通知内容并推送
+     */
+    private void sendPlaybackNotification(Notification notification, Session session, String eventType) {
+        StringBuilder contentBuilder = new StringBuilder();
         contentBuilder.append(eventType).append(System.lineSeparator())
                 .append(System.lineSeparator())
                 .append("用户：").append(notification.getNotificationUsername()).append(System.lineSeparator())
-                .append("影片：").append(playName).append(System.lineSeparator())
+                .append("影片：").append(getPlayName(notification)).append(System.lineSeparator())
                 .append("进度：").append(notification.getPlaybackPosition()).append(" / ").append(notification.getRunTime()).append(System.lineSeparator())
                 .append("设备：").append(notification.getDeviceName()).append(" - ").append(notification.getClientName()).append(System.lineSeparator())
-                .append("IP：").append(session.getRemoteEndPoint());
+                .append("IP：").append(session.getRemoteEndPoint())
+                .append(System.lineSeparator())
+                .append(System.lineSeparator())
+                .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
+        if (!notification.getNotificationUsername().equals(LokTarConstant.JELLYFIN_NOT_NOTIFY)) {
+            sendNotice(contentBuilder.toString());
+        }
     }
 
     private String getPlayName(Notification notification) {
@@ -103,28 +129,72 @@ public class JellyfinWebhookController {
         return "";
     }
 
-    private void handleTransmissionSpeed(Notification notification, Session session) {
-        if (!isLocalNetwork(session.getRemoteEndPoint())) {
-            String content = "";
-            TrResponse trResponseSession = transmissionUtil.getSession();
-            if ("PlaybackStart".equals(notification.getNotificationType()) && !trResponseSession.getArguments().getAltSpeedEnabled()) {
-                transmissionUtil.altSpeedEnabled(true);
-                content = "Transmission已自动开启限速";
-            }
-            if ("PlaybackStop".equals(notification.getNotificationType()) && redisUtil.sGetSetSize(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET) == 0 && trResponseSession.getArguments().getAltSpeedEnabled()) {
-                transmissionUtil.altSpeedEnabled(false);
-                content = "Transmission已自动关闭限速";
-            }
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
-            }
-            if (!notification.getNotificationUsername().equals(LokTarConstant.JELLYFIN_NOT_NOTIFY)) {
-                qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent004Id(), content));
-            }
+    /**
+     * 播放开始时：远程播放且未开启限速，则自动开启Transmission限速
+     */
+    private void handleTransmissionSpeedOnStart(Notification notification, Session session) {
+        if (isLocalNetwork(session.getRemoteEndPoint())) {
+            return;
         }
+        if (!transmissionUtil.getSession().getArguments().getAltSpeedEnabled()) {
+            transmissionUtil.altSpeedEnabled(true);
+            notifyTransmissionSpeedChange(notification, "Transmission已自动开启限速");
+        }
+    }
+
+    /**
+     * 播放停止时：无其他远程播放且已开启限速，则自动关闭Transmission限速
+     */
+    private void handleTransmissionSpeedOnStop(Notification notification, Session session) {
+        if (isLocalNetwork(session.getRemoteEndPoint())) {
+            return;
+        }
+        if (redisUtil.sGetSetSize(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET) == 0 && transmissionUtil.getSession().getArguments().getAltSpeedEnabled()) {
+            transmissionUtil.altSpeedEnabled(false);
+            notifyTransmissionSpeedChange(notification, "Transmission已自动关闭限速");
+        }
+    }
+
+    /**
+     * 播放开始时：记录播放中设备（含本地播放），切换homepage widget为NowPlaying模式
+     */
+    private void handleHomepageWidgetOnStart(Notification notification) {
+        long expireTime = calculateSecondsDifference(notification);
+        long existExpireTime = redisUtil.getExpire(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET);
+        redisUtil.sSetAndTime(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET, Math.max(expireTime, existExpireTime), notification.getDeviceId());
+        homepageUtil.switchJellyfinWidgetMode(true);
+    }
+
+    /**
+     * 播放停止时：移除播放中设备，无其他播放则切换homepage widget为Blocks模式
+     */
+    private void handleHomepageWidgetOnStop(Notification notification) {
+        redisUtil.setRemove(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET, notification.getDeviceId());
+        if (redisUtil.sGetSetSize(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET) == 0) {
+            homepageUtil.switchJellyfinWidgetMode(false);
+        }
+    }
+
+    /**
+     * 延迟1秒后推送Transmission限速变更结果
+     */
+    private void notifyTransmissionSpeedChange(Notification notification, String content) {
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
+        }
+        if (!notification.getNotificationUsername().equals(LokTarConstant.JELLYFIN_NOT_NOTIFY)) {
+            sendNotice(content);
+        }
+    }
+
+    /**
+     * 推送企业微信通知
+     */
+    private void sendNotice(String content) {
+        qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent004Id(), content));
     }
 
     private static long calculateSecondsDifference(Notification notification) {

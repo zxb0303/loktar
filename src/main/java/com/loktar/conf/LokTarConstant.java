@@ -25,6 +25,7 @@ public class LokTarConstant {
     public static final String REDIS_KEY_PREFIX_CHAT_MEMORY = "chat_memory_";
     public static final String REDIS_KEY_PREFIX_NOTICE_DRAFT = "notice_draft_";
     public static final String REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET = "jellyfin_remote_playing_set";
+    public static final String REDIS_KEY_JELLYFIN_PLAYING_SET = "jellyfin_playing_set";
     public static final String REDIS_KEY_NEWHOUSE_COOKIE = "newhouse_cookie";
     public static final String REDIS_KEY_TRANSMISSION_SESSIONID = "transmission_sessionid";
     public static final String REDIS_KEY_QYWX_PATENT_MSG_TASK_LOCK = "qywx_patent_msg_task";
