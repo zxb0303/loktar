@@ -17,6 +17,8 @@ public class Property implements Serializable {
 
     private String value3;
 
+    private String value4;
+
     private String status;
 
     private LocalDateTime updateTime;

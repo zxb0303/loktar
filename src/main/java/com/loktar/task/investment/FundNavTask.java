@@ -7,9 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.common.Property;
+import com.loktar.domain.investment.EquityIndexPerfDaily;
 import com.loktar.domain.investment.FundNav;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.common.PropertyMapper;
+import com.loktar.mapper.investment.EquityIndexPerfDailyMapper;
 import com.loktar.mapper.investment.FundNavMapper;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.wx.qywx.QywxApi;
@@ -39,6 +41,7 @@ import java.util.List;
 public class FundNavTask {
 
     private final FundNavMapper fundNavMapper;
+    private final EquityIndexPerfDailyMapper equityIndexPerfDailyMapper;
     private final PropertyMapper propertyMapper;
     private final QywxApi qywxApi;
     private final LokTarConfig lokTarConfig;
@@ -50,8 +53,9 @@ public class FundNavTask {
     private static final String FUND_NAV_FALLBACK_URL = "https://api.fund.eastmoney.com/f10/lsjz?fundCode={0}&pageIndex={1}&pageSize={2}";
     private static final String FUND_NAV_FALLBACK_REFERER = "http://fundf10.eastmoney.com/jjjz_{0}.html";
 
-    public FundNavTask(FundNavMapper fundNavMapper, PropertyMapper propertyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig, HttpClient httpClient, ObjectMapper objectMapper) {
+    public FundNavTask(FundNavMapper fundNavMapper, EquityIndexPerfDailyMapper equityIndexPerfDailyMapper, PropertyMapper propertyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig, HttpClient httpClient, ObjectMapper objectMapper) {
         this.fundNavMapper = fundNavMapper;
+        this.equityIndexPerfDailyMapper = equityIndexPerfDailyMapper;
         this.propertyMapper = propertyMapper;
         this.qywxApi = qywxApi;
         this.lokTarConfig = lokTarConfig;
@@ -70,6 +74,13 @@ public class FundNavTask {
             FundNav exist = fundNavMapper.selectByFundCodeAndNavDate(fundCode, today);
             if (exist != null) {
                 log.info("{}", fundCode + " 当日数据已存在，跳过");
+                continue;
+            }
+
+            Property property = propertyMapper.selectByPrimaryKey("fund_nav_" + fundCode);
+            boolean needPush = property != null && property.getValue() != null;
+            if (needPush && !equityIndexPerfDailyMapper.existsByIndexCodeAndTradeDate(property.getValue4(), today)) {
+                log.info("{}", fundCode + " 对应指数当日行情未更新，等待下一轮：" + property.getValue4());
                 continue;
             }
 
@@ -105,8 +116,7 @@ public class FundNavTask {
                 fundNav.setUpdateTime(LocalDateTime.now());
                 fundNavMapper.insert(fundNav);
                 log.info("{}", fundCode + " 新增成功：" + fundNav.getNavDate());
-                Property property = propertyMapper.selectByPrimaryKey("fund_nav_" + fundCode);
-                if (property != null && property.getValue() != null) {
+                if (needPush) {
                     BigDecimal share = new BigDecimal(property.getValue2());
                     BigDecimal principal = new BigDecimal(property.getValue3());
                     BigDecimal total = share.multiply(fundNav.getUnitNav()).setScale(2, RoundingMode.HALF_UP);
@@ -114,6 +124,9 @@ public class FundNavTask {
                     StringBuilder msg = new StringBuilder();
                     msg.append(property.getValue()).append(System.lineSeparator());
                     msg.append(System.lineSeparator());
+                    EquityIndexPerfDaily indexPerf = equityIndexPerfDailyMapper.selectByIndexCodeAndTradeDate(property.getValue4(), fundNav.getNavDate());
+                    msg.append("指数收盘：").append(indexPerf.getClose()).append(System.lineSeparator());
+                    msg.append("指数涨跌：").append(indexPerf.getChangePct().setScale(2, RoundingMode.HALF_UP)).append("%").append(System.lineSeparator());
                     msg.append("单位净值：").append(fundNav.getUnitNav()).append(System.lineSeparator());
                     msg.append("日涨跌幅：").append(fundNav.getGrowthRate() != null ? fundNav.getGrowthRate().setScale(2, RoundingMode.HALF_UP) + "%" : "").append(System.lineSeparator());
                     msg.append("持有份额：").append(share).append(System.lineSeparator());
