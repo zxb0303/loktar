@@ -21,8 +21,14 @@ public class RssController {
 
 
     @GetMapping("/refreshTrRssTorrents")
-    public void test() {
-        TrRss trRss = trRssMapper.selectByPrimaryKey(7);
+    public void refreshTrRssTorrents(int rssId) {
+        TrRss trRss = trRssMapper.selectByPrimaryKey(rssId);
         rssService.refreshTrRssTorrents(trRss);
+    }
+
+    @GetMapping("/dealTrRssTorrents")
+    public void dealTrRssTorrents(int rssId) {
+        TrRss trRss = trRssMapper.selectByPrimaryKey(rssId);
+        rssService.dealTrRssTorrents(trRss);
     }
 }

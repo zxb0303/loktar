@@ -24,7 +24,6 @@ public class RssTask {
 
     @Scheduled(cron = "0 */1 * * * ?")
     public void refreshAndDealTrRssTorrents() {
-
         LocalTime now = LocalTime.now();
         int minute = now.getMinute();
         List<TrRss> trRsss = rssService.getTrRsssByStatus(1);
@@ -32,7 +31,7 @@ public class RssTask {
             if (minute % trRss.getIntervalMinutes() == 0) {
                 DelayUtil.delaySeconds(2, 5);
                 //TODO 打印
-                log.info("{}", "transmission:refreshAndDealTrRssTorrents:每隔" + trRss.getIntervalMinutes() + "分钟执行RSS:" + trRss.getHostCnName());
+//                log.info("{}", "transmission:refreshAndDealTrRssTorrents:每隔" + trRss.getIntervalMinutes() + "分钟执行RSS:" + trRss.getHostCnName());
                 rssService.refreshTrRssTorrents(trRss);
                 rssService.dealTrRssTorrents(trRss);
             }
