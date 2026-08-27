@@ -50,69 +50,56 @@ public class VapeOnlineUtil {
 //            System.out.println(product);
 //        }
 
-        List<Product> prodcut3s = getInStockAndNeedProductsAndStockInfo();
-        for (Product product : prodcut3s) {
+//        List<Product> prodcut3s = getInStockAndNeedProductsAndStockInfo();
+//        for (Product product : prodcut3s) {
+//            log.info("{}", product);
+//        }
+
+        List<Product> prodcut4s = getStockQuantityGreaterThan(2);
+        for (Product product : prodcut4s) {
             log.info("{}", product);
         }
     }
 
-    private static List<Product> getInStockAndNeedProducts() {
-        List<Product> products = getInStockProducts();
-        List<Product> needProducts = new ArrayList<>();
-        for (Product product : products) {
-            if (product.getName().contains("可樂") ||
-                            product.getName().toLowerCase().contains("sparkle") ||
-//                            product.getName().toLowerCase().contains("tabacco") ||
-                            product.getName().toLowerCase().contains("cola") ||
-                            product.getName().contains("寶礦力") ||
-                            product.getName().toLowerCase().contains("grapefruit")) {
-                needProducts.add(product);
-            }
-        }
-        return needProducts;
-    }
 
     @SneakyThrows
     public static List<Product> getInStockAndNeedProductsAndStockInfo() {
-       // TODO 如果只监控需要的就换这行代码
-//        List<Product> products = getInStockAndNeedProducts();
         List<Product> products = getInStockProducts();
         HttpClient httpClient = HttpClient.newBuilder().build();
 
         for (Product product : products) {
 //            System.out.println(product.getName() + " - " + product.getProductId() + " - " + product.getSkuCode());
-            // 先用步进5确认最大库存
-            int coarseStep = 10;
-            int roughMax = findMaxPurchasable(httpClient, product, 1, 500, coarseStep);
-
-//            int preciseMax = roughMax;
-//            // 如果低于5，用步进1精确再查一遍
-//            if (roughMax < 5) {
-//                preciseMax = findMaxPurchasable(httpClient, product, 1, roughMax + coarseStep - 1, 1);
-//            }
-            //product.setStockQuantity(preciseMax);
-            product.setStockQuantity(roughMax);
+            // 库存查询上限20，超过20按20+展示：先探测上限，不足时二分确定确切数量
+            int stockLimit = 20;
+            int maxQuantity = findMaxPurchasable(httpClient, product, stockLimit);
+            product.setStockQuantity(maxQuantity);
+            product.setStockQuantityText(maxQuantity >= stockLimit ? stockLimit + "+" : String.valueOf(maxQuantity));
         }
         return products;
     }
 
+    // 以最少查询次数确定最大可购买数量：先探测上限，一次成功即库存充足直接返回上限；否则在 [1, maxLimit-1] 内二分查找确切数量
     @SneakyThrows
-    private static int findMaxPurchasable(HttpClient httpClient, Product product, int min, int max, int step) {
+    private static int findMaxPurchasable(HttpClient httpClient, Product product, int maxLimit) {
+        if (tryPurchase(httpClient, product, maxLimit) == 0) {
+            return maxLimit;
+        }
         int maxQuantity = 0;
-        for (int quantity = min; quantity <= max; quantity += step) {
-            int code = tryPurchase(httpClient, product, quantity);
-            if (code == 0) {
-                maxQuantity = quantity;
-            } else if (code == 1001) {
-                break;
-            } else {
-                break;
-            }
+        int lo = 1;
+        int hi = maxLimit - 1;
+        while (lo <= hi) {
             try {
-                TimeUnit.MILLISECONDS.sleep(200);
+                TimeUnit.MILLISECONDS.sleep(100);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
+            }
+            int mid = (lo + hi) >>> 1;
+            if (tryPurchase(httpClient, product, mid) == 0) {
+                maxQuantity = mid;
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
             }
         }
         return maxQuantity;
@@ -143,6 +130,18 @@ public class VapeOnlineUtil {
         List<Product> newProducts = new ArrayList<>();
         for (Product product : products) {
             if (!ObjectUtils.isEmpty(product.getAvailability()) && product.getAvailability().contains("InStock")) {
+                newProducts.add(product);
+            }
+        }
+        return newProducts;
+    }
+
+    // 筛选库存数量大于指定值的产品
+    public static List<Product> getStockQuantityGreaterThan(int stockQuantity) {
+        List<Product> products = getInStockAndNeedProductsAndStockInfo();
+        List<Product> newProducts = new ArrayList<>();
+        for (Product product : products) {
+            if (product.getStockQuantity() > stockQuantity) {
                 newProducts.add(product);
             }
         }
@@ -237,5 +236,6 @@ public class VapeOnlineUtil {
         private String productId;
         private String skuCode;
         private int stockQuantity;
+        private String stockQuantityText;
     }
 }
