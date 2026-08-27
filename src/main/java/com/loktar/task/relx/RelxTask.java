@@ -64,7 +64,7 @@ public class RelxTask {
                                     .replace("（三颗装）", "")
                                     .replace("[新]", "")
                                     .replace("[]", "")
-                                    + "," + p.getStockQuantity()
+                                    + "," + p.getStockQuantityText()
                     )
                     .sorted()
                     .collect(Collectors.joining(System.lineSeparator()));
