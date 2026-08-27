@@ -1,6 +1,7 @@
 package com.loktar.util;
 
 
+import com.github.houbb.opencc4j.util.ZhConverterUtil;
 import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class VapeOnlineUtil {
@@ -50,15 +52,32 @@ public class VapeOnlineUtil {
 //            System.out.println(product);
 //        }
 
-//        List<Product> prodcut3s = getInStockAndNeedProductsAndStockInfo();
-//        for (Product product : prodcut3s) {
-//            log.info("{}", product);
-//        }
 
-        List<Product> prodcut4s = getStockQuantityGreaterThan(2);
-        for (Product product : prodcut4s) {
-            log.info("{}", product);
-        }
+
+        List<Product> products = getStockQuantityGreaterThan(2);
+
+        String nowInStock = products.stream()
+                .map(p ->
+                        ZhConverterUtil.toSimple(p.getName())
+                                .trim()
+                                .replace("Ultra Pod","奥创")
+                                .replace(" ", "")
+                                .replace("-", "")
+                                .replace("Infinity2", "")
+                                .replaceAll("[a-zA-Z]+ ?", "")
+                                .replace("【", "[")
+                                .replace("】", "]")
+                                .replace("(三颗装)", "")
+                                .replace("（三颗装）", "")
+                                .replace("[新]", "")
+                                .replace("[]", "")
+                                .replace("颗装","")
+                                .replace("奥创","Ultra Pod")
+                                + "," + p.getStockQuantityText()
+                )
+                .sorted()
+                .collect(Collectors.joining(System.lineSeparator()));
+        System.out.println(nowInStock);
     }
 
 
