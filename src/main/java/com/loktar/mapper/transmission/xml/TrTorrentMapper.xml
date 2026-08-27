@@ -77,6 +77,7 @@
                                       where download_dir=#{param2,jdbcType=VARCHAR}
                                       group by `name`,total_size) m
     where unix_timestamp(now())-m.added_date>#{param1,jdbcType=INTEGER}*24*60*60
+    having count_num<10
     order by count_num,total_size,added_date
       limit 1;
   </select>
