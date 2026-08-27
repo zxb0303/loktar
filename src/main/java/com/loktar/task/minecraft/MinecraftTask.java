@@ -77,7 +77,7 @@ public class MinecraftTask {
         String localVersion = rawVersion.split(" ")[0];
         String containerName = lokTarConfig.getMinecraft().getContainerName();
         if (localVersion.equals(latestVersion)) {
-            log.info("{}", "Minecraft版本已是最新：" + localVersion);
+//            log.info("{}", "Minecraft版本已是最新：" + localVersion);
             return;
         }
         if (bedrockVersionsDTO.getRelease().getVersions().contains(localVersion)) {

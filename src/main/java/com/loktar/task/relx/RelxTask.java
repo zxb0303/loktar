@@ -38,7 +38,7 @@ public class RelxTask {
         this.qywxApi = qywxApi;
     }
 
-    @Scheduled(cron = "0 */30 * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     @SneakyThrows
     public void relxStockAvailable() {
         String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH);
