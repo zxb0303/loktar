@@ -1,7 +1,6 @@
 package com.loktar.task.patent;
 
 
-import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.qywx.QywxPatentMsg;
@@ -15,6 +14,7 @@ import com.loktar.util.PatentSmsUtil;
 import com.loktar.util.RedisUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -43,7 +43,7 @@ public class PatentTask {
         this.redisUtil = redisUtil;
     }
 
-    @Scheduled(cron = "0 */30 * * * *")
+//    @Scheduled(cron = "0 */30 * * * *")
     public void patentMonitor() {
         StringBuilder replymsg = new StringBuilder();
         String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
@@ -83,7 +83,7 @@ public class PatentTask {
     }
 
 
-    @Scheduled(cron = "* */30 * * * *")
+//    @Scheduled(cron = "0 */30 * * * *")
     public void dealQywxPatentMsg() {
         boolean lock = redisUtil.setIfAbsent(LokTarConstant.REDIS_KEY_QYWX_PATENT_MSG_TASK_LOCK, "1", 10);
         if (lock) {

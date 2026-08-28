@@ -16,7 +16,7 @@ public class SchedulerConfig implements SchedulingConfigurer {
     @Bean(destroyMethod = "shutdown")
     public ThreadPoolTaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setPoolSize(10);                       // 同时可并行运行的任务数
+        scheduler.setPoolSize(20);                       // 同时可并行运行的任务数
         scheduler.setThreadNamePrefix("scheduled-");    // 线程名，方便看日志/线程栈
         scheduler.setWaitForTasksToCompleteOnShutdown(true);
         scheduler.setAwaitTerminationSeconds(60);       // 关闭时最多等 60s

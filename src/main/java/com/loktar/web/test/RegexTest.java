@@ -18,8 +18,8 @@ public class RegexTest {
 //        } else {
 //            System.out.println("No match found");
 //        }
-        String str = "安徽鲁研种业有限公司 CN215774367U";
-        Pattern r = Pattern.compile(".*U$");
+        String str = "[Movies/电影]纽伦堡 Nuremberg 2025 2160p UHD Blu-ray DoVi HDR10 HEVC DTS-HD MA 5.1-DIY@HDSky";
+        Pattern r = Pattern.compile("^(?!.*(?:Animations|动漫))(?:.*(?:@HDSky|Pure@HDSWEB)|(?!.*S\\d{2}).*HDSWEB)\\s*$");
         Matcher m = r.matcher(str);
         if (m.matches()) {
             log.info("{}", str);
