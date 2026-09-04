@@ -69,7 +69,6 @@ public class ChinaEquityIndexTask {
         msg.append(System.lineSeparator());
         msg.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
         qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent009Id(), msg.toString()));
-        log.info("{}", equityIndexDividendYieldDailys);
     }
 
 }
