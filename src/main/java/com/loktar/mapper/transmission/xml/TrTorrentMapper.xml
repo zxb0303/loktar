@@ -75,9 +75,8 @@
                                                                                                                                                                             left join tr_torrent_tracker trr on tt.id = trr.torrent_id
                                                                                                                                                                             left join tr_torrent_host tth on trr.`host` = tth.`host`
                                       where download_dir=#{param2,jdbcType=VARCHAR}
-                                      group by `name`,total_size) m
+                                      group by `name`,total_size having count_num <![CDATA[ < ]]> 10 ) m
     where unix_timestamp(now())-m.added_date>#{param1,jdbcType=INTEGER}*24*60*60
-    having count_num <![CDATA[ < ]]> 10
     order by count_num,total_size,added_date
       limit 1;
   </select>
