@@ -16,6 +16,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -170,15 +171,7 @@ public class VapeOnlineUtil {
     @SneakyThrows
     private static List<Product> getProductsFromPage() {
         List<Product> result = new ArrayList<>();
-        HttpClient httpClient = HttpClient.newBuilder().build();
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(URL))
-                .timeout(Duration.ofSeconds(60))
-                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
-                .GET()
-                .build();
-        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        String respBody = response.body();
+        String respBody = fetchPageWithRetry();
         Document document = Jsoup.parse(respBody);
         Elements scripts = document.select("script[type=application/ld+json]");
         for (Element script : scripts) {
@@ -205,6 +198,38 @@ public class VapeOnlineUtil {
             }
         }
         return result;
+    }
+
+    // 抓取失败多为瞬时断连（如chunked传输中途连接被重置），间隔重试兜底；重试耗尽抛出异常终止本轮任务，避免误判为空库存推送
+    @SneakyThrows
+    private static String fetchPageWithRetry() {
+        int maxAttempts = 3;
+        HttpClient httpClient = HttpClient.newBuilder().build();
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(URL))
+                .timeout(Duration.ofSeconds(60))
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                .GET()
+                .build();
+        IOException lastException = null;
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+                return response.body();
+            } catch (IOException e) {
+                lastException = e;
+                log.warn("华人蒸汽商品页抓取失败，第 {}/{} 次尝试：{}", attempt, maxAttempts, e.getMessage());
+                if (attempt < maxAttempts) {
+                    try {
+                        TimeUnit.SECONDS.sleep(2);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        throw ie;
+                    }
+                }
+            }
+        }
+        throw lastException;
     }
 
     private static final Pattern JSON_STRING = Pattern.compile(
