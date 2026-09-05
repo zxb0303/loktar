@@ -20,7 +20,7 @@ public class LotteryTask {
     }
 
 
-    @Scheduled(cron = "0 30 9,10,11,12,13 * * ?")
+    @Scheduled(cron = "0 30 9 * * ?")
     public void updateHZLotteryData() {
 
         log.info("{}", "杭州摇号数据定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
