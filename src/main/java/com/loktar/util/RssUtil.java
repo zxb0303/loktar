@@ -12,7 +12,9 @@ import com.loktar.domain.transmission.TrRssTorrent;
 import com.loktar.dto.rss.RssFeed;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -23,7 +25,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+@Component
 @Slf4j
 public class RssUtil {
 
@@ -32,20 +36,20 @@ public class RssUtil {
     static {
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
+
+    private final HttpClient httpClient;
+
+    public RssUtil(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
+    private final static int RSS_FETCH_MAX_ATTEMPTS = 3;
+
     @SneakyThrows
-    public static List<TrRssTorrent> getRssData(TrRss trRss) {
+    public List<TrRssTorrent> getRssData(TrRss trRss) {
         List<TrRssTorrent> trRssTorrents = new ArrayList<>();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(trRss.getRssUrl()))
-                .timeout(Duration.ofSeconds(30))
-                .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
-                .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
-                .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
-                .GET()
-                .build();
-        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        RssFeed rssFeed  = xmlMapper.readValue(response.body(), RssFeed.class);
+        String rssBody = fetchRssWithRetry(trRss.getRssUrl());
+        RssFeed rssFeed = xmlMapper.readValue(rssBody, RssFeed.class);
         rssFeed.getChannel().getItem().forEach(item -> {
             TrRssTorrent trRssTorrent = new TrRssTorrent();
             trRssTorrent.setRssId(trRss.getRssId());
@@ -72,11 +76,47 @@ public class RssUtil {
         return trRssTorrents;
     }
 
+    /**
+     * 抓取 RSS，超时/网络异常时重试（HttpTimeoutException 是 IOException 的子类）
+     */
+    private String fetchRssWithRetry(String rssUrl) throws IOException, InterruptedException {
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(rssUrl))
+                .timeout(Duration.ofSeconds(30))
+                .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
+                .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
+                .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
+                .GET()
+                .build();
+        IOException lastException = null;
+        for (int attempt = 1; attempt <= RSS_FETCH_MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+                return response.body();
+            } catch (IOException e) {
+                lastException = e;
+                log.warn("RSS抓取失败，第 {}/{} 次尝试：{}，url：{}", attempt, RSS_FETCH_MAX_ATTEMPTS, e.getMessage(), rssUrl);
+                if (attempt < RSS_FETCH_MAX_ATTEMPTS) {
+                    try {
+                        TimeUnit.SECONDS.sleep(2);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        throw ie;
+                    }
+                }
+            }
+        }
+        throw lastException;
+    }
+
     public static void main(String[] args)  {
         TrRss trRss = new TrRss();
         trRss.setRssId(111);
         trRss.setRssUrl("");
-        List<TrRssTorrent> trRssTorrents = getRssData(trRss);
+        HttpClient httpClient = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(10))
+                .build();
+        List<TrRssTorrent> trRssTorrents = new RssUtil(httpClient).getRssData(trRss);
         log.info("{}", trRssTorrents);
     }
 

@@ -33,11 +33,14 @@ public class RssServiceImpl implements RssService {
 
     private final LokTarConfig lokTarConfig;
 
-    public RssServiceImpl(TrRssMapper trRssMapper, TrRssTorrentMapper trRssTorrentMapper, TransmissionUtil transmissionUtil, LokTarConfig lokTarConfig) {
+    private final RssUtil rssUtil;
+
+    public RssServiceImpl(TrRssMapper trRssMapper, TrRssTorrentMapper trRssTorrentMapper, TransmissionUtil transmissionUtil, LokTarConfig lokTarConfig, RssUtil rssUtil) {
         this.trRssMapper = trRssMapper;
         this.trRssTorrentMapper = trRssTorrentMapper;
         this.transmissionUtil = transmissionUtil;
         this.lokTarConfig = lokTarConfig;
+        this.rssUtil = rssUtil;
     }
 
     @Override
@@ -48,7 +51,7 @@ public class RssServiceImpl implements RssService {
     @Override
     @Transactional
     public void refreshTrRssTorrents(TrRss trRss) {
-        List<TrRssTorrent> trRssTorrents = RssUtil.getRssData(trRss);
+        List<TrRssTorrent> trRssTorrents = rssUtil.getRssData(trRss);
         for (TrRssTorrent trRssTorrent : trRssTorrents) {
             if (ObjectUtils.isEmpty(trRssTorrentMapper.selectByPrimaryKey(trRssTorrent.getRssTorrentId()))) {
                 trRssTorrentMapper.insert(trRssTorrent);
