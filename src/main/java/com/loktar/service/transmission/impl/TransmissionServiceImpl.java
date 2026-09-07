@@ -11,6 +11,7 @@ import com.loktar.dto.transmission.TrResponseTorrent;
 import com.loktar.mapper.transmission.TrTorrentMapper;
 import com.loktar.mapper.transmission.TrTorrentTrackerMapper;
 import com.loktar.service.transmission.TransmissionService;
+import com.loktar.util.DateTimeUtil;
 import com.loktar.util.TransmissionUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
@@ -124,7 +125,7 @@ public class TransmissionServiceImpl implements TransmissionService {
                 return;
             }
             //TODO 打印
-            log.info("{}", Math.floor((double) worstTorrent.getTotalSize() / 1024 / 1024 / 1024) + ";" + worstTorrent.getName() + ";" + worstTorrent.getTotalSize().toString());
+            log.info("{}", Math.floor((double) worstTorrent.getTotalSize() / 1024 / 1024 / 1024) + "GB;" + worstTorrent.getName() + ";" + DateTimeUtil.convertSecondsToDateTime(worstTorrent.getAddedDate()).format(DateTimeUtil.FORMATTER_DATE));
             tempNames.add(worstTorrent.getName());
             List<TrTorrent> needRemoveTrTorrents = trTorrentMapper.getTorrentsByNameAndSize(worstTorrent.getName(), worstTorrent.getTotalSize());
             for (TrTorrent needRemoveTrTorrent : needRemoveTrTorrents) {
