@@ -70,7 +70,7 @@
     from tr_torrent
   </select>
   <select id="getworstTorrent" resultMap="BaseResultMap">
-    select m.name,m.total_size from (
+    select m.name,m.added_date,m.total_size from (
                                       select tt.`name`,tt.total_size,count(1) count_num,min(tt.added_date) added_date,from_unixtime(min(tt.added_date)) as show_date from tr_torrent  tt
                                                                                                                                                                             left join tr_torrent_tracker trr on tt.id = trr.torrent_id
                                                                                                                                                                             left join tr_torrent_host tth on trr.`host` = tth.`host`
