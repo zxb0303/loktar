@@ -20,6 +20,7 @@ public class LokTarConstant {
     public static final String HTTP_HEADER_CONTENT_ENCODING_NAME = "Content-Encoding";
     public static final String HTTP_HEADER_CONTENT_ENCODING_VALUE_GZIP = "gzip";
     public static final String HTTP_HEADER_COOKIE_NAME = "Cookie";
+    public static final String HTTP_HEADER_AUTHORIZATION_NAME = "Authorization";
 
 
     public static final String REDIS_KEY_PREFIX_CHAT_MEMORY = "chat_memory_";

@@ -9,6 +9,7 @@ import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.jellyfin.Session;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -19,6 +20,7 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.List;
 
+@Slf4j
 @Component
 public class JellyfinUtil {
     private final static ObjectMapper objectMapper = new ObjectMapper();
@@ -37,12 +39,20 @@ public class JellyfinUtil {
                 .uri(URI.create(MessageFormat.format(lokTarConfig.getJellyfin().getUrl(), deviceId)))
                 .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
-                .header("x-emby-token", lokTarConfig.getJellyfin().getToken())
+                .header(LokTarConstant.HTTP_HEADER_AUTHORIZATION_NAME, "MediaBrowser Token=\"" + lokTarConfig.getJellyfin().getToken() + "\"")
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            log.error("Jellyfin Sessions接口调用失败, deviceId:{}, statusCode:{}, body:{}", deviceId, response.statusCode(), response.body());
+            throw new IllegalStateException("Jellyfin Sessions接口调用失败, statusCode:" + response.statusCode());
+        }
         String responseBody = response.body();
         List<Session> sessions = objectMapper.readValue(responseBody, new TypeReference<>(){});
+        if (sessions.isEmpty()) {
+            log.warn("Jellyfin Sessions接口未查询到会话, deviceId:{}", deviceId);
+            throw new IllegalStateException("Jellyfin Sessions接口未查询到会话, deviceId:" + deviceId);
+        }
         return sessions.getFirst();
     }
 }
