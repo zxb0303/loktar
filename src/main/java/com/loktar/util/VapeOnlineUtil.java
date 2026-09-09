@@ -55,9 +55,10 @@ public class VapeOnlineUtil {
 
 
 
-        List<Product> products = getStockQuantityGreaterThan(2);
+        List<Product> products = getStockQuantityGreaterThan(1);
 
         String nowInStock = products.stream()
+                .filter(p -> !p.getName().contains("已过期"))
                 .map(p ->
                         ZhConverterUtil.toSimple(p.getName())
                                 .trim()

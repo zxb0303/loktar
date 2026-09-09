@@ -52,6 +52,7 @@ public class RelxTask {
 
         if (!nowProductsJson.equals(lastProductsJson)) {
             String nowInStock = products.stream()
+                    .filter(p -> !p.getName().contains("已过期"))
                     .map(p ->
                             ZhConverterUtil.toSimple(p.getName())
                                     .trim()
