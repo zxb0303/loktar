@@ -36,8 +36,8 @@ public class RssTask {
                     rssService.refreshTrRssTorrents(trRss);
                     rssService.dealTrRssTorrents(trRss);
                 } catch (Exception e) {
-                    //单个RSS源失败不影响本轮其他源的刷新与下载
-                    log.error("RSS刷新/处理失败，跳过该源继续处理下一个：{}，url：{}", trRss.getHostCnName(), trRss.getRssUrl(), e);
+                    //单个RSS源失败不影响本轮其他源的刷新与下载，仅warn不打error堆栈
+                    log.warn("RSS刷新/处理失败，跳过该源继续处理下一个：{}，url：{}，{}", trRss.getHostCnName(), trRss.getRssUrl(), e.getMessage());
                 }
             }
         }

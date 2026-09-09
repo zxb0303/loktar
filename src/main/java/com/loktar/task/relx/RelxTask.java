@@ -46,7 +46,18 @@ public class RelxTask {
             return;
         }
         log.info("{}", "华人蒸汽库存定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
-        List<VapeOnlineUtil.Product> products = VapeOnlineUtil.getStockQuantityGreaterThan(1);
+        List<VapeOnlineUtil.Product> products;
+        try {
+            products = VapeOnlineUtil.getStockQuantityGreaterThan(1);
+        } catch (Exception e) {
+            // 失败仅warn并跳过本轮，下轮调度补偿，避免异常上抛触发调度器ERROR日志
+            log.warn("华人蒸汽库存查询失败，跳过本轮：{}", e.getMessage());
+            return;
+        }
+        if (products == null) {
+            log.warn("{}", "华人蒸汽库存查询失败，跳过本轮");
+            return;
+        }
         String nowProductsJson = OBJECT_MAPPER.writeValueAsString(products);
         String lastProductsJson = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX);
 

@@ -56,6 +56,10 @@ public class VapeOnlineUtil {
 
 
         List<Product> products = getStockQuantityGreaterThan(1);
+        if (products == null) {
+            System.out.println("抓取失败，跳过本轮");
+            return;
+        }
 
         String nowInStock = products.stream()
                 .filter(p -> !p.getName().contains("已过期"))
@@ -86,6 +90,9 @@ public class VapeOnlineUtil {
     @SneakyThrows
     public static List<Product> getInStockAndNeedProductsAndStockInfo() {
         List<Product> products = getInStockProducts();
+        if (products == null) {
+            return null;
+        }
         HttpClient httpClient = HttpClient.newBuilder().build();
 
         for (Product product : products) {
@@ -148,6 +155,9 @@ public class VapeOnlineUtil {
 
     public static List<Product> getInStockProducts() {
         List<Product> products = getProductsFromPage();
+        if (products == null) {
+            return null;
+        }
         List<Product> newProducts = new ArrayList<>();
         for (Product product : products) {
             if (!ObjectUtils.isEmpty(product.getAvailability()) && product.getAvailability().contains("InStock")) {
@@ -160,6 +170,9 @@ public class VapeOnlineUtil {
     // 筛选库存数量大于指定值的产品
     public static List<Product> getStockQuantityGreaterThan(int stockQuantity) {
         List<Product> products = getInStockAndNeedProductsAndStockInfo();
+        if (products == null) {
+            return null;
+        }
         List<Product> newProducts = new ArrayList<>();
         for (Product product : products) {
             if (product.getStockQuantity() > stockQuantity) {
@@ -173,6 +186,10 @@ public class VapeOnlineUtil {
     private static List<Product> getProductsFromPage() {
         List<Product> result = new ArrayList<>();
         String respBody = fetchPageWithRetry();
+        if (respBody == null) {
+            // 抓取失败返回null，上层据此跳过本轮，避免误判为空库存推送
+            return null;
+        }
         Document document = Jsoup.parse(respBody);
         Elements scripts = document.select("script[type=application/ld+json]");
         for (Element script : scripts) {
@@ -201,8 +218,7 @@ public class VapeOnlineUtil {
         return result;
     }
 
-    // 抓取失败多为瞬时断连（如chunked传输中途连接被重置），间隔重试兜底；重试耗尽抛出异常终止本轮任务，避免误判为空库存推送
-    @SneakyThrows
+    // 抓取失败多为瞬时断连（如chunked传输中途连接被重置），间隔重试兜底；重试耗尽返回null由调用方跳过本轮，避免误判为空库存推送
     private static String fetchPageWithRetry() {
         int maxAttempts = 3;
         HttpClient httpClient = HttpClient.newBuilder().build();
@@ -212,25 +228,27 @@ public class VapeOnlineUtil {
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
                 .GET()
                 .build();
-        IOException lastException = null;
         for (int attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
                 HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
                 return response.body();
             } catch (IOException e) {
-                lastException = e;
                 log.warn("华人蒸汽商品页抓取失败，第 {}/{} 次尝试：{}", attempt, maxAttempts, e.getMessage());
                 if (attempt < maxAttempts) {
                     try {
                         TimeUnit.SECONDS.sleep(2);
                     } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
-                        throw ie;
+                        return null;
                     }
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return null;
             }
         }
-        throw lastException;
+        log.warn("华人蒸汽商品页抓取连续{}次失败，跳过本轮", maxAttempts);
+        return null;
     }
 
     private static final Pattern JSON_STRING = Pattern.compile(

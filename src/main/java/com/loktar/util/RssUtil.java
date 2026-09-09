@@ -49,6 +49,10 @@ public class RssUtil {
     public List<TrRssTorrent> getRssData(TrRss trRss) {
         List<TrRssTorrent> trRssTorrents = new ArrayList<>();
         String rssBody = fetchRssWithRetry(trRss.getRssUrl());
+        if (rssBody == null) {
+            // 抓取失败返回空列表跳过本轮，已有数据保持不变，下轮调度补偿
+            return trRssTorrents;
+        }
         RssFeed rssFeed = xmlMapper.readValue(rssBody, RssFeed.class);
         rssFeed.getChannel().getItem().forEach(item -> {
             TrRssTorrent trRssTorrent = new TrRssTorrent();
@@ -77,9 +81,9 @@ public class RssUtil {
     }
 
     /**
-     * 抓取 RSS，超时/网络异常时重试（HttpTimeoutException 是 IOException 的子类）
+     * 抓取 RSS，超时/网络异常时重试（HttpTimeoutException 是 IOException 的子类）；重试耗尽返回null由调用方跳过本轮
      */
-    private String fetchRssWithRetry(String rssUrl) throws IOException, InterruptedException {
+    private String fetchRssWithRetry(String rssUrl) {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(rssUrl))
                 .timeout(Duration.ofSeconds(30))
@@ -88,25 +92,27 @@ public class RssUtil {
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
                 .GET()
                 .build();
-        IOException lastException = null;
         for (int attempt = 1; attempt <= RSS_FETCH_MAX_ATTEMPTS; attempt++) {
             try {
                 HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
                 return response.body();
             } catch (IOException e) {
-                lastException = e;
                 log.warn("RSS抓取失败，第 {}/{} 次尝试：{}，url：{}", attempt, RSS_FETCH_MAX_ATTEMPTS, e.getMessage(), rssUrl);
                 if (attempt < RSS_FETCH_MAX_ATTEMPTS) {
                     try {
                         TimeUnit.SECONDS.sleep(2);
                     } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
-                        throw ie;
+                        return null;
                     }
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return null;
             }
         }
-        throw lastException;
+        log.warn("RSS抓取连续{}次失败，跳过本轮，url：{}", RSS_FETCH_MAX_ATTEMPTS, rssUrl);
+        return null;
     }
 
     public static void main(String[] args)  {
