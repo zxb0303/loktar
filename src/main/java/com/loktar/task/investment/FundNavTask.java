@@ -120,9 +120,10 @@ public class FundNavTask {
                     BigDecimal share = new BigDecimal(property.getValue2());
                     BigDecimal principal = new BigDecimal(property.getValue3());
                     // 分红复投：根据每份分红和当前持有份额计算新增份额并更新
+                    BigDecimal bonusShares = BigDecimal.ZERO;
                     if (fundNav.getBonus() != null) {
                         BigDecimal bonusAmount = fundNav.getBonus().multiply(share);
-                        BigDecimal bonusShares = bonusAmount.divide(fundNav.getUnitNav(), 2, RoundingMode.HALF_UP);
+                        bonusShares = bonusAmount.divide(fundNav.getUnitNav(), 2, RoundingMode.HALF_UP);
                         share = share.add(bonusShares).setScale(2, RoundingMode.HALF_UP);
                         property.setValue2(share.toPlainString());
                         property.setUpdateTime(LocalDateTime.now());
@@ -145,6 +146,7 @@ public class FundNavTask {
                     msg.append("盈亏比例：").append(profitRate).append("%").append(System.lineSeparator());
                     if (fundNav.getBonus() != null) {
                         msg.append("每份分红：").append(fundNav.getBonus()).append(System.lineSeparator());
+                        msg.append("新增份额：").append(bonusShares).append(System.lineSeparator());
                     }
                     msg.append(System.lineSeparator());
                     msg.append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
