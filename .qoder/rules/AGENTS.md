@@ -32,6 +32,10 @@ Agent 不得打开、读取、打印、总结或以任何方式提取以下文�
   - `Pipfile.lock`
   - `Cargo.lock`
 - `.gitignore`
+## Git 操作规范
+- 禁止 Agent 执行任何 Git 命令（包括但不限于 git commit、git push、git add）。
+- 所有 Git 操作由用户自行执行。
+
 ## 其他要求
 - 不要在日志、提交信息、代码注释或回复中暴露任何密钥、Token、密码或证书内容。
 - 如果意外读取到敏感信息，不要复述内容，应立即停止相关操作并提示用户。
