@@ -48,26 +48,12 @@ public class AudioBookShelfTask {
     @Scheduled(cron = "0 */5 * * * *")
     public void listenMonitor() {
         List<String> users = lokTarConfig.getAudioBookShelf().getUsers();
-        if (ObjectUtils.isEmpty(users)) {
-            return;
-        }
         log.info("{}", "AudioBookShelf收听监控定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         Map<String, String> userIdMap;
-        try {
-            userIdMap = audioBookShelfUtil.getUserIdMap();
-        } catch (Exception e) {
-            // 查询失败仅warn并跳过本轮，下轮调度补偿，避免异常上抛触发调度器ERROR日志
-            log.warn("AudioBookShelf用户列表查询失败，跳过本轮：{}", e.getMessage());
-            return;
-        }
+        userIdMap = audioBookShelfUtil.getUserIdMap();
         String today = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE_COMPACT);
         for (String username : users) {
-            try {
-                monitorUser(username, userIdMap.get(username), today);
-            } catch (Exception e) {
-                // 单个用户失败不影响本轮其他用户，仅warn不打error堆栈
-                log.warn("AudioBookShelf用户[{}]收听监控失败，跳过该用户：{}", username, e.getMessage());
-            }
+            monitorUser(username, userIdMap.get(username), today);
         }
         log.info("{}", "AudioBookShelf收听监控定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
     }
@@ -78,28 +64,15 @@ public class AudioBookShelfTask {
     @Scheduled(cron = "0 0 0 * * *")
     public void resetUserActive() {
         List<String> monitorUsernames = lokTarConfig.getAudioBookShelf().getUsers();
-        if (ObjectUtils.isEmpty(monitorUsernames)) {
-            return;
-        }
         log.info("{}", "AudioBookShelf监控用户状态重置开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         List<AbsUser> absUsers;
-        try {
-            absUsers = audioBookShelfUtil.getUsers();
-        } catch (Exception e) {
-            log.warn("AudioBookShelf用户列表查询失败，跳过本轮重置：{}", e.getMessage());
-            return;
-        }
+        absUsers = audioBookShelfUtil.getUsers();
         for (AbsUser absUser : absUsers) {
             if (!monitorUsernames.contains(absUser.getUsername()) || Boolean.TRUE.equals(absUser.getIsActive())) {
                 continue;
             }
-            try {
-                audioBookShelfUtil.updateUserActive(absUser.getId(), true);
-                log.info("AudioBookShelf用户[{}]已重置为可用状态", absUser.getUsername());
-            } catch (Exception e) {
-                // 单个用户失败不影响其他用户，仅warn不打error堆栈
-                log.warn("AudioBookShelf用户[{}]重置为可用状态失败，跳过该用户：{}", absUser.getUsername(), e.getMessage());
-            }
+            audioBookShelfUtil.updateUserActive(absUser.getId(), true);
+            log.info("AudioBookShelf用户[{}]已重置为可用状态", absUser.getUsername());
         }
         log.info("{}", "AudioBookShelf监控用户状态重置结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
     }
