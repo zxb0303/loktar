@@ -10,6 +10,8 @@ public interface PropertyMapper {
 
     Property selectByPrimaryKey(String id);
 
+    List<Property> selectByType(String type);
+
     List<Property> selectAll();
 
     int updateByPrimaryKey(Property row);

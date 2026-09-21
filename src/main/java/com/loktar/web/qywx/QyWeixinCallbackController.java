@@ -8,12 +8,14 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.common.Notice;
+import com.loktar.domain.common.Property;
 import com.loktar.domain.transmission.TrTorrent;
 import com.loktar.dto.bandwagonhost.VPSInfo;
 import com.loktar.dto.transmission.TrResponse;
 import com.loktar.dto.wx.BaseResult;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.dto.wx.receivemsg.*;
+import com.loktar.mapper.common.PropertyMapper;
 import com.loktar.mapper.patent.PatentPdfApplyMapper;
 import com.loktar.mapper.transmission.TrTorrentMapper;
 import com.loktar.service.common.NoticeServer;
@@ -53,10 +55,12 @@ public class QyWeixinCallbackController {
 
     private final PatentPdfApplyMapper patentPdfApplyMapper;
 
+    private final PropertyMapper propertyMapper;
+
     private final static ObjectMapper xmlMapper = new XmlMapper();
 
 
-    public QyWeixinCallbackController(RedisUtil redisUtil, TransmissionUtil transmissionUtil, NoticeServer noticeServer, QywxApi qywxApi, BandwagonhostUtil bandwagonhostUtil, LokTarConfig lokTarConfig, TrTorrentMapper trTorrentMapper, PatentPdfApplyMapper patentPdfApplyMapper) {
+    public QyWeixinCallbackController(RedisUtil redisUtil, TransmissionUtil transmissionUtil, NoticeServer noticeServer, QywxApi qywxApi, BandwagonhostUtil bandwagonhostUtil, LokTarConfig lokTarConfig, TrTorrentMapper trTorrentMapper, PatentPdfApplyMapper patentPdfApplyMapper, PropertyMapper propertyMapper) {
         this.redisUtil = redisUtil;
         this.transmissionUtil = transmissionUtil;
         this.noticeServer = noticeServer;
@@ -65,6 +69,7 @@ public class QyWeixinCallbackController {
         this.lokTarConfig = lokTarConfig;
         this.trTorrentMapper = trTorrentMapper;
         this.patentPdfApplyMapper = patentPdfApplyMapper;
+        this.propertyMapper = propertyMapper;
         xmlMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
     }
 
@@ -164,15 +169,15 @@ public class QyWeixinCallbackController {
                         break;
                     case SHOW_BWG_fLOW:
                         replymsg.append("当前搬瓦工VPS信息如下：").append(System.lineSeparator());
-                        String[] veids = new String[]{"1830460", "1984718"};
-                        for (String veid : veids) {
-                            VPSInfo vpsInfo = bandwagonhostUtil.getVPSData(veid);
-                            LocalDateTime LocalDateTime = DateTimeUtil.convertSecondsToDateTime(vpsInfo.getDataNextReset());
+                        List<Property> bwgProperties = propertyMapper.selectByType("bwg");
+                        for (Property bwgProperty : bwgProperties) {
+                            VPSInfo vpsInfo = bandwagonhostUtil.getVPSData(bwgProperty.getValue(), bwgProperty.getValue2());
+                            LocalDateTime nextResetTime = DateTimeUtil.convertSecondsToDateTime(vpsInfo.getDataNextReset());
                             replymsg.append(System.lineSeparator())
                                     .append(vpsInfo.getHostname()).append(System.lineSeparator())
                                     .append("IP：").append(vpsInfo.getIpAddresses()[0]).append(System.lineSeparator())
                                     .append("Bandwidth：").append(vpsInfo.getDataCounter() / 1024 / 1024 / 1024).append("GB").append("/").append(vpsInfo.getPlanMonthlyData() / 1024 / 1024 / 1024).append("GB").append(System.lineSeparator())
-                                    .append("Reset：").append(DateTimeUtil.getDatetimeStr(LocalDateTime, DateTimeUtil.FORMATTER_DATE)).append(System.lineSeparator());
+                                    .append("Reset：").append(DateTimeUtil.getDatetimeStr(nextResetTime, DateTimeUtil.FORMATTER_DATE)).append(System.lineSeparator());
                         }
                         break;
                     case UDATE_WX_MENU:

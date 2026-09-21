@@ -15,7 +15,6 @@ public class LokTarConfig {
     private Qywx qywx;
     private Github github;
     private Azure azure;
-    private Bwg bwg;
     private Openai openai;
     private Path path;
     private Common common;
@@ -84,11 +83,6 @@ public class LokTarConfig {
         private String voiceRegion;
         private String docIntelligenceKey;
         private String docIntelligenceEndpoint;
-    }
-
-    @Data
-    public static class Bwg {
-        private String apiKey;
     }
 
     @Data

@@ -53,8 +53,6 @@ conf:
     voiceRegion: xxx
     docIntelligenceKey: xxx
     docIntelligenceEndpoint: https://xxx.cognitiveservices.azure.com/
-  bwg:
-    apiKey: xxx
   openai:
     apiKey: Bearer xxx
   path:
