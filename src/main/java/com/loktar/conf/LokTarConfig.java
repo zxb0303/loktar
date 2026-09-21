@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @Configuration
 @ConfigurationProperties(prefix = "conf")
 @Data
@@ -24,6 +26,7 @@ public class LokTarConfig {
     private Minecraft minecraft;
     private Portainer portainer;
     private Homepage homepage;
+    private AudioBookShelf audioBookShelf;
 
 
     @Data
@@ -141,5 +144,12 @@ public class LokTarConfig {
         public static class Services {
             private String yaml;
         }
+    }
+
+    @Data
+    public static class AudioBookShelf {
+        private String url;
+        private String apiToken;
+        private List<String> users;
     }
 }

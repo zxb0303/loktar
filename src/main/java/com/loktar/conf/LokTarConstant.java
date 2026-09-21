@@ -34,6 +34,7 @@ public class LokTarConstant {
     public static final String REDIS_KEY_PATENT_MONITOR_COUNT = "qywx_patent_monitor_count";
     public static final String REDIS_KEY_RELX = "relx_stock_available";
     public static final String REDIS_KEY_RELX_MONITOR_SWITCH = "relx_monitor_switch";
+    public static final String REDIS_KEY_ABS_LISTEN_TIER_PREFIX = "abs_listen_tier_";
 
 
     public final static String NOTICE_TITLE_GITHUB = "GitHub项目更新通知";
@@ -48,6 +49,7 @@ public class LokTarConstant {
     public final static String NOTICE_JELLYFIN_STOP = "Jellyfin停止播放通知";
     public final static String NOTICE_RELX_STOCK = "华人蒸汽库存通知";
     public final static String NOTICE_TITLE_MINECRAFT = "Minecraft基岩版更新通知";
+    public final static String NOTICE_TITLE_ABS = "AudioBookShelf收听通知";
 
 
     public final static String NOTICE_CERTIMATE = "Certimate通知";
