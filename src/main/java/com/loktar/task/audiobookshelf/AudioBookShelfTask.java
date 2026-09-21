@@ -63,7 +63,6 @@ public class AudioBookShelfTask {
     @Scheduled(cron = "0 0 0 * * *")
     public void resetUserActive() {
         List<String> monitorUsernames = lokTarConfig.getAudioBookShelf().getUsers();
-//        log.info("{}", "AudioBookShelf监控用户状态重置开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         List<AbsUser> absUsers;
         absUsers = audioBookShelfUtil.getUsers();
         for (AbsUser absUser : absUsers) {
@@ -71,9 +70,7 @@ public class AudioBookShelfTask {
                 continue;
             }
             audioBookShelfUtil.updateUserActive(absUser.getId(), true);
-//            log.info("AudioBookShelf用户[{}]已重置为可用状态", absUser.getUsername());
         }
-//        log.info("{}", "AudioBookShelf监控用户状态重置结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
     }
 
     private void monitorUser(String username, String userId, String today) {
