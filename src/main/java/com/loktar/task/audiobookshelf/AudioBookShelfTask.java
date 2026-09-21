@@ -49,8 +49,7 @@ public class AudioBookShelfTask {
     public void listenMonitor() {
         List<String> users = lokTarConfig.getAudioBookShelf().getUsers();
         log.info("{}", "AudioBookShelf收听监控定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
-        Map<String, String> userIdMap;
-        userIdMap = audioBookShelfUtil.getUserIdMap();
+        Map<String, String> userIdMap = audioBookShelfUtil.getUserIdMap();
         String today = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE_COMPACT);
         for (String username : users) {
             monitorUser(username, userIdMap.get(username), today);
