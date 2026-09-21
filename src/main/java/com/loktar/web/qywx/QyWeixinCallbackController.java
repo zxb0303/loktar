@@ -1,7 +1,6 @@
 package com.loktar.web.qywx;
 
 
-
 import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -165,7 +164,7 @@ public class QyWeixinCallbackController {
                         break;
                     case SHOW_BWG_fLOW:
                         replymsg.append("当前搬瓦工VPS信息如下：").append(System.lineSeparator());
-                        String[] veids = new String[]{"1830460"};
+                        String[] veids = new String[]{"1830460", "1984718"};
                         for (String veid : veids) {
                             VPSInfo vpsInfo = bandwagonhostUtil.getVPSData(veid);
                             LocalDateTime LocalDateTime = DateTimeUtil.convertSecondsToDateTime(vpsInfo.getDataNextReset());
