@@ -4,8 +4,6 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
-
 @Configuration
 @ConfigurationProperties(prefix = "conf")
 @Data
@@ -73,6 +71,8 @@ public class LokTarConfig {
         private String agent008Secert;
         private String agent009Id;
         private String agent009Secert;
+        private String agent010Id;
+        private String agent010Secert;
     }
 
     @Data
@@ -150,6 +150,6 @@ public class LokTarConfig {
     public static class AudioBookShelf {
         private String url;
         private String apiToken;
-        private List<String> users;
+        private String user;
     }
 }

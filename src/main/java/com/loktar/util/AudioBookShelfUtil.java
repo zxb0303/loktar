@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.audiobookshelf.AbsListeningStats;
+import com.loktar.dto.audiobookshelf.AbsOpenSessionsRsp;
+import com.loktar.dto.audiobookshelf.AbsPlaybackSession;
 import com.loktar.dto.audiobookshelf.AbsUser;
 import com.loktar.dto.audiobookshelf.AbsUsersRsp;
 import lombok.SneakyThrows;
@@ -18,7 +20,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,14 +52,25 @@ public class AudioBookShelfUtil {
     }
 
     /**
-     * 获取所有用户，返回 username -> userId 映射
+     * 根据用户名获取用户，未找到时返回null
      */
-    public Map<String, String> getUserIdMap() {
-        Map<String, String> userIdMap = new HashMap<>();
+    public AbsUser getUser(String username) {
         for (AbsUser user : getUsers()) {
-            userIdMap.put(user.getUsername(), user.getId());
+            if (user.getUsername().equals(username)) {
+                return user;
+            }
         }
-        return userIdMap;
+        return null;
+    }
+
+    /**
+     * 切换指定用户的启用状态（启用中则禁用，否则启用），返回切换后的状态
+     */
+    public boolean switchUserActive(String username) {
+        AbsUser targetUser = getUser(username);
+        boolean toActive = !Boolean.TRUE.equals(targetUser.getIsActive());
+        updateUserActive(targetUser.getId(), toActive);
+        return toActive;
     }
 
     /**
@@ -67,6 +79,15 @@ public class AudioBookShelfUtil {
     @SneakyThrows
     public AbsListeningStats getTodayListeningStats(String userId) {
         return objectMapper.readValue(get("/api/users/" + userId + "/listening-stats"), AbsListeningStats.class);
+    }
+
+    /**
+     * 获取当前打开的播放会话（暂停中的会话仍保持打开，需结合播放进度是否变化判断是否正在播放）
+     */
+    @SneakyThrows
+    public List<AbsPlaybackSession> getOpenSessions() {
+        AbsOpenSessionsRsp openSessionsRsp = objectMapper.readValue(get("/api/sessions/open"), AbsOpenSessionsRsp.class);
+        return openSessionsRsp.getSessions() == null ? List.of() : openSessionsRsp.getSessions();
     }
 
     /**

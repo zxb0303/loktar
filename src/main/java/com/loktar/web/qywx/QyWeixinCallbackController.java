@@ -10,7 +10,6 @@ import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.common.Notice;
 import com.loktar.domain.common.Property;
 import com.loktar.domain.transmission.TrTorrent;
-import com.loktar.dto.audiobookshelf.AbsUser;
 import com.loktar.dto.bandwagonhost.VPSInfo;
 import com.loktar.dto.transmission.TrResponse;
 import com.loktar.dto.wx.BaseResult;
@@ -33,7 +32,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -231,25 +229,9 @@ public class QyWeixinCallbackController {
                                 .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                         break;
                     case ABS_MONITOR_SWITCH:
-                        List<String> monitorUsernames = lokTarConfig.getAudioBookShelf().getUsers();
-                        List<AbsUser> targetUsers = new ArrayList<>();
-                        for (AbsUser absUser : audioBookShelfUtil.getUsers()) {
-                            if (monitorUsernames.contains(absUser.getUsername())) {
-                                targetUsers.add(absUser);
-                            }
-                        }
-                        // 存在启用中的用户则整体禁用，否则整体启用
-                        boolean toActive = true;
-                        for (AbsUser absUser : targetUsers) {
-                            if (Boolean.TRUE.equals(absUser.getIsActive())) {
-                                toActive = false;
-                                break;
-                            }
-                        }
-                        for (AbsUser absUser : targetUsers) {
-                            audioBookShelfUtil.updateUserActive(absUser.getId(), toActive);
-                        }
-                        replymsg.append(toActive ? "已启用" : "已禁用").append("ABS监控用户（").append(targetUsers.size()).append("个）").append(System.lineSeparator());
+                        String monitorUsername = lokTarConfig.getAudioBookShelf().getUser();
+                        boolean toActive = audioBookShelfUtil.switchUserActive(monitorUsername);
+                        replymsg.append(toActive ? "已启用" : "已禁用").append("ABS监控用户：").append(monitorUsername).append(System.lineSeparator());
                         replymsg.append(System.lineSeparator())
                                 .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                         break;
