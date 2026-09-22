@@ -30,7 +30,7 @@ public class CarTask {
         this.lokTarConfig = lokTarConfig;
     }
 
-    @Scheduled(cron = "0 */10 * * * ?")
+    @Scheduled(cron = "0 */10 6-22 * * ?")
     public void notice() {
         Property xc90AppVersionProperty = propertyMapper.selectByPrimaryKey("xc90_app_version");
         String lastVersion = CarUtil.getLastVersion();

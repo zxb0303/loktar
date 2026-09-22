@@ -49,7 +49,7 @@ public class MinecraftTask {
     }
 
     @SneakyThrows
-    @Scheduled(cron = "0 */30 * * * ?")
+    @Scheduled(cron = "0 */30 0-1 * * ?")
     public void checkVersion() {
         log.info("{}", "Minecraft版本检测定时器：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         HttpRequest httpRequest = HttpRequest.newBuilder()
