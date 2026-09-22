@@ -98,7 +98,7 @@ public class QyWeixinCallbackChatGPTController {
     private void asyncDealMsg(String msgSignature, String timestamp, String nonce, String xml) {
         WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(lokTarConfig.getQywx().getToken(), lokTarConfig.getQywx().getEncodingAeskey(), lokTarConfig.getQywx().getCorpid());
         String xmlMsg = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, xml);
-        log.info("{}", "after decrypt msg: ");
+//        log.info("{}", "after decrypt msg: ");
         log.info("{}", xmlMsg);
         String msgType = xmlMapper.readTree(xmlMsg).get(LokTarConstant.WX_RECEIVE_MSGTYPE).asText().trim();
         ReceiveBaseMsg receiveBaseMsg;
