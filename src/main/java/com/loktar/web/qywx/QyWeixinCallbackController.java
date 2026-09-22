@@ -12,7 +12,6 @@ import com.loktar.domain.common.Property;
 import com.loktar.domain.transmission.TrTorrent;
 import com.loktar.dto.bandwagonhost.VPSInfo;
 import com.loktar.dto.transmission.TrResponse;
-import com.loktar.dto.wx.BaseResult;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.dto.wx.receivemsg.*;
 import com.loktar.mapper.common.PropertyMapper;
@@ -33,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -185,12 +185,10 @@ public class QyWeixinCallbackController {
                         }
                         break;
                     case UDATE_WX_MENU:
-                        BaseResult baseResult = qywxApi.createAgentMenu(receiveEventMsg.getAgentID());
-                        if (baseResult.getErrcode() == 0) {
-                            replymsg.append("菜单更新成功");
-                        } else {
-                            replymsg.append("菜单更新失败");
-                        }
+                        Map<String, Boolean> menuResults = qywxApi.createAllAgentMenus();
+                        menuResults.forEach((agentId, success) -> replymsg.append("应用 ").append(agentId)
+                                .append(success ? " 菜单更新成功" : " 菜单更新失败")
+                                .append(System.lineSeparator()));
                         break;
                     case PATENT_SEARCH_PROCESS:
                         replymsg.append("当前专利进度如下：").append(System.lineSeparator());

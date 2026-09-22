@@ -144,6 +144,36 @@ public class QywxApi {
 
     }
 
+    /**
+     * 按菜单表中已启用的配置去重应用 ID，逐个更新菜单并返回各应用的更新结果。
+     */
+    public Map<String, Boolean> createAllAgentMenus() {
+        List<Integer> agentIds = qywxMenuMapper.selectAll().stream()
+                .filter(menu -> Integer.valueOf(1).equals(menu.getStatus()))
+                .map(QywxMenu::getAgentId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .sorted()
+                .toList();
+        Map<String, Boolean> results = new LinkedHashMap<>();
+        for (Integer id : agentIds) {
+            String agentId = id.toString();
+            try {
+                BaseResult result = createAgentMenu(agentId);
+                results.put(agentId, result != null && result.getErrcode() == 0);
+            } catch (Exception e) {
+                if (e instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("企业微信菜单批量更新被中断", e);
+                }
+                // 单个应用异常不阻断其他应用；不输出可能含访问令牌的异常消息。
+                log.error("企业微信菜单更新异常，agentId:{}，异常类型:{}", agentId, e.getClass().getSimpleName());
+                results.put(agentId, false);
+            }
+        }
+        return results;
+    }
+
     @SneakyThrows
     public BaseResult createAgentMenu(String agentId) {
         List<QywxMenu> qywxMenus = qywxMenuMapper.selectAllByAgentId(agentId);
