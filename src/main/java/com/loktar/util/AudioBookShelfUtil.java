@@ -97,6 +97,9 @@ public class AudioBookShelfUtil {
     public void updateUserActive(String userId, boolean isActive) {
         String path = "/api/users/" + userId;
         HttpRequest httpRequest = HttpRequest.newBuilder()
+                // ABS 内网入口无法兼容 JDK 默认的 h2c 升级，会在返回响应头前断连（EOF）。
+                // 在请求级指定 HTTP/1.1，避免影响共享 HttpClient 的其他调用方。
+                .version(HttpClient.Version.HTTP_1_1)
                 .uri(URI.create(baseUrl() + path))
                 .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
@@ -112,6 +115,9 @@ public class AudioBookShelfUtil {
     @SneakyThrows
     private String get(String path) {
         HttpRequest httpRequest = HttpRequest.newBuilder()
+                // ABS 内网入口无法兼容 JDK 默认的 h2c 升级，会在返回响应头前断连（EOF）。
+                // 在请求级指定 HTTP/1.1，避免影响共享 HttpClient 的其他调用方。
+                .version(HttpClient.Version.HTTP_1_1)
                 .uri(URI.create(baseUrl() + path))
                 .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)

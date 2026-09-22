@@ -7,8 +7,10 @@
 ## 目录
 
 - [一、本项目功能介绍](#一本项目功能介绍)
+  - [1.11 Audiobookshelf 收听监控](#111-audiobookshelf-收听监控)
 - [二、项目搭建流程](#二项目搭建流程)
 - [三、代码调整与版本升级要点](#三代码调整与版本升级要点)
+  - [3.4.1 Audiobookshelf 内网 HTTP 响应头 EOF](#341-audiobookshelf-内网-http-响应头-eof)
 - [四、打包发布](#四打包发布)
 - [五、其他](#五其他)
 
@@ -78,6 +80,12 @@ Jellyfin 用户播放时通过 Webhook 通知企微，同时对 Transmission 自
 ### 1.10 一键搭建 Xray
 
 通过 SSH 一键安装并配置 Xray：[VPSInitMain.java](src/main/java/com/loktar/web/test/VPSInitMain.java)。
+
+### 1.11 Audiobookshelf 收听监控
+
+- **收听提醒**：[AudioBookShelfTask.java](src/main/java/com/loktar/task/audiobookshelf/AudioBookShelfTask.java) 定时监控单个用户，根据播放进度变化推送收听内容，跨当日时长档位时附加提醒。
+- **用户管理**：通过企业微信菜单启用/禁用监控用户，每日 08:00 自动恢复可用状态。
+- **手动测试入口**：[AudioBookShelfController.java](src/main/java/com/loktar/web/audiobookshelf/AudioBookShelfController.java)，支持触发监控、恢复用户状态及切换启用状态。
 
 ---
 
@@ -297,6 +305,82 @@ public class GithubController {
 `org.apache.http.impl.client`、`org.springframework.web.client.RestTemplate` -> `java.net.http.HttpClient`（JDK 11+），参考 [Http.java](src/main/java/com/loktar/learn/jdk11/Http.java)。
 
 参考 [QywxApi.java](src/main/java/com/loktar/util/wx/qywx/QywxApi.java)。
+
+#### 3.4.1 Audiobookshelf 内网 HTTP 响应头 EOF
+
+**现象**：ABS 收听监控通过内网 HTTP 查询用户时持续失败，异常出现在 `AudioBookShelfUtil.get()` 的 `HttpClient.send()`，还未进入播放进度判断：
+
+```text
+java.io.IOException: HTTP/1.1 header parser received no bytes
+Caused by: java.io.EOFException: EOF reached while reading
+```
+
+同一内网入口使用普通 curl 请求能够返回 HTTP 响应，而 Java 改用 HTTPS 域名入口后可以正常调用。不能仅凭这段异常认定 HTTP 不支持、配置未生效或连接池复用了失效连接。
+
+**定位方法与证据**：在本机 IBM Semeru 21.0.9 上，对同一内网地址的 `/api/users` 发送不带 Token 的 GET 请求，每次使用新客户端，只改变请求的 HTTP 版本偏好：
+
+| 请求方式 | 实测结果 |
+|----------|----------|
+| 指定 `HTTP_1_1` | 返回 `401 Unauthorized`，正常收到 HTTP 响应 |
+| 指定 `HTTP_2` | 出现相同的响应头 EOF |
+| 不指定版本（JDK 默认偏好 HTTP/2） | 出现相同的响应头 EOF |
+
+`401` 是未带凭据时的认证响应，证明已收到响应头，并不代表认证成功。新客户端也能复现，说明旧连接复用不是本次故障的必要条件。
+
+可在能够访问 ABS 内网的 JDK 21 `jshell` 中执行以下对照（先替换 `ABS_HOST` 和端口；不需要实际 Token）：
+
+```java
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
+class AbsHttpProbe {
+    public static void main(String[] args) {
+        URI uri = URI.create("http://ABS_HOST:6085/api/users");
+        for (HttpClient.Version version : HttpClient.Version.values()) {
+            try (HttpClient client = HttpClient.newHttpClient()) {
+                HttpRequest request = HttpRequest.newBuilder(uri)
+                        .version(version)
+                        .timeout(Duration.ofSeconds(8))
+                        .GET()
+                        .build();
+                HttpResponse<Void> response = client.send(request, HttpResponse.BodyHandlers.discarding());
+                System.out.println(version + " -> " + response.statusCode());
+            } catch (Exception e) {
+                System.out.println(version + " -> " + e);
+            }
+        }
+    }
+}
+```
+
+粘贴上述定义后，在 `jshell` 中执行 `AbsHttpProbe.main(new String[0]);` 查看结果。
+
+**原因**：默认版本请求的实际日志中出现了以下升级头：
+
+```http
+Connection: Upgrade, HTTP2-Settings
+Upgrade: h2c
+```
+
+JDK 在明文 HTTP 请求中尝试通过 `h2c` 升级到 HTTP/2；本次 ABS 内网入口在收到这类请求时未返回响应头就断开连接。升级从 HTTP/1.1 请求开始，因此异常中的 `HTTP/1.1` 并不意味着没有尝试 HTTP/2 升级。普通 curl 的 HTTP/1.1 请求没有这些升级头；HTTPS 入口使用 TLS ALPN 协商协议，且经过不同的服务入口，不能据其成功反推内网 HTTP 不可用。相同兼容性现象可参考 [OpenJDK JDK-8326420](https://bugs.openjdk.org/browse/JDK-8326420)。
+
+**修复**：在 [AudioBookShelfUtil.java](src/main/java/com/loktar/util/AudioBookShelfUtil.java) 的 `get()` 和 `updateUserActive()` 两处请求构造中，局部指定 HTTP/1.1，并附中文说明：
+
+```java
+HttpRequest.Builder builder = HttpRequest.newBuilder()
+        // ABS 内网入口无法兼容 JDK 默认的 h2c 升级，会在返回响应头前断连（EOF）。
+        // 在请求级指定 HTTP/1.1，避免影响共享 HttpClient 的其他调用方。
+        .version(HttpClient.Version.HTTP_1_1);
+```
+
+上例展示请求构造器的关键设置；项目中仍在原有链式调用中继续设置 URI、超时、认证头以及 GET/PATCH 方法。
+
+- 保留内网 URL、共享 HttpClient 与现有业务逻辑，不修改全局协议偏好，不需要修改 Dockerfile 或设置 keep-alive JVM 参数。
+- 本次修改已通过 Maven 编译，并经实际测试确认内网调用恢复。部署后可使用 [手动测试入口](#111-audiobookshelf-收听监控) 验证完整调用；状态切换接口会修改真实 ABS 用户状态。
+- 若其他环境出现相同 EOF，应重新进行同环境、同地址、同路径的对照，不应把所有 EOF 都归因于 `h2c`。排查请求头时仅对不带凭据的探测请求启用详细日志，避免泄露 `Authorization`、Cookie 等信息。
 
 ### 3.5 XML 解析使用 jackson-dataformat-xml
 
