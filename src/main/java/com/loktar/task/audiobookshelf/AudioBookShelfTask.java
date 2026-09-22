@@ -41,13 +41,16 @@ public class AudioBookShelfTask {
         this.audioBookShelfUtil = audioBookShelfUtil;
     }
 
-    @Scheduled(cron = "0 */2 * * * *")
+    // 每2分钟监控：周一至周五16:00开始，周六至周日07:00开始，每天22:00执行最后一轮。
+    @Scheduled(cron = "0 */2 16-21 * * MON-FRI")
+    @Scheduled(cron = "0 */2 7-21 * * SAT,SUN")
+    @Scheduled(cron = "0 0 22 * * *")
     public void listenMonitor() {
         String user = lokTarConfig.getAudioBookShelf().getUser();
         log.info("{}", "AudioBookShelf收听监控定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         AbsUser absUser = audioBookShelfUtil.getUser(user);
         if (absUser == null || !Boolean.TRUE.equals(absUser.getIsActive())) {
-            //log.info("{}", "AudioBookShelf监控用户不存在或已禁用，跳过收听监控：" + user);
+            log.info("{}", "AudioBookShelf监控用户已禁用，跳过收听监控：" + user);
             return;
         }
         String today = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE_COMPACT);
