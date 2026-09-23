@@ -7,12 +7,52 @@
 ## 目录
 
 - [一、本项目功能介绍](#一本项目功能介绍)
+  - [1.1 企业微信中枢](#11-企业微信中枢)
+  - [1.2 GitHub 项目更新推送](#12-github-项目更新推送)
+  - [1.3 Jellyfin + Transmission 联动](#13-jellyfin--transmission-联动)
+  - [1.4 Transmission 自动化运维](#14-transmission-自动化运维)
+  - [1.5 房产/土地数据爬虫](#15-房产土地数据爬虫)
+  - [1.6 投资监控](#16-投资监控)
+  - [1.7 专利业务自动化](#17-专利业务自动化)
+  - [1.8 AI 与多媒体能力](#18-ai-与多媒体能力)
+  - [1.9 其他自动化通知](#19-其他自动化通知)
+  - [1.10 一键搭建 Xray](#110-一键搭建-xray)
   - [1.11 Audiobookshelf 收听监控](#111-audiobookshelf-收听监控)
 - [二、项目搭建流程](#二项目搭建流程)
+  - [2.1 通过 IDEA Spring Initialize 创建新工程](#21-通过-idea-spring-initialize-创建新工程)
+  - [2.2 修改配置文件格式](#22-修改配置文件格式)
+  - [2.3 创建包结构](#23-创建包结构)
+  - [2.4 生成 domain、mapper](#24-生成-domainmapper)
+    - [2.4.1 添加依赖](#241-添加依赖)
+    - [2.4.2 创建 mybatis-generator 配置](#242-创建-mybatis-generator-配置)
+    - [2.4.3 在 pom.xml 的 build 中添加 plugin](#243-在-pomxml-的-build-中添加-plugin)
+    - [2.4.4 在 mybatis-generator-config.xml 中启用 Lombok 插件](#244-在-mybatis-generator-configxml-中启用-lombok-插件)
+    - [2.4.5 执行生成](#245-执行生成)
+    - [2.4.6 在 application.yml 中配置 mybatis](#246-在-applicationyml-中配置-mybatis)
+    - [2.4.7 统一开启 Mapper 扫描](#247-统一开启-mapper-扫描)
+    - [2.4.8 IDEA 自动注入告警处理](#248-idea-自动注入告警处理)
+  - [2.5 创建 Controller 测试 Maven 全流程](#25-创建-controller-测试-maven-全流程)
 - [三、代码调整与版本升级要点](#三代码调整与版本升级要点)
-  - [3.4.1 Audiobookshelf 内网 HTTP 响应头 EOF](#341-audiobookshelf-内网-http-响应头-eof)
+  - [3.1 @Deprecated 调整](#31-deprecated-调整)
+    - [3.1.1 字段注入改为构造器注入](#311-字段注入改为构造器注入)
+    - [3.1.2 工具类替换](#312-工具类替换)
+  - [3.2 JSON 库切换](#32-json-库切换)
+  - [3.3 修改 Redis 序列化](#33-修改-redis-序列化)
+  - [3.4 HTTP 客户端切换](#34-http-客户端切换)
+    - [3.4.1 Audiobookshelf 内网 HTTP 响应头 EOF](#341-audiobookshelf-内网-http-响应头-eof)
+  - [3.5 XML 解析使用 jackson-dataformat-xml](#35-xml-解析使用-jackson-dataformat-xml)
+  - [3.6 CompletableFuture.runAsync 异常处理](#36-completablefuturerunasync-异常处理)
+  - [3.7 FFmpeg 调用方案调整](#37-ffmpeg-调用方案调整)
+  - [3.8 Azure 语音 SDK 在 Docker 中运行的基础镜像选型](#38-azure-语音-sdk-在-docker-中运行的基础镜像选型)
+    - [当前已验证的组合](#当前已验证的组合)
+    - [历史问题与 OpenSSL 支持演进](#历史问题与-openssl-支持演进)
+    - [更换镜像时的检查项](#更换镜像时的检查项)
 - [四、打包发布](#四打包发布)
+  - [4.1 添加 Dockerfile](#41-添加-dockerfile)
+  - [4.2 使用 dockerfile-maven-plugin 构建并推送镜像](#42-使用-dockerfile-maven-plugin-构建并推送镜像)
+  - [4.3 使用 GitHub Action 构建并推送镜像](#43-使用-github-action-构建并推送镜像)
 - [五、其他](#五其他)
+  - [5.1 GitHub 单独删除某个文件的所有历史记录](#51-github-单独删除某个文件的所有历史记录)
 
 ---
 
@@ -456,26 +496,29 @@ services:
 
 ### 3.8 Azure 语音 SDK 在 Docker 中运行的基础镜像选型
 
-部署后曾报错：`Failed to initialize platform (azure-c-shared)`。
+#### 当前已验证的组合
 
-参考 https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2272 ，当时使用的 SDK 版本（1.34.x）仅支持 OpenSSL 1.x，因此必须选择自带 OpenSSL 1.x 的发行版作为基础镜像：
+当前项目使用 Azure Speech SDK **1.51.2**（见 [pom.xml](pom.xml)），搭配 [Dockerfile](Dockerfile) 中的基础镜像，已通过项目实际运行测试：
 
-| Ubuntu LTS | 名称            |
-|------------|-----------------|
-| 24.04      | Noble Numbat    |
-| 22.04      | Jammy Jellyfish |
-| 20.04      | Focal Fossa     |
-| 18.04      | Bionic Beaver   |
+```dockerfile
+FROM ibm-semeru-runtimes:open-21.0.12.10-jre-resolute
+```
 
-| Debian LTS | 名称       |
-|------------|------------|
-| 12         | Bookworm   |
-| 11         | Bullseye   |
-| 10         | Buster     |
+当前 Dockerfile 未额外添加系统依赖安装步骤。此处记录的是本项目已验证的 SDK 与镜像组合，不代表该发行版已获得 Azure 官方支持，也不代表任意 JRE 镜像都能直接运行。
 
-当时将基础镜像由 `eclipse-temurin:21-jammy` 调整为 `ibm-semeru-runtimes:open-21-jre-focal`。
+#### 历史问题与 OpenSSL 支持演进
 
-> **更新**：Azure Speech SDK 从 **1.38.0** 起已原生支持 OpenSSL 3.x（参考 https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2048 ），当前项目使用的 1.50.0 同样支持。因此基础镜像不再受 OpenSSL 版本限制，可自由选择基于 Ubuntu 22.04+ / Debian 12+ 等自带 OpenSSL 3.x 的现代发行版，如 `ibm-semeru-runtimes:open-21-jre-noble`。
+旧版 SDK（1.34.x）依赖 OpenSSL 1.x，项目部署时曾出现 `Failed to initialize platform (azure-c-shared)`。当时通过将基础镜像从 `eclipse-temurin:21-jammy` 换为 `ibm-semeru-runtimes:open-21-jre-focal` 解决，参考 [Issue #2272](https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2272)。这一历史限制不应继续用于判断新版 SDK 的镜像选型。
+
+- **1.38.0**：开始支持 OpenSSL 3，但初期仅支持 **3.0.x**，见 [Issue #2048 维护者说明](https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2048#issuecomment-2161849523)。
+- **1.40.0**：移除了仅限 OpenSSL 3.0.x 的内部限制，并修复 Linux arm64 上的 OpenSSL 3 检测问题，见 [Issue #2436 维护者说明](https://github.com/Azure-Samples/cognitive-services-speech-sdk/issues/2436#issuecomment-2292049452)。
+- **当前官方要求**：Java/Linux SDK 支持 OpenSSL **1.x 或 3.x**，但没有提供逐个 OpenSSL 3.x 次版本的完整验证表，不能据此推断所有发行版和镜像组合均已验证。
+
+#### 更换镜像时的检查项
+
+Speech SDK 在 Linux 上动态使用容器内的 OpenSSL，镜像选型除 JDK 版本外，还需检查 CPU 架构、glibc、OpenSSL 共享库、CA 证书（`ca-certificates`）及 ALSA 等系统依赖。支持 OpenSSL 3.x 不等于镜像依赖齐全；遇到平台初始化或 TLS/WebSocket 连接失败时，应结合 SDK 日志确认原因，而不是直接归因为 OpenSSL 3 不兼容。
+
+参考：[Java/Linux 平台要求](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/quickstarts/setup-platform?tabs=linux&pivots=programming-language-java)、[Linux OpenSSL 与证书配置](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-configure-openssl-linux)。
 
 ---
 
