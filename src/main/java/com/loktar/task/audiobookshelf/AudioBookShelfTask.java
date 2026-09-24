@@ -14,8 +14,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
@@ -25,7 +25,7 @@ public class AudioBookShelfTask {
     private final static int NOTICE_TIER_MINUTES = 10;
 
     // Redis刻度记录保留2天，避免历史数据堆积
-    private final static long TIER_RECORD_EXPIRE = 2 * 24 * 60 * 60;
+    private final static Duration TIER_RECORD_EXPIRE = Duration.ofDays(2);
 
     private final LokTarConfig lokTarConfig;
 
@@ -111,9 +111,9 @@ public class AudioBookShelfTask {
                 System.lineSeparator() +
                 DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
         qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent010Id(), content));
-        redisTemplate.opsForValue().set(posKey, currentPos, TIER_RECORD_EXPIRE, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(posKey, currentPos, TIER_RECORD_EXPIRE);
         if (lastTierValue == null || tierReached) {
-            redisTemplate.opsForValue().set(tierKey, currentTier, TIER_RECORD_EXPIRE, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(tierKey, currentTier, TIER_RECORD_EXPIRE);
         }
     }
 

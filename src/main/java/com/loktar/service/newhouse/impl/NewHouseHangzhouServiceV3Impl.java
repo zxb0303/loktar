@@ -115,7 +115,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
         HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
         Map<String, String> sessionCookies = extractCookies(response);
         String redisValue = MessageFormat.format(COOKIE_STR, sessionCookies.get(COOKIE_NAME_HZSESSIONID));
-        redisTemplate.opsForValue().set(LokTarConstant.REDIS_KEY_NEWHOUSE_COOKIE, redisValue, 60 * 30, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(LokTarConstant.REDIS_KEY_NEWHOUSE_COOKIE, redisValue, Duration.ofMinutes(30));
     }
 
     @Override

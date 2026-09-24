@@ -34,7 +34,6 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
@@ -112,7 +111,7 @@ public class QywxApi {
         AccessToken accessToken = objectMapper.readValue(response.body(), AccessToken.class);
         if (!StringUtils.isEmpty(accessToken.getAccessToken())) {
             if (accessToken.getExpiresIn() > 0) {
-                redisTemplate.opsForValue().set(KEY_ACCESSTOKEN + agentId, accessToken, accessToken.getExpiresIn(), TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(KEY_ACCESSTOKEN + agentId, accessToken, Duration.ofSeconds(accessToken.getExpiresIn()));
             } else {
                 redisTemplate.opsForValue().set(KEY_ACCESSTOKEN + agentId, accessToken);
             }

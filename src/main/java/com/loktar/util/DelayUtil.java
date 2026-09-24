@@ -11,9 +11,9 @@ public class DelayUtil {
      */
     public static void delaySeconds(int minSecond,int maxSecond){
         Random random = new Random();
-        int millis = random.nextInt((maxSecond-minSecond)*1000)+minSecond*1000;
+        int seconds = random.nextInt(maxSecond - minSecond) + minSecond;
         try {
-            TimeUnit.MILLISECONDS.sleep(millis);
+            TimeUnit.SECONDS.sleep(seconds);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

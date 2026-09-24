@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 
@@ -27,7 +28,7 @@ public class RedisController {
         RestInfo restInfo = new RestInfo();
         restInfo.setEligibleDays(1);
         restInfo.setName("zhangsan");
-        redisTemplate.opsForValue().set("2", restInfo, 5, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set("2", restInfo, Duration.ofSeconds(5));
     }
     @GetMapping("get")
     public void get(){

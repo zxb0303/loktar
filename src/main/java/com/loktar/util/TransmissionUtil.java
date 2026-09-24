@@ -23,13 +23,12 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
 public class TransmissionUtil {
     private final static String TRANSMISSION_SESSION_ID = "X-Transmission-Session-Id";
-    private final static long TRANSMISSION_SESSION_ID_EXPIRE = 28 * 60;
+    private final static Duration TRANSMISSION_SESSION_ID_EXPIRE = Duration.ofMinutes(28);
     private final static String AUTHORIZATION = "Authorization";
     private final RedisTemplate<String, Object> redisTemplate;
     private final LokTarConfig lokTarConfig;
@@ -70,7 +69,7 @@ public class TransmissionUtil {
 
         if (response.statusCode() == 409) {
             sessionId = response.headers().firstValue(TRANSMISSION_SESSION_ID).orElse(null);
-            redisTemplate.opsForValue().set(LokTarConstant.REDIS_KEY_TRANSMISSION_SESSIONID, sessionId, TRANSMISSION_SESSION_ID_EXPIRE, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(LokTarConstant.REDIS_KEY_TRANSMISSION_SESSIONID, sessionId, TRANSMISSION_SESSION_ID_EXPIRE);
             return rpc(trRequest);
         }
         //TODO 打印
