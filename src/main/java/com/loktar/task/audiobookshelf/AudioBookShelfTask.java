@@ -8,13 +8,14 @@ import com.loktar.dto.audiobookshelf.AbsUser;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.util.AudioBookShelfUtil;
 import com.loktar.util.DateTimeUtil;
-import com.loktar.util.RedisUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
@@ -28,15 +29,15 @@ public class AudioBookShelfTask {
 
     private final LokTarConfig lokTarConfig;
 
-    private final RedisUtil redisUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final QywxApi qywxApi;
 
     private final AudioBookShelfUtil audioBookShelfUtil;
 
-    public AudioBookShelfTask(LokTarConfig lokTarConfig, RedisUtil redisUtil, QywxApi qywxApi, AudioBookShelfUtil audioBookShelfUtil) {
+    public AudioBookShelfTask(LokTarConfig lokTarConfig, RedisTemplate<String, Object> redisTemplate, QywxApi qywxApi, AudioBookShelfUtil audioBookShelfUtil) {
         this.lokTarConfig = lokTarConfig;
-        this.redisUtil = redisUtil;
+        this.redisTemplate = redisTemplate;
         this.qywxApi = qywxApi;
         this.audioBookShelfUtil = audioBookShelfUtil;
     }
@@ -88,7 +89,7 @@ public class AudioBookShelfTask {
         String posKey = LokTarConstant.REDIS_KEY_ABS_PLAYING_POS_PREFIX + username;
         long currentTime = playingSession.getCurrentTime() == null ? 0 : playingSession.getCurrentTime();
         String currentPos = playingSession.getId() + "|" + currentTime;
-        Object lastPosValue = redisUtil.get(posKey);
+        Object lastPosValue = redisTemplate.opsForValue().get(posKey);
         if (currentPos.equals(lastPosValue)) {
             // 播放进度无变化，已暂停，不推送
             return;
@@ -98,7 +99,7 @@ public class AudioBookShelfTask {
         long todayMinutes = todaySeconds == null ? 0 : todaySeconds / 60;
         long currentTier = todayMinutes / NOTICE_TIER_MINUTES;
         String tierKey = LokTarConstant.REDIS_KEY_ABS_LISTEN_TIER_PREFIX + today + "_" + username;
-        Object lastTierValue = redisUtil.get(tierKey);
+        Object lastTierValue = redisTemplate.opsForValue().get(tierKey);
         // 当日首次记录：以当前档位为基线不附加超时信息，避免服务重启后对当日历史时长误报
         long lastTier = lastTierValue == null ? currentTier : Long.parseLong(lastTierValue.toString());
         boolean tierReached = currentTier > lastTier;
@@ -110,9 +111,9 @@ public class AudioBookShelfTask {
                 System.lineSeparator() +
                 DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
         qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent010Id(), content));
-        redisUtil.set(posKey, currentPos, TIER_RECORD_EXPIRE);
+        redisTemplate.opsForValue().set(posKey, currentPos, TIER_RECORD_EXPIRE, TimeUnit.SECONDS);
         if (lastTierValue == null || tierReached) {
-            redisUtil.set(tierKey, currentTier, TIER_RECORD_EXPIRE);
+            redisTemplate.opsForValue().set(tierKey, currentTier, TIER_RECORD_EXPIRE, TimeUnit.SECONDS);
         }
     }
 

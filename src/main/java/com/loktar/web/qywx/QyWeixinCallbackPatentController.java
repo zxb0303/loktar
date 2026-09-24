@@ -3,9 +3,9 @@ package com.loktar.web.qywx;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.dataformat.xml.XmlMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.patent.PatentApply;
@@ -15,15 +15,16 @@ import com.loktar.dto.wx.receivemsg.ReceiceMsgType;
 import com.loktar.dto.wx.receivemsg.ReceiveTextMsg;
 import com.loktar.mapper.patent.PatentApplyMapper;
 import com.loktar.mapper.qywx.QywxPatentMsgMapper;
-import com.loktar.util.RedisUtil;
 import com.loktar.util.wx.aes.WXBizMsgCrypt;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.MessageFormat;
+import java.util.concurrent.TimeUnit;
 
 
 @RestController
@@ -31,7 +32,7 @@ import java.text.MessageFormat;
 @Slf4j
 public class QyWeixinCallbackPatentController {
 
-    private final RedisUtil redisUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final QywxApi qywxApi;
 
@@ -41,23 +42,25 @@ public class QyWeixinCallbackPatentController {
 
     private final PatentApplyMapper patentApplyMapper;
 
-    private final static ObjectMapper xmlMapper = new XmlMapper();
+    private static final XmlMapper xmlMapper = XmlMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE)
+            .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
 
 
-    public QyWeixinCallbackPatentController(RedisUtil redisUtil, QywxApi qywxApi, LokTarConfig lokTarConfig, QywxPatentMsgMapper qywxPatentMsgMapper, PatentApplyMapper patentApplyMapper) {
-        this.redisUtil = redisUtil;
+    public QyWeixinCallbackPatentController(RedisTemplate<String, Object> redisTemplate, QywxApi qywxApi, LokTarConfig lokTarConfig, QywxPatentMsgMapper qywxPatentMsgMapper, PatentApplyMapper patentApplyMapper) {
+        this.redisTemplate = redisTemplate;
         this.qywxApi = qywxApi;
         this.lokTarConfig = lokTarConfig;
         this.qywxPatentMsgMapper = qywxPatentMsgMapper;
         this.patentApplyMapper = patentApplyMapper;
-        xmlMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
     }
 
     @PostMapping("receive")
     public ResponseEntity<Void> receive(
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce, @RequestBody String xml) {
-        if (!redisUtil.setIfAbsent(msgSignature, timestamp, 30)) {
+        if (!redisTemplate.opsForValue().setIfAbsent(msgSignature, timestamp, 30, TimeUnit.SECONDS)) {
             return ResponseEntity.noContent().build();
         }
         Thread.ofVirtual().start(() -> asyncDealMsg(msgSignature, timestamp, nonce, xml));
@@ -70,7 +73,7 @@ public class QyWeixinCallbackPatentController {
         String xmlMsg = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, xml);
 //        log.info("{}", "after decrypt msg: ");
         log.info("{}", xmlMsg);
-        String msgType = xmlMapper.readTree(xmlMsg).get(LokTarConstant.WX_RECEIVE_MSGTYPE).asText().trim();
+        String msgType = xmlMapper.readTree(xmlMsg).get(LokTarConstant.WX_RECEIVE_MSGTYPE).asString().trim();
         ReceiceMsgType type = ReceiceMsgType.getByName(msgType);
         switch (type) {
             case ReceiceMsgType.TEXT:

@@ -1,0 +1,4 @@
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"后端修改边界、注入与日志约定"}
+{"file":".trellis/spec/backend/external-integrations.md","reason":"保持外部接口契约"}
+{"file":".trellis/spec/backend/tests.md","reason":"测试目录约定；框架版本以 Boot 4 实际 API 为准"}
+{"file":".trellis/spec/guides/index.md","reason":"跨层变更检查"}

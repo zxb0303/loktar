@@ -19,7 +19,6 @@ import com.loktar.mapper.newhouse.NewHouseHangzhouV3PresellMapper;
 import com.loktar.service.newhouse.NewHouseHangzhouV3Service;
 import com.loktar.util.AzureDocIntelligenceUtil;
 import com.loktar.util.PicUtil;
-import com.loktar.util.RedisUtil;
 import com.loktar.util.UUIDUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,6 +27,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -75,7 +75,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
 
     private final NewHouseHangzhouV3PresellBuildMapper newHouseHangzhouV3PresellBuildMapper;
 
-    private final RedisUtil redisUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
     private final LokTarConfig lokTarConfig;
@@ -83,11 +83,11 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
 
     private final HttpClient httpClient;
 
-    public NewHouseHangzhouServiceV3Impl(NewHouseHangzhouV3Mapper newHouseHangzhouV3Mapper, NewHouseHangzhouV3PresellMapper newHouseHangzhouV3PresellMapper, NewHouseHangzhouV3PresellBuildMapper newHouseHangzhouV3PresellBuildMapper, RedisUtil redisUtil, LokTarConfig lokTarConfig, NewHouseHangzhouV3DetailMapper newHouseHangzhouV3DetailMapper, HttpClient httpClient) {
+    public NewHouseHangzhouServiceV3Impl(NewHouseHangzhouV3Mapper newHouseHangzhouV3Mapper, NewHouseHangzhouV3PresellMapper newHouseHangzhouV3PresellMapper, NewHouseHangzhouV3PresellBuildMapper newHouseHangzhouV3PresellBuildMapper, RedisTemplate<String, Object> redisTemplate, LokTarConfig lokTarConfig, NewHouseHangzhouV3DetailMapper newHouseHangzhouV3DetailMapper, HttpClient httpClient) {
         this.newHouseHangzhouV3Mapper = newHouseHangzhouV3Mapper;
         this.newHouseHangzhouV3PresellMapper = newHouseHangzhouV3PresellMapper;
         this.newHouseHangzhouV3PresellBuildMapper = newHouseHangzhouV3PresellBuildMapper;
-        this.redisUtil = redisUtil;
+        this.redisTemplate = redisTemplate;
         this.lokTarConfig = lokTarConfig;
         STATUS_MAP.put("可售", 1);
         STATUS_MAP.put("已售", 2);
@@ -115,7 +115,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
         HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
         Map<String, String> sessionCookies = extractCookies(response);
         String redisValue = MessageFormat.format(COOKIE_STR, sessionCookies.get(COOKIE_NAME_HZSESSIONID));
-        redisUtil.set(LokTarConstant.REDIS_KEY_NEWHOUSE_COOKIE, redisValue,60*30);
+        redisTemplate.opsForValue().set(LokTarConstant.REDIS_KEY_NEWHOUSE_COOKIE, redisValue, 60 * 30, TimeUnit.SECONDS);
     }
 
     @Override
@@ -135,7 +135,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
                 .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_HTML)
-                .header(LokTarConstant.HTTP_HEADER_COOKIE_NAME, (String) redisUtil.get(LokTarConstant.REDIS_KEY_NEWHOUSE_COOKIE))
+                .header(LokTarConstant.HTTP_HEADER_COOKIE_NAME, (String) redisTemplate.opsForValue().get(LokTarConstant.REDIS_KEY_NEWHOUSE_COOKIE))
                 .GET()
                 .build();
         HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
@@ -202,7 +202,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
                 .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_HTML)
-                .header(LokTarConstant.HTTP_HEADER_COOKIE_NAME, (String) redisUtil.get(LokTarConstant.REDIS_KEY_NEWHOUSE_COOKIE))
+                .header(LokTarConstant.HTTP_HEADER_COOKIE_NAME, (String) redisTemplate.opsForValue().get(LokTarConstant.REDIS_KEY_NEWHOUSE_COOKIE))
                 .GET()
                 .build();
         HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
@@ -256,7 +256,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
                     .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
                     .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
                     .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_HTML)
-                    .header(LokTarConstant.HTTP_HEADER_COOKIE_NAME, (String) redisUtil.get(LokTarConstant.REDIS_KEY_NEWHOUSE_COOKIE))
+                    .header(LokTarConstant.HTTP_HEADER_COOKIE_NAME, (String) redisTemplate.opsForValue().get(LokTarConstant.REDIS_KEY_NEWHOUSE_COOKIE))
                     .GET()
                     .build();
             HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
@@ -318,7 +318,7 @@ public class NewHouseHangzhouServiceV3Impl implements NewHouseHangzhouV3Service 
                         .header(LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_ENCODING_VALUE_GZIP)
                         .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
                         .header(LokTarConstant.HTTP_HEADER_CONTENT_TYPE_NAME, LokTarConstant.HTTP_HEADER_CONTENT_TYPE_VALUE_HTML)
-                        .header(LokTarConstant.HTTP_HEADER_COOKIE_NAME, (String) redisUtil.get(LokTarConstant.REDIS_KEY_NEWHOUSE_COOKIE))
+                        .header(LokTarConstant.HTTP_HEADER_COOKIE_NAME, (String) redisTemplate.opsForValue().get(LokTarConstant.REDIS_KEY_NEWHOUSE_COOKIE))
                         .GET()
                         .build();
                 HttpResponse<byte[]> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());

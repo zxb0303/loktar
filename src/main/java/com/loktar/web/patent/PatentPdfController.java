@@ -2,9 +2,8 @@ package com.loktar.web.patent;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.domain.patent.PatentApply;
 import com.loktar.domain.patent.PatentDetail;
 import com.loktar.domain.patent.PatentPdf;
@@ -49,7 +48,9 @@ public class PatentPdfController {
     private final CompanyInfoCqqMapper companyInfoCqqMapper;
     private final QywxPatentMsgMapper qywxPatentMsgMapper;
 
-    private ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE).registerModule(new JavaTimeModule());
+    private final JsonMapper objectMapper = JsonMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
+            .build();
 
     public PatentPdfController(PatentPdfMapper patentPdfMapper, PatentPdfApplyMapper patentPdfApplyMapper, PatentService patentService, PatentDetailMapper patentDetailMapper, PatentApplyMapper patentApplyMapper, CompanyInfoCqqMapper companyInfoCqqMapper, QywxPatentMsgMapper qywxPatentMsgMapper) {
         this.patentPdfMapper = patentPdfMapper;
@@ -62,7 +63,6 @@ public class PatentPdfController {
     }
 
     // Uipath 生成合同协议使用
-    @SneakyThrows
     @PostMapping("/getContractDTO")
     public String getContractDTO(String applyName, String price) {
         PatentContractDTO patentContractDTO = companyInfoCqqMapper.getPatentContractDTOByApplyName(applyName);
@@ -100,7 +100,6 @@ public class PatentPdfController {
     }
 
     //Uipath 专利获取使用
-    @SneakyThrows
     @GetMapping("/get")
     public String get(String status, String start, String end) {
         int statusInt = Integer.parseInt(status);
@@ -117,7 +116,6 @@ public class PatentPdfController {
     }
 
     //Uipath 生成报价单时使用
-    @SneakyThrows
     @PostMapping("/getEncodeDetails")
     public String getEncodeDetails(String applyName) {
         PatentApply patentApply = patentApplyMapper.selectByApplyName(applyName);
@@ -162,7 +160,6 @@ public class PatentPdfController {
     }
 
     //Uipath 自动生成报价单及合同协议使用
-    @SneakyThrows
     @PostMapping("/getQywxPatentMsg")
     public String getQywxPatentMsg(String status) {
         List<QywxPatentMsg> qywxPatentMsgs = qywxPatentMsgMapper.getQywxPatentMsgsByStatus(status);

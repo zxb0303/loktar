@@ -1,8 +1,8 @@
 package com.loktar.task.investment;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
@@ -46,14 +46,14 @@ public class FundNavTask {
     private final QywxApi qywxApi;
     private final LokTarConfig lokTarConfig;
     private final HttpClient httpClient;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper objectMapper;
     private static final List<String> FUND_CODES = List.of("021550");
 
     private static final String FUND_NAV_URL = "https://fundf10.eastmoney.com/F10DataApi.aspx?type=lsjz&code={0}&sdate={1}&edate={2}&per={3}&page={4}";
     private static final String FUND_NAV_FALLBACK_URL = "https://api.fund.eastmoney.com/f10/lsjz?fundCode={0}&pageIndex={1}&pageSize={2}";
     private static final String FUND_NAV_FALLBACK_REFERER = "http://fundf10.eastmoney.com/jjjz_{0}.html";
 
-    public FundNavTask(FundNavMapper fundNavMapper, EquityIndexPerfDailyMapper equityIndexPerfDailyMapper, PropertyMapper propertyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig, HttpClient httpClient, ObjectMapper objectMapper) {
+    public FundNavTask(FundNavMapper fundNavMapper, EquityIndexPerfDailyMapper equityIndexPerfDailyMapper, PropertyMapper propertyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig, HttpClient httpClient, JsonMapper objectMapper) {
         this.fundNavMapper = fundNavMapper;
         this.equityIndexPerfDailyMapper = equityIndexPerfDailyMapper;
         this.propertyMapper = propertyMapper;
@@ -221,8 +221,8 @@ public class FundNavTask {
         try {
             JsonNode root = objectMapper.readTree(response);
             JsonNode errCode = root.get("ErrCode");
-            if (errCode == null || errCode.asInt() != 0) {
-                log.warn("{} 备用接口返回错误: {}", code, root.has("ErrMsg") ? root.get("ErrMsg").asText() : "unknown");
+            if (errCode == null || errCode.asInt(0) != 0) {
+                log.warn("{} 备用接口返回错误: {}", code, root.has("ErrMsg") ? root.get("ErrMsg").asString() : "unknown");
                 return result;
             }
             JsonNode lsjzList = root.path("Data").path("LSJZList");
@@ -232,19 +232,16 @@ public class FundNavTask {
             for (JsonNode item : lsjzList) {
                 FundNav fundNav = new FundNav();
                 fundNav.setFundCode(code);
-                fundNav.setNavDate(LocalDate.parse(item.get("FSRQ").asText().trim(), DateTimeUtil.FORMATTER_DATE));
-                fundNav.setUnitNav(new BigDecimal(item.get("DWJZ").asText().trim()));
-                fundNav.setAccNav(new BigDecimal(item.get("LJJZ").asText().trim()));
-
-                String growthRateStr = item.has("JZZZL") && !item.get("JZZZL").isNull() ? item.get("JZZZL").asText().trim() : "";
+                fundNav.setNavDate(LocalDate.parse(item.get("FSRQ").asString().trim(), DateTimeUtil.FORMATTER_DATE));
+                fundNav.setUnitNav(new BigDecimal(item.get("DWJZ").asString().trim()));
+                fundNav.setAccNav(new BigDecimal(item.get("LJJZ").asString().trim()));
+                String growthRateStr = item.has("JZZZL") && !item.get("JZZZL").isNull() ? item.get("JZZZL").asString().trim() : "";
                 if (!growthRateStr.isEmpty()) {
                     fundNav.setGrowthRate(new BigDecimal(growthRateStr));
                 }
-
-                fundNav.setSubscribeStatus(item.has("SGZT") ? item.get("SGZT").asText().trim() : "");
-                fundNav.setRedeemStatus(item.has("SHZT") ? item.get("SHZT").asText().trim() : "");
-
-                String fhfcz = item.has("FHFCZ") && !item.get("FHFCZ").isNull() ? item.get("FHFCZ").asText().trim() : "";
+                fundNav.setSubscribeStatus(item.has("SGZT") ? item.get("SGZT").asString().trim() : "");
+                fundNav.setRedeemStatus(item.has("SHZT") ? item.get("SHZT").asString().trim() : "");
+                String fhfcz = item.has("FHFCZ") && !item.get("FHFCZ").isNull() ? item.get("FHFCZ").asString().trim() : "";
                 if (!fhfcz.isEmpty()) {
                     java.util.regex.Pattern bonusPattern = java.util.regex.Pattern.compile("\\d+\\.\\d+");
                     java.util.regex.Matcher bonusMatcher = bonusPattern.matcher(fhfcz);

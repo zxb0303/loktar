@@ -1,7 +1,7 @@
 package com.loktar.dto.rss;
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import lombok.Data;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 
 import java.util.List;
 

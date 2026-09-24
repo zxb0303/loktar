@@ -3,8 +3,8 @@ package com.loktar.service.lottery.impl;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.lottery.LotteryHouse;
@@ -51,7 +51,9 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
 
     private final static String URL_HOUSE_LIST = "https://miniprogram.hz-notary.com/app/api/lottery?layPage.pageNum=1&layPage.pageSize=20";
 
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private static final JsonMapper objectMapper = JsonMapper.builder()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
 
     private final QywxApi qywxApi;
 
@@ -66,7 +68,6 @@ public class HZLotteryServiceV2Impl implements HZLotteryServiceV2 {
         this.qywxApi = qywxApi;
         this.lokTarConfig = lokTarConfig;
         this.httpClient = httpClient;
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     /**

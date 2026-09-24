@@ -8,6 +8,7 @@ import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.util.*;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,16 +28,16 @@ public class JellyfinWebhookController {
     private final TransmissionUtil transmissionUtil;
     private final JellyfinUtil jellyfinUtil;
     private final LokTarConfig lokTarConfig;
-    private final RedisUtil redisUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final IPUtil ipUtil;
     private final HomepageUtil homepageUtil;
 
-    public JellyfinWebhookController(QywxApi qywxApi, TransmissionUtil transmissionUtil, JellyfinUtil jellyfinUtil, LokTarConfig lokTarConfig, RedisUtil redisUtil, IPUtil ipUtil, HomepageUtil homepageUtil) {
+    public JellyfinWebhookController(QywxApi qywxApi, TransmissionUtil transmissionUtil, JellyfinUtil jellyfinUtil, LokTarConfig lokTarConfig, RedisTemplate<String, Object> redisTemplate, IPUtil ipUtil, HomepageUtil homepageUtil) {
         this.qywxApi = qywxApi;
         this.transmissionUtil = transmissionUtil;
         this.jellyfinUtil = jellyfinUtil;
         this.lokTarConfig = lokTarConfig;
-        this.redisUtil = redisUtil;
+        this.redisTemplate = redisTemplate;
         this.ipUtil = ipUtil;
         this.homepageUtil = homepageUtil;
     }
@@ -76,10 +77,14 @@ public class JellyfinWebhookController {
         Session session = jellyfinUtil.getSessionByDeviceId(notification.getDeviceId());
         if (!isLocalNetwork(session.getRemoteEndPoint())) {
             long expireTime = calculateSecondsDifference(notification);
-            long existExpireTime = redisUtil.getExpire(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET);
-            redisUtil.sSetAndTime(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, Math.max(expireTime, existExpireTime), notification.getNotificationUsername());
+            long existExpireTime = redisTemplate.getExpire(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, TimeUnit.SECONDS);
+            long ttl = Math.max(expireTime, existExpireTime);
+            redisTemplate.opsForSet().add(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, notification.getNotificationUsername());
+            if (ttl > 0) {
+                redisTemplate.expire(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, ttl, TimeUnit.SECONDS);
+            }
         } else {
-            redisUtil.setRemove(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, notification.getNotificationUsername());
+            redisTemplate.opsForSet().remove(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, notification.getNotificationUsername());
         }
         sendPlaybackNotification(notification, session, LokTarConstant.NOTICE_JELLYFIN_START);
         handleTransmissionSpeedOnStart(notification, session);
@@ -91,7 +96,7 @@ public class JellyfinWebhookController {
      */
     private void handlePlaybackStop(Notification notification) {
         Session session = jellyfinUtil.getSessionByDeviceId(notification.getDeviceId());
-        redisUtil.setRemove(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, notification.getNotificationUsername());
+        redisTemplate.opsForSet().remove(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, notification.getNotificationUsername());
         sendPlaybackNotification(notification, session, LokTarConstant.NOTICE_JELLYFIN_STOP);
         handleTransmissionSpeedOnStop(notification, session);
         handleHomepageWidgetOnStop(notification);
@@ -149,7 +154,7 @@ public class JellyfinWebhookController {
         if (isLocalNetwork(session.getRemoteEndPoint())) {
             return;
         }
-        if (redisUtil.sGetSetSize(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET) == 0 && transmissionUtil.getSession().getArguments().getAltSpeedEnabled()) {
+        if (redisTemplate.opsForSet().size(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET) == 0 && transmissionUtil.getSession().getArguments().getAltSpeedEnabled()) {
             transmissionUtil.altSpeedEnabled(false);
             notifyTransmissionSpeedChange(notification, "Transmission已自动关闭限速");
         }
@@ -160,8 +165,12 @@ public class JellyfinWebhookController {
      */
     private void handleHomepageWidgetOnStart(Notification notification) {
         long expireTime = calculateSecondsDifference(notification);
-        long existExpireTime = redisUtil.getExpire(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET);
-        redisUtil.sSetAndTime(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET, Math.max(expireTime, existExpireTime), notification.getDeviceId());
+        long existExpireTime = redisTemplate.getExpire(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET, TimeUnit.SECONDS);
+        long ttl = Math.max(expireTime, existExpireTime);
+        redisTemplate.opsForSet().add(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET, notification.getDeviceId());
+        if (ttl > 0) {
+            redisTemplate.expire(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET, ttl, TimeUnit.SECONDS);
+        }
         homepageUtil.switchJellyfinWidgetMode(true);
     }
 
@@ -169,8 +178,8 @@ public class JellyfinWebhookController {
      * 播放停止时：移除播放中设备，无其他播放则切换homepage widget为Blocks模式
      */
     private void handleHomepageWidgetOnStop(Notification notification) {
-        redisUtil.setRemove(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET, notification.getDeviceId());
-        if (redisUtil.sGetSetSize(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET) == 0) {
+        redisTemplate.opsForSet().remove(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET, notification.getDeviceId());
+        if (redisTemplate.opsForSet().size(LokTarConstant.REDIS_KEY_JELLYFIN_PLAYING_SET) == 0) {
             homepageUtil.switchJellyfinWidgetMode(false);
         }
     }

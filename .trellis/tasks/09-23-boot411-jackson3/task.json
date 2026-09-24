@@ -1,0 +1,11 @@
+{
+  "id": "boot411-jackson3",
+  "name": "boot411-jackson3",
+  "title": "Spring Boot 4.1.1 与 Jackson 3 升级",
+  "description": "用户已批准框架、序列化及学习示例迁移计划",
+  "status": "completed",
+  "createdAt": "2026-09-23",
+  "priority": "P1",
+  "children": [],
+  "notes": "升级及示例迁移完成，Java 21 编译和 70 项隔离测试通过；受限项见 implement.md。使用文件工具维护任务，未执行 Git 或会读取分支的生命周期脚本，原计划保持不变。"
+}

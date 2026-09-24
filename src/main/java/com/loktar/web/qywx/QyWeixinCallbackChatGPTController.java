@@ -2,10 +2,12 @@ package com.loktar.web.qywx;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.xml.XmlMapper;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
@@ -45,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class QyWeixinCallbackChatGPTController {
 
-    private final RedisUtil redisUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final QywxApi qywxApi;
 
@@ -63,14 +65,17 @@ public class QyWeixinCallbackChatGPTController {
 
     private final StringRedisTemplate stringRedisTemplate;
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper objectMapper;
 
-    private final static ObjectMapper xmlMapper = new XmlMapper();
+    private static final XmlMapper xmlMapper = XmlMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE)
+            .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
 
     private static final Duration NOTICE_DRAFT_TTL = Duration.ofMinutes(10);
 
-    public QyWeixinCallbackChatGPTController(RedisUtil redisUtil, QywxApi qywxApi, PropertyMapper propertyMapper, QywxChatgptMsgMapper qywxChatgptMsgMapper, AzureVoiceUtil azureVoiceUtil, ChatGPTUtil chatGPTUtil, LokTarConfig lokTarConfig, FFmpegUtil ffmpegUtil, StringRedisTemplate stringRedisTemplate, ObjectMapper objectMapper) {
-        this.redisUtil = redisUtil;
+    public QyWeixinCallbackChatGPTController(RedisTemplate<String, Object> redisTemplate, QywxApi qywxApi, PropertyMapper propertyMapper, QywxChatgptMsgMapper qywxChatgptMsgMapper, AzureVoiceUtil azureVoiceUtil, ChatGPTUtil chatGPTUtil, LokTarConfig lokTarConfig, FFmpegUtil ffmpegUtil, StringRedisTemplate stringRedisTemplate, JsonMapper objectMapper) {
+        this.redisTemplate = redisTemplate;
         this.qywxApi = qywxApi;
         this.propertyMapper = propertyMapper;
         this.qywxChatgptMsgMapper = qywxChatgptMsgMapper;
@@ -80,14 +85,13 @@ public class QyWeixinCallbackChatGPTController {
         this.ffmpegUtil = ffmpegUtil;
         this.stringRedisTemplate = stringRedisTemplate;
         this.objectMapper = objectMapper;
-        xmlMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
     }
 
     @PostMapping("receive")
     public ResponseEntity<Void> receive(
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce, @RequestBody String xml) {
-        if (!redisUtil.setIfAbsent(msgSignature, timestamp, 30)) {
+        if (!redisTemplate.opsForValue().setIfAbsent(msgSignature, timestamp, 30, TimeUnit.SECONDS)) {
             return ResponseEntity.noContent().build();
         }
         Thread.ofVirtual().start(() -> asyncDealMsg(msgSignature, timestamp, nonce, xml));
@@ -100,7 +104,7 @@ public class QyWeixinCallbackChatGPTController {
         String xmlMsg = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, xml);
 //        log.info("{}", "after decrypt msg: ");
         log.info("{}", xmlMsg);
-        String msgType = xmlMapper.readTree(xmlMsg).get(LokTarConstant.WX_RECEIVE_MSGTYPE).asText().trim();
+        String msgType = xmlMapper.readTree(xmlMsg).get(LokTarConstant.WX_RECEIVE_MSGTYPE).asString().trim();
         ReceiveBaseMsg receiveBaseMsg;
         ReceiceMsgType type = ReceiceMsgType.getByName(msgType);
         receiveBaseMsg = switch (type) {
@@ -215,7 +219,7 @@ public class QyWeixinCallbackChatGPTController {
     private void saveNoticeDraft(String userId, IntentResult draft) {
         try {
             stringRedisTemplate.opsForValue().set(buildNoticeDraftKey(userId), objectMapper.writeValueAsString(draft), NOTICE_DRAFT_TTL);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("保存提醒草稿失败: {}", e.getMessage(), e);
         }
     }
@@ -227,7 +231,7 @@ public class QyWeixinCallbackChatGPTController {
         }
         try {
             return objectMapper.readValue(json, IntentResult.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.warn("读取提醒草稿失败，清空草稿: {}", e.getMessage());
             clearNoticeDraft(userId);
             return null;

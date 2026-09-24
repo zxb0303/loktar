@@ -1,8 +1,7 @@
 package com.loktar.web.patent;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.domain.patent.PatentApply;
 import com.loktar.domain.patent.PatentDetail;
 import com.loktar.dto.patent.PatentContractDTO;
@@ -13,7 +12,6 @@ import com.loktar.mapper.patent.PatentDetailMapper;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.NumberToChineseUtil;
 import com.loktar.util.PatentUtil;
-import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +32,9 @@ public class PatentPdf2Controller {
     private final PatentApplyMapper patentApplyMapper;
     private final CompanyInfoCqqMapper companyInfoCqqMapper;
 
-    private ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE).registerModule(new JavaTimeModule());
+    private final JsonMapper objectMapper = JsonMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
+            .build();
 
     public PatentPdf2Controller(PatentDetailMapper patentDetailMapper, PatentApplyMapper patentApplyMapper, CompanyInfoCqqMapper companyInfoCqqMapper) {
         this.patentDetailMapper = patentDetailMapper;
@@ -44,7 +44,6 @@ public class PatentPdf2Controller {
 
 
     // Uipath 生成合同协议使用
-    @SneakyThrows
     @PostMapping("/getContractDTO")
     public String getContractDTO(String applyName, String price) {
         PatentContractDTO patentContractDTO = companyInfoCqqMapper.getPatentContractDTOByApplyName(applyName);
@@ -57,7 +56,6 @@ public class PatentPdf2Controller {
     }
 
     //Uipath 生成报价单时使用
-    @SneakyThrows
     @PostMapping("/getEncodeDetails")
     public String getEncodeDetails(String applyName) {
         PatentApply patentApply = patentApplyMapper.selectByApplyName(applyName);

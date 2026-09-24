@@ -3,8 +3,8 @@ package com.loktar.web.child;
 
 import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.util.DateTimeUtil;
 import lombok.Data;
@@ -58,7 +58,9 @@ public class QSNG {
     private static final String EXCEL_DIR = "F:/";
     private static final int PAGE_SIZE = 100;
     private static final String COOKIE_VALUE = "edu.session.id=060260b7-8ade-43cc-ae81-197724bbc26b; SERVERID=86974b1c5d3c68ca9a53fce778a015a6|1780281137|1780281115";
-    private static final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private static final JsonMapper objectMapper = JsonMapper.builder()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
 
     public static void main(String[] args) throws Exception {
         List<QSNGBean> allBeans = new ArrayList<>();

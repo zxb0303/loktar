@@ -1,20 +1,20 @@
 package com.loktar.util;
 
 
-import com.github.houbb.opencc4j.util.ZhConverterUtil;
-import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.houbb.opencc4j.util.ZhConverterUtil;
 import lombok.Data;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.net.URI;
@@ -35,7 +35,7 @@ public class VapeOnlineUtil {
     private static final String URL = "https://vapeonlines.shop/collections/all_9415de3f/products/relxddp";
     private static final String ADD_URL = "https://vapeonlines.shop/homeapi/cart/add";
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final JsonMapper MAPPER = JsonMapper.builder().build();
 
     public static void main(String[] args) {
 //        List<Product> product1s = getProductsFromPage();
@@ -182,7 +182,6 @@ public class VapeOnlineUtil {
         return newProducts;
     }
 
-    @SneakyThrows
     private static List<Product> getProductsFromPage() {
         List<Product> result = new ArrayList<>();
         String respBody = fetchPageWithRetry();
@@ -200,9 +199,9 @@ public class VapeOnlineUtil {
             json = Parser.unescapeEntities(json, true);
             json = escapeStringLiteralsNewline(json);
             JsonNode node = MAPPER.readTree(json);
-            if (node.has("@type") && "Product".equals(node.get("@type").asText()) && node.has("offers")) {
+            if (node.has("@type") && "Product".equals(node.get("@type").asString("")) && node.has("offers")) {
                 JsonNode offersNode = node.get("offers");
-                List<Product> offerList = MAPPER.readValue(offersNode.traverse(), new TypeReference<List<Product>>() {
+                List<Product> offerList = MAPPER.treeToValue(offersNode, new TypeReference<List<Product>>() {
                 });
                 for (Product p : offerList) {
                     if (p.getUrl() != null) {

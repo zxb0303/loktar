@@ -3,8 +3,8 @@ package com.loktar.service.second.impl;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.common.Property;
 import com.loktar.domain.second.SecondHandHouse;
@@ -113,8 +113,9 @@ public class SecondHandHouseServiceImpl implements SecondHandHouseService {
                     .build();
             HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                JsonMapper objectMapper = JsonMapper.builder()
+                        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                        .build();
                 SecondHandHouseResultDTO secondHandHouseResultDTO = objectMapper.readValue(response.body(), SecondHandHouseResultDTO.class);
                 if (secondHandHouseResultDTO.getList() == null) {
                     log.info("{}", "cookie失效");

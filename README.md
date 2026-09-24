@@ -1,6 +1,6 @@
 # Loktar
 
-> 基于 **SpringBoot 3 + Java 21** 的多功能自动化服务聚合项目，整合企业微信推送、爬虫、媒体处理、AI 对话、PT 下载管理、投资监控等能力，面向个人自动化场景。
+> 基于 **Spring Boot 4.1.1 + Jackson 3 + Java 21** 的多功能自动化服务聚合项目，整合企业微信推送、爬虫、媒体处理、AI 对话、PT 下载管理、投资监控等能力，面向个人自动化场景。
 
 ---
 
@@ -133,11 +133,12 @@ Jellyfin 用户播放时通过 Webhook 通知企微，同时对 Transmission 自
 
 ### 2.1 通过 IDEA Spring Initialize 创建新工程
 
-仅添加最小依赖集：
+选择 **Spring Boot 4.1.1** 和 **Java 21**，版本及完整依赖以 [pom.xml](pom.xml) 为准。Web 与测试的最小依赖集：
 
-- `spring-boot-starter`
-- `spring-boot-starter-web`
-- `spring-boot-starter-test`
+- `spring-boot-starter-webmvc`：Spring MVC Web 支持，替代原 `spring-boot-starter-web`。
+- `spring-boot-starter-test`：测试依赖，使用 `test` scope。
+
+基础 Starter 由 Web Starter 传递引入，无需重复声明。
 
 ### 2.2 修改配置文件格式
 
@@ -171,12 +172,11 @@ com.loktar
 <dependency>
     <groupId>org.mybatis.spring.boot</groupId>
     <artifactId>mybatis-spring-boot-starter</artifactId>
-    <version>3.0.5</version>
+    <version>4.1.0</version>
 </dependency>
 <dependency>
     <groupId>com.mysql</groupId>
     <artifactId>mysql-connector-j</artifactId>
-    <version>9.6.0</version>
 </dependency>
 <dependency>
     <groupId>org.mybatis.generator</groupId>
@@ -223,7 +223,7 @@ table.tableName=tr_torrent_tracker
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
-            <version>9.6.0</version>
+            <version>9.7.0</version>
         </dependency>
         <dependency>
             <groupId>com.softwareloop</groupId>
@@ -302,7 +302,7 @@ table.tableName=tr_torrent_tracker
 
 > **背景说明**：作者长期使用 JDK 8 进行开发，本项目升级到 JDK 21。在改造过程中尽可能优先选用 JDK 自带能力以及 Spring Boot 已经引入的依赖，减少对第三方库的引入。例如：
 >
-> - JSON 处理直接使用 Spring Boot 自带的 `jackson`，不再额外引入 `fastjson`；
+> - JSON 处理使用 Spring Boot 4 默认集成的 **Jackson 3**，不再额外引入 `fastjson`；
 > - HTTP 调用使用 JDK 11+ 自带的 `java.net.http.HttpClient`，替换 `Apache HttpClient` 与 `RestTemplate`；
 > - XML 解析使用 `jackson-dataformat-xml`，与 JSON 体系保持一致；
 > - 异步编程使用 JDK 自带的 `CompletableFuture`。
@@ -334,9 +334,17 @@ public class GithubController {
 
 ### 3.2 JSON 库切换
 
-`com.alibaba.fastjson` -> `com.fasterxml.jackson`，参考 [JacksonTest.java](src/main/java/com/loktar/learn/jackson/JacksonTest.java)。
+项目已从 Fastjson / Jackson 2 迁移到 **Jackson 3**，JSON 与 XML 依赖版本统一由 Spring Boot 管理。
+
+- 核心与数据绑定 API 使用 `tools.jackson.*`，例如 `tools.jackson.databind.ObjectMapper`、`tools.jackson.databind.JsonNode`、`tools.jackson.core.type.TypeReference`。
+- JSON Mapper 使用 `tools.jackson.databind.json.JsonMapper.builder()` 配置并构建，避免沿用旧版 Mapper 的可变配置方式。
+- 通用注解仍使用 `com.fasterxml.jackson.annotation.*`（如 `JsonProperty`、`JsonIgnoreProperties`、`JsonFormat`），不要机械替换为 `tools.jackson.annotation.*`。
+
+参考 [JacksonTest.java](src/main/java/com/loktar/learn/jackson/JacksonTest.java)。
 
 ### 3.3 修改 Redis 序列化
+
+对象缓存使用 `RedisTemplate<String, Object>`，由 Jackson 3 的 `JsonMapper` 配合 `GenericJacksonJsonRedisSerializer` 处理 value/hash value；key/hash key 使用字符串序列化。独立的 `StringRedisTemplate` 继续用于字符串数据，不与对象缓存混用。
 
 参考 [RedisConfig.java](src/main/java/com/loktar/conf/RedisConfig.java)。
 
@@ -424,11 +432,12 @@ HttpRequest.Builder builder = HttpRequest.newBuilder()
 
 ### 3.5 XML 解析使用 jackson-dataformat-xml
 
+XML 模块同步使用 Jackson 3，版本由 Spring Boot 管理，无需单独指定：
+
 ```xml
 <dependency>
-    <groupId>com.fasterxml.jackson.dataformat</groupId>
+    <groupId>tools.jackson.dataformat</groupId>
     <artifactId>jackson-dataformat-xml</artifactId>
-    <version>2.15.4</version>
 </dependency>
 ```
 

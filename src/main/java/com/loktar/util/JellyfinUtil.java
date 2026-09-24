@@ -1,10 +1,10 @@
 package com.loktar.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.jellyfin.Session;
@@ -23,14 +23,19 @@ import java.util.List;
 @Slf4j
 @Component
 public class JellyfinUtil {
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private static final JsonMapper objectMapper = JsonMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .changeDefaultPropertyInclusion(inclusion -> inclusion
+                    .withValueInclusion(JsonInclude.Include.NON_NULL)
+                    .withContentInclusion(JsonInclude.Include.NON_NULL))
+            .build();
     private final LokTarConfig lokTarConfig;
     private final HttpClient httpClient;
 
     public JellyfinUtil(LokTarConfig lokTarConfig, HttpClient httpClient) {
         this.lokTarConfig = lokTarConfig;
         this.httpClient = httpClient;
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     @SneakyThrows

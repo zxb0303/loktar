@@ -11,11 +11,11 @@ import com.loktar.mapper.patent.PatentPdfApplyMapper;
 import com.loktar.mapper.qywx.QywxPatentMsgMapper;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.PatentSmsUtil;
-import com.loktar.util.RedisUtil;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -33,35 +33,35 @@ public class PatentTask {
     private final PatentPdfApplyMapper patentPdfApplyMapper;
     private final QywxApi qywxApi;
     private final LokTarConfig lokTarConfig;
-    private final RedisUtil redisUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    public PatentTask(QywxPatentMsgMapper qywxPatentMsgMapper, PatentPdfApplyMapper patentPdfApplyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig, RedisUtil redisUtil) {
+    public PatentTask(QywxPatentMsgMapper qywxPatentMsgMapper, PatentPdfApplyMapper patentPdfApplyMapper, QywxApi qywxApi, LokTarConfig lokTarConfig, RedisTemplate<String, Object> redisTemplate) {
         this.qywxPatentMsgMapper = qywxPatentMsgMapper;
         this.patentPdfApplyMapper = patentPdfApplyMapper;
         this.qywxApi = qywxApi;
         this.lokTarConfig = lokTarConfig;
-        this.redisUtil = redisUtil;
+        this.redisTemplate = redisTemplate;
     }
 
 //    @Scheduled(cron = "0 */30 * * * *")
     public void patentMonitor() {
         StringBuilder replymsg = new StringBuilder();
-        String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
+        String status = (String) redisTemplate.opsForValue().get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
         if (StringUtils.isEmpty(status)) {
             return;
         }
-        Integer redisCount = (Integer) redisUtil.get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_COUNT);
+        Integer redisCount = (Integer) redisTemplate.opsForValue().get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_COUNT);
         int dbCount1 = patentPdfApplyMapper.getCountByStatus(0);
         int dbCount2 = patentPdfApplyMapper.getCountByStatus(-5);
         int dbCount = dbCount1 + dbCount2;
         if (dbCount == 0) {
             replymsg.append("专利查询已完成");
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), replymsg.toString()));
-            redisUtil.del(LokTarConstant.REDIS_KEY_PATENT_MONITOR_COUNT);
+            redisTemplate.delete(LokTarConstant.REDIS_KEY_PATENT_MONITOR_COUNT);
             return;
         }
         if (redisCount == null || redisCount.intValue() != dbCount) {
-            redisUtil.set(LokTarConstant.REDIS_KEY_PATENT_MONITOR_COUNT, dbCount, -1);
+            redisTemplate.opsForValue().set(LokTarConstant.REDIS_KEY_PATENT_MONITOR_COUNT, dbCount);
             return;
         }
         replymsg.append("专利查询异常，已关闭监控：").append(System.lineSeparator());
@@ -71,7 +71,7 @@ public class PatentTask {
                 .append("状态-5剩余：").append(dbCount2).append(System.lineSeparator())
                 .append(System.lineSeparator())
                 .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
-        redisUtil.del(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
+        redisTemplate.delete(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
         qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), replymsg.toString()));
 
     }
@@ -85,7 +85,7 @@ public class PatentTask {
 
 //    @Scheduled(cron = "0 */30 * * * *")
     public void dealQywxPatentMsg() {
-        boolean lock = redisUtil.setIfAbsent(LokTarConstant.REDIS_KEY_QYWX_PATENT_MSG_TASK_LOCK, "1", 10);
+        boolean lock = redisTemplate.opsForValue().setIfAbsent(LokTarConstant.REDIS_KEY_QYWX_PATENT_MSG_TASK_LOCK, "1", 10, TimeUnit.SECONDS);
         if (lock) {
             return;
         }
@@ -122,7 +122,7 @@ public class PatentTask {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            redisUtil.del(LokTarConstant.REDIS_KEY_QYWX_PATENT_MSG_TASK_LOCK);
+            redisTemplate.delete(LokTarConstant.REDIS_KEY_QYWX_PATENT_MSG_TASK_LOCK);
         }
     }
 

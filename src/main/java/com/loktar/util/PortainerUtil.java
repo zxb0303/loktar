@@ -1,14 +1,14 @@
 package com.loktar.util;
 
 
-import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.loktar.conf.LokTarConfig;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -26,14 +26,15 @@ public class PortainerUtil {
 
     private final HttpClient httpClient;
 
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private static final JsonMapper objectMapper = JsonMapper.builder()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
 
     private final static String HEADER_API_KEY = "X-API-Key";
 
     public PortainerUtil(LokTarConfig lokTarConfig, HttpClient httpClient) {
         this.lokTarConfig = lokTarConfig;
         this.httpClient = httpClient;
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @SneakyThrows
@@ -61,8 +62,8 @@ public class PortainerUtil {
             JsonNode names = container.get("Names");
             if (names != null && names.isArray()) {
                 for (JsonNode name : names) {
-                    if (("/" + containerName).equals(name.asText())) {
-                        containerId = container.get("Id").asText();
+                    if (("/" + containerName).equals(name.asString())) {
+                        containerId = container.get("Id").asString();
                         break;
                     }
                 }

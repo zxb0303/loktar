@@ -2,17 +2,17 @@ package com.loktar.task.relx;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.json.JsonMapper;
 import com.github.houbb.opencc4j.util.ZhConverterUtil;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.util.DateTimeUtil;
-import com.loktar.util.RedisUtil;
 import com.loktar.util.VapeOnlineUtil;
 import com.loktar.util.wx.qywx.QywxApi;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -26,22 +26,23 @@ public class RelxTask {
 
     private final LokTarConfig lokTarConfig;
 
-    private final RedisUtil redisUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final QywxApi qywxApi;
 
-    private static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final JsonMapper OBJECT_MAPPER = JsonMapper.builder()
+            .disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+            .build();
 
-    public RelxTask(LokTarConfig lokTarConfig, RedisUtil redisUtil, QywxApi qywxApi) {
+    public RelxTask(LokTarConfig lokTarConfig, RedisTemplate<String, Object> redisTemplate, QywxApi qywxApi) {
         this.lokTarConfig = lokTarConfig;
-        this.redisUtil = redisUtil;
+        this.redisTemplate = redisTemplate;
         this.qywxApi = qywxApi;
     }
 
     @Scheduled(cron = "0 */10 7-23 * * *")
-    @SneakyThrows
     public void relxStockAvailable() {
-        String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH);
+        String status = (String) redisTemplate.opsForValue().get(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH);
         if (StringUtils.isEmpty(status)) {
             return;
         }
@@ -59,7 +60,7 @@ public class RelxTask {
             return;
         }
         String nowProductsJson = OBJECT_MAPPER.writeValueAsString(products);
-        String lastProductsJson = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX);
+        String lastProductsJson = (String) redisTemplate.opsForValue().get(LokTarConstant.REDIS_KEY_RELX);
 
         if (!nowProductsJson.equals(lastProductsJson)) {
             String nowInStock = products.stream()
@@ -90,7 +91,7 @@ public class RelxTask {
                     System.lineSeparator() +
                     DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent008Id(), content));
-            redisUtil.set(LokTarConstant.REDIS_KEY_RELX, nowProductsJson);
+            redisTemplate.opsForValue().set(LokTarConstant.REDIS_KEY_RELX, nowProductsJson);
         }
         log.info("{}", "华人蒸汽库存定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
     }

@@ -2,17 +2,15 @@ package com.loktar.util;
 
 
 
-import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.transmission.TrRss;
 import com.loktar.domain.transmission.TrRssTorrent;
 import com.loktar.dto.rss.RssFeed;
-import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.dataformat.xml.XmlMapper;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,11 +29,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class RssUtil {
 
-    public final static ObjectMapper xmlMapper = new XmlMapper();
-
-    static {
-        xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
+    public static final XmlMapper xmlMapper = XmlMapper.builder()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
 
     private final HttpClient httpClient;
 
@@ -45,7 +41,6 @@ public class RssUtil {
 
     private final static int RSS_FETCH_MAX_ATTEMPTS = 3;
 
-    @SneakyThrows
     public List<TrRssTorrent> getRssData(TrRss trRss) {
         List<TrRssTorrent> trRssTorrents = new ArrayList<>();
         String rssBody = fetchRssWithRetry(trRss.getRssUrl());

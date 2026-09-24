@@ -4,8 +4,8 @@ package com.loktar.service.land.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.land.Land;
 import com.loktar.dto.land.LandDTO;
@@ -43,12 +43,16 @@ public class LandServiceImpl implements LandService {
 
     private final static String URK_LIST = "http://land.zzhz.zjol.com.cn/lands_data_list?year={0}";
 
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private static final JsonMapper objectMapper = JsonMapper.builder()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .changeDefaultPropertyInclusion(inclusion -> inclusion
+                    .withValueInclusion(JsonInclude.Include.NON_NULL)
+                    .withContentInclusion(JsonInclude.Include.NON_NULL))
+            .build();
 
     public LandServiceImpl(LandMapper landMapper, HttpClient httpClient) {
         this.landMapper = landMapper;
         this.httpClient = httpClient;
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
         STATUS_MAP.put("39", "已成交");
         STATUS_MAP.put("40", "未成交");
         STATUS_MAP.put("41", "流拍");

@@ -3,10 +3,10 @@ package com.loktar.web.test;
 
 import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import com.jcraft.jsch.*;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -71,8 +71,21 @@ public class VPSInitMain {
     private static String REMOTE_CERTIFICATE_FILEPATH = "/etc/letsencrypt/live/" + HOST + "/fullchain.pem";
     private static String REMOTE_KEY_FILEPATH = "/etc/letsencrypt/live/" + HOST + "/privkey.pem";
     private final static String WARP_ENDPOINT = "engage.cloudflareclient.com:2408";
-    private final static ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL).enable(SerializationFeature.INDENT_OUTPUT);
-    private final static ObjectMapper objectMapper2 = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL).enable(SerializationFeature.INDENT_OUTPUT);
+    private static final JsonMapper objectMapper = JsonMapper.builder()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .changeDefaultPropertyInclusion(inclusion -> inclusion
+                    .withValueInclusion(JsonInclude.Include.NON_NULL)
+                    .withContentInclusion(JsonInclude.Include.NON_NULL))
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .build();
+    private static final JsonMapper objectMapper2 = JsonMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .changeDefaultPropertyInclusion(inclusion -> inclusion
+                    .withValueInclusion(JsonInclude.Include.NON_NULL)
+                    .withContentInclusion(JsonInclude.Include.NON_NULL))
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .build();
 
 
     public static void main(String[] args) {

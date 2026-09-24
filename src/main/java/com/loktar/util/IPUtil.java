@@ -1,7 +1,6 @@
 package com.loktar.util;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 public class IPUtil {
-    private final static ObjectMapper objectMapper = new ObjectMapper();
     private final LokTarConfig lokTarConfig;
     private final HttpClient httpClient;
 

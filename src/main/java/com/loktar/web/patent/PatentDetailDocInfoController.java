@@ -4,10 +4,10 @@ package com.loktar.web.patent;
 import lombok.extern.slf4j.Slf4j;
 import com.azure.ai.documentintelligence.models.AnalyzeResult;
 import com.azure.ai.documentintelligence.models.DocumentParagraph;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.domain.patent.PatentDetail;
 import com.loktar.domain.patent.PatentDetailDocInfo;
 import com.loktar.domain.patent.PatentDetailYitong;
@@ -50,7 +50,10 @@ public class PatentDetailDocInfoController {
     private final PatentDetailMapper patentDetailMapper;
     private final PatentDetailDocInfoMapper patentDetailDocInfoMapper;
     private final PatentDetailYitongMapper patentDetailYitongMapper;
-    private final ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE).registerModule(new JavaTimeModule());
+    private final JsonMapper objectMapper = JsonMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
+            .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
 
     public PatentDetailDocInfoController(PatentDetailMapper patentDetailMapper, PatentDetailDocInfoMapper patentDetailDocInfoMapper, PatentDetailYitongMapper patentDetailYitongMapper) {
         this.patentDetailMapper = patentDetailMapper;
@@ -59,7 +62,6 @@ public class PatentDetailDocInfoController {
     }
 
 
-    @SneakyThrows
     @PostMapping("/getEncodeDetails")
     public String getEncodeDetails(String caseStatus, String start, String end) {
         List<PatentDetailDTO> patentDetailDTOs = new ArrayList<>();
@@ -79,7 +81,6 @@ public class PatentDetailDocInfoController {
         return objectMapper.writeValueAsString(patentDetailDTOs);
     }
 
-    @SneakyThrows
     @PostMapping("/saveDocData")
     public void saveDocData(String docData, String patentId) {
         List<PatentDetailDocInfo> patentDetailDocInfos = objectMapper.readValue(docData, new TypeReference<>() {

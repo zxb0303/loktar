@@ -1,10 +1,8 @@
 package com.loktar.web.cxy;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.domain.cxy.TiktokAccount;
 import com.loktar.mapper.cxy.TiktokAccountMapper;
-import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +18,7 @@ public class TiktokController {
 
     private final TiktokAccountMapper tiktokAccountMapper;
 
-    private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private final JsonMapper objectMapper = JsonMapper.builder().build();
 
     public TiktokController(TiktokAccountMapper tiktokAccountMapper) {
         this.tiktokAccountMapper = tiktokAccountMapper;
@@ -28,14 +26,12 @@ public class TiktokController {
 
 
     @GetMapping("/getAccount")
-    @SneakyThrows
     public String getAccount() {
         List<TiktokAccount> tiktokAccounts = tiktokAccountMapper.selectByStatus(1);
         return objectMapper.writeValueAsString(tiktokAccounts);
     }
 
     @GetMapping("/getTimeParams")
-    @SneakyThrows
     public String getTimeParams(String dateStr) {
         LocalDate date = LocalDate.parse(dateStr); // yyyy-MM-dd
         String monthStartSecond = String.valueOf(date.withDayOfMonth(1).atStartOfDay().toEpochSecond(ZoneOffset.UTC));

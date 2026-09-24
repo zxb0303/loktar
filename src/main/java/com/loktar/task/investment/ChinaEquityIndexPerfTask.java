@@ -1,8 +1,8 @@
 package com.loktar.task.investment;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import com.loktar.conf.LokTarConstant;
@@ -12,6 +12,7 @@ import com.loktar.util.DateTimeUtil;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -28,11 +29,11 @@ public class ChinaEquityIndexPerfTask {
 
     private final EquityIndexPerfDailyMapper equityIndexPerfDailyMapper;
     private final HttpClient httpClient;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper objectMapper;
     private static final List<String> INDEX_CODES = List.of("930955","H20955");
     private static final String INDEX_PERF_URL = "https://www.csindex.com.cn/csindex-home/perf/index-perf?indexCode={0}&startDate={1}&endDate={2}";
 
-    public ChinaEquityIndexPerfTask(EquityIndexPerfDailyMapper equityIndexPerfDailyMapper, HttpClient httpClient, ObjectMapper objectMapper) {
+    public ChinaEquityIndexPerfTask(EquityIndexPerfDailyMapper equityIndexPerfDailyMapper, HttpClient httpClient, JsonMapper objectMapper) {
         this.equityIndexPerfDailyMapper = equityIndexPerfDailyMapper;
         this.httpClient = httpClient;
         this.objectMapper = objectMapper;
@@ -84,8 +85,8 @@ public class ChinaEquityIndexPerfTask {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         JsonNode root = objectMapper.readTree(response.body());
-        if (!"200".equals(root.path("code").asText())) {
-            log.warn("{} 行情接口返回错误: {}", indexCode, root.path("msg").asText());
+        if (!"200".equals(root.path("code").asString())) {
+            log.warn("{} 行情接口返回错误: {}", indexCode, root.path("msg").asString());
             return;
         }
         JsonNode data = root.path("data");
@@ -95,19 +96,19 @@ public class ChinaEquityIndexPerfTask {
         }
         for (JsonNode item : data) {
             EquityIndexPerfDaily perfDaily = new EquityIndexPerfDaily();
-            perfDaily.setIndexCode(item.get("indexCode").asText().trim());
-            perfDaily.setIndexName(item.get("indexNameCn").asText().trim());
-            perfDaily.setTradeDate(LocalDate.parse(item.get("tradeDate").asText().trim(), DateTimeUtil.FORMATTER_DATE_COMPACT));
-            perfDaily.setOpen(item.get("open").decimalValue());
-            perfDaily.setHigh(item.get("high").decimalValue());
-            perfDaily.setLow(item.get("low").decimalValue());
-            perfDaily.setClose(item.get("close").decimalValue());
-            perfDaily.setChange(item.get("change").decimalValue());
-            perfDaily.setChangePct(item.get("changePct").decimalValue());
-            perfDaily.setTradingVol(item.get("tradingVol").asDouble());
-            perfDaily.setTradingValue(item.get("tradingValue").decimalValue());
-            perfDaily.setConsNumber(item.get("consNumber").asInt());
-            perfDaily.setPeg(item.get("peg").decimalValue());
+            perfDaily.setIndexCode(item.get("indexCode").asString().trim());
+            perfDaily.setIndexName(item.get("indexNameCn").asString().trim());
+            perfDaily.setTradeDate(LocalDate.parse(item.get("tradeDate").asString().trim(), DateTimeUtil.FORMATTER_DATE_COMPACT));
+            perfDaily.setOpen(item.get("open").decimalValue(BigDecimal.ZERO));
+            perfDaily.setHigh(item.get("high").decimalValue(BigDecimal.ZERO));
+            perfDaily.setLow(item.get("low").decimalValue(BigDecimal.ZERO));
+            perfDaily.setClose(item.get("close").decimalValue(BigDecimal.ZERO));
+            perfDaily.setChange(item.get("change").decimalValue(BigDecimal.ZERO));
+            perfDaily.setChangePct(item.get("changePct").decimalValue(BigDecimal.ZERO));
+            perfDaily.setTradingVol(item.get("tradingVol").asDouble(0.0));
+            perfDaily.setTradingValue(item.get("tradingValue").decimalValue(BigDecimal.ZERO));
+            perfDaily.setConsNumber(item.get("consNumber").asInt(0));
+            perfDaily.setPeg(item.get("peg").decimalValue(BigDecimal.ZERO));
 
             EquityIndexPerfDaily exist = equityIndexPerfDailyMapper.selectByIndexCodeAndTradeDate(perfDaily.getIndexCode(), perfDaily.getTradeDate());
             if (exist == null) {

@@ -2,10 +2,10 @@ package com.loktar.service.patent.impl;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.domain.patent.PatentApply;
 import com.loktar.domain.patent.PatentDetail;
 import com.loktar.domain.patent.PatentPdfApply;
@@ -15,7 +15,6 @@ import com.loktar.mapper.patent.PatentDetailMapper;
 import com.loktar.mapper.patent.PatentPdfApplyMapper;
 import com.loktar.mapper.patent.PatentTradeMapper;
 import com.loktar.service.patent.PatentService;
-import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +31,10 @@ public class PatentServiceImpl implements PatentService {
     private final PatentPdfApplyMapper patentPdfApplyMapper;
     private final PatentApplyMapper patentApplyMapper;
     private final PatentTradeMapper patentTradeMapper;
-    private ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE).registerModule(new JavaTimeModule());
+    private final JsonMapper objectMapper = JsonMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
+            .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
 
     public PatentServiceImpl(PatentDetailMapper patentDetailMapper, PatentPdfApplyMapper patentPdfApplyMapper, PatentApplyMapper patentApplyMapper, PatentTradeMapper patentTradeMapper) {
         this.patentDetailMapper = patentDetailMapper;
@@ -42,7 +44,6 @@ public class PatentServiceImpl implements PatentService {
     }
 
     @Override
-    @SneakyThrows
     @Transactional
     public void deal(String applyId, int patentCount, String detail) {
         //System.out.println("detail:" + detail);

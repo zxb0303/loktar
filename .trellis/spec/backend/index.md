@@ -17,7 +17,7 @@
 | [错误处理](./error-handling.md) | @SneakyThrows + SchedulerConfig 全局兜底 | 已填充 |
 | [外部集成契约](./external-integrations.md) | Portainer REST API、MineStat 基岩版查询的可执行契约 | 已填充 |
 | [质量规范](./quality-guidelines.md) | 代码审查清单、必须模式、禁止项 | 已填充 |
-| [测试规范](./tests.md) | src/test/ 为空的现状声明 | 已填充 |
+| [测试规范](./tests.md) | 隔离单测模式、Redis 缓存回归契约与安全验证命令 | 已填充 |
 | [前端表单](./frontend-forms.md) | 无前端代码的现状声明 | 已填充 |
 
 ---
@@ -35,7 +35,7 @@
 | 定时任务 | Spring @Scheduled + ThreadPoolTaskScheduler |
 | 安全 | Spring Security (HTTP Basic + 白名单) |
 | 实体类 | Lombok (由 MBG 插件生成) |
-| 测试 | 无（src/test/ 为空） |
+| 测试 | JUnit Jupiter + Mockito 隔离单元测试 |
 | 前端 | 无（纯后端 API 服务） |
 
 ---
@@ -44,5 +44,5 @@
 
 1. **记录现实**：规范基于代码库实际模式，不引入理想化约定
 2. **附代码引用**：每条规范附具体代码文件路径
-3. **标注现状**：测试和前端等无代码的模式明确声明为空
+3. **标注现状**：测试记录已有用例及验证边界；无代码的模式（如前端）明确声明为空
 4. **可验证**：所有模式均可在代码库中找到对应示例

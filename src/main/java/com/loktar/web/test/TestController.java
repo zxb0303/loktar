@@ -2,18 +2,18 @@ package com.loktar.web.test;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.wx.agentmsg.AgentMsgText;
 import com.loktar.mapper.github.GithubRepositoryMapper;
 import com.loktar.util.DateTimeUtil;
 import com.loktar.util.IPUtil;
-import com.loktar.util.RedisUtil;
 import com.loktar.util.VapeOnlineUtil;
 import com.loktar.util.wx.qywx.QywxApi;
-import lombok.SneakyThrows;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,26 +35,27 @@ public class TestController {
 
     private final IPUtil ipUtil;
 
-    private final RedisUtil redisUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final QywxApi qywxApi;
 
-    private static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final JsonMapper OBJECT_MAPPER = JsonMapper.builder()
+            .disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+            .build();
 
 
 
-    public TestController(LokTarConfig lokTarConfig, Environment environment, GithubRepositoryMapper githubRepositoryMapper, IPUtil ipUtil, RedisUtil redisUtil, QywxApi qywxApi) {
+    public TestController(LokTarConfig lokTarConfig, Environment environment, GithubRepositoryMapper githubRepositoryMapper, IPUtil ipUtil, RedisTemplate<String, Object> redisTemplate, QywxApi qywxApi) {
 
         this.lokTarConfig = lokTarConfig;
         this.environment = environment;
         this.githubRepositoryMapper = githubRepositoryMapper;
         this.ipUtil = ipUtil;
-        this.redisUtil = redisUtil;
+        this.redisTemplate = redisTemplate;
         this.qywxApi = qywxApi;
     }
 
     @GetMapping("/test")
-    @SneakyThrows
     public void test() {
         log.info("{}", "华人蒸汽库存定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
 
@@ -64,7 +65,7 @@ public class TestController {
             return;
         }
         String nowProductsJson = OBJECT_MAPPER.writeValueAsString(products);
-        String lastProductsJson = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX);
+        String lastProductsJson = (String) redisTemplate.opsForValue().get(LokTarConstant.REDIS_KEY_RELX);
 
         if (!nowProductsJson.equals(lastProductsJson)) {
             String nowInStock = products.stream()
@@ -78,7 +79,7 @@ public class TestController {
                     System.lineSeparator() +
                     DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent008Id(), content));
-            redisUtil.set(LokTarConstant.REDIS_KEY_RELX, nowProductsJson);
+            redisTemplate.opsForValue().set(LokTarConstant.REDIS_KEY_RELX, nowProductsJson);
         }
         log.info("{}", "华人蒸汽库存定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(),DateTimeUtil.FORMATTER_DATESECOND));
 

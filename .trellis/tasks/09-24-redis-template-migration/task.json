@@ -1,0 +1,11 @@
+{
+  "id": "redis-template-migration",
+  "name": "redis-template-migration",
+  "title": "RedisUtil 全项目迁移至 RedisTemplate",
+  "description": "按用户批准的方案迁移全部调用方，保留缓存契约并显式传播 Redis 操作异常",
+  "status": "completed",
+  "createdAt": "2026-09-24",
+  "priority": "P2",
+  "children": [],
+  "notes": "已完成 12 个调用类迁移、删除 RedisUtil、7 个隔离测试类及测试规范同步。Java 21 编译和 43 项测试通过，IDE 与全范围质量检查无阻断问题；验证详情见 implement.md。任务材料使用文件工具维护，不执行 Git、生命周期或归档脚本，不修改原批准计划或其他任务；任务保留在当前目录。"
+}

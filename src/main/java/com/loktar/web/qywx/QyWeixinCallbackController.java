@@ -2,9 +2,9 @@ package com.loktar.web.qywx;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.dataformat.xml.XmlMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.common.Notice;
@@ -21,18 +21,19 @@ import com.loktar.service.common.NoticeServer;
 import com.loktar.util.AudioBookShelfUtil;
 import com.loktar.util.BandwagonhostUtil;
 import com.loktar.util.DateTimeUtil;
-import com.loktar.util.RedisUtil;
 import com.loktar.util.TransmissionUtil;
 import com.loktar.util.wx.aes.WXBizMsgCrypt;
 import com.loktar.util.wx.qywx.QywxApi;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 @RestController
@@ -40,7 +41,7 @@ import java.util.Map;
 @Slf4j
 public class QyWeixinCallbackController {
 
-    private final RedisUtil redisUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final TransmissionUtil transmissionUtil;
 
@@ -60,11 +61,14 @@ public class QyWeixinCallbackController {
 
     private final PropertyMapper propertyMapper;
 
-    private final static ObjectMapper xmlMapper = new XmlMapper();
+    private static final XmlMapper xmlMapper = XmlMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE)
+            .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
 
 
-    public QyWeixinCallbackController(RedisUtil redisUtil, TransmissionUtil transmissionUtil, NoticeServer noticeServer, QywxApi qywxApi, BandwagonhostUtil bandwagonhostUtil, LokTarConfig lokTarConfig, AudioBookShelfUtil audioBookShelfUtil, TrTorrentMapper trTorrentMapper, PatentPdfApplyMapper patentPdfApplyMapper, PropertyMapper propertyMapper) {
-        this.redisUtil = redisUtil;
+    public QyWeixinCallbackController(RedisTemplate<String, Object> redisTemplate, TransmissionUtil transmissionUtil, NoticeServer noticeServer, QywxApi qywxApi, BandwagonhostUtil bandwagonhostUtil, LokTarConfig lokTarConfig, AudioBookShelfUtil audioBookShelfUtil, TrTorrentMapper trTorrentMapper, PatentPdfApplyMapper patentPdfApplyMapper, PropertyMapper propertyMapper) {
+        this.redisTemplate = redisTemplate;
         this.transmissionUtil = transmissionUtil;
         this.noticeServer = noticeServer;
         this.qywxApi = qywxApi;
@@ -74,14 +78,13 @@ public class QyWeixinCallbackController {
         this.trTorrentMapper = trTorrentMapper;
         this.patentPdfApplyMapper = patentPdfApplyMapper;
         this.propertyMapper = propertyMapper;
-        xmlMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
     }
 
     @PostMapping("receive")
     public ResponseEntity<Void> receive(
             @RequestParam("msg_signature") String msgSignature,
             @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce, @RequestBody String xml) {
-        if (!redisUtil.setIfAbsent(msgSignature, timestamp, 30)) {
+        if (!redisTemplate.opsForValue().setIfAbsent(msgSignature, timestamp, 30, TimeUnit.SECONDS)) {
             return ResponseEntity.noContent().build();
         }
         Thread.ofVirtual().start(() -> asyncDealMsg(msgSignature, timestamp, nonce, xml));
@@ -94,7 +97,7 @@ public class QyWeixinCallbackController {
         String xmlMsg = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, xml);
 //        log.info("{}", "after decrypt msg: ");
         log.info("{}", xmlMsg);
-        String msgType = xmlMapper.readTree(xmlMsg).get(LokTarConstant.WX_RECEIVE_MSGTYPE).asText().trim();
+        String msgType = xmlMapper.readTree(xmlMsg).get(LokTarConstant.WX_RECEIVE_MSGTYPE).asString().trim();
         ReceiceMsgType type = ReceiceMsgType.getByName(msgType);
         switch (type) {
             case ReceiceMsgType.TEXT:
@@ -202,25 +205,25 @@ public class QyWeixinCallbackController {
                                 .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                         break;
                     case PATENT_MONITOR_SWITCH:
-                        String status = (String) redisUtil.get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
+                        String status = (String) redisTemplate.opsForValue().get(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
                         if ("on".equals(status)) {
-                            redisUtil.del(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
+                            redisTemplate.delete(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH);
                             replymsg.append("已关闭专利监控").append(System.lineSeparator());
                         } else {
-                            redisUtil.set(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH, "on", -1);
+                            redisTemplate.opsForValue().set(LokTarConstant.REDIS_KEY_PATENT_MONITOR_SWITCH, "on");
                             replymsg.append("已开启专利监控").append(System.lineSeparator());
                         }
                         replymsg.append(System.lineSeparator())
                                 .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                         break;
                     case RELX_MONITOR_SWITCH:
-                        String relxStatus = (String) redisUtil.get(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH);
+                        String relxStatus = (String) redisTemplate.opsForValue().get(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH);
                         if ("on".equals(relxStatus)) {
-                            redisUtil.del(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH);
-                            redisUtil.del(LokTarConstant.REDIS_KEY_RELX);
+                            redisTemplate.delete(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH);
+                            redisTemplate.delete(LokTarConstant.REDIS_KEY_RELX);
                             replymsg.append("已关闭Relx监控").append(System.lineSeparator());
                         } else {
-                            redisUtil.set(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH, "on", -1);
+                            redisTemplate.opsForValue().set(LokTarConstant.REDIS_KEY_RELX_MONITOR_SWITCH, "on");
                             replymsg.append("已开启Relx监控").append(System.lineSeparator());
                         }
                         replymsg.append(System.lineSeparator())

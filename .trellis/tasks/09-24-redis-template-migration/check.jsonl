@@ -1,0 +1,8 @@
+{"file":".trellis/spec/backend/index.md","reason":"完整后端变更范围检查"}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"12 个调用方的最小变更与构造器一致性"}
+{"file":".trellis/spec/backend/error-handling.md","reason":"验证异常不再由 Redis 工具层吞掉"}
+{"file":".trellis/spec/backend/logging-guidelines.md","reason":"确认无新增敏感信息输出"}
+{"file":".trellis/spec/backend/tests.md","reason":"隔离单测与编译验证"}
+{"file":".trellis/spec/guides/index.md","reason":"共享检查规范入口"}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"TTL、缓存类型、集合成员及原子去重语义"}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"无遗漏引用、无新包装及重复实现"}

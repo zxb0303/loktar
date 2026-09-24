@@ -2,17 +2,18 @@ package com.loktar.util;
 
 
 
-import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.transmission.*;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -22,6 +23,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
@@ -29,21 +31,25 @@ public class TransmissionUtil {
     private final static String TRANSMISSION_SESSION_ID = "X-Transmission-Session-Id";
     private final static long TRANSMISSION_SESSION_ID_EXPIRE = 28 * 60;
     private final static String AUTHORIZATION = "Authorization";
-    private final RedisUtil redisUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final LokTarConfig lokTarConfig;
     private final HttpClient httpClient;
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private static final JsonMapper objectMapper = JsonMapper.builder()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .changeDefaultPropertyInclusion(inclusion -> inclusion
+                    .withValueInclusion(JsonInclude.Include.NON_NULL)
+                    .withContentInclusion(JsonInclude.Include.NON_NULL))
+            .build();
 
-    public TransmissionUtil(RedisUtil redisUtil, LokTarConfig lokTarConfig, HttpClient httpClient) {
-        this.redisUtil = redisUtil;
+    public TransmissionUtil(RedisTemplate<String, Object> redisTemplate, LokTarConfig lokTarConfig, HttpClient httpClient) {
+        this.redisTemplate = redisTemplate;
         this.lokTarConfig = lokTarConfig;
         this.httpClient = httpClient;
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     @SneakyThrows
     private TrResponse rpc(TrRequest trRequest) {
-        String sessionId = (String) redisUtil.get(LokTarConstant.REDIS_KEY_TRANSMISSION_SESSIONID);
+        String sessionId = (String) redisTemplate.opsForValue().get(LokTarConstant.REDIS_KEY_TRANSMISSION_SESSIONID);
         if (StringUtils.isEmpty(sessionId)) {
             sessionId = "";
         }
@@ -64,7 +70,7 @@ public class TransmissionUtil {
 
         if (response.statusCode() == 409) {
             sessionId = response.headers().firstValue(TRANSMISSION_SESSION_ID).orElse(null);
-            redisUtil.set(LokTarConstant.REDIS_KEY_TRANSMISSION_SESSIONID, sessionId, TRANSMISSION_SESSION_ID_EXPIRE);
+            redisTemplate.opsForValue().set(LokTarConstant.REDIS_KEY_TRANSMISSION_SESSIONID, sessionId, TRANSMISSION_SESSION_ID_EXPIRE, TimeUnit.SECONDS);
             return rpc(trRequest);
         }
         //TODO 打印

@@ -2,13 +2,13 @@ package com.loktar.util;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.bandwagonhost.VPSInfo;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -21,12 +21,14 @@ import java.time.Duration;
 public class BandwagonhostUtil {
 
     private final static String URL = "https://api.64clouds.com/v1/getServiceInfo?veid={0}&&api_key={1}";
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private static final JsonMapper objectMapper = JsonMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .changeDefaultPropertyInclusion(inclusion -> inclusion
+                    .withValueInclusion(JsonInclude.Include.NON_NULL)
+                    .withContentInclusion(JsonInclude.Include.NON_NULL))
+            .build();
     private final HttpClient httpClient;
-
-    static {
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    }
 
     public BandwagonhostUtil(HttpClient httpClient) {
         this.httpClient = httpClient;

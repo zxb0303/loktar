@@ -2,20 +2,18 @@ package com.loktar.learn.jackson;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.loktar.domain.github.GithubRepository;
-import lombok.SneakyThrows;
 
 import java.util.List;
 
 @Slf4j
 public class JacksonTest {
-    @SneakyThrows
     public static void main(String[] args)  {
         //常见示例
         //test1();
@@ -40,7 +38,6 @@ public class JacksonTest {
 
     }
 
-    @SneakyThrows
     private static void test4() {
         GithubRepository githubRepository = new GithubRepository();
         githubRepository.setRepositoryId(1);
@@ -48,57 +45,63 @@ public class JacksonTest {
         githubRepository.setRepository("sss");
 
         // 驼峰命名，字段的首字母小写. {"animalName":"sam","animalSex":1,"animalWeight":100}
-        ObjectMapper mapper1 = new ObjectMapper();
-        mapper1.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE);
+        JsonMapper mapper1 = JsonMapper.builder()
+                .propertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
+                .build();
         log.info("{}", mapper1.writeValueAsString(githubRepository));
 
         // 驼峰命名，字段的首字母大写. {"AnimalName":"sam","AnimalSex":1,"AnimalWeight":100}
-        ObjectMapper mapper2 = new ObjectMapper();
-        mapper2.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
+        JsonMapper mapper2 = JsonMapper.builder()
+                .propertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE)
+                .build();
         log.info("{}", mapper2.writeValueAsString(githubRepository));
 
         // 字段小写，多个单词以下划线_分隔. {"animal_name":"sam","animal_sex":1,"animal_weight":100}
-        ObjectMapper mapper3 = new ObjectMapper();
-        mapper3.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+        JsonMapper mapper3 = JsonMapper.builder()
+                .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+                .build();
         log.info("{}", mapper3.writeValueAsString(githubRepository));
 
         // 字段小写，多个单词以中横线-分隔. {"animal-name":"sam","animal-sex":1,"animal-weight":100}
-        ObjectMapper mapper4 = new ObjectMapper();
-        mapper4.setPropertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE);
+        JsonMapper mapper4 = JsonMapper.builder()
+                .propertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE)
+                .build();
         log.info("{}", mapper4.writeValueAsString(githubRepository));
 
         // 字段小写，多个单词间无分隔符. {"animalname":"sam","animalsex":1,"animalweight":100}
-        ObjectMapper mapper5 = new ObjectMapper();
-        mapper5.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CASE);
+        JsonMapper mapper5 = JsonMapper.builder()
+                .propertyNamingStrategy(PropertyNamingStrategies.LOWER_CASE)
+                .build();
         log.info("{}", mapper5.writeValueAsString(githubRepository));
 
         // 字段小写，多个单词以点号.分隔. {"animal.name":"sam","animal.sex":1,"animal.weight":100}
-        ObjectMapper mapper6 = new ObjectMapper();
-        mapper6.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_DOT_CASE);
+        JsonMapper mapper6 = JsonMapper.builder()
+                .propertyNamingStrategy(PropertyNamingStrategies.LOWER_DOT_CASE)
+                .build();
         log.info("{}", mapper6.writeValueAsString(githubRepository));
 
         // 字段大写，多个单词以下划线_分隔. {"ANIMAL_NAME":"sam","ANIMAL_SEX":1,"ANIMAL_WEIGHT":100}
-        ObjectMapper mapper7 = new ObjectMapper();
-        mapper7.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_SNAKE_CASE);
+        JsonMapper mapper7 = JsonMapper.builder()
+                .propertyNamingStrategy(PropertyNamingStrategies.UPPER_SNAKE_CASE)
+                .build();
         log.info("{}", mapper7.writeValueAsString(githubRepository));
     }
 
-    @SneakyThrows
     private static void test3() {
         // java对象转JSON字符串
         GithubRepository githubRepository = new GithubRepository();
         githubRepository.setRepositoryId(1);
         githubRepository.setLastTagId(2);
         githubRepository.setRepository("1111");
-        String githubRepositoryStr = new ObjectMapper().writeValueAsString(githubRepository);
+        String githubRepositoryStr = JsonMapper.builder().build().writeValueAsString(githubRepository);
         log.info("{}", githubRepositoryStr);
         //JSON字符串转java对象
-        GithubRepository newGithubRepository2 = new ObjectMapper().readValue(githubRepositoryStr, GithubRepository.class);
+        GithubRepository newGithubRepository2 = JsonMapper.builder().build().readValue(githubRepositoryStr, GithubRepository.class);
     }
 
     private static void test2() {
         //添加对象
-        ObjectMapper objectMapper = new ObjectMapper();
+        JsonMapper objectMapper = JsonMapper.builder().build();
         ObjectNode obj = objectMapper.createObjectNode();
         ObjectNode arguments = objectMapper.createObjectNode();
         ArrayNode idsArray = objectMapper.createArrayNode();
@@ -113,10 +116,9 @@ public class JacksonTest {
         log.info("{}", obj);
     }
 
-    @SneakyThrows
     private static void test1() {
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        JsonMapper objectMapper = JsonMapper.builder().build();
         //json对象创建
         ObjectNode jsonObject1 = objectMapper.createObjectNode();
         jsonObject1.put("姓名", "张三");
@@ -138,16 +140,16 @@ public class JacksonTest {
         jsonArray2.add("李四");
         log.info("{}", jsonArray2);
         //json对象取值
-        String name1 = jsonObject1.get("姓名").asText();
-        String age1 = jsonObject1.get("年龄").asText();
+        String name1 = jsonObject1.get("姓名").asString();
+        String age1 = jsonObject1.get("年龄").asString();
         log.info("{}", name1);
         log.info("{}", age1);
         JsonNode obj = jsonArray1.get(0);
-        String name2 = obj.get("姓名").asText();
+        String name2 = obj.get("姓名").asString();
         log.info("{}", name2);
         //遍历获取json数组中对象的值
         for (JsonNode j : jsonArray1) {
-            log.info("{}", j.get("姓名").asText());
+            log.info("{}", j.get("姓名").asString());
         }
         //JSON 对象转字符串
         String str = jsonObject1.toString();
@@ -157,7 +159,7 @@ public class JacksonTest {
 
         //json数组与字符串的转换
         String str1 = "[\"张三\",\"李四\",\"王五\"]";
-        ObjectMapper mapper = new ObjectMapper();
+        JsonMapper mapper = JsonMapper.builder().build();
         //字符串转json数组
         ArrayNode jsonArray = (ArrayNode)mapper.readTree(str1);
         //json数组转字符串
@@ -173,12 +175,12 @@ public class JacksonTest {
         githubRepository.setRepository("1111");
 
         //java对象转JSON字符串
-        String githubRepositoryStr = new ObjectMapper().writeValueAsString(githubRepository);
+        String githubRepositoryStr = JsonMapper.builder().build().writeValueAsString(githubRepository);
 
         log.info("{}", githubRepositoryStr);
         //JSON字符串转java对象
         GithubRepository newGithubRepository = mapper.readValue(githubRepositoryStr, GithubRepository.class);
-        GithubRepository newGithubRepository2 = new ObjectMapper().readValue(githubRepositoryStr, GithubRepository.class);
+        GithubRepository newGithubRepository2 = JsonMapper.builder().build().readValue(githubRepositoryStr, GithubRepository.class);
 
         log.info("{}", newGithubRepository.toString());
         log.info("{}", newGithubRepository2.toString());

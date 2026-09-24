@@ -2,8 +2,8 @@ package com.loktar.service.newhouse.impl;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.common.Property;
 import com.loktar.domain.newhouse.NewHouseHangzhouDetail;
@@ -53,7 +53,9 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
 
     private Property property;
 
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private static final JsonMapper objectMapper = JsonMapper.builder()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
 
     public final static String URL_HOUSE_INFO = "https://www.tmsf.com/newhouse/property_{0}_{1}_basicinfo.htm";
     public final static String URL_PRESELL = "https://www.tmsf.com/newhouse/property_{0}_{1}_price.htm";
@@ -69,7 +71,6 @@ public class NewHouseHangzhouServiceV2Impl implements NewHouseHangzhouV2Service 
         this.newHouseHangzhouPresellMapper = newHouseHangzhouPresellMapper;
         this.newHouseHangzhouDetailMapper = newHouseHangzhouDetailMapper;
         this.httpClient = httpClient;
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @Override

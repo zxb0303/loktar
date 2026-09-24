@@ -1,12 +1,12 @@
 package com.loktar.util;
 
 
-import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.loktar.conf.LokTarConstant;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -17,7 +17,7 @@ import java.time.Duration;
 @Slf4j
 public class CarUtil {
     private final static String URL = "https://support.volvo.care/v1/quality-info/release-notes/cn/V526/23w17";
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private static final JsonMapper objectMapper = JsonMapper.builder().build();
 
     @SneakyThrows
     public static String getLastVersion() {
@@ -37,7 +37,7 @@ public class CarUtil {
         JsonNode lastVersionObject = jsonArrayBody.get(1);
         ArrayNode jsonArrayChildren = (ArrayNode) lastVersionObject.get("children");
         JsonNode jsonArrayChildren1 = jsonArrayChildren.get(0);
-        return jsonArrayChildren1.get("children").asText().replace("软件", "").replace("更新", "");
+        return jsonArrayChildren1.get("children").asString().replace("软件", "").replace("更新", "");
     }
 
     public static void main(String[] args) {

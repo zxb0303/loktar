@@ -4,9 +4,9 @@ package com.loktar.util.wx.qywx;
 
 import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.domain.qywx.QywxMenu;
@@ -14,9 +14,9 @@ import com.loktar.dto.wx.*;
 import com.loktar.dto.wx.agentmsg.*;
 import com.loktar.mapper.qywx.QywxMenuMapper;
 import com.loktar.util.DateTimeUtil;
-import com.loktar.util.RedisUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
@@ -34,6 +34,7 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
@@ -52,7 +53,7 @@ public class QywxApi {
 
     private final static String FORM_NAME = "media";
 
-    private final RedisUtil redisUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final QywxMenuMapper qywxMenuMapper;
 
@@ -60,12 +61,18 @@ public class QywxApi {
 
     private final HttpClient httpClient;
 
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private static final JsonMapper objectMapper = JsonMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .changeDefaultPropertyInclusion(inclusion -> inclusion
+                    .withValueInclusion(JsonInclude.Include.NON_NULL)
+                    .withContentInclusion(JsonInclude.Include.NON_NULL))
+            .build();
     private final static Map<String, String> AGENTMAP = new HashMap<>();
 
 
-    public QywxApi(RedisUtil redisUtil, QywxMenuMapper qywxMenuMapper, LokTarConfig lokTarConfig, HttpClient httpClient) {
-        this.redisUtil = redisUtil;
+    public QywxApi(RedisTemplate<String, Object> redisTemplate, QywxMenuMapper qywxMenuMapper, LokTarConfig lokTarConfig, HttpClient httpClient) {
+        this.redisTemplate = redisTemplate;
         this.qywxMenuMapper = qywxMenuMapper;
         this.lokTarConfig = lokTarConfig;
         this.httpClient = httpClient;
@@ -77,14 +84,13 @@ public class QywxApi {
         AGENTMAP.put(lokTarConfig.getQywx().getAgent008Id(), lokTarConfig.getQywx().getAgent008Secert());
         AGENTMAP.put(lokTarConfig.getQywx().getAgent009Id(), lokTarConfig.getQywx().getAgent009Secert());
         AGENTMAP.put(lokTarConfig.getQywx().getAgent010Id(), lokTarConfig.getQywx().getAgent010Secert());
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     /**
      * 获取accessToken
      */
     public AccessToken accessToken(String agentId) {
-        AccessToken accessToken = (AccessToken) redisUtil.get(KEY_ACCESSTOKEN + agentId);
+        AccessToken accessToken = (AccessToken) redisTemplate.opsForValue().get(KEY_ACCESSTOKEN + agentId);
         if (Objects.nonNull(accessToken)) {
             return accessToken;
         }
@@ -105,7 +111,11 @@ public class QywxApi {
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         AccessToken accessToken = objectMapper.readValue(response.body(), AccessToken.class);
         if (!StringUtils.isEmpty(accessToken.getAccessToken())) {
-            redisUtil.set(KEY_ACCESSTOKEN + agentId, accessToken, accessToken.getExpiresIn());
+            if (accessToken.getExpiresIn() > 0) {
+                redisTemplate.opsForValue().set(KEY_ACCESSTOKEN + agentId, accessToken, accessToken.getExpiresIn(), TimeUnit.SECONDS);
+            } else {
+                redisTemplate.opsForValue().set(KEY_ACCESSTOKEN + agentId, accessToken);
+            }
         }
         return accessToken;
     }

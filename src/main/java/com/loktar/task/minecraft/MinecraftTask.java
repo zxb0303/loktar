@@ -2,8 +2,8 @@ package com.loktar.task.minecraft;
 
 
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.minecraft.BedrockVersionsDTO;
@@ -38,14 +38,15 @@ public class MinecraftTask {
 
     private final QywxApi qywxApi;
 
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private static final JsonMapper objectMapper = JsonMapper.builder()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
 
     public MinecraftTask(LokTarConfig lokTarConfig, HttpClient httpClient, PortainerUtil portainerUtil, QywxApi qywxApi) {
         this.lokTarConfig = lokTarConfig;
         this.httpClient = httpClient;
         this.portainerUtil = portainerUtil;
         this.qywxApi = qywxApi;
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @SneakyThrows

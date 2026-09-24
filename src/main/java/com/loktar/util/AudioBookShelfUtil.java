@@ -1,8 +1,6 @@
 package com.loktar.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loktar.conf.LokTarConfig;
 import com.loktar.conf.LokTarConstant;
 import com.loktar.dto.audiobookshelf.AbsListeningStats;
@@ -14,6 +12,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -31,11 +31,12 @@ public class AudioBookShelfUtil {
 
     private final HttpClient httpClient;
 
-    private final static ObjectMapper objectMapper = new ObjectMapper();
-
-    static {
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    }
+    private static final JsonMapper objectMapper = JsonMapper.builder()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .changeDefaultPropertyInclusion(inclusion -> inclusion
+                    .withValueInclusion(JsonInclude.Include.NON_NULL)
+                    .withContentInclusion(JsonInclude.Include.NON_NULL))
+            .build();
 
     public AudioBookShelfUtil(LokTarConfig lokTarConfig, HttpClient httpClient) {
         this.lokTarConfig = lokTarConfig;
@@ -45,7 +46,6 @@ public class AudioBookShelfUtil {
     /**
      * 获取所有用户
      */
-    @SneakyThrows
     public List<AbsUser> getUsers() {
         AbsUsersRsp usersRsp = objectMapper.readValue(get("/api/users"), AbsUsersRsp.class);
         return usersRsp.getUsers() == null ? List.of() : usersRsp.getUsers();
@@ -76,7 +76,6 @@ public class AudioBookShelfUtil {
     /**
      * 获取用户当日收听统计数据（today为当日收听秒数）
      */
-    @SneakyThrows
     public AbsListeningStats getTodayListeningStats(String userId) {
         return objectMapper.readValue(get("/api/users/" + userId + "/listening-stats"), AbsListeningStats.class);
     }
@@ -84,7 +83,6 @@ public class AudioBookShelfUtil {
     /**
      * 获取当前打开的播放会话（暂停中的会话仍保持打开，需结合播放进度是否变化判断是否正在播放）
      */
-    @SneakyThrows
     public List<AbsPlaybackSession> getOpenSessions() {
         AbsOpenSessionsRsp openSessionsRsp = objectMapper.readValue(get("/api/sessions/open"), AbsOpenSessionsRsp.class);
         return openSessionsRsp.getSessions() == null ? List.of() : openSessionsRsp.getSessions();

@@ -1,0 +1,9 @@
+{"file":".trellis/spec/backend/index.md","reason":"后端规范与包边界"}
+{"file":".trellis/spec/backend/api-routes.md","reason":"保持路由与构造器注入方式"}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"最小变更及代码质量约束"}
+{"file":".trellis/spec/backend/error-handling.md","reason":"Redis 异常向上抛出，保留已有上层边界"}
+{"file":".trellis/spec/backend/logging-guidelines.md","reason":"禁止新增敏感值日志"}
+{"file":".trellis/spec/backend/tests.md","reason":"JUnit 与 Mockito 隔离测试约定，版本以 pom 为准"}
+{"file":".trellis/spec/guides/index.md","reason":"跨层与复用指南入口"}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"保持序列化、TTL 与业务流程契约"}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"复用现有 RedisTemplate Bean，不新增包装"}
