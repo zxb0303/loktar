@@ -3,7 +3,6 @@ package com.loktar.domain.patent;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 public class PatentDetailDocInfo implements Serializable {
@@ -26,8 +25,4 @@ public class PatentDetailDocInfo implements Serializable {
     private String docType;
 
     private Integer index;
-
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
 }

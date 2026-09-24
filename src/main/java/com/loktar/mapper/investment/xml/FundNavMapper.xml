@@ -11,8 +11,6 @@
     <result column="subscribe_status" jdbcType="VARCHAR" property="subscribeStatus" />
     <result column="redeem_status" jdbcType="VARCHAR" property="redeemStatus" />
     <result column="bonus" jdbcType="DECIMAL" property="bonus" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from fund_nav
@@ -21,12 +19,10 @@
   <insert id="insert" parameterType="com.loktar.domain.investment.FundNav">
     insert into fund_nav (id, fund_code, nav_date, 
       unit_nav, acc_nav, growth_rate, 
-      subscribe_status, redeem_status, bonus, 
-      create_time, update_time)
+      subscribe_status, redeem_status, bonus)
     values (#{id,jdbcType=BIGINT}, #{fundCode,jdbcType=VARCHAR}, #{navDate,jdbcType=DATE}, 
       #{unitNav,jdbcType=DECIMAL}, #{accNav,jdbcType=DECIMAL}, #{growthRate,jdbcType=DECIMAL}, 
-      #{subscribeStatus,jdbcType=VARCHAR}, #{redeemStatus,jdbcType=VARCHAR}, #{bonus,jdbcType=DECIMAL}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+      #{subscribeStatus,jdbcType=VARCHAR}, #{redeemStatus,jdbcType=VARCHAR}, #{bonus,jdbcType=DECIMAL})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.loktar.domain.investment.FundNav">
     update fund_nav
@@ -37,25 +33,23 @@
       growth_rate = #{growthRate,jdbcType=DECIMAL},
       subscribe_status = #{subscribeStatus,jdbcType=VARCHAR},
       redeem_status = #{redeemStatus,jdbcType=VARCHAR},
-      bonus = #{bonus,jdbcType=DECIMAL},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      bonus = #{bonus,jdbcType=DECIMAL}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select id, fund_code, nav_date, unit_nav, acc_nav, growth_rate, subscribe_status, 
-    redeem_status, bonus, create_time, update_time
+    redeem_status, bonus
     from fund_nav
     where id = #{id,jdbcType=BIGINT}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select id, fund_code, nav_date, unit_nav, acc_nav, growth_rate, subscribe_status,
-    redeem_status, bonus, create_time, update_time
+    redeem_status, bonus
     from fund_nav
   </select>
   <select id="selectByFundCodeAndNavDate" resultMap="BaseResultMap">
     select id, fund_code, nav_date, unit_nav, acc_nav, growth_rate, subscribe_status,
-    redeem_status, bonus, create_time, update_time
+    redeem_status, bonus
     from fund_nav
     where fund_code = #{fundCode,jdbcType=VARCHAR}
       and nav_date = #{navDate,jdbcType=DATE}

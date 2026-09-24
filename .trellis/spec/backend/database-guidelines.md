@@ -19,7 +19,7 @@
 | 代码生成 | MyBatis Generator 2.0.0 |
 | 实体类 | Lombok 化（`@Data` / `@Builder` 等，由 MBG 插件生成） |
 | 数据库 | MySQL |
-| Mapper XML | 位于 `src/main/resources/mapper/{module}/` |
+| Mapper XML | 位于 `src/main/java/com/loktar/mapper/{module}/xml/` |
 
 ---
 
@@ -31,7 +31,14 @@
 - 集成 Lombok 第三方插件
 - Domain 实体生成到 `com.loktar.domain.{module}`
 - Mapper 接口生成到 `com.loktar.mapper.{module}`
-- XML 映射文件生成到 `src/main/resources/mapper/{module}/`
+- XML 映射文件生成到 `src/main/java/com/loktar/mapper/{module}/xml/`
+- 通过 `<ignoreColumn>` 忽略 `create_time` / `update_time` 列，实体类与 Mapper XML 均不生成这两个字段
+
+### 时间列维护方式
+
+- `create_time`：由数据库默认值维护（插入时自动填充）
+- `update_time`：由数据库默认值 + `ON UPDATE CURRENT_TIMESTAMP` 维护（插入与更新时自动刷新）
+- Java 代码不设置、不读取这两个字段
 
 ### 执行命令
 
@@ -67,15 +74,11 @@ public LotteryController(HZLotteryServiceV2 hZLotteryServiceV2,
 // 查询：按主键
 FundNav exist = fundNavMapper.selectByFundCodeAndNavDate(code, today);
 
-// 插入
-fundNav.setCreateTime(LocalDateTime.now());
-fundNav.setUpdateTime(LocalDateTime.now());
+// 插入（createTime / updateTime 由数据库维护，无需设置）
 fundNavMapper.insert(fundNav);
 
-// 更新
+// 更新（时间列由数据库自动维护，无需手动赋值）
 fundNav.setId(exist.getId());
-fundNav.setCreateTime(exist.getCreateTime());
-fundNav.setUpdateTime(LocalDateTime.now());
 fundNavMapper.updateByPrimaryKey(fundNav);
 ```
 
@@ -112,11 +115,6 @@ if (exist != null) {
 FundNav current = fundNavMapper.selectByFundCodeAndNavDate(fundNav.getFundCode(), fundNav.getNavDate());
 if (current == null) {
     fundNavMapper.insert(fundNav);
-} else {
-    fundNav.setId(current.getId());
-    fundNav.setCreateTime(current.getCreateTime());
-    fundNav.setUpdateTime(LocalDateTime.now());
-    fundNavMapper.updateByPrimaryKey(fundNav);
 }
 ```
 
@@ -129,7 +127,7 @@ if (current == null) {
 | Mapper 通过构造器注入 | 不使用 `@Autowired` |
 | Domain 实体由 MBG 生成 | 不手写实体类 |
 | Domain 实体使用 Lombok | 由 MBG Lombok 插件自动添加注解 |
-| `createTime` / `updateTime` 手动设置 | 不依赖数据库默认值或自动填充 |
+| `createTime` / `updateTime` 由数据库维护 | 实体类不生成这两个字段，代码中不手动设置 |
 | 数据同步需幂等性检查 | 插入前先查询是否存在 |
 
 ---
@@ -140,3 +138,4 @@ if (current == null) {
 - 禁止在 Mapper XML 中编写复杂 SQL 而不添加注释
 - 禁止使用 `@Autowired` 注入 Mapper
 - 禁止跳过幂等性检查直接 `insert`（定时任务场景）
+- 禁止在代码中手动设置 `createTime` / `updateTime`（由数据库自动维护）

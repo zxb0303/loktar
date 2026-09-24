@@ -12,8 +12,6 @@
     <result column="month_diamond_pct" jdbcType="VARCHAR" property="monthDiamondPct" />
     <result column="month_new_creator_cnt" jdbcType="INTEGER" property="monthNewCreatorCnt" />
     <result column="month_new_creator_diamond_cnt" jdbcType="INTEGER" property="monthNewCreatorDiamondCnt" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from tiktok_data
@@ -23,13 +21,11 @@
     insert into tiktok_data (data_id, account_id, `date`, 
       today_diamond_cnt, today_live_cnt, today_new_member_cnt, 
       month_diamond_cnt, month_diamond_pct, month_new_creator_cnt, 
-      month_new_creator_diamond_cnt, create_time, 
-      update_time)
+      month_new_creator_diamond_cnt)
     values (#{dataId,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{date,jdbcType=VARCHAR}, 
       #{todayDiamondCnt,jdbcType=INTEGER}, #{todayLiveCnt,jdbcType=INTEGER}, #{todayNewMemberCnt,jdbcType=INTEGER}, 
       #{monthDiamondCnt,jdbcType=INTEGER}, #{monthDiamondPct,jdbcType=VARCHAR}, #{monthNewCreatorCnt,jdbcType=INTEGER}, 
-      #{monthNewCreatorDiamondCnt,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP})
+      #{monthNewCreatorDiamondCnt,jdbcType=INTEGER})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.loktar.domain.cxy.TiktokData">
     update tiktok_data
@@ -41,22 +37,18 @@
       month_diamond_cnt = #{monthDiamondCnt,jdbcType=INTEGER},
       month_diamond_pct = #{monthDiamondPct,jdbcType=VARCHAR},
       month_new_creator_cnt = #{monthNewCreatorCnt,jdbcType=INTEGER},
-      month_new_creator_diamond_cnt = #{monthNewCreatorDiamondCnt,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      month_new_creator_diamond_cnt = #{monthNewCreatorDiamondCnt,jdbcType=INTEGER}
     where data_id = #{dataId,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select data_id, account_id, `date`, today_diamond_cnt, today_live_cnt, today_new_member_cnt, 
-    month_diamond_cnt, month_diamond_pct, month_new_creator_cnt, month_new_creator_diamond_cnt, 
-    create_time, update_time
+    month_diamond_cnt, month_diamond_pct, month_new_creator_cnt, month_new_creator_diamond_cnt
     from tiktok_data
     where data_id = #{dataId,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select data_id, account_id, `date`, today_diamond_cnt, today_live_cnt, today_new_member_cnt, 
-    month_diamond_cnt, month_diamond_pct, month_new_creator_cnt, month_new_creator_diamond_cnt, 
-    create_time, update_time
+    month_diamond_cnt, month_diamond_pct, month_new_creator_cnt, month_new_creator_diamond_cnt
     from tiktok_data
   </select>
 </mapper>

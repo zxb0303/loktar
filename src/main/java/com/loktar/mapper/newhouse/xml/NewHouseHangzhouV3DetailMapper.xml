@@ -15,8 +15,6 @@
     <result column="unit_price" jdbcType="VARCHAR" property="unitPrice" />
     <result column="total_price" jdbcType="VARCHAR" property="totalPrice" />
     <result column="status" jdbcType="INTEGER" property="status" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from new_house_hangzhou_v3_detail
@@ -27,13 +25,13 @@
       house_id, build_no, unit_no, 
       room_no, build_area, inner_area, 
       area_rate, unit_price, total_price, 
-      `status`, create_time, update_time
+      `status`
       )
     values (#{detailId,jdbcType=VARCHAR}, #{buildId,jdbcType=VARCHAR}, #{presellId,jdbcType=VARCHAR}, 
       #{houseId,jdbcType=VARCHAR}, #{buildNo,jdbcType=VARCHAR}, #{unitNo,jdbcType=VARCHAR}, 
       #{roomNo,jdbcType=VARCHAR}, #{buildArea,jdbcType=VARCHAR}, #{innerArea,jdbcType=VARCHAR}, 
       #{areaRate,jdbcType=VARCHAR}, #{unitPrice,jdbcType=VARCHAR}, #{totalPrice,jdbcType=VARCHAR}, 
-      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      #{status,jdbcType=INTEGER}
       )
   </insert>
     <update id="updateByPrimaryKey" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV3Detail">
@@ -49,20 +47,18 @@
       area_rate = #{areaRate,jdbcType=VARCHAR},
       unit_price = #{unitPrice,jdbcType=VARCHAR},
       total_price = #{totalPrice,jdbcType=VARCHAR},
-      `status` = #{status,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      `status` = #{status,jdbcType=INTEGER}
     where detail_id = #{detailId,jdbcType=VARCHAR}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select detail_id, build_id, presell_id, house_id, build_no, unit_no, room_no, build_area, 
-    inner_area, area_rate, unit_price, total_price, `status`, create_time, update_time
+    inner_area, area_rate, unit_price, total_price, `status`
     from new_house_hangzhou_v3_detail
     where detail_id = #{detailId,jdbcType=VARCHAR}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select detail_id, build_id, presell_id, house_id, build_no, unit_no, room_no, build_area, 
-    inner_area, area_rate, unit_price, total_price, `status`, create_time, update_time
+    inner_area, area_rate, unit_price, total_price, `status`
     from new_house_hangzhou_v3_detail
   </select>
   <insert id="insertBatch">
@@ -70,7 +66,7 @@
                                               house_id, build_no, unit_no,
                                               room_no, build_area, inner_area,
                                               area_rate, unit_price, total_price,
-                                              `status`, create_time, update_time
+                                              `status`
     )
     values
     <foreach collection="list" item="item" separator=",">
@@ -78,7 +74,7 @@
             #{item.houseId,jdbcType=VARCHAR}, #{item.buildNo,jdbcType=VARCHAR}, #{item.unitNo,jdbcType=VARCHAR},
             #{item.roomNo,jdbcType=VARCHAR}, #{item.buildArea,jdbcType=VARCHAR}, #{item.innerArea,jdbcType=VARCHAR},
             #{item.areaRate,jdbcType=VARCHAR}, #{item.unitPrice,jdbcType=VARCHAR}, #{item.totalPrice,jdbcType=VARCHAR},
-            #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}
+            #{item.status,jdbcType=INTEGER}
            )
     </foreach>
   </insert>

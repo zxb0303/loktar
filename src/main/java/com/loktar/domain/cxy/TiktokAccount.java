@@ -3,7 +3,6 @@ package com.loktar.domain.cxy;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 public class TiktokAccount implements Serializable {
@@ -28,10 +27,6 @@ public class TiktokAccount implements Serializable {
     private String excelMonthlyDataIndex;
 
     private String excelMonthlyDataPartner;
-
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
 
     private static final long serialVersionUID = 1L;
 }

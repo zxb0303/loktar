@@ -137,7 +137,6 @@ public class QyWeixinCallbackChatGPTController {
         receiveQywxChatgptMsg.setRole(ChatMessageType.USER.name());
         receiveQywxChatgptMsg.setText(receiveMsg);
         receiveQywxChatgptMsg.setFilename(receiveFileName);
-        receiveQywxChatgptMsg.setCreateTime(LocalDateTime.now());
         qywxChatgptMsgMapper.insert(receiveQywxChatgptMsg);
 
         // 先尝试获取提醒草稿，支持多轮补充信息
@@ -206,7 +205,6 @@ public class QyWeixinCallbackChatGPTController {
         if (!replyFileNameBase.isBlank()) {
             replyQywxChatgptMsg.setFilename(replyFileNameBase + LokTarConstant.VOICE_SUFFIX_WAV);
         }
-        replyQywxChatgptMsg.setCreateTime(LocalDateTime.now());
         qywxChatgptMsgMapper.insert(replyQywxChatgptMsg);
     }
 

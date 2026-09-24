@@ -69,6 +69,9 @@
                enableDeleteByExample="true"
                enableSelectByExample="true">
             <property name="useActualColumnNames" value="false" />
+            <!-- 忽略数据库维护的时间字段：create_time 仅默认值维护，update_time 默认值+按时间戳更新，不参与代码生成 -->
+            <ignoreColumn column="create_time" />
+            <ignoreColumn column="update_time" />
             <!-- 数据库表主键 -->
 <!--            <generatedKey column="id" sqlStatement="Mysql" identity="true" />-->
         </table>

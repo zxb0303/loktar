@@ -6,8 +6,6 @@
     <result column="build_no" jdbcType="VARCHAR" property="buildNo" />
     <result column="presell_id" jdbcType="VARCHAR" property="presellId" />
     <result column="house_id" jdbcType="VARCHAR" property="houseId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from new_house_hangzhou_v3_presell_build
@@ -15,40 +13,38 @@
   </delete>
   <insert id="insert" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV3PresellBuild">
     insert into new_house_hangzhou_v3_presell_build (build_id, build_no, presell_id, 
-      house_id, create_time, update_time
+      house_id
       )
     values (#{buildId,jdbcType=VARCHAR}, #{buildNo,jdbcType=VARCHAR}, #{presellId,jdbcType=VARCHAR}, 
-      #{houseId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      #{houseId,jdbcType=VARCHAR}
       )
   </insert>
     <update id="updateByPrimaryKey" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV3PresellBuild">
     update new_house_hangzhou_v3_presell_build
     set build_no = #{buildNo,jdbcType=VARCHAR},
       presell_id = #{presellId,jdbcType=VARCHAR},
-      house_id = #{houseId,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      house_id = #{houseId,jdbcType=VARCHAR}
     where build_id = #{buildId,jdbcType=VARCHAR}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select build_id, build_no, presell_id, house_id, create_time, update_time
+    select build_id, build_no, presell_id, house_id
     from new_house_hangzhou_v3_presell_build
     where build_id = #{buildId,jdbcType=VARCHAR}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select build_id, build_no, presell_id, house_id, create_time, update_time
+    select build_id, build_no, presell_id, house_id
     from new_house_hangzhou_v3_presell_build
   </select>
     <insert id="insertBatch">
-    insert into new_house_hangzhou_v3_presell_build (build_id, build_no, presell_id,house_id, create_time, update_time)
+    insert into new_house_hangzhou_v3_presell_build (build_id, build_no, presell_id,house_id)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.buildId,jdbcType=VARCHAR}, #{item.buildNo,jdbcType=VARCHAR}, #{item.presellId,jdbcType=VARCHAR},
-      #{item.houseId,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP})
+      #{item.houseId,jdbcType=VARCHAR})
     </foreach>
   </insert>
   <select id="selectByHouseId" resultMap="BaseResultMap">
-    select build_id, build_no, presell_id, house_id, create_time, update_time
+    select build_id, build_no, presell_id, house_id
     from new_house_hangzhou_v3_presell_build where house_id = #{item.houseId,jdbcType=VARCHAR}
   </select>
 

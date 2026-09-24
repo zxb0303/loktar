@@ -18,7 +18,6 @@
     <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
     <result column="plate" jdbcType="VARCHAR" property="plate" />
     <result column="address" jdbcType="VARCHAR" property="address" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from new_house_hangzhou_v2
@@ -30,13 +29,13 @@
       green_ratio, cover_area, bulid_area, 
       bulid_type, total_house_num, car_park_num, 
       area, area_code, plate, 
-      address, update_time)
+      address)
     values (#{houseId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{nameSpread,jdbcType=VARCHAR}, 
       #{price,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, #{plotRatio,jdbcType=DOUBLE}, 
       #{greenRatio,jdbcType=VARCHAR}, #{coverArea,jdbcType=VARCHAR}, #{bulidArea,jdbcType=VARCHAR}, 
       #{bulidType,jdbcType=VARCHAR}, #{totalHouseNum,jdbcType=INTEGER}, #{carParkNum,jdbcType=INTEGER}, 
       #{area,jdbcType=VARCHAR}, #{areaCode,jdbcType=VARCHAR}, #{plate,jdbcType=VARCHAR}, 
-      #{address,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+      #{address,jdbcType=VARCHAR})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.loktar.domain.newhouse.NewHouseHangzhouV2">
     update new_house_hangzhou_v2
@@ -54,21 +53,18 @@
       area = #{area,jdbcType=VARCHAR},
       area_code = #{areaCode,jdbcType=VARCHAR},
       plate = #{plate,jdbcType=VARCHAR},
-      address = #{address,jdbcType=VARCHAR},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      address = #{address,jdbcType=VARCHAR}
     where house_id = #{houseId,jdbcType=VARCHAR}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select house_id, `name`, name_spread, price, `type`, plot_ratio, green_ratio, cover_area, 
-    bulid_area, bulid_type, total_house_num, car_park_num, area, area_code, plate, address, 
-    update_time
+    bulid_area, bulid_type, total_house_num, car_park_num, area, area_code, plate, address
     from new_house_hangzhou_v2
     where house_id = #{houseId,jdbcType=VARCHAR}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select house_id, `name`, name_spread, price, `type`, plot_ratio, green_ratio, cover_area, 
-    bulid_area, bulid_type, total_house_num, car_park_num, area, area_code, plate, address, 
-    update_time
+    bulid_area, bulid_type, total_house_num, car_park_num, area, area_code, plate, address
     from new_house_hangzhou_v2
   </select>
 </mapper>

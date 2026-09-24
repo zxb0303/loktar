@@ -7,7 +7,6 @@
     <result column="agent_id" jdbcType="VARCHAR" property="agentId" />
     <result column="role" jdbcType="VARCHAR" property="role" />
     <result column="filename" jdbcType="VARCHAR" property="filename" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="text" jdbcType="LONGVARCHAR" property="text" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -16,9 +15,9 @@
   </delete>
   <insert id="insert" parameterType="com.loktar.domain.qywx.QywxChatgptMsg">
     insert into qywx_chatgpt_msg (`id`, from_user_name, agent_id, `role`, filename,
-      create_time, `text`)
+      `text`)
     values (#{id,jdbcType=INTEGER}, #{fromUserName,jdbcType=VARCHAR}, #{agentId,jdbcType=VARCHAR}, #{role,jdbcType=VARCHAR}, #{filename,jdbcType=VARCHAR},
-      #{createTime,jdbcType=TIMESTAMP}, #{text,jdbcType=LONGVARCHAR})
+      #{text,jdbcType=LONGVARCHAR})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.loktar.domain.qywx.QywxChatgptMsg">
     update qywx_chatgpt_msg
@@ -26,19 +25,18 @@
       agent_id = #{agentId,jdbcType=VARCHAR},
       `role` = #{role,jdbcType=VARCHAR},
       filename = #{filename,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
       `text` = #{text,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select id, from_user_name, agent_id, `role`, filename,
-    create_time, `text`
+    `text`
     from qywx_chatgpt_msg
     where id = #{id,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select id, from_user_name, agent_id, `role`, filename,
-    create_time, `text`
+    `text`
     from qywx_chatgpt_msg
   </select>
 </mapper>

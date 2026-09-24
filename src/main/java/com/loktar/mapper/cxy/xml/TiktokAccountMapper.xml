@@ -13,8 +13,6 @@
     <result column="excel_monthly_index" jdbcType="VARCHAR" property="excelMonthlyIndex" />
     <result column="excel_monthly_data_index" jdbcType="VARCHAR" property="excelMonthlyDataIndex" />
     <result column="excel_monthly_data_partner" jdbcType="VARCHAR" property="excelMonthlyDataPartner" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from tiktok_account
@@ -24,13 +22,11 @@
     insert into tiktok_account (account_id, country, email, 
       `password`, faction_id, `status`, 
       excel_start, excel_end, excel_monthly_index, 
-      excel_monthly_data_index, excel_monthly_data_partner, 
-      create_time, update_time)
+      excel_monthly_data_index, excel_monthly_data_partner)
     values (#{accountId,jdbcType=INTEGER}, #{country,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
       #{password,jdbcType=VARCHAR}, #{factionId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
       #{excelStart,jdbcType=VARCHAR}, #{excelEnd,jdbcType=VARCHAR}, #{excelMonthlyIndex,jdbcType=VARCHAR}, 
-      #{excelMonthlyDataIndex,jdbcType=VARCHAR}, #{excelMonthlyDataPartner,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+      #{excelMonthlyDataIndex,jdbcType=VARCHAR}, #{excelMonthlyDataPartner,jdbcType=VARCHAR})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.loktar.domain.cxy.TiktokAccount">
     update tiktok_account
@@ -43,28 +39,23 @@
       excel_end = #{excelEnd,jdbcType=VARCHAR},
       excel_monthly_index = #{excelMonthlyIndex,jdbcType=VARCHAR},
       excel_monthly_data_index = #{excelMonthlyDataIndex,jdbcType=VARCHAR},
-      excel_monthly_data_partner = #{excelMonthlyDataPartner,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      excel_monthly_data_partner = #{excelMonthlyDataPartner,jdbcType=VARCHAR}
     where account_id = #{accountId,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select account_id, country, email, `password`, faction_id, `status`, excel_start, 
-    excel_end, excel_monthly_index, excel_monthly_data_index, excel_monthly_data_partner, 
-    create_time, update_time
+    excel_end, excel_monthly_index, excel_monthly_data_index, excel_monthly_data_partner
     from tiktok_account
     where account_id = #{accountId,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select account_id, country, email, `password`, faction_id, `status`, excel_start, 
-    excel_end, excel_monthly_index, excel_monthly_data_index, excel_monthly_data_partner, 
-    create_time, update_time
+    excel_end, excel_monthly_index, excel_monthly_data_index, excel_monthly_data_partner
     from tiktok_account
   </select>
     <select id="selectByStatus" resultMap="BaseResultMap">
       select account_id, country, email, `password`, faction_id, `status`, excel_start,
-             excel_end, excel_monthly_index, excel_monthly_data_index, excel_monthly_data_partner,
-             create_time, update_time
+             excel_end, excel_monthly_index, excel_monthly_data_index, excel_monthly_data_partner
       from tiktok_account  where `status` = #{status,jdbcType=INTEGER}
 
     </select>

@@ -3,7 +3,6 @@ package com.loktar.domain.qywx;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 public class QywxChatgptMsg implements Serializable {
@@ -16,8 +15,6 @@ public class QywxChatgptMsg implements Serializable {
     private String role;
 
     private String filename;
-
-    private LocalDateTime createTime;
 
     private String text;
 

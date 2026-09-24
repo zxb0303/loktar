@@ -41,7 +41,6 @@ public class CarTask {
                     System.lineSeparator() +
                     DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             xc90AppVersionProperty.setValue(lastVersion);
-            xc90AppVersionProperty.setUpdateTime(LocalDateTime.now());
             propertyMapper.updateByPrimaryKey(xc90AppVersionProperty);
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), content));
         }

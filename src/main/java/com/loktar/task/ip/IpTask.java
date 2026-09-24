@@ -51,7 +51,6 @@ public class IpTask {
                     System.lineSeparator() +
                     DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
             ipProperty.setValue(ip);
-            ipProperty.setUpdateTime(LocalDateTime.now());
             propertyMapper.updateByPrimaryKey(ipProperty);
             qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent002Id(), content));
         }

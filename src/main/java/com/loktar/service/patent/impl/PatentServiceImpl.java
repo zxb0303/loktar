@@ -22,7 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,7 +129,6 @@ public class PatentServiceImpl implements PatentService {
         //处理patentPdfApply
         PatentPdfApply patentPdfApply = patentPdfApplyMapper.selectByPrimaryKey(applyId);
         patentPdfApply.setStatus(1);
-        patentPdfApply.setUpdateTime(LocalDateTime.now());
         patentPdfApplyMapper.updateByPrimaryKey(patentPdfApply);
 
         //处理patentApply

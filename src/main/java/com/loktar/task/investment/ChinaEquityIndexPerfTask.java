@@ -111,8 +111,6 @@ public class ChinaEquityIndexPerfTask {
 
             EquityIndexPerfDaily exist = equityIndexPerfDailyMapper.selectByIndexCodeAndTradeDate(perfDaily.getIndexCode(), perfDaily.getTradeDate());
             if (exist == null) {
-                perfDaily.setCreateTime(LocalDateTime.now());
-                perfDaily.setUpdateTime(LocalDateTime.now());
                 equityIndexPerfDailyMapper.insert(perfDaily);
                 log.info("{}", indexCode + " 指数行情新增成功：" + perfDaily.getTradeDate());
             }

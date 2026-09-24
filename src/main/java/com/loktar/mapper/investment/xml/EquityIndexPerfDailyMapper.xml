@@ -16,8 +16,6 @@
     <result column="trading_value" jdbcType="DECIMAL" property="tradingValue" />
     <result column="cons_number" jdbcType="INTEGER" property="consNumber" />
     <result column="peg" jdbcType="DECIMAL" property="peg" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from equity_index_perf_daily
@@ -28,14 +26,12 @@
       trade_date, `open`, high, 
       low, `close`, `change`, 
       change_pct, trading_vol, trading_value, 
-      cons_number, peg, create_time, 
-      update_time)
+      cons_number, peg)
     values (#{id,jdbcType=BIGINT}, #{indexCode,jdbcType=VARCHAR}, #{indexName,jdbcType=VARCHAR}, 
       #{tradeDate,jdbcType=DATE}, #{open,jdbcType=DECIMAL}, #{high,jdbcType=DECIMAL}, 
       #{low,jdbcType=DECIMAL}, #{close,jdbcType=DECIMAL}, #{change,jdbcType=DECIMAL}, 
       #{changePct,jdbcType=DECIMAL}, #{tradingVol,jdbcType=DOUBLE}, #{tradingValue,jdbcType=DECIMAL}, 
-      #{consNumber,jdbcType=INTEGER}, #{peg,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP})
+      #{consNumber,jdbcType=INTEGER}, #{peg,jdbcType=DECIMAL})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.loktar.domain.investment.EquityIndexPerfDaily">
     update equity_index_perf_daily
@@ -51,25 +47,23 @@
       trading_vol = #{tradingVol,jdbcType=DOUBLE},
       trading_value = #{tradingValue,jdbcType=DECIMAL},
       cons_number = #{consNumber,jdbcType=INTEGER},
-      peg = #{peg,jdbcType=DECIMAL},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      peg = #{peg,jdbcType=DECIMAL}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select id, index_code, index_name, trade_date, `open`, high, low, `close`, `change`, 
-    change_pct, trading_vol, trading_value, cons_number, peg, create_time, update_time
+    change_pct, trading_vol, trading_value, cons_number, peg
     from equity_index_perf_daily
     where id = #{id,jdbcType=BIGINT}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select id, index_code, index_name, trade_date, `open`, high, low, `close`, `change`, 
-    change_pct, trading_vol, trading_value, cons_number, peg, create_time, update_time
+    change_pct, trading_vol, trading_value, cons_number, peg
     from equity_index_perf_daily
   </select>
   <select id="selectByIndexCodeAndTradeDate" resultMap="BaseResultMap">
     select id, index_code, index_name, trade_date, `open`, high, low, `close`, `change`,
-    change_pct, trading_vol, trading_value, cons_number, peg, create_time, update_time
+    change_pct, trading_vol, trading_value, cons_number, peg
     from equity_index_perf_daily
     where index_code = #{indexCode,jdbcType=VARCHAR} and trade_date = #{tradeDate,jdbcType=DATE}
   </select>

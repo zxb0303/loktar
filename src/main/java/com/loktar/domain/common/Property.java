@@ -3,7 +3,6 @@ package com.loktar.domain.common;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 public class Property implements Serializable {
@@ -20,8 +19,6 @@ public class Property implements Serializable {
     private String value4;
 
     private String status;
-
-    private LocalDateTime updateTime;
 
     private static final long serialVersionUID = 1L;
 }

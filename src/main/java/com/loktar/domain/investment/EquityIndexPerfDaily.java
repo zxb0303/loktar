@@ -1,10 +1,10 @@
 package com.loktar.domain.investment;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import lombok.Data;
 
 @Data
 public class EquityIndexPerfDaily implements Serializable {
@@ -35,10 +35,6 @@ public class EquityIndexPerfDaily implements Serializable {
     private Integer consNumber;
 
     private BigDecimal peg;
-
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
 
     private static final long serialVersionUID = 1L;
 }

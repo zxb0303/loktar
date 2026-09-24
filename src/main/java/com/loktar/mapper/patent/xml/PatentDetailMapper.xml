@@ -15,8 +15,6 @@
     <result column="auth_notice_date" jdbcType="VARCHAR" property="authNoticeDate" />
     <result column="main_category_num" jdbcType="VARCHAR" property="mainCategoryNum" />
     <result column="status" jdbcType="INTEGER" property="status" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from patent_detail
@@ -27,13 +25,13 @@
       apply_name, `type`, apply_date, 
       pub_notice_num, auth_notice_num, legal_status, 
       case_status, auth_notice_date, main_category_num, 
-      `status`, create_time, update_time
+      `status`
       )
     values (#{patentId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{applyId,jdbcType=VARCHAR}, 
       #{applyName,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{applyDate,jdbcType=VARCHAR}, 
       #{pubNoticeNum,jdbcType=VARCHAR}, #{authNoticeNum,jdbcType=VARCHAR}, #{legalStatus,jdbcType=VARCHAR}, 
       #{caseStatus,jdbcType=VARCHAR}, #{authNoticeDate,jdbcType=VARCHAR}, #{mainCategoryNum,jdbcType=VARCHAR}, 
-      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      #{status,jdbcType=INTEGER}
       )
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.loktar.domain.patent.PatentDetail">
@@ -49,28 +47,25 @@
       case_status = #{caseStatus,jdbcType=VARCHAR},
       auth_notice_date = #{authNoticeDate,jdbcType=VARCHAR},
       main_category_num = #{mainCategoryNum,jdbcType=VARCHAR},
-      `status` = #{status,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      `status` = #{status,jdbcType=INTEGER}
     where patent_id = #{patentId,jdbcType=VARCHAR}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select patent_id, `name`, apply_id, apply_name, `type`, apply_date, pub_notice_num, 
     auth_notice_num, legal_status, case_status, auth_notice_date, main_category_num, 
-    `status`, create_time, update_time
+    `status`
     from patent_detail
     where patent_id = #{patentId,jdbcType=VARCHAR}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select patent_id, `name`, apply_id, apply_name, `type`, apply_date, pub_notice_num, 
     auth_notice_num, legal_status, case_status, auth_notice_date, main_category_num, 
-    `status`, create_time, update_time
+    `status`
     from patent_detail
   </select>
   <select id="selectByStatus" resultMap="BaseResultMap">
     select patent_id, `name`, apply_id, apply_name, `type`, apply_date, pub_notice_num, auth_notice_num,
-           legal_status, case_status, auth_notice_date, main_category_num, `status`, create_time,
-           update_time
+           legal_status, case_status, auth_notice_date, main_category_num, `status`
     from patent_detail
     where status = #{status,jdbcType=INTEGER}
   </select>
@@ -83,7 +78,7 @@
                                apply_name, `type`, apply_date,
                                pub_notice_num, auth_notice_num, legal_status,
                                case_status, auth_notice_date, main_category_num,
-                               `status`, create_time, update_time
+                               `status`
     )
     values
     <foreach collection="list" separator="," item="item">
@@ -91,30 +86,27 @@
             #{item.applyName,jdbcType=VARCHAR}, #{item.type,jdbcType=VARCHAR}, #{item.applyDate,jdbcType=VARCHAR},
             #{item.pubNoticeNum,jdbcType=VARCHAR}, #{item.authNoticeNum,jdbcType=VARCHAR}, #{item.legalStatus,jdbcType=VARCHAR},
             #{item.caseStatus,jdbcType=VARCHAR}, #{item.authNoticeDate,jdbcType=VARCHAR}, #{item.mainCategoryNum,jdbcType=VARCHAR},
-            #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}
+            #{item.status,jdbcType=INTEGER}
            )
     </foreach>
   </insert>
   <select id="selectByApplyId" resultMap="BaseResultMap">
     select patent_id, `name`, apply_id, apply_name, `type`, apply_date, pub_notice_num, auth_notice_num,
-           legal_status, case_status, auth_notice_date, main_category_num, `status`, create_time,
-           update_time
+           legal_status, case_status, auth_notice_date, main_category_num, `status`
     from patent_detail
     where apply_id = #{applyId,jdbcType=VARCHAR}
 
   </select>
     <select id="selectForQuote" resultMap="BaseResultMap">
       select patent_id, `name`, apply_id, apply_name, `type`, apply_date, pub_notice_num, auth_notice_num,
-             legal_status, case_status, auth_notice_date, main_category_num, `status`, create_time,
-             update_time
+             legal_status, case_status, auth_notice_date, main_category_num, `status`
       from patent_detail
       where apply_id = #{param1,jdbcType=VARCHAR} and `type` = #{param2,jdbcType=VARCHAR} and case_status in ('专利权维持','等年费滞纳金') and apply_date<![CDATA[>=]]>'2021-01-01'
     </select>
 
     <select id="selectForQuoteV2" resultMap="BaseResultMap">
       select patent_id, `name`, apply_id, apply_name, `type`, apply_date, pub_notice_num, auth_notice_num,
-             legal_status, case_status, auth_notice_date, main_category_num, `status`, create_time,
-             update_time
+             legal_status, case_status, auth_notice_date, main_category_num, `status`
       from patent_detail
       where apply_id = #{applyId,jdbcType=VARCHAR} and case_status in ('专利权维持','等年费滞纳金') and ((`type` ='实用新型' and apply_date<![CDATA[>=]]>'2021-01-01') or (`type` ='发明专利' and apply_date<![CDATA[>=]]>'2019-01-01'))
     </select>

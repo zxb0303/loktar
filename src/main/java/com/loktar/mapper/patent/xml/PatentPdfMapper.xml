@@ -9,8 +9,6 @@
     <result column="auth_notice_date" jdbcType="VARCHAR" property="authNoticeDate" />
     <result column="main_category_num" jdbcType="VARCHAR" property="mainCategoryNum" />
     <result column="status" jdbcType="INTEGER" property="status" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from patent_pdf
@@ -19,11 +17,11 @@
   <insert id="insert" parameterType="com.loktar.domain.patent.PatentPdf">
     insert into patent_pdf (patent_id, apply_name, `type`, 
       auth_notice_num, auth_notice_date, main_category_num, 
-      `status`, create_time, update_time
+      `status`
       )
     values (#{patentId,jdbcType=VARCHAR}, #{applyName,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
       #{authNoticeNum,jdbcType=VARCHAR}, #{authNoticeDate,jdbcType=VARCHAR}, #{mainCategoryNum,jdbcType=VARCHAR}, 
-      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      #{status,jdbcType=INTEGER}
       )
   </insert>
     <update id="updateByPrimaryKey" parameterType="com.loktar.domain.patent.PatentPdf">
@@ -33,32 +31,30 @@
       auth_notice_num = #{authNoticeNum,jdbcType=VARCHAR},
       auth_notice_date = #{authNoticeDate,jdbcType=VARCHAR},
       main_category_num = #{mainCategoryNum,jdbcType=VARCHAR},
-      `status` = #{status,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      `status` = #{status,jdbcType=INTEGER}
     where patent_id = #{patentId,jdbcType=VARCHAR}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select patent_id, apply_name, `type`, auth_notice_num, auth_notice_date, main_category_num, 
-    `status`, create_time, update_time
+    `status`
     from patent_pdf
     where patent_id = #{patentId,jdbcType=VARCHAR}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select patent_id, apply_name, `type`, auth_notice_num, auth_notice_date, main_category_num, 
-    `status`, create_time, update_time
+    `status`
     from patent_pdf
   </select>
   <insert id="insertBatch">
     insert into patent_pdf (patent_id, apply_name, `type`,
                             auth_notice_num, auth_notice_date, main_category_num,
-                            `status`, create_time, update_time
+                            `status`
     )
     values
     <foreach collection="list" separator="," item="item">
         (#{item.patentId,jdbcType=VARCHAR}, #{item.applyName,jdbcType=VARCHAR}, #{item.type,jdbcType=VARCHAR},
             #{item.authNoticeNum,jdbcType=VARCHAR}, #{item.authNoticeDate,jdbcType=VARCHAR}, #{item.mainCategoryNum,jdbcType=VARCHAR},
-            #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}
+            #{item.status,jdbcType=INTEGER}
            )
     </foreach>
   </insert>

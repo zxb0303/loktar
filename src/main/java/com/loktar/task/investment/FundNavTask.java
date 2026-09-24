@@ -112,8 +112,6 @@ public class FundNavTask {
 
             FundNav current = fundNavMapper.selectByFundCodeAndNavDate(fundNav.getFundCode(), fundNav.getNavDate());
             if (current == null) {
-                fundNav.setCreateTime(LocalDateTime.now());
-                fundNav.setUpdateTime(LocalDateTime.now());
                 fundNavMapper.insert(fundNav);
                 log.info("{}", fundCode + " 新增成功：" + fundNav.getNavDate());
                 if (needPush) {
@@ -126,7 +124,6 @@ public class FundNavTask {
                         bonusShares = bonusAmount.divide(fundNav.getUnitNav(), 2, RoundingMode.HALF_UP);
                         share = share.add(bonusShares).setScale(2, RoundingMode.HALF_UP);
                         property.setValue2(share.toPlainString());
-                        property.setUpdateTime(LocalDateTime.now());
                         propertyMapper.updateByPrimaryKey(property);
                         log.info("{}", fundCode + " 分红复投：每份分红=" + fundNav.getBonus() + "，新增份额=" + bonusShares + "，更新后份额=" + share);
                     }

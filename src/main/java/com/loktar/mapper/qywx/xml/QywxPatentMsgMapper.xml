@@ -11,8 +11,6 @@
     <result column="price" jdbcType="VARCHAR" property="price" />
     <result column="mobile" jdbcType="VARCHAR" property="mobile" />
     <result column="status" jdbcType="VARCHAR" property="status" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from qywx_patent_msg
@@ -21,42 +19,35 @@
   <insert id="insert" parameterType="com.loktar.domain.qywx.QywxPatentMsg">
     insert into qywx_patent_msg (id, agent_id, from_user_name, content,
       `type`, apply_name, price, 
-      mobile, `status`, create_time, 
-      update_time)
+      mobile, `status`)
     values (#{id,jdbcType=INTEGER}, #{agentId,jdbcType=VARCHAR}, #{fromUserName,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
       #{type,jdbcType=VARCHAR}, #{applyName,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, 
-      #{mobile,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP})
+      #{mobile,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.loktar.domain.qywx.QywxPatentMsg">
     update qywx_patent_msg
     set
-      agent_id = #{agentId,jdbcType=VARCHAR}
+      agent_id = #{agentId,jdbcType=VARCHAR},
       from_user_name = #{fromUserName,jdbcType=VARCHAR},
       content = #{content,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
       apply_name = #{applyName,jdbcType=VARCHAR},
       price = #{price,jdbcType=VARCHAR},
       mobile = #{mobile,jdbcType=VARCHAR},
-      `status` = #{status,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      `status` = #{status,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select id, agent_id, from_user_name, content, `type`, apply_name, price, mobile, `status`,
-    create_time, update_time
+    select id, agent_id, from_user_name, content, `type`, apply_name, price, mobile, `status`
     from qywx_patent_msg
     where id = #{id,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select id, agent_id, from_user_name, content, `type`, apply_name, price, mobile, `status`,
-    create_time, update_time
+    select id, agent_id, from_user_name, content, `type`, apply_name, price, mobile, `status`
     from qywx_patent_msg
   </select>
   <select id="getQywxPatentMsgsByStatus" resultMap="BaseResultMap">
-    select id, agent_id, from_user_name, content, `type`, apply_name, price, mobile, `status`,
-           create_time, update_time
+    select id, agent_id, from_user_name, content, `type`, apply_name, price, mobile, `status`
     from qywx_patent_msg
     where `status` = #{status,jdbcType=INTEGER}
   </select>
