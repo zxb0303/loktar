@@ -24,6 +24,9 @@ public class AudioBookShelfTask {
     // 当日累计收听每满10分钟为一个通知刻度
     private final static int NOTICE_TIER_MINUTES = 10;
 
+    // 当日累计收听每满20分钟为一个自动关闭刻度，达到即把用户置为不可用
+    private final static int AUTO_CLOSE_TIER_MINUTES = 20;
+
     // Redis刻度记录保留2天，避免历史数据堆积
     private final static Duration TIER_RECORD_EXPIRE = Duration.ofDays(2);
 
@@ -103,14 +106,26 @@ public class AudioBookShelfTask {
         // 当日首次记录：以当前档位为基线不附加超时信息，避免服务重启后对当日历史时长误报
         long lastTier = lastTierValue == null ? currentTier : Long.parseLong(lastTierValue.toString());
         boolean tierReached = currentTier > lastTier;
+        // 自动关闭刻度：与通知刻度同为当日累计口径，当日首次记录同样以当前档位为基线
+        long closeTier = todayMinutes / AUTO_CLOSE_TIER_MINUTES;
+        String closeTierKey = LokTarConstant.REDIS_KEY_ABS_CLOSE_TIER_PREFIX + today + "_" + username;
+        Object lastCloseTierValue = redisTemplate.opsForValue().get(closeTierKey);
+        long lastCloseTier = lastCloseTierValue == null ? closeTier : Long.parseLong(lastCloseTierValue.toString());
+        boolean closeReached = closeTier >= 1 && closeTier > lastCloseTier;
+        if (closeReached) {
+            // 把用户置为不可用即停止其播放，当天剩余轮次监控直接跳过，次日08点由resetUserActive恢复
+            audioBookShelfUtil.updateUserActive(userId, false);
+            redisTemplate.opsForValue().set(closeTierKey, closeTier, TIER_RECORD_EXPIRE);
+        }
         String content = LokTarConstant.NOTICE_TITLE_ABS + System.lineSeparator() +
                 System.lineSeparator() +
-                username + (tierReached ? " 今日收听已超 " + currentTier * NOTICE_TIER_MINUTES + " 分钟" : "") + System.lineSeparator() +
+                username + (tierReached ? " 今日收听已超 " + currentTier * NOTICE_TIER_MINUTES + " 分钟" : "")
+                + (closeReached ? "，已自动关闭" : "") + System.lineSeparator() +
                 "正在收听：" + playingSession.getDisplayAuthor() + " - " + playingSession.getDisplayTitle()
                 + "（" + formatPlaybackTime(currentTime) + "）" + System.lineSeparator() +
                 System.lineSeparator() +
                 DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
-        qywxApi.sendTextMsg(new AgentMsgText(lokTarConfig.getQywx().getNoticeZxb(), lokTarConfig.getQywx().getAgent010Id(), content));
+        qywxApi.sendTextMsg(new AgentMsgText("@all",lokTarConfig.getQywx().getAgent010Id(), content));
         redisTemplate.opsForValue().set(posKey, currentPos, TIER_RECORD_EXPIRE);
         if (lastTierValue == null || tierReached) {
             redisTemplate.opsForValue().set(tierKey, currentTier, TIER_RECORD_EXPIRE);

@@ -35,6 +35,7 @@ public class LokTarConstant {
     public static final String REDIS_KEY_RELX = "relx_stock_available";
     public static final String REDIS_KEY_RELX_MONITOR_SWITCH = "relx_monitor_switch";
     public static final String REDIS_KEY_ABS_LISTEN_TIER_PREFIX = "abs_listen_tier_";
+    public static final String REDIS_KEY_ABS_CLOSE_TIER_PREFIX = "abs_close_tier_";
     public static final String REDIS_KEY_ABS_PLAYING_POS_PREFIX = "abs_playing_pos_";
 
 
