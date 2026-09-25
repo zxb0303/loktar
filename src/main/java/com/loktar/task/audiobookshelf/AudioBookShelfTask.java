@@ -45,10 +45,8 @@ public class AudioBookShelfTask {
         this.audioBookShelfUtil = audioBookShelfUtil;
     }
 
-    // 每2分钟监控：周一至周五16:00开始，周六至周日07:00开始，每天22:00执行最后一轮。
-    @Scheduled(cron = "0 */2 16-21 * * MON-FRI")
-    @Scheduled(cron = "0 */2 7-21 * * SAT,SUN")
-    @Scheduled(cron = "0 0 22 * * *")
+    // 每2分钟监控
+    @Scheduled(cron = "0 */2 7-22 * * SAT,SUN")
     public void listenMonitor() {
         String user = lokTarConfig.getAudioBookShelf().getUser();
         log.info("{}", "AudioBookShelf收听监控定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
