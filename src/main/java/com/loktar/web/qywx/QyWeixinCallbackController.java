@@ -114,6 +114,7 @@ public class QyWeixinCallbackController {
 
     private void dealEventMsg(ReceiveEventMsg receiveEventMsg) {
         String event = receiveEventMsg.getEvent();
+        String fromUserName = receiveEventMsg.getFromUserName();
         ReceiveEventType eventType = ReceiveEventType.getByName(event);
         switch (eventType) {
             case VIEW:
@@ -232,16 +233,18 @@ public class QyWeixinCallbackController {
                     case ABS_MONITOR_SWITCH:
                         String monitorUsername = lokTarConfig.getAudioBookShelf().getUser();
                         boolean toActive = audioBookShelfUtil.switchUserActive(monitorUsername);
+                        replymsg.append(receiveEventMsg.getFromUserName());
                         replymsg.append(toActive ? "已启用" : "已禁用").append("ABS监控用户：").append(monitorUsername).append(System.lineSeparator());
                         replymsg.append(System.lineSeparator())
                                 .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
+                        fromUserName = LokTarConstant.QYWX_NOTICE_ALL;
                         break;
                     default:
                         replymsg.append("不支持该命令");
                         break;
 
                 }
-                qywxApi.sendTextMsg(new AgentMsgText(receiveEventMsg.getFromUserName(), receiveEventMsg.getAgentID(), replymsg.toString()));
+                qywxApi.sendTextMsg(new AgentMsgText(fromUserName, receiveEventMsg.getAgentID(), replymsg.toString()));
             default:
                 break;
         }

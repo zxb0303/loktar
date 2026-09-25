@@ -87,5 +87,7 @@ public class LokTarConstant {
     public final static String PATENT_CONTRACT_FILE_PATH = "contract/收购合同-{0}.doc";
     public final static String PATENT_AGREEMENT_FILE_PATH = "contract/转让协议-{0}.doc";
 
+    public final static String QYWX_NOTICE_ALL = "@all";
+
 
 }

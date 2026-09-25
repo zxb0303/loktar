@@ -125,7 +125,7 @@ public class AudioBookShelfTask {
                 + "（" + formatPlaybackTime(currentTime) + "）" + System.lineSeparator() +
                 System.lineSeparator() +
                 DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
-        qywxApi.sendTextMsg(new AgentMsgText("@all",lokTarConfig.getQywx().getAgent010Id(), content));
+        qywxApi.sendTextMsg(new AgentMsgText(LokTarConstant.QYWX_NOTICE_ALL, lokTarConfig.getQywx().getAgent010Id(), content));
         redisTemplate.opsForValue().set(posKey, currentPos, TIER_RECORD_EXPIRE);
         if (lastTierValue == null || tierReached) {
             redisTemplate.opsForValue().set(tierKey, currentTier, TIER_RECORD_EXPIRE);
