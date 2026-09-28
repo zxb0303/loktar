@@ -46,7 +46,7 @@ public class AudioBookShelfTask {
     }
 
     // 每2分钟监控
-    @Scheduled(cron = "0 */2 7-22 * * SAT,SUN")
+    @Scheduled(cron = "0 */2 7-22 * * *")
     public void listenMonitor() {
         String user = lokTarConfig.getAudioBookShelf().getUser();
         log.info("{}", "AudioBookShelf收听监控定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
@@ -63,7 +63,7 @@ public class AudioBookShelfTask {
     /**
      * 每天08点将监控用户状态重置为可用
      */
-    @Scheduled(cron = "0 0 8 * * *")
+    @Scheduled(cron = "0 0 7 * * *")
     public void resetUserActive() {
         String monitorUsername = lokTarConfig.getAudioBookShelf().getUser();
         AbsUser absUser = audioBookShelfUtil.getUser(monitorUsername);
