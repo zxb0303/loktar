@@ -113,7 +113,6 @@ public class AudioBookShelfTask {
         if (closeReached) {
             // 把用户置为不可用即停止其播放，当天剩余轮次监控直接跳过，次日08点由resetUserActive恢复
             audioBookShelfUtil.updateUserActive(userId, false);
-            redisTemplate.opsForValue().set(closeTierKey, closeTier, TIER_RECORD_EXPIRE);
         }
         String content = LokTarConstant.NOTICE_TITLE_ABS + System.lineSeparator() +
                 System.lineSeparator() +
@@ -127,6 +126,10 @@ public class AudioBookShelfTask {
         redisTemplate.opsForValue().set(posKey, currentPos, TIER_RECORD_EXPIRE);
         if (lastTierValue == null || tierReached) {
             redisTemplate.opsForValue().set(tierKey, currentTier, TIER_RECORD_EXPIRE);
+        }
+        // 关闭刻度与通知刻度同理需在当日首次记录时落库基线，否则该键永不写入导致关闭判定永远无法命中
+        if (lastCloseTierValue == null || closeReached) {
+            redisTemplate.opsForValue().set(closeTierKey, closeTier, TIER_RECORD_EXPIRE);
         }
     }
 
