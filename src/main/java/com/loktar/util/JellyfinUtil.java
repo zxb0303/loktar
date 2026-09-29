@@ -50,13 +50,13 @@ public class JellyfinUtil {
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() != 200) {
             log.error("Jellyfin Sessions接口调用失败, deviceId:{}, statusCode:{}, body:{}", deviceId, response.statusCode(), response.body());
-            throw new IllegalStateException("Jellyfin Sessions接口调用失败, statusCode:" + response.statusCode());
+            return null;
         }
         String responseBody = response.body();
         List<Session> sessions = objectMapper.readValue(responseBody, new TypeReference<>(){});
         if (sessions.isEmpty()) {
             log.warn("Jellyfin Sessions接口未查询到会话, deviceId:{}", deviceId);
-            throw new IllegalStateException("Jellyfin Sessions接口未查询到会话, deviceId:" + deviceId);
+            return null;
         }
         return sessions.getFirst();
     }

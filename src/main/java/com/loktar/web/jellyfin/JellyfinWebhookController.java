@@ -96,9 +96,11 @@ public class JellyfinWebhookController {
      */
     private void handlePlaybackStop(Notification notification) {
         Session session = jellyfinUtil.getSessionByDeviceId(notification.getDeviceId());
+        if (session != null) {
+            sendPlaybackNotification(notification, session, LokTarConstant.NOTICE_JELLYFIN_STOP);
+            handleTransmissionSpeedOnStop(notification, session);
+        }
         redisTemplate.opsForSet().remove(LokTarConstant.REDIS_KEY_JELLYFIN_REMOTE_PLAYING_SET, notification.getNotificationUsername());
-        sendPlaybackNotification(notification, session, LokTarConstant.NOTICE_JELLYFIN_STOP);
-        handleTransmissionSpeedOnStop(notification, session);
         handleHomepageWidgetOnStop(notification);
     }
 
