@@ -61,9 +61,10 @@ public class AudioBookShelfTask {
     }
 
     /**
-     * 每天07点将监控用户状态重置为可用
+     * 每天07点和18:30将监控用户状态重置为可用
      */
     @Scheduled(cron = "0 0 7 * * *")
+    @Scheduled(cron = "0 30 18 * * *")
     public void resetUserActive() {
         String monitorUsername = lokTarConfig.getAudioBookShelf().getUser();
         AbsUser absUser = audioBookShelfUtil.getUser(monitorUsername);
@@ -90,7 +91,7 @@ public class AudioBookShelfTask {
         if (noticeReached) {
             sendListeningNotice(username, openSession, noticeTier * NOTICE_TIER_MINUTES);
         }
-        // 关闭刻度：把用户置为不可用即停止其播放并推送关闭通知，当天剩余轮次监控直接跳过，次日07点由resetUserActive恢复
+        // 关闭刻度：把用户置为不可用即停止其播放并推送关闭通知，当天剩余轮次监控直接跳过，07点/18:30由resetUserActive恢复
         if (closeReached) {
             audioBookShelfUtil.updateUserActive(userId, false);
             sendAutoCloseNotice(username);
