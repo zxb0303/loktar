@@ -53,6 +53,7 @@ public class RssUtil {
             TrRssTorrent trRssTorrent = new TrRssTorrent();
             trRssTorrent.setRssId(trRss.getRssId());
             trRssTorrent.setTitle(item.getTitle());
+            trRssTorrent.setDescription(item.getDescription());
             trRssTorrent.setLink(item.getLink());
             String idStr = item.getLink().split("id=")[1];
             if (idStr.contains("&")) {

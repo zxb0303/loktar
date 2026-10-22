@@ -21,5 +21,7 @@ public class TrRssTorrent implements Serializable {
 
     private String title;
 
+    private String description;
+
     private static final long serialVersionUID = 1L;
 }

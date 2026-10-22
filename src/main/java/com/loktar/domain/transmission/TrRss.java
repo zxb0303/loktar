@@ -12,7 +12,9 @@ public class TrRss implements Serializable {
 
     private String rssUrl;
 
-    private String pattern;
+    private String titlePattern;
+
+    private String descriptionPattern;
 
     private String commonDownloadUrl;
 

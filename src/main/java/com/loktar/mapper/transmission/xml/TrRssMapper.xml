@@ -5,7 +5,8 @@
     <id column="rss_id" jdbcType="INTEGER" property="rssId" />
     <result column="host_cn_name" jdbcType="VARCHAR" property="hostCnName" />
     <result column="rss_url" jdbcType="VARCHAR" property="rssUrl" />
-    <result column="pattern" jdbcType="VARCHAR" property="pattern" />
+    <result column="title_pattern" jdbcType="VARCHAR" property="titlePattern" />
+    <result column="description_pattern" jdbcType="VARCHAR" property="descriptionPattern" />
     <result column="common_download_url" jdbcType="VARCHAR" property="commonDownloadUrl" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="interval_minutes" jdbcType="INTEGER" property="intervalMinutes" />
@@ -16,33 +17,34 @@
   </delete>
   <insert id="insert" parameterType="com.loktar.domain.transmission.TrRss">
     insert into tr_rss (rss_id, host_cn_name, rss_url, 
-      pattern, common_download_url, `status`, 
+      title_pattern, description_pattern, common_download_url, `status`, 
       interval_minutes)
     values (#{rssId,jdbcType=INTEGER}, #{hostCnName,jdbcType=VARCHAR}, #{rssUrl,jdbcType=VARCHAR}, 
-      #{pattern,jdbcType=VARCHAR}, #{commonDownloadUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{titlePattern,jdbcType=VARCHAR}, #{descriptionPattern,jdbcType=VARCHAR}, #{commonDownloadUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
       #{intervalMinutes,jdbcType=INTEGER})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.loktar.domain.transmission.TrRss">
     update tr_rss
     set host_cn_name = #{hostCnName,jdbcType=VARCHAR},
       rss_url = #{rssUrl,jdbcType=VARCHAR},
-      pattern = #{pattern,jdbcType=VARCHAR},
+      title_pattern = #{titlePattern,jdbcType=VARCHAR},
+      description_pattern = #{descriptionPattern,jdbcType=VARCHAR},
       common_download_url = #{commonDownloadUrl,jdbcType=VARCHAR},
       `status` = #{status,jdbcType=INTEGER},
       interval_minutes = #{intervalMinutes,jdbcType=INTEGER}
     where rss_id = #{rssId,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select rss_id, host_cn_name, rss_url, pattern, common_download_url, `status`, interval_minutes
+    select rss_id, host_cn_name, rss_url, title_pattern, description_pattern, common_download_url, `status`, interval_minutes
     from tr_rss
     where rss_id = #{rssId,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select rss_id, host_cn_name, rss_url, pattern, common_download_url, `status`, interval_minutes
+    select rss_id, host_cn_name, rss_url, title_pattern, description_pattern, common_download_url, `status`, interval_minutes
     from tr_rss
   </select>
   <select id="getTrRsssByStatus" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select rss_id, host_cn_name, rss_url, pattern, common_download_url, `status`, interval_minutes
+    select rss_id, host_cn_name, rss_url, title_pattern, description_pattern, common_download_url, `status`, interval_minutes
     from tr_rss where status = #{status,jdbcType=INTEGER}
   </select>
 </mapper>

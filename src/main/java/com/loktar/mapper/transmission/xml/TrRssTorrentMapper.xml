@@ -9,6 +9,7 @@
     <result column="download_url" jdbcType="VARCHAR" property="downloadUrl" />
     <result column="pub_date" jdbcType="TIMESTAMP" property="pubDate" />
     <result column="title" jdbcType="LONGVARCHAR" property="title" />
+    <result column="description" jdbcType="LONGVARCHAR" property="description" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from tr_rss_torrent
@@ -17,10 +18,10 @@
   <insert id="insert" parameterType="com.loktar.domain.transmission.TrRssTorrent">
     insert into tr_rss_torrent (rss_torrent_id, rss_id, link, 
       `status`, download_url, pub_date, 
-      title)
+      title, description)
     values (#{rssTorrentId,jdbcType=INTEGER}, #{rssId,jdbcType=INTEGER}, #{link,jdbcType=VARCHAR}, 
       #{status,jdbcType=INTEGER}, #{downloadUrl,jdbcType=VARCHAR}, #{pubDate,jdbcType=TIMESTAMP}, 
-      #{title,jdbcType=LONGVARCHAR})
+      #{title,jdbcType=LONGVARCHAR}, #{description,jdbcType=LONGVARCHAR})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.loktar.domain.transmission.TrRssTorrent">
     update tr_rss_torrent
@@ -29,20 +30,21 @@
       `status` = #{status,jdbcType=INTEGER},
       download_url = #{downloadUrl,jdbcType=VARCHAR},
       pub_date = #{pubDate,jdbcType=TIMESTAMP},
-      title = #{title,jdbcType=LONGVARCHAR}
+      title = #{title,jdbcType=LONGVARCHAR},
+      description = #{description,jdbcType=LONGVARCHAR}
     where rss_torrent_id = #{rssTorrentId,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select rss_torrent_id, rss_id, link, `status`, download_url, pub_date, title
+    select rss_torrent_id, rss_id, link, `status`, download_url, pub_date, title, description
     from tr_rss_torrent
     where rss_torrent_id = #{rssTorrentId,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select rss_torrent_id, rss_id, link, `status`, download_url, pub_date, title
+    select rss_torrent_id, rss_id, link, `status`, download_url, pub_date, title, description
     from tr_rss_torrent
   </select>
   <select id="getTrRssTorrentsByStatusAndTrRssId" resultMap="BaseResultMap">
-    select rss_torrent_id, rss_id, title, link, `status`, download_url, pub_date
+    select rss_torrent_id, rss_id, title, link, `status`, download_url, pub_date, description
     from tr_rss_torrent where `status` =  #{param1,jdbcType=INTEGER} and rss_id = #{param2,jdbcType=INTEGER}
   </select>
 </mapper>

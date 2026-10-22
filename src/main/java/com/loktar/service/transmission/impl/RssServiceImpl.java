@@ -14,11 +14,11 @@ import com.loktar.util.DelayUtil;
 import com.loktar.util.RssUtil;
 import com.loktar.util.TransmissionUtil;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
@@ -62,10 +62,13 @@ public class RssServiceImpl implements RssService {
     @Override
     public void dealTrRssTorrents(TrRss trRss) {
         List<TrRssTorrent> trRssTorrents = trRssTorrentMapper.getTrRssTorrentsByStatusAndTrRssId(0, trRss.getRssId());
+        // 两个pattern均为空时不校验直接放行，不为空的需匹配才下载
+        Pattern titlePattern = StringUtils.isBlank(trRss.getTitlePattern()) ? null : Pattern.compile(trRss.getTitlePattern());
+        Pattern descriptionPattern = StringUtils.isBlank(trRss.getDescriptionPattern()) ? null : Pattern.compile(trRss.getDescriptionPattern());
         for (TrRssTorrent trRssTorrent : trRssTorrents) {
-            Pattern r = Pattern.compile(trRss.getPattern());
-            Matcher m = r.matcher(trRssTorrent.getTitle());
-            if (m.matches()) {
+            boolean titleMatched = titlePattern == null || (trRssTorrent.getTitle() != null && titlePattern.matcher(trRssTorrent.getTitle()).matches());
+            boolean descriptionMatched = descriptionPattern == null || (trRssTorrent.getDescription() != null && descriptionPattern.matcher(trRssTorrent.getDescription()).matches());
+            if (titleMatched && descriptionMatched) {
                 String downloadUrl = trRssTorrent.getDownloadUrl();
                 DelayUtil.delaySeconds(3, 5);
                 TrResponse trResponse = transmissionUtil.addTorrent(downloadUrl, lokTarConfig.getTransmission().getTempDownloadDir(), false);
