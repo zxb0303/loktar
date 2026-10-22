@@ -4,11 +4,11 @@ import com.loktar.domain.transmission.TrRssTorrent;
 import java.util.List;
 
 public interface TrRssTorrentMapper {
-    int deleteByPrimaryKey(Integer rssTorrentId);
+    int deleteByPrimaryKey(Integer rssTorrentId, Integer rssId);
 
     int insert(TrRssTorrent row);
 
-    TrRssTorrent selectByPrimaryKey(Integer rssTorrentId);
+    TrRssTorrent selectByPrimaryKey(Integer rssTorrentId, Integer rssId);
 
     List<TrRssTorrent> selectAll();
 

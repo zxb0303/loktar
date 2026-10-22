@@ -9,6 +9,7 @@ import com.loktar.dto.rss.RssFeed;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.dataformat.xml.XmlMapper;
 
@@ -24,6 +25,8 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 @Slf4j
@@ -40,6 +43,9 @@ public class RssUtil {
     }
 
     private final static int RSS_FETCH_MAX_ATTEMPTS = 3;
+    // link中ID提取：参数型 xxx.php?id=639203 优先，否则取最后一个数字串（兼容路径型 detail/1275528）
+    private final static Pattern PATTERN_LINK_ID_PARAM = Pattern.compile("id=(\\d+)");
+    private final static Pattern PATTERN_LINK_ID_LAST_NUM = Pattern.compile("(\\d+)(?!.*\\d)");
 
     public List<TrRssTorrent> getRssData(TrRss trRss) {
         List<TrRssTorrent> trRssTorrents = new ArrayList<>();
@@ -48,18 +54,33 @@ public class RssUtil {
             // 抓取失败返回空列表跳过本轮，已有数据保持不变，下轮调度补偿
             return trRssTorrents;
         }
-        RssFeed rssFeed = xmlMapper.readValue(rssBody, RssFeed.class);
+        RssFeed rssFeed;
+        try {
+            rssFeed = xmlMapper.readValue(rssBody, RssFeed.class);
+        } catch (JacksonException e) {
+            // 响应非XML（如站点按Accept内容协商返回JSON）或格式异常时跳过本轮，已有数据保持不变，下轮调度补偿
+            log.warn("RSS解析失败，跳过本轮，url：{}，原因：{}", trRss.getRssUrl(), e.getMessage());
+            return trRssTorrents;
+        }
         rssFeed.getChannel().getItem().forEach(item -> {
             TrRssTorrent trRssTorrent = new TrRssTorrent();
             trRssTorrent.setRssId(trRss.getRssId());
             trRssTorrent.setTitle(item.getTitle());
             trRssTorrent.setDescription(item.getDescription());
             trRssTorrent.setLink(item.getLink());
-            String idStr = item.getLink().split("id=")[1];
-            if (idStr.contains("&")) {
-                idStr = idStr.split("&")[0];
+            if (ObjectUtils.isEmpty(item.getLink())) {
+                log.warn("RSS条目link为空，跳过，url：{}", trRss.getRssUrl());
+                return;
             }
-            int id = Integer.parseInt(idStr);
+            Matcher idMatcher = PATTERN_LINK_ID_PARAM.matcher(item.getLink());
+            if (!idMatcher.find()) {
+                idMatcher = PATTERN_LINK_ID_LAST_NUM.matcher(item.getLink());
+                if (!idMatcher.find()) {
+                    log.warn("RSS条目link无法提取ID，跳过，url：{}，link：{}", trRss.getRssUrl(), item.getLink());
+                    return;
+                }
+            }
+            int id = Integer.parseInt(idMatcher.group(1));
             trRssTorrent.setRssTorrentId(id);
             if(!ObjectUtils.isEmpty(item.getEnclosure())){
                 trRssTorrent.setDownloadUrl(item.getEnclosure().getUrl());
@@ -84,7 +105,7 @@ public class RssUtil {
                 .uri(URI.create(rssUrl))
                 .timeout(Duration.ofSeconds(30))
                 .header(LokTarConstant.HTTP_HEADER_USER_AGENT_NAME, LokTarConstant.HTTP_HEADER_USER_AGENT_VALUE)
-                .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_JSON)
+                .header(LokTarConstant.HTTP_HEADER_ACCEPT_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_VALUE_XML)
                 .header(LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_NAME, LokTarConstant.HTTP_HEADER_ACCEPT_LANGUAGE_VALUE_CN)
                 .GET()
                 .build();

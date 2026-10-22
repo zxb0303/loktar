@@ -11,9 +11,9 @@
     <result column="title" jdbcType="LONGVARCHAR" property="title" />
     <result column="description" jdbcType="LONGVARCHAR" property="description" />
   </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+  <delete id="deleteByPrimaryKey">
     delete from tr_rss_torrent
-    where rss_torrent_id = #{rssTorrentId,jdbcType=INTEGER}
+    where rss_torrent_id = #{param1,jdbcType=INTEGER} and rss_id = #{param2,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.loktar.domain.transmission.TrRssTorrent">
     insert into tr_rss_torrent (rss_torrent_id, rss_id, link, 
@@ -32,12 +32,12 @@
       pub_date = #{pubDate,jdbcType=TIMESTAMP},
       title = #{title,jdbcType=LONGVARCHAR},
       description = #{description,jdbcType=LONGVARCHAR}
-    where rss_torrent_id = #{rssTorrentId,jdbcType=INTEGER}
+    where rss_torrent_id = #{rssTorrentId,jdbcType=INTEGER} and rss_id = #{rssId,jdbcType=INTEGER}
   </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
     select rss_torrent_id, rss_id, link, `status`, download_url, pub_date, title, description
     from tr_rss_torrent
-    where rss_torrent_id = #{rssTorrentId,jdbcType=INTEGER}
+    where rss_torrent_id = #{param1,jdbcType=INTEGER} and rss_id = #{param2,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select rss_torrent_id, rss_id, link, `status`, download_url, pub_date, title, description

@@ -1172,7 +1172,7 @@ CREATE TABLE `tr_rss_torrent`  (
                                    `status` int(11) NULL DEFAULT NULL COMMENT '0:未处理；1:已推送下载；2:已跳过；3:失败',
                                    `download_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
                                    `pub_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-                                   PRIMARY KEY (`rss_torrent_id`) USING BTREE
+                                   PRIMARY KEY (`rss_torrent_id`, `rss_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------

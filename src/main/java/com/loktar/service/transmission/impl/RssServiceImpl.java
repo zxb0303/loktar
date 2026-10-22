@@ -53,7 +53,7 @@ public class RssServiceImpl implements RssService {
     public void refreshTrRssTorrents(TrRss trRss) {
         List<TrRssTorrent> trRssTorrents = rssUtil.getRssData(trRss);
         for (TrRssTorrent trRssTorrent : trRssTorrents) {
-            if (ObjectUtils.isEmpty(trRssTorrentMapper.selectByPrimaryKey(trRssTorrent.getRssTorrentId()))) {
+            if (ObjectUtils.isEmpty(trRssTorrentMapper.selectByPrimaryKey(trRssTorrent.getRssTorrentId(), trRss.getRssId()))) {
                 trRssTorrentMapper.insert(trRssTorrent);
             }
         }

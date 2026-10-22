@@ -15,7 +15,8 @@ public class DateTimeUtil {
     public final static DateTimeFormatter FORMATTER_YEAR = DateTimeFormatter.ofPattern("yyyy");
     public final static DateTimeFormatter FORMATTER_FILENAME = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     public final static DateTimeFormatter FORMATTER_QYWX_RECEIVE = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-    public final static DateTimeFormatter FORMATTER_RSS_ITEM_PUB = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+    // [z][Z]可选段兼容两种RSS pubDate时区写法：字母时区（GMT/UTC）与数字偏移（+0800）
+    public final static DateTimeFormatter FORMATTER_RSS_ITEM_PUB = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss [z][Z]", Locale.ENGLISH);
     public final static DateTimeFormatter FORMATTER_DATE_CHINESE = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
 
 

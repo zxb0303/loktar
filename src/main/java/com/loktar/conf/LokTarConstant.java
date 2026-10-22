@@ -5,6 +5,7 @@ public class LokTarConstant {
     public static final String HTTP_HEADER_USER_AGENT_VALUE = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36";
     public static final String HTTP_HEADER_ACCEPT_NAME = "Accept";
     public static final String HTTP_HEADER_ACCEPT_VALUE_JSON = "application/json";
+    public static final String HTTP_HEADER_ACCEPT_VALUE_XML = "application/rss+xml, application/xml, text/xml, */*";
     public static final String HTTP_HEADER_ACCEPT_VALUE_HTML = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
     public static final String HTTP_HEADER_CONTENT_TYPE_NAME = "Content-type";
     public static final String HTTP_HEADER_CONTENT_TYPE_VALUE_JSON = "application/json; charset=utf-8";
