@@ -1,4 +1,4 @@
-FROM ibm-semeru-runtimes:open-21.0.12.10-jre-resolute
+FROM ibm-semeru-runtimes:open-21.0.12.15-jre-resolute
 EXPOSE 8080
 ARG JAR_FILE
 ADD $JAR_FILE /app.jar

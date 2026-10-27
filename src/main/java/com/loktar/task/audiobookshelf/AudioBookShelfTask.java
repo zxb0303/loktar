@@ -49,15 +49,15 @@ public class AudioBookShelfTask {
     @Scheduled(cron = "0 */2 7-22 * * *")
     public void listenMonitor() {
         String user = lokTarConfig.getAudioBookShelf().getUser();
-        log.info("{}", "AudioBookShelf收听监控定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
+//        log.info("{}", "AudioBookShelf收听监控定时器开始：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
         AbsUser absUser = audioBookShelfUtil.getUser(user);
         if (absUser == null || !Boolean.TRUE.equals(absUser.getIsActive())) {
-            log.info("{}", "AudioBookShelf监控用户已禁用，跳过收听监控：" + user);
+//            log.info("{}", "AudioBookShelf监控用户已禁用，跳过收听监控：" + user);
             return;
         }
         String today = DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE_COMPACT);
         monitorUser(user, absUser.getId(), today);
-        log.info("{}", "AudioBookShelf收听监控定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
+//        log.info("{}", "AudioBookShelf收听监控定时器结束：" + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATESECOND));
     }
 
     /**
