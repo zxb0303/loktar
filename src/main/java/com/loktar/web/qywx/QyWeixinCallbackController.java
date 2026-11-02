@@ -18,6 +18,7 @@ import com.loktar.mapper.common.PropertyMapper;
 import com.loktar.mapper.patent.PatentPdfApplyMapper;
 import com.loktar.mapper.transmission.TrTorrentMapper;
 import com.loktar.service.common.NoticeServer;
+import com.loktar.task.audiobookshelf.AudioBookShelfTask;
 import com.loktar.util.AudioBookShelfUtil;
 import com.loktar.util.BandwagonhostUtil;
 import com.loktar.util.DateTimeUtil;
@@ -55,6 +56,8 @@ public class QyWeixinCallbackController {
 
     private final AudioBookShelfUtil audioBookShelfUtil;
 
+    private final AudioBookShelfTask audioBookShelfTask;
+
     private final TrTorrentMapper trTorrentMapper;
 
     private final PatentPdfApplyMapper patentPdfApplyMapper;
@@ -67,7 +70,7 @@ public class QyWeixinCallbackController {
             .build();
 
 
-    public QyWeixinCallbackController(RedisTemplate<String, Object> redisTemplate, TransmissionUtil transmissionUtil, NoticeServer noticeServer, QywxApi qywxApi, BandwagonhostUtil bandwagonhostUtil, LokTarConfig lokTarConfig, AudioBookShelfUtil audioBookShelfUtil, TrTorrentMapper trTorrentMapper, PatentPdfApplyMapper patentPdfApplyMapper, PropertyMapper propertyMapper) {
+    public QyWeixinCallbackController(RedisTemplate<String, Object> redisTemplate, TransmissionUtil transmissionUtil, NoticeServer noticeServer, QywxApi qywxApi, BandwagonhostUtil bandwagonhostUtil, LokTarConfig lokTarConfig, AudioBookShelfUtil audioBookShelfUtil, AudioBookShelfTask audioBookShelfTask, TrTorrentMapper trTorrentMapper, PatentPdfApplyMapper patentPdfApplyMapper, PropertyMapper propertyMapper) {
         this.redisTemplate = redisTemplate;
         this.transmissionUtil = transmissionUtil;
         this.noticeServer = noticeServer;
@@ -75,6 +78,7 @@ public class QyWeixinCallbackController {
         this.bandwagonhostUtil = bandwagonhostUtil;
         this.lokTarConfig = lokTarConfig;
         this.audioBookShelfUtil = audioBookShelfUtil;
+        this.audioBookShelfTask = audioBookShelfTask;
         this.trTorrentMapper = trTorrentMapper;
         this.patentPdfApplyMapper = patentPdfApplyMapper;
         this.propertyMapper = propertyMapper;
@@ -230,7 +234,7 @@ public class QyWeixinCallbackController {
                         replymsg.append(System.lineSeparator())
                                 .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                         break;
-                    case ABS_MONITOR_SWITCH:
+                    case ABS_ACTIVE_SWITCH:
                         String monitorUsername = lokTarConfig.getAudioBookShelf().getUser();
                         boolean toActive = audioBookShelfUtil.switchUserActive(monitorUsername);
                         replymsg.append(receiveEventMsg.getFromUserName());
@@ -238,6 +242,12 @@ public class QyWeixinCallbackController {
                         replymsg.append(System.lineSeparator())
                                 .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                         fromUserName = LokTarConstant.QYWX_NOTICE_ALL;
+                        break;
+                    case ABS_MONITOR_SWITCH:
+                        boolean autoCloseEnabled = audioBookShelfTask.switchTodayAutoClose();
+                        replymsg.append("ABS当日自动禁用：").append(autoCloseEnabled ? "已开启" : "已关闭").append(System.lineSeparator());
+                        replymsg.append(System.lineSeparator())
+                                .append(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE));
                         break;
                     default:
                         replymsg.append("不支持该命令");

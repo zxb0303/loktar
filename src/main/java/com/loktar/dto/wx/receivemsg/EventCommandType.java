@@ -17,6 +17,7 @@ public enum EventCommandType {
     PATENT_SEARCH_PROCESS("专利查询进度"),
     PATENT_MONITOR_SWITCH("专利查询监控"),
     RELX_MONITOR_SWITCH("Relx监控开关"),
+    ABS_ACTIVE_SWITCH("ABS启用禁用"),
     ABS_MONITOR_SWITCH("ABS监控开关");
 
 

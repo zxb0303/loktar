@@ -47,4 +47,11 @@ public class AudioBookShelfController {
         boolean toActive = audioBookShelfUtil.switchUserActive(monitorUsername);
         return (toActive ? "已启用" : "已禁用") + "ABS监控用户：" + monitorUsername;
     }
+
+    @PostMapping("/testSwitchTodayAutoClose")
+    @SneakyThrows
+    public String testSwitchTodayAutoClose() {
+        boolean autoCloseEnabled = audioBookShelfTask.switchTodayAutoClose();
+        return "ABS当日自动禁用：" + (autoCloseEnabled ? "已开启" : "已关闭");
+    }
 }

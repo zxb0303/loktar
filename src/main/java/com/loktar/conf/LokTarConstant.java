@@ -38,6 +38,7 @@ public class LokTarConstant {
     public static final String REDIS_KEY_ABS_LISTEN_TIER_PREFIX = "abs_listen_tier_";
     public static final String REDIS_KEY_ABS_CLOSE_TIER_PREFIX = "abs_close_tier_";
     public static final String REDIS_KEY_ABS_PLAYING_POS_PREFIX = "abs_playing_pos_";
+    public static final String REDIS_KEY_ABS_AUTO_CLOSE_SWITCH_PREFIX = "abs_auto_close_switch_";
 
 
     public final static String NOTICE_TITLE_GITHUB = "GitHub项目更新通知";

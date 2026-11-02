@@ -30,6 +30,9 @@ public class AudioBookShelfTask {
     // Redis刻度记录保留2天，避免历史数据堆积
     private final static Duration TIER_RECORD_EXPIRE = Duration.ofDays(2);
 
+    // 当日自动禁用开关的关闭标记，开关未设置标记即视为开启
+    private final static String AUTO_CLOSE_SWITCH_OFF = "off";
+
     private final LokTarConfig lokTarConfig;
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -74,6 +77,29 @@ public class AudioBookShelfTask {
         audioBookShelfUtil.updateUserActive(absUser.getId(), true);
     }
 
+    /**
+     * 切换当日自动禁用开关，返回切换后的状态：true为当日开启自动禁用
+     */
+    public boolean switchTodayAutoClose() {
+        String switchKey = autoCloseSwitchKey(DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATE_COMPACT));
+        if (Boolean.TRUE.equals(redisTemplate.delete(switchKey))) {
+            return true;
+        }
+        redisTemplate.opsForValue().set(switchKey, AUTO_CLOSE_SWITCH_OFF, TIER_RECORD_EXPIRE);
+        return false;
+    }
+
+    /**
+     * 判断当日自动禁用是否开启：仅影响自动关闭动作，收听通知不受影响
+     */
+    private boolean isTodayAutoCloseEnabled(String today) {
+        return !AUTO_CLOSE_SWITCH_OFF.equals(redisTemplate.opsForValue().get(autoCloseSwitchKey(today)));
+    }
+
+    private String autoCloseSwitchKey(String today) {
+        return LokTarConstant.REDIS_KEY_ABS_AUTO_CLOSE_SWITCH_PREFIX + today;
+    }
+
     private void monitorUser(String username, String userId, String today) {
         // 暂停中的会话仍保持打开，通过对比播放进度是否变化判断是否正在播放
         AbsPlaybackSession openSession = findOpenSession(userId);
@@ -87,19 +113,23 @@ public class AudioBookShelfTask {
         String closeTierKey = LokTarConstant.REDIS_KEY_ABS_CLOSE_TIER_PREFIX + today + "_" + username;
         boolean noticeReached = isNewTierReached(noticeTierKey, noticeTier);
         boolean closeReached = isNewTierReached(closeTierKey, closeTier);
+        boolean autoCloseEnabled = isTodayAutoCloseEnabled(today);
         // 通知刻度：推送收听通知（当日累计时长与正在收听内容）
         if (noticeReached) {
             sendListeningNotice(username, openSession, noticeTier * NOTICE_TIER_MINUTES);
         }
         // 关闭刻度：把用户置为不可用即停止其播放并推送关闭通知，当天剩余轮次监控直接跳过，07点/18:30由resetUserActive恢复
-        if (closeReached) {
+        if (closeReached && autoCloseEnabled) {
             audioBookShelfUtil.updateUserActive(userId, false);
             sendAutoCloseNotice(username);
         }
         // 先动作后落库：动作失败时本轮进度与档位不记录，下轮重新判定实现幂等重试
         recordPlayingPos(username, openSession);
         recordTier(noticeTierKey, noticeTier);
-        recordTier(closeTierKey, closeTier);
+        // 当日自动禁用关闭期间不记录关闭刻度，开关重新开启后按最新刻度立即补做一次禁用
+        if (autoCloseEnabled) {
+            recordTier(closeTierKey, closeTier);
+        }
     }
 
     /**
