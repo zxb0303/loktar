@@ -93,6 +93,6 @@ jobs:
 #          build-args: |
 #            JAR_FILE=target/*.jar
 
-      - name: Send Webhook Notification
-        run: |
-          curl -X POST -d "version=loktar:${{ env.PROJECT_VERSION }}" ${{ secrets.WEB_HOOK_URL }}
+#      - name: Send Webhook Notification
+#        run: |
+#          curl -X POST -d "version=loktar:${{ env.PROJECT_VERSION }}" ${{ secrets.WEB_HOOK_URL }}
