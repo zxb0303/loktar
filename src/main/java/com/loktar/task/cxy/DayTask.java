@@ -43,6 +43,22 @@ public class DayTask {
     }
 
     /**
+     * 工作日14点至17点半，每半小时提醒查看TikTok数据是否已更新
+     */
+    @Scheduled(cron = "0 0/30 14-17 ? * MON-FRI")
+    public void tikTokDataUpdateRemind() {
+        String content = LokTarConstant.NOTICE_TITLE_WORK + System.lineSeparator()
+                + System.lineSeparator()
+                + "查看TikTok数据是否已更新" + System.lineSeparator()
+                + DateTimeUtil.getDatetimeStr(LocalDateTime.now(), DateTimeUtil.FORMATTER_DATEMINUTE);
+        qywxApi.sendTextMsg(new AgentMsgText(
+                lokTarConfig.getQywx().getNoticeCxy(),
+                lokTarConfig.getQywx().getAgent002Id(),
+                content
+        ));
+    }
+
+    /**
      * @description: 每个月最后一个工作日10点提醒
      * @param:
      * @retuan: void
